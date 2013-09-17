@@ -1,0 +1,5 @@
+c:\users\txmieln\documents\visual studio 2012\Projects\LoginForm\Helpers\bin\Debug\Helpers.dll
+c:\users\txmieln\documents\visual studio 2012\Projects\LoginForm\Helpers\bin\Debug\Helpers.pdb
+c:\users\txmieln\documents\visual studio 2012\Projects\LoginForm\Helpers\obj\Debug\Helpers.csprojResolveAssemblyReference.cache
+c:\users\txmieln\documents\visual studio 2012\Projects\LoginForm\Helpers\obj\Debug\Helpers.dll
+c:\users\txmieln\documents\visual studio 2012\Projects\LoginForm\Helpers\obj\Debug\Helpers.pdb
