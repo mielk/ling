@@ -1,0 +1,39 @@
+﻿@model LoginForm.Models.User
+
+@{
+    ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    <div>
+        <fieldset>
+            <legend>Registration form</legend>
+            <div class="editor-label">
+                @Html.LabelFor(u => u.UserName)
+            </div>
+            <div class="editor-field">
+                @Html.TextBoxFor(u => u.UserName)
+                @Html.ValidationMessageFor(u => u.UserName)
+            </div>
+            <div class="editor-label">
+                @Html.LabelFor(u => u.Password)
+            </div>
+            <div class="editor-field">
+                @Html.PasswordFor(u => u.Password)
+                @Html.ValidationMessageFor(u => u.Password)
+            </div>
+
+            <div class="editor-label">
+                @Html.LabelFor(u => u.ConfirmPassword)
+            </div>
+            <div class="editor-field">
+                @Html.PasswordFor(u => u.ConfirmPassword)
+            </div>
+
+            <input type="submit" value="Register" />
+        </fieldset>
+    </div>
+}
+
