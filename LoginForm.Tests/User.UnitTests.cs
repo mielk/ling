@@ -10,12 +10,12 @@ namespace LoginForm.Tests
 
         private User user;
 
+        
         public UserUnitTests()
         {
             user = new User();
             populateWithCorrectParameters();
         }
-
 
         private void populateWithCorrectParameters()
         {
@@ -31,7 +31,7 @@ namespace LoginForm.Tests
             user.ConfirmPassword = pswd;
         }
 
-
+        [Ignore]
         [TestMethod]
         public void IsValid_given_correct_parameters_returns_true()
         {
@@ -39,6 +39,7 @@ namespace LoginForm.Tests
             Assert.AreEqual(true, user.IsValid());
         }
 
+        [Ignore]
         [TestMethod]
         public void IsValid_different_passwords_returns_false()
         {
@@ -50,6 +51,7 @@ namespace LoginForm.Tests
 
         }
 
+        [Ignore]
         [TestMethod]
         public void IsValid_too_short_username_returns_false() {
             populateWithCorrectParameters();
@@ -59,6 +61,7 @@ namespace LoginForm.Tests
             Assert.AreEqual(false, user.IsValid());
         }
 
+        [Ignore]
         [TestMethod]
         public void IsValid_null_username_returns_false()
         {
@@ -67,6 +70,7 @@ namespace LoginForm.Tests
             Assert.AreEqual(false, user.IsValid());
         }
 
+        [Ignore]
         [TestMethod]
         public void IsValid_too_long_username_returns_false()
         {
@@ -75,6 +79,7 @@ namespace LoginForm.Tests
             Assert.AreEqual(false, user.IsValid());
         }
 
+        [Ignore]
         [TestMethod]
         public void IsValid_null_password_returns_false()
         {
@@ -83,6 +88,7 @@ namespace LoginForm.Tests
             Assert.AreEqual(false, user.IsValid());
         }
 
+        [Ignore]
         [TestMethod]
         public void IsValid_too_short_password_returns_false()
         {
@@ -91,6 +97,7 @@ namespace LoginForm.Tests
             Assert.AreEqual(false, user.IsValid());
         }
 
+        [Ignore]
         [TestMethod]
         public void IsValid_too_long_password_returns_false()
         {
@@ -99,6 +106,7 @@ namespace LoginForm.Tests
             Assert.AreEqual(false, user.IsValid());
         }
 
+        [Ignore]
         [TestMethod]
         public void IsValid_password_without_upper_letter_returns_false()
         {
@@ -107,6 +115,7 @@ namespace LoginForm.Tests
             Assert.AreEqual(false, user.IsValid());
         }
 
+        [Ignore]
         [TestMethod]
         public void IsValid_password_without_low_letter_returns_false()
         {
@@ -115,6 +124,7 @@ namespace LoginForm.Tests
             Assert.AreEqual(false, user.IsValid());
         }
 
+        [Ignore]
         [TestMethod]
         public void IsValid_password_contains_no_number_returns_false()
         {
@@ -123,6 +133,7 @@ namespace LoginForm.Tests
             Assert.AreEqual(false, user.IsValid());
         }
 
+        [Ignore]
         [TestMethod]
         public void IsValid_password_contains_no_special_char_returns_false()
         {
@@ -130,7 +141,8 @@ namespace LoginForm.Tests
             changeBothPasswords("Haslo1");
             Assert.AreEqual(false, user.IsValid());
         }
-
+        
+        [Ignore]
         [TestMethod]
         public void IsValid_given_already_existing_login_returns_false()
         {
@@ -144,6 +156,7 @@ namespace LoginForm.Tests
 
         }
 
+        [Ignore]
         [TestMethod]
         public void Add_after_adding_user_exists()
         {
@@ -160,6 +173,7 @@ namespace LoginForm.Tests
 
         }
 
+        [Ignore]
         [TestMethod]
         public void Remove__after_removing_user_is_not_active()
         {
