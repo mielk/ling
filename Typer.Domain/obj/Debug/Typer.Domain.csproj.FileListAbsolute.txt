@@ -1,0 +1,5 @@
+C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Domain\bin\Debug\Typer.Domain.dll
+C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Domain\bin\Debug\Typer.Domain.pdb
+C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Domain\obj\Debug\Typer.Domain.csprojResolveAssemblyReference.cache
+C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Domain\obj\Debug\Typer.Domain.dll
+C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Domain\obj\Debug\Typer.Domain.pdb
