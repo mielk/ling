@@ -11,6 +11,7 @@ namespace Typer.Web.Controllers
         //
         // GET: /Home/
 
+        [AllowAnonymous]
         public ActionResult Index()
         {
             return View();
