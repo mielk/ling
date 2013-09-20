@@ -12,12 +12,12 @@
     <div style="width: auto; background-color: #728ea7;">
         @if (Request.IsAuthenticated) {
             <strong>@Html.Encode(User.Identity.Name)</strong>
-            @Html.ActionLink("Sign Out", "Logout", "User")
+            @Html.ActionLink("Sign Out", "Logout", "Login")
         }
         else {
-            @Html.ActionLink("Register", "Register", "User")
+            @Html.ActionLink("Register", "Register", "Login")
             <span> | </span>
-            @Html.ActionLink("Sign In", "Login", "User")
+            @Html.ActionLink("Sign In", "Login", "Login")
         }
     </div>
 

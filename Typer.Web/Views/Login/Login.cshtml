@@ -1,0 +1,38 @@
+﻿@model Typer.Domain.Entities.User
+
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/Sign.cshtml";
+}
+
+
+<div id="account">
+    @using (Html.BeginForm())
+    {
+        <fieldset>
+            <div class="field">
+                @Html.LabelFor(u => u.UserName)
+                <span>
+                    @Html.TextBoxFor(u => u.UserName, new{  
+                        @class="default", 
+                        @placeholder="Username", 
+                        @id="Username"
+                    })
+                </span>
+            </div>
+
+            <div class="field">
+                @Html.LabelFor(u => u.Password)
+                <span>
+                    @Html.PasswordFor(u => u.Password, new{  
+                        @class="default", 
+                        @placeholder="Password", 
+                        @id="Password"
+                    })
+                </span>
+            </div>
+
+        </fieldset>
+    
+    }
+</div>

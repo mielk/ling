@@ -1,0 +1,75 @@
+﻿body {
+    font-size: .85em;
+    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
+    color: #fff;
+    background-color: #222;
+}
+
+header, footer, nav, section {
+    display: block;
+}
+
+#account
+{
+    display: block;
+    position: relative;
+    width: 36%;
+    height: 20%;
+    margin: 20% 32% 60% 32%;
+    background-color: #eee;
+    border: none;
+}
+
+#account fieldset
+{
+    border: none;
+    margin: 0;
+    padding: 6px;
+    overflow: hidden;
+}
+
+#account .field
+{
+    padding-bottom: 5px;
+    margin: 0;
+    width: 100%;
+}
+
+#account input[type=text], input[type=password]
+{
+    font-family: Calibri, Arial, Tahoma, Georgia, serif;
+    font-size: 17px;
+    font-weight: normal;
+    box-shadow: 1px 1px 0px 0px rgba(255,255,255,0.25);
+    outline-width: 0px;
+    outline-style: none;
+    outline-color: invert;
+}
+
+#account input.default{
+    width: 100%;
+    padding: 7px 14px;
+    margin: 0;
+    color: #222;
+    background-color: rgb(229, 230, 231);
+    border: 1px solid #555;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+#account input.default:focus
+{
+    background-color: rgb(186, 210, 223);
+}
+
+#account label{
+    display: none;
+    float: left;
+}
+
+#account span{
+    display: block;
+    overflow: hidden;
+    margin: 2px;
+}
