@@ -40,7 +40,7 @@ header, footer, nav, section
 {
     font-family: Calibri, Arial, Tahoma, Georgia, serif;
     font-size: 17px;
-    font-weight: normal;
+    font-weight: bold;
     box-shadow: 1px 1px 0px 0px rgba(255,255,255,0.25);
     outline-width: 0px;
     outline-style: none;
@@ -50,7 +50,7 @@ header, footer, nav, section
 #account input.default
 {
     width: 100%;
-    padding: 7px 14px;
+    padding: 6px 12px;
     margin: 0;
     color: #222;
     background-color: rgb(229, 230, 231);
@@ -69,7 +69,13 @@ header, footer, nav, section
 {
     display: block;
     float: left;
-    visibility: visible;
+    width: 75px;
+    color: #222;
+    padding: 7px;
+    height: 21px;
+    line-height: 21px;
+    font-size: 13px;
+    font-weight: bold;
 }
 
 #account span
