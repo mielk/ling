@@ -5,7 +5,8 @@
     background-color: #222;
 }
 
-header, footer, nav, section {
+header, footer, nav, section 
+{
     display: block;
 }
 
@@ -46,7 +47,8 @@ header, footer, nav, section {
     outline-color: invert;
 }
 
-#account input.default{
+#account input.default
+{
     width: 100%;
     padding: 7px 14px;
     margin: 0;
@@ -63,12 +65,15 @@ header, footer, nav, section {
     background-color: rgb(186, 210, 223);
 }
 
-#account label{
-    display: none;
+#account label
+{
+    display: block;
     float: left;
+    visibility: visible;
 }
 
-#account span{
+#account span
+{
     display: block;
     overflow: hidden;
     margin: 2px;

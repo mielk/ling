@@ -11,18 +11,19 @@
     {
         <fieldset>
             <div class="field">
-                @Html.LabelFor(u => u.UserName)
+                @Html.LabelFor(u => u.UserName, new { @class="label" })
                 <span>
                     @Html.TextBoxFor(u => u.UserName, new{  
                         @class="default", 
                         @placeholder="Username", 
-                        @id="Username"
+                        @id="Username",
+                        @onkeypress="checkPlaceholder();"
                     })
                 </span>
             </div>
 
             <div class="field">
-                @Html.LabelFor(u => u.Password)
+                @Html.LabelFor(u => u.Password, new { @class="label" })
                 <span>
                     @Html.PasswordFor(u => u.Password, new{  
                         @class="default", 
