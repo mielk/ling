@@ -10,5 +10,6 @@ namespace Typer.Domain.Abstract
     public interface IUsersRepository
     {
         User getUser(int userID);
+        User getUser(string userName, string password);
     }
 }
