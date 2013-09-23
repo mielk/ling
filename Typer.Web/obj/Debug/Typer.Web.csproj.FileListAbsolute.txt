@@ -1,6 +1,5 @@
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\Typer.Web.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\Typer.Web.pdb
-C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\Antlr3.Runtime.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\EntityFramework.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\Microsoft.Web.Infrastructure.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\Moq.dll
@@ -10,14 +9,12 @@ C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\Syste
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\System.Web.Http.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\System.Web.Http.WebHost.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\System.Web.Mvc.dll
-C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\System.Web.Optimization.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\System.Web.Providers.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\System.Web.Razor.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\System.Web.WebPages.Deployment.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\System.Web.WebPages.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\System.Web.WebPages.Razor.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\Typer.Domain.dll
-C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\WebGrease.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\Typer.Domain.pdb
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\Moq.xml
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\Ninject.pdb
