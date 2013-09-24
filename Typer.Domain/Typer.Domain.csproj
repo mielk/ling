@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Abstract\IUsersRepository.cs" />
     <Compile Include="Entities\User.cs" />
+    <Compile Include="Helpers\ExtensionMethods.cs" />
     <Compile Include="Helpers\SHA1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

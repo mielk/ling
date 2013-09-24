@@ -10,6 +10,5 @@ namespace Typer.Domain.Helpers
     {
 
 
-
     }
 }
