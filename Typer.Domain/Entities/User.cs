@@ -12,35 +12,10 @@ namespace Typer.Domain.Entities
     public class User
     {
 
-        #region UsersRepository
+        //Static properties.
         private static IUsersRepository usersRepository;
 
-        public static void injectUsersRepository(IUsersRepository repository)
-        {
-            usersRepository = repository;
-        }
-
-        public static IUsersRepository getUsersRepository()
-        {
-            return usersRepository;
-        }
-
-        private static void checkUsersRepository()
-        {
-            if (usersRepository == null)
-            {
-                UsersRepositoryFactory factory = UsersRepositoryFactory.getInstance();
-                usersRepository = factory.Repository;
-            }
-        }
-
-        #endregion UsersRepositoryInstance
-
-
-
-
-        #region InstanceProperties
-
+        //Instance properties.
         public int UserID { get; set; }
 
         [Required]
@@ -56,17 +31,47 @@ namespace Typer.Domain.Entities
         [Display(Name = "Password")]
         public string Password { get; set; }
 
-        #endregion InstanceProperties
+
+
+
+        static User()
+        {
+            checkUsersRepository();
+        }
+
+
+        //User repository methods.
+        #region User repository methods.
+        public static void injectUsersRepository(IUsersRepository repository)
+        {
+            usersRepository = repository;
+        }
+
+        public static IUsersRepository getUsersRepository()
+        {
+            return usersRepository;
+        }
+
+        private static void checkUsersRepository()
+        {
+            if (usersRepository == null)
+            {
+                UsersRepositoryFactory factory = UsersRepositoryFactory.getInstance();
+                injectUsersRepository(factory.Repository);
+            }
+        }
+        #endregion User repository methods.
 
 
 
 
-        #region Authentication
+        //Authentication.
+        #region Authentication.
         public bool IsAuthenticated()
         {
 
             //Prepare users repository.
-            checkUsersRepository();
+            
             if (usersRepository == null)
             {
                 throw new NullReferenceException("Users repository has not been injected.");
@@ -79,7 +84,7 @@ namespace Typer.Domain.Entities
             return (user == null ? false : true);
 
         }
-        #endregion Authentication
+        #endregion Authentication.
 
 
 
