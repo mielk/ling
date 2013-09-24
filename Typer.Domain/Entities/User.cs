@@ -24,6 +24,16 @@ namespace Typer.Domain.Entities
         {
             return usersRepository;
         }
+
+        private static void checkUsersRepository()
+        {
+            if (usersRepository == null)
+            {
+                UsersRepositoryFactory factory = new UsersRepositoryFactory();
+                usersRepository = factory.Repository;
+            }
+        }
+
         #endregion UsersRepositoryInstance
 
 
@@ -55,20 +65,19 @@ namespace Typer.Domain.Entities
         public bool IsAuthenticated()
         {
 
-            //Repository must be injected before we will search for a user.
-            if (usersRepository == null){
-                throw new NullReferenceException("No repository has been injected.");
-            }
-
             //Username and password cannot be null nor empty.
             if (UserName.isNullOrEmpty() || Password.isNullOrEmpty()) return false;
 
+
+            checkUsersRepository();
             User user = usersRepository.getUser(UserName, SHA1.Encode(Password));
+
 
             return (user == null ? false : true);
 
         }
         #endregion Authentication
+
 
 
     }
