@@ -59,8 +59,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Domain\UserUnitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SHA1UnitTests.cs" />
+    <Compile Include="Helpers\SHA1UnitTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -74,6 +75,9 @@
       <Project>{b81fab79-30c0-42ed-9875-d85d38aceedd}</Project>
       <Name>Typer.Web</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controllers\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

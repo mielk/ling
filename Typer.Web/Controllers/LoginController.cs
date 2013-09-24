@@ -26,7 +26,7 @@ namespace Typer.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (user.IsAuthorized())
+                if (user.IsAuthenticated())
                 {
                     FormsAuthentication.SetAuthCookie(user.UserName, false);
                     return RedirectToAction("Index", "Home");
