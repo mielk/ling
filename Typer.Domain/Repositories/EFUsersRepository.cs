@@ -12,6 +12,8 @@ namespace Typer.Domain.Concrete
     {
 
         private static IUsersRepository instance;
+        private EFDbContext context = new EFDbContext();
+        
 
         private EFUsersRepository()
         {
@@ -29,16 +31,27 @@ namespace Typer.Domain.Concrete
 
 
         //------------
-        
+
+        public IQueryable<User> Users()
+        {
+            return context.Users;
+        }
 
         public User getUser(int userID)
         {
-            return null;
+            return context.Users.Single(u => u.UserID == userID);
         }
 
         public User getUser(string username, string password)
         {
-            return null;
+            int x = getUsersCount();
+            return context.Users.Single(u => u.UserName == username && u.Password == password);
+        }
+
+        public int getUsersCount()
+        {
+            IQueryable<User> users = Users();
+            return users.Count();
         }
 
     }

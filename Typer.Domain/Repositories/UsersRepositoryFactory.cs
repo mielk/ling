@@ -36,7 +36,7 @@ namespace Typer.Domain.Entities
 
         private static IUsersRepository getRepositoryInstance()
         {
-            return UsersRepository.getInstance();
+            return EFUsersRepository.getInstance();
         }
 
 

@@ -9,7 +9,9 @@ namespace Typer.Domain.Abstract
 {
     public interface IUsersRepository
     {
+        IQueryable<User> Users();
         User getUser(int userID);
         User getUser(string username, string password);
+        int getUsersCount();
     }
 }

@@ -31,6 +31,11 @@ namespace Typer.Domain.Entities
         [Display(Name = "Password")]
         public string Password { get; set; }
 
+        public int CountryId { get; set; }
+        public DateTime DateOfBirth { get; set; }
+        public DateTime RegistrationDate { get; set; }
+        public string Email { get; set; }
+
 
 
 
