@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Typer.Domain.Abstract;
+using Typer.Domain.Helpers;
 
 namespace Typer.Domain.Entities
 {
@@ -50,25 +51,24 @@ namespace Typer.Domain.Entities
 
 
 
-
+        #region Authentication
         public bool IsAuthenticated()
         {
 
-            if (usersRepository == null) throw new NullReferenceException("No repository has been injected.");
+            //Repository must be injected before we will search for a user.
+            if (usersRepository == null){
+                throw new NullReferenceException("No repository has been injected.");
+            }
 
+            //Username and password cannot be null nor empty.
+            if (UserName.isNullOrEmpty() || Password.isNullOrEmpty()) return false;
 
-            string u = UserName;
-            string p = Password;
+            User user = usersRepository.getUser(UserName, SHA1.Encode(Password));
 
-            if (u == null || u == string.Empty) return false;
-            if (p == null || p == string.Empty) return false;
-
-            User x = usersRepository.getUser(2);
-            return false;
+            return (user == null ? false : true);
 
         }
-
-        //private bool isEmptyString(string username
+        #endregion Authentication
 
 
     }

@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Typer.Domain.Entities;
 using Typer.Domain.Abstract;
+using Typer.Domain.Helpers;
 using Moq;
 
 namespace Typer.Tests.UnitTests.Domain
@@ -35,7 +36,6 @@ namespace Typer.Tests.UnitTests.Domain
         private void addUserToMockRepository(Mock<IUsersRepository> mockRepo, User user){
             mockRepo.Setup(m => m.getUser(user.UserID)).Returns(user);
             mockRepo.Setup(m => m.getUser(user.UserName, user.Password)).Returns(user);
-            //mockRepo.Setup(m => m.getUser(user.User, It.IsNotIn("test"))).Returns((User)null);
         }
         #endregion TestInitialization
 
@@ -88,6 +88,15 @@ namespace Typer.Tests.UnitTests.Domain
         }
 
 
+
+        [ExpectedException(typeof(NullReferenceException))]
+        [TestMethod]
+        public void User_IsAuthenticated_exception_is_thrown_if_repository_is_not_injected()
+        {
+            User.injectUsersRepository(null);
+            User user = new User { UserName = "", Password = "test" };
+            user.IsAuthenticated();
+        }
 
 
     }
