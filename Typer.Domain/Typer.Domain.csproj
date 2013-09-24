@@ -42,8 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstract\IUsersRepository.cs" />
+    <Compile Include="Concrete\EFUsersRepository.cs" />
     <Compile Include="Entities\User.cs" />
-    <Compile Include="Entities\UsersRepositoryFactory.cs" />
+    <Compile Include="Concrete\UsersRepositoryFactory.cs" />
     <Compile Include="Helpers\ExtensionMethods.cs" />
     <Compile Include="Helpers\SHA1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
