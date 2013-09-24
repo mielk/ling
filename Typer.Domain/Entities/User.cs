@@ -29,7 +29,7 @@ namespace Typer.Domain.Entities
         {
             if (usersRepository == null)
             {
-                UsersRepositoryFactory factory = new UsersRepositoryFactory();
+                UsersRepositoryFactory factory = UsersRepositoryFactory.getInstance();
                 usersRepository = factory.Repository;
             }
         }

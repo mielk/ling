@@ -16,8 +16,6 @@ namespace Typer.Domain.Entities
 
 
 
-
-
         private UsersRepositoryFactory(IUsersRepository repository)
         {
             Repository = repository;
@@ -28,7 +26,7 @@ namespace Typer.Domain.Entities
         {
             if (instance == null)
             {
-                instance = new UsersRepositoryFactory(getRepoInstance());
+                instance = new UsersRepositoryFactory(getRepositoryInstance());
             }
 
             return instance;
@@ -36,9 +34,9 @@ namespace Typer.Domain.Entities
         }
 
 
-        private static IUsersRepository getRepoInstance()
+        private static IUsersRepository getRepositoryInstance()
         {
-            return EFUsersRepository.getInstance();
+            return DefaultUsersRepository.getInstance();
         }
 
 
