@@ -8,7 +8,7 @@ using Typer.Domain.Entities;
 
 namespace Typer.Domain.Concrete
 {
-    public class DefaultUsersRepository : IUsersRepository
+    public class UsersRepository : IUsersRepository
     {
 
         private static IUsersRepository instance;
@@ -16,7 +16,7 @@ namespace Typer.Domain.Concrete
 
 
 
-        private DefaultUsersRepository(){
+        private UsersRepository(){
             users = new List<User>();
             users.Add(new User { UserID = 1, UserName = "test", Password = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3" });
             users.Add(new User { UserID = 2, UserName = "test2", Password = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3" });
@@ -27,7 +27,7 @@ namespace Typer.Domain.Concrete
         {
             if (instance == null)
             {
-                instance = new DefaultUsersRepository();
+                instance = new UsersRepository();
             }
 
             return instance;

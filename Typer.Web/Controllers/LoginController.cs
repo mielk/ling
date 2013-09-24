@@ -39,9 +39,9 @@ namespace Typer.Web.Controllers
                         ModelState.AddModelError("", "Login data are incorrect!");
                     }
                 }
-                catch (NullReferenceException nre)
+                catch (NullReferenceException exception)
                 {
-                    ModelState.AddModelError("", "Connection to users repository failed.");
+                    ModelState.AddModelError("", "Connection to users repository failed: " + exception.ToString());
                 }
 
             }

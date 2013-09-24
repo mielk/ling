@@ -68,11 +68,15 @@ namespace Typer.Domain.Entities
             //Username and password cannot be null nor empty.
             if (UserName.isNullOrEmpty() || Password.isNullOrEmpty()) return false;
 
-
+            //Prepare users repository.
             checkUsersRepository();
+            if (usersRepository == null)
+            {
+                throw new NullReferenceException("Users repository has not been injected.");
+            }
+
+
             User user = usersRepository.getUser(UserName, SHA1.Encode(Password));
-
-
             return (user == null ? false : true);
 
         }
