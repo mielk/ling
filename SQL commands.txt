@@ -1,0 +1,27 @@
+CREATE TABLE Countries
+(
+	[Id] INT NOT NULL IDENTITY,
+	[ShortName] NVARCHAR(3) NOT NULL,
+	[Name] NVARCHAR(100) NOT NULL,
+	[FlagTop] INT NULL,
+	[FlagLeft] INT NULL,
+	PRIMARY KEY([Id])
+)
+
+
+
+CREATE TABLE Users
+(
+	[Id] INT NOT NULL IDENTITY ,
+	[Username] NVARCHAR(50) NOT NULL,
+	[Password] NVARCHAR(MAX) NOT NULL,
+	[FirstName] NVARCHAR(100) NOT NULL,
+	[LastName] NVARCHAR(100) NOT NULL,
+	[CountryId] INT NOT NULL,
+	[DateOfBirth] DATETIME NULL,
+	[RegistrationDate] DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	[Email] NVARCHAR(50) NOT NULL,
+	PRIMARY KEY ([Id]), 
+    	CONSTRAINT [FK_user_country] FOREIGN KEY ([CountryId]) REFERENCES [Countries]([Id]),
+	CONSTRAINT [Unique_Mail] UNIQUE ([Email])
+)
