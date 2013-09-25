@@ -48,7 +48,6 @@
     <Compile Include="Abstract\IUsersRepository.cs" />
     <Compile Include="Concrete\EFDbContext.cs" />
     <Compile Include="Repositories\EFUsersRepository.cs" />
-    <Compile Include="Repositories\UsersRepository.cs" />
     <Compile Include="Entities\User.cs" />
     <Compile Include="Repositories\UsersRepositoryFactory.cs" />
     <Compile Include="Helpers\ExtensionMethods.cs" />

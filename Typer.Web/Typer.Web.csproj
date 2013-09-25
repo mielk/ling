@@ -138,10 +138,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\TyperDB.mdf" />
-    <Content Include="App_Data\TyperDB_log.ldf">
-      <DependentUpon>TyperDB.mdf</DependentUpon>
-    </Content>
     <Content Include="Content\Login.css" />
     <Content Include="Content\normalize.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
@@ -234,6 +230,7 @@
     <Content Include="Views\Shared\Sign.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Data\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
