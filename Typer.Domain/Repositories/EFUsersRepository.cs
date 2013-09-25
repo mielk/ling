@@ -32,11 +32,6 @@ namespace Typer.Domain.Concrete
 
         //------------
 
-        public IQueryable<User> Users()
-        {
-            return context.Users;
-        }
-
         public User getUser(int userID)
         {
             return context.Users.Single(u => u.UserID == userID);
@@ -44,14 +39,7 @@ namespace Typer.Domain.Concrete
 
         public User getUser(string username, string password)
         {
-            int x = getUsersCount();
             return context.Users.Single(u => u.UserName == username && u.Password == password);
-        }
-
-        public int getUsersCount()
-        {
-            IQueryable<User> users = Users();
-            return users.Count();
         }
 
     }
