@@ -5,13 +5,22 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using Typer.Domain.Entities;
+using Typer.BLL.Services;
 
 namespace Typer.Web.Controllers
 {
     public class LoginController : Controller
     {
 
-        
+        private readonly IUserService userService;
+
+
+        public LoginController(IUserService userService)
+        {
+            this.userService = userService;
+        }
+
+
 
         //
         // GET: /Login/
@@ -29,6 +38,8 @@ namespace Typer.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+
+                
 
                 if (user.IsAuthenticated())
                 {

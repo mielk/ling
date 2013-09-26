@@ -10,8 +10,6 @@ namespace Typer.Domain.Abstract
     public interface IUsersRepository
     {
         User getUser(int userID);
-        bool logUser(string username, string password);
-        void setCurrentUser(User user);
-        User getCurrentUser();
+        bool userExists(string username, string password);
     }
 }

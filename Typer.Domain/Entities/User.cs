@@ -6,23 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Typer.Domain.Abstract;
 using Typer.Domain.Helpers;
-using Typer.Domain.Services;
 using Ninject;
 
 namespace Typer.Domain.Entities
 {
     public class User
     {
-
-        #region Static properties.
-        //
-
-        [Inject]
-        private static IUserServices userServices;
-
-        //
-        #endregion Static properties.
-
 
         #region Instance properties.
         //
@@ -49,22 +38,6 @@ namespace Typer.Domain.Entities
 
         //
         #endregion Instance properties.
-
-
-        #region Authentication.
-        //
-
-
-        public bool IsAuthenticated()
-        {
-            return userServices.IsAuthenticated(UserName, SHA1.Encode(Password));
-        }
-
-
-        //
-        #endregion Authentication.
-
-
 
     }
 }
