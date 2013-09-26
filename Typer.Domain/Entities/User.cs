@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Typer.Domain.Abstract;
 using Typer.Domain.Helpers;
+using Typer.Domain.Repositories;
 
 namespace Typer.Domain.Entities
 {
@@ -74,16 +75,8 @@ namespace Typer.Domain.Entities
         public bool IsAuthenticated()
         {
 
-            //Prepare users repository.
-            
-            if (usersRepository == null)
-            {
-                throw new NullReferenceException("Users repository has not been injected.");
-            }
-
             //Username and password cannot be null nor empty.
             if (UserName.isNullOrEmpty() || Password.isNullOrEmpty()) return false;
-
             return usersRepository.logUser(UserName, SHA1.Encode(Password));
 
         }

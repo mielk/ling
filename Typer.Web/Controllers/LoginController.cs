@@ -27,21 +27,14 @@ namespace Typer.Web.Controllers
             if (ModelState.IsValid)
             {
 
-                try
+                if (user.IsAuthenticated())
                 {
-                    if (user.IsAuthenticated())
-                    {
-                        FormsAuthentication.SetAuthCookie(user.UserName, false);
-                        return RedirectToAction("Index", "Home");
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "Login data are incorrect!");
-                    }
+                    FormsAuthentication.SetAuthCookie(user.UserName, false);
+                    return RedirectToAction("Index", "Home");
                 }
-                catch (NullReferenceException exception)
+                else
                 {
-                    ModelState.AddModelError("", "Connection to users repository failed: " + exception.ToString());
+                    ModelState.AddModelError("", "Login data are incorrect!");
                 }
 
             }
