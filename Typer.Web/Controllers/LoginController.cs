@@ -10,6 +10,9 @@ namespace Typer.Web.Controllers
 {
     public class LoginController : Controller
     {
+
+        
+
         //
         // GET: /Login/
 

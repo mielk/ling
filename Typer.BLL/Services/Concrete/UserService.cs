@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Typer.Domain.Services
+namespace Typer.BLL.Services
 {
-    public class UserServices : IUserServices
+    public class UserService : IUserService
     {
 
-        public bool Authentication(string username, string password)
+        public bool IsAuthenticated(string username, string password)
         {
             throw new Exception("Not implemented yet.");
         }

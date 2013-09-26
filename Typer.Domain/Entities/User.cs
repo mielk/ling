@@ -6,17 +6,27 @@ using System.Text;
 using System.Threading.Tasks;
 using Typer.Domain.Abstract;
 using Typer.Domain.Helpers;
-using Typer.Domain.Repositories;
+using Typer.Domain.Services;
+using Ninject;
 
 namespace Typer.Domain.Entities
 {
     public class User
     {
 
-        //Static properties.
-        private static IUsersRepository usersRepository;
+        #region Static properties.
+        //
 
-        //Instance properties.
+        [Inject]
+        private static IUserServices userServices;
+
+        //
+        #endregion Static properties.
+
+
+        #region Instance properties.
+        //
+        
         public int UserID { get; set; }
 
         [Required]
@@ -37,49 +47,21 @@ namespace Typer.Domain.Entities
         public DateTime RegistrationDate { get; set; }
         public string Email { get; set; }
 
+        //
+        #endregion Instance properties.
 
 
-
-        static User()
-        {
-            checkUsersRepository();
-        }
-
-
-        //User repository methods.
-        #region User repository methods.
-        public static void injectUsersRepository(IUsersRepository repository)
-        {
-            usersRepository = repository;
-        }
-
-        public static IUsersRepository getUsersRepository()
-        {
-            return usersRepository;
-        }
-
-        private static void checkUsersRepository()
-        {
-            if (usersRepository == null)
-            {
-                injectUsersRepository(UsersRepositoryFactory.instance.Repository);
-            }
-        }
-        #endregion User repository methods.
-
-
-
-
-        //Authentication.
         #region Authentication.
+        //
+
+
         public bool IsAuthenticated()
         {
-
-            //Username and password cannot be null nor empty.
-            if (UserName.isNullOrEmpty() || Password.isNullOrEmpty()) return false;
-            return usersRepository.logUser(UserName, SHA1.Encode(Password));
-
+            return userServices.IsAuthenticated(UserName, SHA1.Encode(Password));
         }
+
+
+        //
         #endregion Authentication.
 
 

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Typer.Domain.Services
+namespace Typer.BLL.Services
 {
-    public class IUserServices
+    public class IUserService
     {
-        bool Authentication(string username, string password);
+        bool IsAuthenticated(string username, string password);
     }
 }

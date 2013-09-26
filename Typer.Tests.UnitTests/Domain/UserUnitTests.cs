@@ -12,14 +12,9 @@ namespace Typer.Tests.UnitTests.Domain
     {
 
 
-        private Mock<IUsersRepository> repo;
-
-
         #region TestInitialization
         public UserUnitTests()
         {
-            repo = createMockUsersRepository();
-            User.injectUsersRepository(repo.Object);
         }
 
         private Mock<IUsersRepository> createMockUsersRepository()
@@ -41,12 +36,6 @@ namespace Typer.Tests.UnitTests.Domain
 
 
 
-
-        [TestMethod]
-        public void UsersRepository_after_injecting_proper_repository_is_assigned()
-        {            
-            Assert.AreSame(repo.Object, User.getUsersRepository());
-        }
 
         [TestMethod]
         public void User_IsAuthenticated_return_false_for_empty_username()
@@ -85,17 +74,6 @@ namespace Typer.Tests.UnitTests.Domain
             User user2 = new User { UserName = "test2", Password = "test" };
             Assert.IsTrue(user2.IsAuthenticated());
 
-        }
-
-
-
-        [ExpectedException(typeof(NullReferenceException))]
-        [TestMethod]
-        public void User_IsAuthenticated_exception_is_thrown_if_repository_is_not_injected()
-        {
-            User.injectUsersRepository(null);
-            User user = new User { UserName = "", Password = "test" };
-            user.IsAuthenticated();
         }
 
 
