@@ -6,3 +6,6 @@ C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Domain\obj\De
 C:\users\txmieln\documents\visual studio 2012\projects\typer\Typer.Domain\bin\Debug\Typer.Domain.dll.config
 C:\users\txmieln\documents\visual studio 2012\projects\typer\Typer.Domain\bin\Debug\EntityFramework.dll
 C:\users\txmieln\documents\visual studio 2012\projects\typer\Typer.Domain\bin\Debug\EntityFramework.xml
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Domain\bin\Debug\Ninject.dll
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Domain\bin\Debug\Ninject.pdb
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Domain\bin\Debug\Ninject.xml

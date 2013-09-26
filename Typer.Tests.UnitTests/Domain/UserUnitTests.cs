@@ -35,7 +35,7 @@ namespace Typer.Tests.UnitTests.Domain
 
         private void addUserToMockRepository(Mock<IUsersRepository> mockRepo, User user){
             mockRepo.Setup(m => m.getUser(user.UserID)).Returns(user);
-            mockRepo.Setup(m => m.getUser(user.UserName, user.Password)).Returns(user);
+            mockRepo.Setup(m => m.logUser(user.UserName, user.Password)).Returns(true);
         }
         #endregion TestInitialization
 

@@ -61,8 +61,7 @@ namespace Typer.Domain.Entities
         {
             if (usersRepository == null)
             {
-                UsersRepositoryFactory factory = UsersRepositoryFactory.getInstance();
-                injectUsersRepository(factory.Repository);
+                injectUsersRepository(UsersRepositoryFactory.instance.Repository);
             }
         }
         #endregion User repository methods.
@@ -85,8 +84,7 @@ namespace Typer.Domain.Entities
             //Username and password cannot be null nor empty.
             if (UserName.isNullOrEmpty() || Password.isNullOrEmpty()) return false;
 
-            User user = usersRepository.getUser(UserName, SHA1.Encode(Password));
-            return (user == null ? false : true);
+            return usersRepository.logUser(UserName, SHA1.Encode(Password));
 
         }
         #endregion Authentication.

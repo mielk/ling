@@ -35,3 +35,7 @@ C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\Syste
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\obj\Debug\Typer.Web.csprojResolveAssemblyReference.cache
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\obj\Debug\Typer.Web.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\obj\Debug\Typer.Web.pdb
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Web\bin\Ninject.Web.Common.dll
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Web\bin\WebActivator.dll
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Web\bin\Ninject.Web.Common.pdb
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Web\bin\Ninject.Web.Common.xml
