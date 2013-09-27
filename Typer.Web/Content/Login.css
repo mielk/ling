@@ -144,3 +144,20 @@ header, footer, nav, section
     float: right;
     margin-right: 12px;
 }
+
+.validation-summary-errors
+{
+    color: red;
+    box-sizing: border-box;
+    margin: 3px 0px;
+    padding: 6px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.validation-summary-errors ul
+{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}

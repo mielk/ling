@@ -47,7 +47,7 @@ namespace Typer.Web.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Login data are incorrect!");
+                    ModelState.AddModelError("", "Login or password is incorrect. Please try again.");
                 }
 
             }
