@@ -32,3 +32,5 @@ C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTes
 C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Typer.DAL.pdb
 C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\EntityFramework.xml
 C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Typer.Tests.UnitTests.dll.config
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Typer.BLL.dll
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Typer.BLL.pdb

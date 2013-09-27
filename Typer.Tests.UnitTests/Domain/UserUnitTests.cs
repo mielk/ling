@@ -1,8 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Typer.Domain.Entities;
-using Typer.Domain.Helpers;
-using Moq;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Typer.Tests.UnitTests.Domain
 {

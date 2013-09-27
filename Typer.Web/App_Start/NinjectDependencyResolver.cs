@@ -1,7 +1,5 @@
-﻿using System;
-using System.Web.Http.Dependencies;
+﻿using System.Web.Http.Dependencies;
 using Ninject;
-using Ninject.Syntax;
 
 
 namespace Typer.Web

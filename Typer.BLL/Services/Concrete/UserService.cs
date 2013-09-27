@@ -1,18 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Typer.DAL.Repositories;
+﻿using Typer.DAL.Repositories;
+using Typer.Domain.Helpers;
 
 namespace Typer.BLL.Services
 {
     public class UserService : IUserService
     {
 
+        private readonly IUsersRepository repository;
+
+        public UserService(IUsersRepository repository)
+        {
+            this.repository = repository;
+        }
+
+
         public bool IsAuthenticated(string username, string password)
         {
-            return false;
+            return repository.userExists(username, SHA1.Encode(password));
         }
 
     }
