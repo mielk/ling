@@ -23,9 +23,12 @@ C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Tests.UnitTes
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Tests.UnitTests\obj\Debug\Typer.Tests.UnitTests.csprojResolveAssemblyReference.cache
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Tests.UnitTests\obj\Debug\Typer.Tests.UnitTests.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Tests.UnitTests\obj\Debug\Typer.Tests.UnitTests.pdb
-C:\users\txmieln\documents\visual studio 2012\projects\typer\Typer.Tests.UnitTests\bin\Debug\EntityFramework.dll
-C:\users\txmieln\documents\visual studio 2012\projects\typer\Typer.Tests.UnitTests\bin\Debug\EntityFramework.xml
 C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Ninject.Web.Common.dll
 C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\WebActivator.dll
 C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Ninject.Web.Common.pdb
 C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Ninject.Web.Common.xml
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Typer.DAL.dll
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\EntityFramework.dll
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Typer.DAL.pdb
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\EntityFramework.xml
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Typer.Tests.UnitTests.dll.config

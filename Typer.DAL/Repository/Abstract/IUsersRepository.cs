@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Typer.Domain.Entities;
 
-namespace Typer.Domain.Abstract
+namespace Typer.DAL.Repositories
 {
     public interface IUsersRepository
     {

@@ -53,6 +53,9 @@
     <Reference Include="Ninject.Web.Common">
       <HintPath>..\packages\Ninject.Web.Common.3.0.0.7\lib\net45-full\Ninject.Web.Common.dll</HintPath>
     </Reference>
+    <Reference Include="Ninject.Web.Mvc">
+      <HintPath>..\packages\Ninject.MVC3.3.0.0.6\lib\net45-full\Ninject.Web.Mvc.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
@@ -204,6 +207,7 @@
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Compile Include="App_Start\NinjectWebCommon.Bindings.cs" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-1.7.1.js" />
     <Content Include="Scripts\jquery-1.7.1.min.js" />
@@ -245,6 +249,14 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Typer.BLL\Typer.BLL.csproj">
+      <Project>{e8628122-b26f-4c8b-94bc-2c0a25f0115c}</Project>
+      <Name>Typer.BLL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Typer.DAL\Typer.DAL.csproj">
+      <Project>{401d8a84-3df6-4b9b-9de4-79dc508ce143}</Project>
+      <Name>Typer.DAL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Typer.Domain\Typer.Domain.csproj">
       <Project>{3eaa9d4e-25a5-4e32-b0c5-2e45ad15bd91}</Project>
       <Name>Typer.Domain</Name>

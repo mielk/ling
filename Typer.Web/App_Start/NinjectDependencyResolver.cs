@@ -10,7 +10,7 @@ namespace Typer.Web
    // so we derive from NinjectScope.
    public class NinjectDependencyResolver : NinjectDependencyScope, IDependencyResolver
    {
-      IKernel kernel;
+      private IKernel kernel;
 
       public NinjectDependencyResolver(IKernel kernel) : base(kernel)
       {
@@ -21,5 +21,11 @@ namespace Typer.Web
       {
          return new NinjectDependencyScope(kernel.BeginBlock());
       }
+
+      protected override void Dispose(bool disposing)
+      {
+          base.Dispose(disposing);
+      }
+
    }
 }

@@ -4,10 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Ninject;
-using Typer.Domain.Abstract;
-using Typer.Domain.Concrete;
 
-namespace Typer.Domain.Repositories
+namespace Typer.DAL.Repositories
 {
     public class UsersRepositoryFactory
     {

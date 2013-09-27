@@ -6,29 +6,35 @@ using System.Web.Mvc;
 using System.Web.Security;
 using Typer.Domain.Entities;
 using Typer.BLL.Services;
+using Ninject;
+using Typer.DAL.Repositories;
 
 namespace Typer.Web.Controllers
 {
+
+
+
     public class LoginController : Controller
     {
 
-        private readonly IUserService userService;
+        private readonly IUsersRepository _repository;
 
-
-        public LoginController(IUserService userService)
+        public LoginController(IUsersRepository repository)
         {
-            this.userService = userService;
+            _repository = repository;
         }
 
 
 
-        //
-        // GET: /Login/
 
         [HttpGet]
         [AllowAnonymous]
         public ActionResult Login()
         {
+
+            //IUserService test = userService;
+                 
+
             return View();
         }
 
@@ -39,17 +45,18 @@ namespace Typer.Web.Controllers
             if (ModelState.IsValid)
             {
 
-                
+                IUsersRepository ur = _repository;
+                FormsAuthentication.SetAuthCookie(user.UserName, false);
 
-                if (user.IsAuthenticated())
-                {
-                    FormsAuthentication.SetAuthCookie(user.UserName, false);
-                    return RedirectToAction("Index", "Home");
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Login data are incorrect!");
-                }
+                //if (user.IsAuthenticated())
+                //{
+                //    FormsAuthentication.SetAuthCookie(user.UserName, false);
+                //    return RedirectToAction("Index", "Home");
+                //}
+                //else
+                //{
+                //    ModelState.AddModelError("", "Login data are incorrect!");
+                //}
 
             }
             return View(user);

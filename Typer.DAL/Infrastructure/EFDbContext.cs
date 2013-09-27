@@ -1,10 +1,14 @@
-﻿using System.Data.Entity;
-using Typer.Domain.Entities;
+﻿using Typer.Domain.Entities;
+using System.Data.Entity;
 
-namespace Typer.Domain.Concrete
+namespace Typer.DAL.Infrastructure
 {
     public class EFDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }
     }
 }
+
+
+
+

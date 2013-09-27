@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Typer.DAL.Repositories;
 
 namespace Typer.BLL.Services
 {
@@ -11,7 +12,7 @@ namespace Typer.BLL.Services
 
         public bool IsAuthenticated(string username, string password)
         {
-            throw new Exception("Not implemented yet.");
+            return false;
         }
 
     }

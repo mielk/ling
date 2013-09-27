@@ -11,7 +11,8 @@ namespace Typer.Web
     // which resolves services using the Ninject container.
     public class NinjectDependencyScope : IDependencyScope
     {
-        IResolutionRoot resolver;
+
+        private IResolutionRoot resolver;
 
         public NinjectDependencyScope(IResolutionRoot resolver)
         {
@@ -21,7 +22,9 @@ namespace Typer.Web
         public object GetService(Type serviceType)
         {
             if (resolver == null)
+            {
                 throw new ObjectDisposedException("this", "This scope has been disposed");
+            }
 
             return resolver.TryGet(serviceType);
         }
@@ -36,12 +39,21 @@ namespace Typer.Web
 
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
             IDisposable disposable = resolver as IDisposable;
             if (disposable != null)
+            {
                 disposable.Dispose();
+            }
 
             resolver = null;
         }
+
     }
 
 }

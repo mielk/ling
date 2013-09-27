@@ -1,0 +1,14 @@
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.BLL\obj\Debug\Typer.BLL.csprojResolveAssemblyReference.cache
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.BLL\bin\Debug\Typer.BLL.dll
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.BLL\bin\Debug\Typer.BLL.pdb
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.BLL\obj\Debug\Typer.BLL.dll
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.BLL\obj\Debug\Typer.BLL.pdb
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.BLL\bin\Debug\Typer.DAL.dll
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.BLL\bin\Debug\Typer.Domain.dll
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.BLL\bin\Debug\EntityFramework.dll
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.BLL\bin\Debug\Ninject.dll
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.BLL\bin\Debug\Typer.DAL.pdb
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.BLL\bin\Debug\Typer.Domain.pdb
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.BLL\bin\Debug\EntityFramework.xml
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.BLL\bin\Debug\Ninject.pdb
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.BLL\bin\Debug\Ninject.xml

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Typer.BLL.Services
 {
-    public class IUserService
+    public interface IUserService
     {
         bool IsAuthenticated(string username, string password);
     }
