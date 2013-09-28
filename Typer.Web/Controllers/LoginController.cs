@@ -54,6 +54,14 @@ namespace Typer.Web.Controllers
             return View(user);
         }
 
+
+        public ActionResult Logout()
+        {
+            FormsAuthentication.SignOut();
+            return RedirectToAction("Index", "Home");
+        }
+
+
     }
 
 }

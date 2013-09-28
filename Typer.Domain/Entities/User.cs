@@ -28,6 +28,7 @@ namespace Typer.Domain.Entities
         public DateTime DateOfBirth { get; set; }
         public DateTime RegistrationDate { get; set; }
         public string Email { get; set; }
+        public bool IsActive { get; set; }
 
         //
         #endregion Instance properties.

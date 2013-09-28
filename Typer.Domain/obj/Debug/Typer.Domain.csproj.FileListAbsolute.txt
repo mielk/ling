@@ -9,3 +9,14 @@ C:\users\txmieln\documents\visual studio 2012\projects\typer\Typer.Domain\bin\De
 C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Domain\bin\Debug\Ninject.dll
 C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Domain\bin\Debug\Ninject.pdb
 C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Domain\bin\Debug\Ninject.xml
+C:\Users\Tomek\Documents\Visual Studio 2012\Projects\Typer\Typer.Domain\bin\Debug\Typer.Domain.dll.config
+C:\Users\Tomek\Documents\Visual Studio 2012\Projects\Typer\Typer.Domain\bin\Debug\Typer.Domain.dll
+C:\Users\Tomek\Documents\Visual Studio 2012\Projects\Typer\Typer.Domain\bin\Debug\Typer.Domain.pdb
+C:\Users\Tomek\Documents\Visual Studio 2012\Projects\Typer\Typer.Domain\bin\Debug\EntityFramework.dll
+C:\Users\Tomek\Documents\Visual Studio 2012\Projects\Typer\Typer.Domain\bin\Debug\Ninject.dll
+C:\Users\Tomek\Documents\Visual Studio 2012\Projects\Typer\Typer.Domain\bin\Debug\EntityFramework.xml
+C:\Users\Tomek\Documents\Visual Studio 2012\Projects\Typer\Typer.Domain\bin\Debug\Ninject.pdb
+C:\Users\Tomek\Documents\Visual Studio 2012\Projects\Typer\Typer.Domain\bin\Debug\Ninject.xml
+C:\Users\Tomek\Documents\Visual Studio 2012\Projects\Typer\Typer.Domain\obj\Debug\Typer.Domain.csprojResolveAssemblyReference.cache
+C:\Users\Tomek\Documents\Visual Studio 2012\Projects\Typer\Typer.Domain\obj\Debug\Typer.Domain.dll
+C:\Users\Tomek\Documents\Visual Studio 2012\Projects\Typer\Typer.Domain\obj\Debug\Typer.Domain.pdb
