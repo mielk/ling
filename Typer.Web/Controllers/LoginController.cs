@@ -20,18 +20,16 @@ namespace Typer.Web.Controllers
         }
 
 
-
+        //------------------------
+        #region Login
 
         [HttpGet]
         [AllowAnonymous]
         public ActionResult Login()
         {
-
-            //IUserService test = userService;
-                 
-
             return View();
         }
+
 
         [HttpPost]
         [AllowAnonymous]
@@ -60,6 +58,41 @@ namespace Typer.Web.Controllers
             FormsAuthentication.SignOut();
             return RedirectToAction("Index", "Home");
         }
+
+        #endregion Login
+        //------------------------
+
+
+
+        //------------------------
+        #region Registration
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult Register()
+        {
+            return View();
+        }
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult Register(User user)
+        {
+            if (ModelState.IsValid)
+            {
+
+            }
+            return View(user);
+        }
+
+
+
+
+        #endregion Registration
+        //------------------------
+
+
 
 
     }

@@ -10,6 +10,7 @@
     @using (Html.BeginForm())
     {
         <fieldset>
+            <!-- User name -->
             <div class="field">
                 @Html.LabelFor(u => u.UserName, new { @class="label" })
                 <span>
@@ -21,6 +22,7 @@
                 </span>
             </div>
 
+            <!-- Password -->
             <div class="field">
                 @Html.LabelFor(u => u.Password, new { @class="label" })
                 <span>
@@ -39,7 +41,7 @@
         <div class="footer">
             <input type="submit" value="Sign in" />
             <a href="" class="reset">Reset my password</a>
-            <a href="" class="signup">Sign up</a>
+            @Html.ActionLink("Register", "Register", "Login")
         </div>
 
     }

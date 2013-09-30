@@ -1,0 +1,86 @@
+﻿@model Typer.Domain.Entities.User
+
+@{
+    ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/Sign.cshtml";
+}
+
+<div id="account">
+    @using (Html.BeginForm())
+    {
+        <fieldset>
+
+            <!-- User name -->
+            <div class="field">
+                @Html.LabelFor(u => u.UserName, new { @class="label" })
+                <span>
+                    @Html.TextBoxFor(u => u.UserName, new{  
+                        @class="default", 
+                        @placeholder="Username", 
+                        @id="Username"
+                    })
+                </span>
+            </div>
+
+            <!-- Password -->
+            <div class="field">
+                @Html.LabelFor(u => u.Password, new { @class="label" })
+                <span class="icon">asd</span>
+                <span>
+                    @Html.PasswordFor(u => u.Password, new{  
+                        @class="default", 
+                        @placeholder="Password", 
+                        @id="Password"
+                    })
+                </span>
+
+            </div>
+
+            <!-- Confirm password -->
+            <div class="field">
+                @Html.LabelFor(u => u.ConfirmPassword, new { @class="label" })
+                <span>
+                    @Html.PasswordFor(u => u.ConfirmPassword, new{  
+                        @class="default", 
+                        @placeholder="Confirm password", 
+                        @id="ConfirmPassword"
+                    })
+                </span>
+            </div>
+
+            <!-- Mail -->
+            <div class="field">
+                @Html.LabelFor(u => u.Email, new { @class="label" })
+                <span>
+                    @Html.TextBoxFor(u => u.Password, new{  
+                        @class="default", 
+                        @placeholder="E-mail", 
+                        @id="Mail"
+                    })
+                </span>
+            </div>
+
+            <!-- Country -->
+            <div class="field">
+                @Html.LabelFor(u => u.CountryId, new { @class="label" })
+                <span>
+                    @Html.TextBoxFor(u => u.CountryId, new{  
+                        @class="default", 
+                        @placeholder="Country", 
+                        @id="Country"
+                    })
+                </span>
+            </div>
+
+        </fieldset>
+        
+        @Html.ValidationSummary(true);
+
+        <div class="footer">
+            <input id="btnRegister" type="submit" value="Register" />
+            @Html.ActionLink("Sign in", "Login", "Login")
+        </div>
+
+    }
+</div>
+
