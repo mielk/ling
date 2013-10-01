@@ -242,6 +242,7 @@
     <Content Include="Views\Login\Login.cshtml" />
     <Content Include="Views\Shared\Sign.cshtml" />
     <Content Include="Views\Login\Register.cshtml" />
+    <Content Include="Views\Home\Karo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
