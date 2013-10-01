@@ -14,9 +14,9 @@ namespace Typer.BLL.Services
         }
 
 
-        public bool IsAuthenticated(string username, string password)
+        public bool IsAuthenticated(UserLoginData loginData)
         {
-            return repository.userExists(username, SHA1.Encode(password));
+            return repository.userExists(loginData.Username, SHA1.Encode(loginData.Password));
         }
 
     }

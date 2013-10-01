@@ -33,14 +33,14 @@ namespace Typer.Web.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult Login(User user)
+        public ActionResult Login(UserLoginData loginData)
         {
             if (ModelState.IsValid)
             {
 
-                if (userService.IsAuthenticated(user.UserName, user.Password))
+                if (userService.IsAuthenticated(loginData))
                 {
-                    FormsAuthentication.SetAuthCookie(user.UserName, false);
+                    FormsAuthentication.SetAuthCookie(loginData.Username, false);
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -49,7 +49,7 @@ namespace Typer.Web.Controllers
                 }
 
             }
-            return View(user);
+            return View(loginData);
         }
 
 

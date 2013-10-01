@@ -1,8 +1,7 @@
-﻿
-namespace Typer.BLL.Services
+﻿namespace Typer.BLL.Services
 {
     public interface IUserService
     {
-        bool IsAuthenticated(string username, string password);
+        bool IsAuthenticated(UserLoginData loginData);
     }
 }

@@ -1,4 +1,4 @@
-﻿@model Typer.Domain.Entities.User
+﻿@model Typer.BLL.Services.UserLoginData
 
 @{
     ViewBag.Title = "Login";
@@ -12,9 +12,9 @@
         <fieldset>
             <!-- User name -->
             <div class="field">
-                @Html.LabelFor(u => u.UserName, new { @class="label" })
+                @Html.LabelFor(u => u.Username, new { @class="label" })
                 <span>
-                    @Html.TextBoxFor(u => u.UserName, new{  
+                    @Html.TextBoxFor(u => u.Username, new{  
                         @class="default", 
                         @placeholder="Username", 
                         @id="Username"

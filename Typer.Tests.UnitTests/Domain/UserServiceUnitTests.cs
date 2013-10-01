@@ -10,11 +10,14 @@ namespace Typer.Tests.UnitTests.Domain
     public class UserServiceUnitTests
     {
 
+        private static readonly string username = "test";
+        private static readonly string password = "test";
+        private static readonly string passwordEncrypted = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3";
+
         private UserService service;
+        private UserLoginData loginData = new UserLoginData { Username = username, Password = password };
         //private IUsersRepository repository;
-        private static readonly string testUserName = "test";
-        private static readonly string testPasswordPlain = "test";
-        private static readonly string testPasswordEncrypted = "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3";
+        
 
 
         #region TestsInitialization
@@ -25,7 +28,7 @@ namespace Typer.Tests.UnitTests.Domain
         private Mock<IUsersRepository> createMockRepository()
         {
             Mock<IUsersRepository> mock = new Mock<IUsersRepository>();
-            mock.Setup(m => m.userExists(testUserName, testPasswordEncrypted)).Returns(true);
+            mock.Setup(m => m.userExists(loginData.Username, passwordEncrypted)).Returns(true);
             return mock;
         }
         #endregion TestsInitialization
@@ -34,25 +37,25 @@ namespace Typer.Tests.UnitTests.Domain
         [TestMethod]
         public void IsAuthenticated_returns_true_for_existing_user_password_pair()
         {
-            Assert.IsTrue(service.IsAuthenticated(testUserName, testPasswordPlain));
+            Assert.IsTrue(service.IsAuthenticated(loginData));
         }
 
 
         [TestMethod]
         public void IsAuthenticated_returns_false_for_non_existing_user_password_pair()
         {
-            Assert.IsFalse(service.IsAuthenticated(testUserName, testPasswordPlain + "a"));
+            Assert.IsFalse(service.IsAuthenticated(new UserLoginData { Username = username, Password = password + "a" }));
         }
 
         [TestMethod]
         public void IsAuthenticated_returns_false_for_user_or_password_empty_or_null()
         {
-            Assert.IsFalse(service.IsAuthenticated("", testPasswordPlain));
-            Assert.IsFalse(service.IsAuthenticated(testUserName, ""));
-            Assert.IsFalse(service.IsAuthenticated(null, testPasswordPlain));
-            Assert.IsFalse(service.IsAuthenticated(testUserName, null));
-            Assert.IsFalse(service.IsAuthenticated("", ""));
-            Assert.IsFalse(service.IsAuthenticated(null, null));
+            Assert.IsFalse(service.IsAuthenticated(new UserLoginData { Username = "", Password = password }));
+            Assert.IsFalse(service.IsAuthenticated(new UserLoginData { Username = username, Password = "" }));
+            Assert.IsFalse(service.IsAuthenticated(new UserLoginData { Username = null, Password = password }));
+            Assert.IsFalse(service.IsAuthenticated(new UserLoginData { Username = username, Password = null }));
+            Assert.IsFalse(service.IsAuthenticated(new UserLoginData { Username = "", Password = "" }));
+            Assert.IsFalse(service.IsAuthenticated(new UserLoginData { Username = null, Password = null }));
         }
 
     }

@@ -11,8 +11,8 @@ namespace Typer.Domain.Entities
         
         public int UserID { get; set; }
 
-        [Required]
-        [Display(Name = "User name", Prompt = "Enter user name")]
+        //[Required]
+        //[Display(Name = "User name", Prompt = "Enter user name")]
         public string UserName { get; set; }
 
         //[Required]
