@@ -11,12 +11,5 @@ namespace Typer.Web.Controllers
             return View();
         }
 
-
-        public ActionResult Logged()
-        {
-            return View();
-        }
-
-
     }
 }
