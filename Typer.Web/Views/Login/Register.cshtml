@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "Register";
     Layout = "~/Views/Shared/Sign.cshtml";
+    @Scripts.Render("~/bundles/registration")
 }
 
 <div id="account">
@@ -11,7 +12,7 @@
         <fieldset>
 
             <!-- User name -->
-            <div class="field">
+            <div id="div_username" class="field">
                 @Html.LabelFor(u => u.UserName, new { @class="label" })
                 <span>
                     @Html.TextBoxFor(u => u.UserName, new{  
@@ -23,8 +24,9 @@
             </div>
 
             <!-- Password -->
-            <div class="field">
+            <div id="div_password" class="field">
                 @Html.LabelFor(u => u.Password, new { @class="label" })
+                <span class="error">error</span>
                 <span class="icon">asd</span>
                 <span>
                     @Html.PasswordFor(u => u.Password, new{  
@@ -60,7 +62,7 @@
                 </span>
             </div>
 
-            <!-- Country -->
+@*            <!-- Country -->
             <div class="field">
                 @Html.LabelFor(u => u.CountryId, new { @class="label" })
                 <span>
@@ -70,7 +72,7 @@
                         @id="Country"
                     })
                 </span>
-            </div>
+            </div>*@
 
         </fieldset>
         
