@@ -28,16 +28,11 @@ namespace Typer.Domain.Entities
         [Display(Name = "Password")]
         public string Password { get; set; }
 
-        [Required]
-        [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        public string ConfirmPassword { get; set; }
-
-        [Required]
+        //[Required]
         [Display(Name = "E-mail")]
         public string Email { get; set; }        
 
-        [Required]
+        //[Required]
         [Display(Name = "Country")]
         public int CountryId { get; set; }
 
