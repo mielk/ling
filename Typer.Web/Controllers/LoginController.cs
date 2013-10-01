@@ -41,7 +41,7 @@ namespace Typer.Web.Controllers
                 if (userService.IsAuthenticated(data))
                 {
                     FormsAuthentication.SetAuthCookie(data.Username, false);
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Karo", "Home");
                 }
                 else
                 {

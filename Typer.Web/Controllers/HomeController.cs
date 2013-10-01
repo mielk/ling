@@ -11,5 +11,10 @@ namespace Typer.Web.Controllers
             return View();
         }
 
+        public ActionResult Karo()
+        {
+            return View();
+        }
+
     }
 }
