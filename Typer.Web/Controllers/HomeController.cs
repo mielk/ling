@@ -12,7 +12,7 @@ namespace Typer.Web.Controllers
         }
 
 
-        public ActionResult Karo()
+        public ActionResult Logged()
         {
             return View();
         }

@@ -41,7 +41,7 @@ namespace Typer.Web.Controllers
                 if (userService.IsAuthenticated(data))
                 {
                     FormsAuthentication.SetAuthCookie(data.Username, false);
-                    return RedirectToAction("Karo", "Home");
+                    return RedirectToAction("Logged", "Home");
                 }
                 else
                 {
@@ -49,7 +49,7 @@ namespace Typer.Web.Controllers
                 }
 
             }
-            return View(loginData);
+            return View(data);
         }
 
 
@@ -83,7 +83,7 @@ namespace Typer.Web.Controllers
             {
 
             }
-            return View(user);
+            return View(data);
         }
 
 

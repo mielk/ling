@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Typer.BLL.Services.Concrete
+namespace Typer.BLL.Services
 {
     public class UserRegistrationData
     {
