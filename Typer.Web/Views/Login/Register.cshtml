@@ -14,7 +14,9 @@
             <!-- User name -->
             <div id="div_username" class="field">
                 @Html.LabelFor(u => u.UserName, new { @class="label" })
-                <span class="error">error</span>
+                <div class="error">
+                    <div class="error_content">error</div>
+                </div>
                 <span class="icon">asd</span>
                 <span>
                     @Html.TextBoxFor(u => u.UserName, new{  
@@ -28,7 +30,9 @@
             <!-- Password -->
             <div id="div_password" class="field">
                 @Html.LabelFor(u => u.Password, new { @class="label" })
-                <span class="error">error</span>
+                <div class="error">
+                    <div class="error_content">error</div>
+                </div>
                 <span class="icon">asd</span>
                 <span>
                     @Html.PasswordFor(u => u.Password, new{  

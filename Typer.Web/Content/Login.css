@@ -69,6 +69,7 @@ header, footer, nav, section
 
 #account input.default:focus
 {
+    border-color: rgb(56, 71, 120);
     background-color: rgb(186, 210, 223);
 }
 
@@ -129,8 +130,10 @@ header, footer, nav, section
     border: 1px solid #777777;
 }
 
-#account span.error
+#account .error
 {
+    display: table;
+    vertical-align: middle;
     float: right;
     width: 200px;
     margin-right: -218px;
@@ -138,6 +141,15 @@ header, footer, nav, section
     background-color: red;
     border: 1px solid #777777;
 }
+
+#account .error_content
+{
+    display: table-cell; 
+    vertical-align: middle; 
+    text-align: center;
+    font-size: 13px;
+}
+
 
 #account .footer
 {

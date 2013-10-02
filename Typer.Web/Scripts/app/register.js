@@ -71,19 +71,22 @@ function ControlGroup(id, fn) {
     }
 
     this.formatAsValid = function () {
-        $(this.getValueControl()).addClass('valid');
+        $(this.getValueControl()).
+            removeClass('invalid').
+            addClass('valid');
+        $(this.getErrorControl()).css({
+            'visibility': 'hidden'
+        });
     }
 
     this.formatAsInvalid = function () {
-        $(this.getValueControl()).addClass('invalid');
+        $(this.getValueControl()).
+            removeClass('valid').
+            addClass('invalid');
+        $(this.getErrorControl()).css({
+            'visibility': 'visible'
+        });
     }
-
-    //Bind change event to value control.
-    $(this.getValueControl()).bind({
-        'change': function () {
-            validate();
-        }
-    });
 
 
     function validate() {
@@ -93,9 +96,17 @@ function ControlGroup(id, fn) {
         } else {
             //Add error message.
             me.format(false);
-            $(me.getErrorControl()).text(isValid);
+            $(me.getErrorTextField()).text(isValid);
         }
     }
+
+
+    //Bind change event to value control.
+    $(this.getValueControl()).bind({
+        'change': function () {
+            validate();
+        }
+    });
 
 
     //Initial validation.
@@ -113,6 +124,9 @@ ControlGroup.prototype.getStateIconControl = function () {
 }
 ControlGroup.prototype.getErrorControl = function () {
     return this.getControl('error');
+}
+ControlGroup.prototype.getErrorTextField = function () {
+    return this.getControl('error_content');
 }
 ControlGroup.prototype.getValue = function () {
     var ctrl = $(this.getValueControl());
