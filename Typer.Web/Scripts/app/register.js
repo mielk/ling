@@ -1,10 +1,4 @@
 ﻿$(document).ready(function () {
-    //$(document).bind({
-    //    'keydown': function (e) {
-    //        $('#ConfirmPassword').text(e.target);
-    //    }
-    //});
-
     adjustPlaceholder();
     model();
 });
@@ -193,11 +187,20 @@ function checkUsername(username) {
 }
 
 function checkPassword(password) {
-    return true;
+    var MIN_LENGTH = 6;
+    if (!password) {
+        return MessageBundle.get(dict.PasswordCannotBeEmpty);
+    } else if (password.length < MIN_LENGTH) {
+        return MessageBundle.get(dict.PasswordTooShort, [MIN_LENGTH]);
+    } else if (!password.match(/^.*(?=.*\d)(?=.*[a-zA-Z]).*$/)) {
+        return MessageBundle.get(dict.IllegalPasswordFormat);
+    } else {
+        return true;
+    }
 }
 
 function checkIfPasswordsMatch(password, confirmPassword) {
-
+    
 }
 
 function checkMail(mail) {
@@ -209,4 +212,3 @@ function checkMail(mail) {
         return true;
     }
 }
-

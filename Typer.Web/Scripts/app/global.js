@@ -37,6 +37,18 @@ var dict = dict || {
     IllegalMailFormat: {
         POL: 'Nieprawidłowy format adresu e-mail',
         ENG: 'Illegal e-mail format'
+    },
+    PasswordCannotBeEmpty: {
+        POL: 'Hasło nie może być puste',
+        ENG: 'Password cannot be empty'
+    },
+    PasswordTooShort: {
+        POL: 'Hasło musi składać się co najmniej z {0} znaków',
+        ENG: 'Password must contain at least {0} characters'
+    },
+    IllegalPasswordFormat: {
+        POL: 'Hasło musi zawierać co najmniej jedną literę i jedną cyfrę',
+        ENG: 'Password must contain at least one letter and one digit'
     }
 }
 
