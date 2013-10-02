@@ -78,3 +78,17 @@
     }
 
 }
+
+
+
+var text = text || {
+
+    isLetter : function (char) {
+        return (char.length === 1 && char.match(/[a-z]/i) ? true : false);
+    },
+
+    containLettersNumbersUnderscore: function (str) {
+        return (str.match(/^\w+$/) ? true : false);
+    }
+
+}

@@ -209,6 +209,7 @@
     <Content Include="Content\Site.css" />
     <Compile Include="App_Start\NinjectWebCommon.Bindings.cs" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
+    <Content Include="Scripts\app\global.js" />
     <Content Include="Scripts\app\register.js" />
     <Content Include="Scripts\app\util.js" />
     <Content Include="Scripts\jquery-1.7.1.js" />

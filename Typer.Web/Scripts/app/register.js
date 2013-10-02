@@ -56,7 +56,6 @@ var model = function (){
     }
 
 
-
 };
 
 
@@ -72,20 +71,35 @@ function ControlGroup(id, fn) {
     }
 
     this.formatAsValid = function () {
-        alert('valid');
+        $(this.getValueControl()).addClass('valid');
     }
 
     this.formatAsInvalid = function () {
-        alert('invalid');
+        $(this.getValueControl()).addClass('invalid');
     }
 
     //Bind change event to value control.
     $(this.getValueControl()).bind({
         'change': function () {
-            var isValid = fn(me.getValue());
-            me.format(isValid);
+            validate();
         }
     });
+
+
+    function validate() {
+        var isValid = fn(me.getValue());
+        if (isValid === true) {
+            me.format(true);
+        } else {
+            //Add error message.
+            me.format(false);
+            $(me.getErrorControl()).text(isValid);
+        }
+    }
+
+
+    //Initial validation.
+    validate();
 
 }
 ControlGroup.prototype.getContainer = function () {
@@ -116,14 +130,31 @@ ControlGroup.prototype.format = function (isValid) {
 
 
 
-
+/*
+ * Username must have 6-20 characters. Only letters,
+ * digits and underscore are accepted.
+ */
 function checkUsername(username) {
-    alert('checkUsername for ' + username);
-    return true;
+    var MIN_LENGTH = 6;
+    var MAX_LENGTH = 20;
+
+    if (!username) {
+        return MessageBundle.get(dict.UsernameCannotBeEmpty, [MIN_LENGTH]);
+    } else if (username.length < MIN_LENGTH) {
+        return MessageBundle.get(dict.UsernameMustBeLongerThan, [MIN_LENGTH]);
+    } else if (username.length > MAX_LENGTH) {
+        return MessageBundle.get(dict.UsernameCannotBeLongerThan, [MAX_LENGTH]);
+    } else if (!text.isLetter(username.charAt(0))) {
+        return MessageBundle.get(dict.UsernameMustStartWithLetter);
+    } else if (!text.containLettersNumbersUnderscore(username)) {
+        return MessageBundle.get(dict.UsernameContainsIllegalChar);
+    } else {
+        return true;
+    }
+
 }
 
 function checkPassword(password) {
-    alert('checkPassword for ' + password);
     return false;
 }
 
@@ -134,3 +165,4 @@ function checkIfPasswordsMatch(password, confirmPassword) {
 function checkMail(mail) {
 
 }
+

@@ -19,10 +19,12 @@ namespace Typer.Web
                         "~/Scripts/jquery.validate*"));
 
             bundles.Add(new ScriptBundle("~/bundles/login").Include(
+                                    "~/Scripts/app/global.js",
                                     "~/Scripts/app/login.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/registration").Include(
                                     "~/Scripts/app/util.js",
+                                    "~/Scripts/app/global.js",
                                     "~/Scripts/app/register.js"));
 
             // Use the development version of Modernizr to develop with and learn from. Then, when you're

@@ -26,6 +26,7 @@ header, footer, nav, section
     padding-bottom: 5px;
     margin: 0;
     width: 100%;
+    overflow: visible;
 }
 
 #account input[type=text], input[type=password]
@@ -71,13 +72,24 @@ header, footer, nav, section
     background-color: rgb(186, 210, 223);
 }
 
+#account input.valid
+{
+    border-color: green;
+    background-color: green;
+}
+
+#account input.invalid
+{
+    border-color: red;
+    background-color: red;
+}
+
 
 #account fieldset
 {
     border: none;
     margin: 0;
     padding: 8px;
-    overflow: hidden;
 }
 
 #account input
@@ -114,6 +126,16 @@ header, footer, nav, section
     height: 33px;
     margin-left: 3px;
     background-color: green;
+    border: 1px solid #777777;
+}
+
+#account span.error
+{
+    float: right;
+    width: 200px;
+    margin-right: -218px;
+    height: 33px;
+    background-color: red;
     border: 1px solid #777777;
 }
 

@@ -14,6 +14,8 @@
             <!-- User name -->
             <div id="div_username" class="field">
                 @Html.LabelFor(u => u.UserName, new { @class="label" })
+                <span class="error">error</span>
+                <span class="icon">asd</span>
                 <span>
                     @Html.TextBoxFor(u => u.UserName, new{  
                         @class="default", 
