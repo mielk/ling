@@ -56,6 +56,12 @@ header, footer, nav, section
     font-weight: bold;
 }
 
+#account input[type="submit"]:disabled
+{
+    background-color: #BBB;
+    color: #222;
+}
+
 #account input.default
 {
     width: 100%;
@@ -120,7 +126,7 @@ header, footer, nav, section
     margin: 0;
 }
 
-#account span.icon
+#account .icon
 {
     float: right;
     width: 33px;
@@ -129,6 +135,19 @@ header, footer, nav, section
     background-color: green;
     border: 1px solid #777777;
 }
+
+
+#account .iconValid
+{
+    background-color: green;
+}
+
+#account .iconInvalid
+{
+    background-color: red;
+}
+
+
 
 #account .error
 {
@@ -163,7 +182,6 @@ header, footer, nav, section
 #account a
 {
     display: block;
-    width: auto;
     height: 28px;
     padding: 2px 7px;
     border: none;

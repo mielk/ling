@@ -15,9 +15,9 @@
             <div id="div_username" class="field">
                 @Html.LabelFor(u => u.UserName, new { @class="label" })
                 <div class="error">
-                    <div class="error_content">error</div>
+                    <div class="error_content"></div>
                 </div>
-                <span class="icon">asd</span>
+                <span class="icon"></span>
                 <span>
                     @Html.TextBoxFor(u => u.UserName, new{  
                         @class="default", 
@@ -31,9 +31,9 @@
             <div id="div_password" class="field">
                 @Html.LabelFor(u => u.Password, new { @class="label" })
                 <div class="error">
-                    <div class="error_content">error</div>
+                    <div class="error_content"></div>
                 </div>
-                <span class="icon">asd</span>
+                <span class="icon"></span>
                 <span>
                     @Html.PasswordFor(u => u.Password, new{  
                         @class="default", 
@@ -45,7 +45,7 @@
             </div>
 
             <!-- Confirm password -->
-            <div class="field">
+            <div id="div_confirm_password" class="field">
                 @Html.LabelFor(u => u.ConfirmPassword, new { @class="label" })
                 <span>
                     @Html.PasswordFor(u => u.ConfirmPassword, new{  
@@ -57,8 +57,12 @@
             </div>
 
             <!-- Mail -->
-            <div class="field">
+            <div id="div_mail" class="field">
                 @Html.LabelFor(u => u.Email, new { @class="label" })
+                <div class="error">
+                    <div class="error_content"></div>
+                </div>
+                <span class="icon"></span>
                 <span>
                     @Html.TextBoxFor(u => u.Password, new{  
                         @class="default", 
@@ -82,11 +86,9 @@
 
         </fieldset>
         
-        @Html.ValidationSummary(true);
-
         <div class="footer">
             <input id="btnRegister" type="submit" value="Register" />
-            @Html.ActionLink("Sign in", "Login", "Login")
+            @Html.ActionLink("Sign in", "Login", "Login", new { @class = "signup" })
         </div>
 
     }

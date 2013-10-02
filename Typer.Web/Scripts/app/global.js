@@ -30,6 +30,14 @@ var dict = dict || {
         POL: 'Nazwa użytkownika może zawierać tylko liczby, cyfry oraz podkreślenie (_)',
         ENG: 'Username can contain only letters, digits and underscore (_)'
     },
+    MailCannotBeEmpty: {
+        POL: 'Pole e-mail nie może pozostać puste',
+        ENG: 'E-mail cannot be empty'
+    },
+    IllegalMailFormat: {
+        POL: 'Nieprawidłowy format adresu e-mail',
+        ENG: 'Illegal e-mail format'
+    }
 }
 
 

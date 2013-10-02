@@ -89,6 +89,11 @@ var text = text || {
 
     containLettersNumbersUnderscore: function (str) {
         return (str.match(/^\w+$/) ? true : false);
+    },
+
+    isValidMail : function(mail){
+        return (mail.match(/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/) ? true : false);
     }
+    
 
 }

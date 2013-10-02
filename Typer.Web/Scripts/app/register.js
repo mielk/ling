@@ -1,7 +1,14 @@
 ﻿$(document).ready(function () {
+    //$(document).bind({
+    //    'keydown': function (e) {
+    //        $('#ConfirmPassword').text(e.target);
+    //    }
+    //});
+
     adjustPlaceholder();
     model();
 });
+
 
 function adjustPlaceholder() {
     var supported = Modernizr.input.placeholder;
@@ -23,9 +30,18 @@ var model = function (){
     var controls = new HashTable(null);
     controls.setItem('username', new ControlGroup('div_username', checkUsername));
     controls.setItem('password', new ControlGroup('div_password', checkPassword));
-    
+    controls.setItem('mail', new ControlGroup('div_mail', checkMail));
 
-
+    controls.each(
+        function (key, value) {
+            $(value.getContainer()).bind({
+                'validation': function (e) {
+                    validation(e.id, e.status);
+                }
+            });
+            value.validate();
+        }
+    );
     
 
     function isValid() {
@@ -33,26 +49,20 @@ var model = function (){
     }
 
     function checkState() {
-        alert("Not implemented yet.");
+        if (isValid()) {
+            $(btn).removeAttr('disabled');
+        } else {
+            $(btn).attr('disabled','disabled');
+        }
     }
 
-
-
-
-    return {
-
-        getControlGroup: function (name) {
-            return controls.getItem(name);
-        },
-
-        addToInactive: function (control) {
-            inactive.setItem(control, true);
-        },
-
-        removeFromInactive: function (control) {
-            inactive.removeItem(control);
+    function validation(id, value) {
+        if (value) {
+            inactive.removeItem(id);
+        } else {
+            inactive.setItem(id, id);
         }
-
+        checkState();
     }
 
 
@@ -61,10 +71,11 @@ var model = function (){
 
 
 
-function ControlGroup(id, fn) {
+function ControlGroup(_id, _fn) {
     var me = this; //To be used in events binding.
 
-    this.container = $('#' + id)[0];
+    this.id = _id;
+    this.container = $('#' + _id)[0];
 
     this.getControl = function(selector){
         return $(this.container).find('.' + selector)[0];
@@ -77,6 +88,9 @@ function ControlGroup(id, fn) {
         $(this.getErrorControl()).css({
             'visibility': 'hidden'
         });
+        $(this.getStateIconControl()).
+            removeClass('iconInvalid').
+            addClass('iconValid');
     }
 
     this.formatAsInvalid = function () {
@@ -86,11 +100,13 @@ function ControlGroup(id, fn) {
         $(this.getErrorControl()).css({
             'visibility': 'visible'
         });
+        $(this.getStateIconControl()).
+            removeClass('iconValid').
+            addClass('iconInvalid');
     }
 
-
-    function validate() {
-        var isValid = fn(me.getValue());
+    this._validate = function () {
+        var isValid = _fn(me.getValue());
         if (isValid === true) {
             me.format(true);
         } else {
@@ -98,19 +114,25 @@ function ControlGroup(id, fn) {
             me.format(false);
             $(me.getErrorTextField()).text(isValid);
         }
+
+        $(me.container).trigger({
+            type: 'validation',
+            id: me.id,
+            status: (isValid === true ? true : false)
+        });
+
     }
 
 
     //Bind change event to value control.
     $(this.getValueControl()).bind({
+        'keyup': function () {
+            me._validate();
+        },
         'change': function () {
-            validate();
+            me._validate();
         }
     });
-
-
-    //Initial validation.
-    validate();
 
 }
 ControlGroup.prototype.getContainer = function () {
@@ -139,7 +161,9 @@ ControlGroup.prototype.format = function (isValid) {
         this.formatAsInvalid();
     }
 }
-
+ControlGroup.prototype.validate = function () {
+    this._validate();
+}
 
 
 
@@ -149,11 +173,11 @@ ControlGroup.prototype.format = function (isValid) {
  * digits and underscore are accepted.
  */
 function checkUsername(username) {
-    var MIN_LENGTH = 6;
+    var MIN_LENGTH = 5;
     var MAX_LENGTH = 20;
 
     if (!username) {
-        return MessageBundle.get(dict.UsernameCannotBeEmpty, [MIN_LENGTH]);
+        return MessageBundle.get(dict.UsernameCannotBeEmpty);
     } else if (username.length < MIN_LENGTH) {
         return MessageBundle.get(dict.UsernameMustBeLongerThan, [MIN_LENGTH]);
     } else if (username.length > MAX_LENGTH) {
@@ -169,7 +193,7 @@ function checkUsername(username) {
 }
 
 function checkPassword(password) {
-    return false;
+    return true;
 }
 
 function checkIfPasswordsMatch(password, confirmPassword) {
@@ -177,6 +201,12 @@ function checkIfPasswordsMatch(password, confirmPassword) {
 }
 
 function checkMail(mail) {
-
+    if (!mail) {
+        return MessageBundle.get(dict.MailCannotBeEmpty);
+    } else if (!text.isValidMail(mail)) {
+        return MessageBundle.get(dict.IllegalMailFormat);
+    } else {
+        return true;
+    }
 }
 

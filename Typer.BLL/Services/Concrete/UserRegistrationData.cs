@@ -16,7 +16,7 @@ namespace Typer.BLL.Services
         [Display(Name = "Password")]
         public string Password { get; set; }
 
-        [Required]
+        //[Required]
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
         public string ConfirmPassword { get; set; }
@@ -31,7 +31,7 @@ namespace Typer.BLL.Services
         [Display(Name = "Last name")]
         public string LastName { get; set; }
 
-        //[Required]
+        [Required]
         [Display(Name = "E-mail")]
         public string Email { get; set; }
 

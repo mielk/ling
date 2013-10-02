@@ -79,11 +79,15 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult Register(UserRegistrationData data)
         {
-            if (ModelState.IsValid)
-            {
 
-            }
-            return View(data);
+            FormsAuthentication.SetAuthCookie("test", false);
+            return RedirectToAction("Karo", "Home");
+
+            //if (ModelState.IsValid)
+            //{
+
+            //}
+            //return View(data);
         }
 
 
