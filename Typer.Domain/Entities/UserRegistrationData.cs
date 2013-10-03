@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using Typer.Domain.Helpers;
 
-namespace Typer.BLL.Services
+namespace Typer.Domain.Entities
 {
     public class UserRegistrationData
     {

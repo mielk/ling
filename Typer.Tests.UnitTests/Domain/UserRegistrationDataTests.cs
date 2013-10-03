@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Typer.BLL.Services;
+using Typer.Domain.Entities;
 
 namespace Typer.Tests.UnitTests.Domain
 {

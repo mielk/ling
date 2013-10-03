@@ -1,4 +1,6 @@
-﻿namespace Typer.BLL.Services
+﻿using Typer.Domain.Entities;
+
+namespace Typer.BLL.Services
 {
     public interface IUserService
     {

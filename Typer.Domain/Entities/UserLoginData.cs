@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Typer.BLL.Services
+namespace Typer.Domain.Entities
 {
     public class UserLoginData
     {
