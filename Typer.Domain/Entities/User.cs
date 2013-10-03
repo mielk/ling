@@ -42,10 +42,18 @@ namespace Typer.Domain.Entities
         public DateTime? DateOfBirth { get; set; }
         public DateTime? RegistrationDate { get; set; }
 
+        public string ConfirmationCode { get; set; }
+        public DateTime? ConfirmationDate { get; set; }
+
         public bool IsActive { get; set; }
 
         //
         #endregion Instance properties.
+
+
+        public User()
+        {
+        }
 
 
         public User(UserRegistrationData urd)
@@ -58,6 +66,8 @@ namespace Typer.Domain.Entities
             CountryId = null;
             DateOfBirth = null;
             RegistrationDate = DateTime.Now;
+            ConfirmationCode = "abc";
+            ConfirmationDate = null;
         }
 
 

@@ -19,7 +19,7 @@ namespace Typer.DAL.Repositories
 
         private User getUser(string username, string password)
         {
-            return context.Users.SingleOrDefault(u => u.UserName == username && u.Password == password && u.IsActive);
+            return context.Users.SingleOrDefault(u => u.UserName == username && u.Password == password && u.IsActive == true);
         }
 
 

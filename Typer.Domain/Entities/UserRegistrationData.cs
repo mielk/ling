@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using Typer.Domain.Helpers;
+using Ninject;
 
 namespace Typer.Domain.Entities
 {
@@ -75,6 +76,8 @@ namespace Typer.Domain.Entities
         {
             if (UserName == null || UserName.Length < UserNameMinimumLength || UserName.Length > UserNameMaximumLength)
                 return false;
+
+            
 
             return true;
 
