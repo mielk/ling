@@ -1,6 +1,8 @@
-﻿$(document).ready(function () {
+﻿var model;
+
+$(document).ready(function () {
     adjustPlaceholder();
-    model();
+    model = modelConstructor();
 });
 
 
@@ -12,7 +14,7 @@ function adjustPlaceholder() {
 
 
 
-var model = function (){
+var modelConstructor = function () {
 
     //Confirmation button.
     var btn = $("#btnRegister")[0];
@@ -24,6 +26,7 @@ var model = function (){
     var controls = new HashTable(null);
     controls.setItem('username', new ControlGroup('div_username', checkUsername));
     controls.setItem('password', new ControlGroup('div_password', checkPassword));
+    controls.setItem('confirmPassword', new ControlGroup('div_confirm_password', matchPasswords));
     controls.setItem('mail', new ControlGroup('div_mail', checkMail));
 
     controls.each(
@@ -36,7 +39,7 @@ var model = function (){
             value.validate();
         }
     );
-    
+
 
     function isValid() {
         return (inactive.size() > 0 ? false : true);
@@ -46,7 +49,7 @@ var model = function (){
         if (isValid()) {
             $(btn).removeAttr('disabled');
         } else {
-            $(btn).attr('disabled','disabled');
+            $(btn).attr('disabled', 'disabled');
         }
     }
 
@@ -60,6 +63,13 @@ var model = function (){
     }
 
 
+    return {
+        getPassword: function () {
+            var controlGroup = controls.getItem('password');
+            return controlGroup ? controlGroup.getValue() : null;
+        }
+    }
+
 };
 
 
@@ -71,7 +81,7 @@ function ControlGroup(_id, _fn) {
     this.id = _id;
     this.container = $('#' + _id)[0];
 
-    this.getControl = function(selector){
+    this.getControl = function (selector) {
         return $(this.container).find('.' + selector)[0];
     }
 
@@ -119,12 +129,21 @@ function ControlGroup(_id, _fn) {
 
 
     //Bind change event to value control.
-    $(this.getValueControl()).bind({
+    var valueControl = $(this.getValueControl());
+    valueControl.bind({
         'keyup': function () {
             me._validate();
         },
         'change': function () {
             me._validate();
+        },
+        'mouseup': function (e) {
+            e.preventDefault();
+        }
+    });
+    valueControl.on({
+        'focus': function (e) {
+            this.select();
         }
     });
 
@@ -199,8 +218,21 @@ function checkPassword(password) {
     }
 }
 
+function matchPasswords(confirmPassword) {
+    if (!confirmPassword) {
+        return MessageBundle.get(dict.ConfirmPasswordCannotBeEmpty);
+    } else {
+        var currentPassword = model ? model.getPassword() : null;
+        return checkIfPasswordsMatch(currentPassword, confirmPassword);
+    }
+}
+
 function checkIfPasswordsMatch(password, confirmPassword) {
-    
+    if (password !== confirmPassword) {
+        return MessageBundle.get(dict.PasswordsDontMatch);
+    } else {
+        return true;
+    }
 }
 
 function checkMail(mail) {
