@@ -35,12 +35,12 @@ namespace Typer.Domain.Entities
 
         //[Required]
         [Display(Name = "Country")]
-        public int CountryId { get; set; }
+        public int? CountryId { get; set; }
 
         //[Required]
         //[Display(Name = "Date of birth")]
-        public DateTime DateOfBirth { get; set; }
-        public DateTime RegistrationDate { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public DateTime? RegistrationDate { get; set; }
 
         public bool IsActive { get; set; }
 
@@ -51,8 +51,13 @@ namespace Typer.Domain.Entities
         public User(UserRegistrationData urd)
         {
             UserName = urd.UserName;
+            FirstName = null;
+            LastName = null;
             Password = SHA1.Encode(urd.Password);
             Email = urd.Email;
+            CountryId = null;
+            DateOfBirth = null;
+            RegistrationDate = DateTime.Now;
         }
 
 

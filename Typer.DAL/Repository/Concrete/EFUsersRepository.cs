@@ -37,6 +37,7 @@ namespace Typer.DAL.Repositories
         public bool addUser(User user)
         {
             context.Users.Add(user);
+            context.SaveChanges();
             return false;
         }
 

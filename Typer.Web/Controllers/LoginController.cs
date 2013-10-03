@@ -83,9 +83,6 @@ namespace Typer.Web.Controllers
 
             if (ModelState.IsValid)
             {
-
-                data.Password = "";
-
                 if (data.isValid())
                 {
                     User user = new User(data);
