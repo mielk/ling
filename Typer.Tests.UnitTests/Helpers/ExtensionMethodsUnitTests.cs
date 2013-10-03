@@ -32,5 +32,32 @@ namespace Typer.Tests.UnitTests.Helpers
         }
 
 
+        [TestMethod]
+        public void IsLegalMail_returns_false_for_illegal_mails()
+        {
+
+            string[] illegalMails = { "mail.o2.pl", "mail@o2", "@o2.pl", "mail mail@o2.pl", "mail@o2.pl.", "mail@o2..pl" };
+
+            foreach (string mail in illegalMails)
+            {
+                Assert.IsFalse(mail.isLegalMail());
+            }
+
+        }
+
+        [TestMethod]
+        public void IsLegalMail_returns_true_for_legal_mails()
+        {
+
+            string[] legalMails = { "mail@o2.pl", "mail@gmail.com", "imie.nazwisko@firma.com", " mail@o2.pl " };
+
+            foreach (string mail in legalMails)
+            {
+                Assert.IsTrue(mail.isLegalMail());
+            }
+
+        }
+
+
     }
 }
