@@ -1,6 +1,5 @@
 ﻿using System.Web.Mvc;
 using System.Web.Security;
-using Typer.Domain.Entities;
 using Typer.BLL.Services;
 using System;
 
@@ -85,8 +84,7 @@ namespace Typer.Web.Controllers
             {
                 if (data.isValid())
                 {
-                    User user = new User(data);
-                    userService.addUser(user);
+                    userService.addUser(data);
                     return RedirectToAction("AccountCreated", "Login");
                 }
             }

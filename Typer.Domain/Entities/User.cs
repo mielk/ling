@@ -51,25 +51,5 @@ namespace Typer.Domain.Entities
         #endregion Instance properties.
 
 
-        public User()
-        {
-        }
-
-
-        public User(UserRegistrationData urd)
-        {
-            UserName = urd.UserName;
-            FirstName = null;
-            LastName = null;
-            Password = SHA1.Encode(urd.Password);
-            Email = urd.Email;
-            CountryId = null;
-            DateOfBirth = null;
-            RegistrationDate = DateTime.Now;
-            ConfirmationCode = "abc";
-            ConfirmationDate = null;
-        }
-
-
     }
 }

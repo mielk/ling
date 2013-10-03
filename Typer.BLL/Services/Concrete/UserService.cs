@@ -19,8 +19,9 @@ namespace Typer.BLL.Services
             return repository.userExists(loginData.Username, SHA1.Encode(loginData.Password));
     }
 
-        public bool addUser(User user)
+        public bool addUser(UserRegistrationData userData)
         {
+            User user = userData.toUser();
             user.IsActive = false;
             repository.addUser(user);
             return false;

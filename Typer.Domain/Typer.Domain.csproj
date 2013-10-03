@@ -49,8 +49,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\User.cs" />
-    <Compile Include="Entities\UserLoginData.cs" />
-    <Compile Include="Entities\UserRegistrationData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

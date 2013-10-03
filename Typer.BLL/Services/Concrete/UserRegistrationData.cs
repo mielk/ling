@@ -2,9 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using Typer.Common.Helpers;
-using Ninject;
+using Typer.Domain.Entities;
 
-namespace Typer.Domain.Entities
+namespace Typer.BLL.Services
 {
     public class UserRegistrationData
     {
@@ -108,6 +108,24 @@ namespace Typer.Domain.Entities
         private bool isMailValid()
         {
             return Email.isLegalMail();
+        }
+
+        public User toUser()
+        {
+            User user = new User { 
+                UserName = UserName, 
+                Password = SHA1.Encode(Password),
+                Email = Email,
+                FirstName = null,
+                LastName = null,
+                CountryId = null,
+                DateOfBirth = null,
+                RegistrationDate = DateTime.Now,
+                ConfirmationCode = Guid.NewGuid().ToString(),
+                ConfirmationDate = null
+            };
+
+            return user;
         }
 
 

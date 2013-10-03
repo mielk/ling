@@ -24,5 +24,3 @@ C:\Users\Tomek\Documents\Visual Studio 2012\Projects\Typer\Typer.DAL\bin\Debug\N
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\Typer\Typer.DAL\obj\Debug\Typer.DAL.csprojResolveAssemblyReference.cache
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\Typer\Typer.DAL\obj\Debug\Typer.DAL.dll
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\Typer\Typer.DAL\obj\Debug\Typer.DAL.pdb
-C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.DAL\bin\Debug\Typer.Common.dll
-C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.DAL\bin\Debug\Typer.Common.pdb
