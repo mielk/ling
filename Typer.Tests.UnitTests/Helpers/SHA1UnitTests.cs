@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Typer.Domain.Helpers;
+using Typer.Common.Helpers;
 
 namespace Typer.Tests.UnitTests
 {

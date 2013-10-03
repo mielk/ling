@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
-using Typer.Domain.Helpers;
+using Typer.Common.Helpers;
 using Ninject;
 
 namespace Typer.Domain.Entities

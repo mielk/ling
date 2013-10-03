@@ -94,3 +94,5 @@ C:\Users\Tomek\Documents\Visual Studio 2012\Projects\Typer\Typer.Web\bin\System.
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\Typer\Typer.Web\obj\Debug\Typer.Web.csprojResolveAssemblyReference.cache
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\Typer\Typer.Web\obj\Debug\Typer.Web.dll
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\Typer\Typer.Web\obj\Debug\Typer.Web.pdb
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Web\bin\Typer.Common.dll
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Web\bin\Typer.Common.pdb

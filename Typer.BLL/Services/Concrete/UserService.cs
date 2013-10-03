@@ -1,5 +1,5 @@
 ﻿using Typer.DAL.Repositories;
-using Typer.Domain.Helpers;
+using Typer.Common.Helpers;
 using Typer.Domain.Entities;
 
 namespace Typer.BLL.Services

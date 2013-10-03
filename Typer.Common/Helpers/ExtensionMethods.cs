@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Typer.Domain.Helpers
+namespace Typer.Common.Helpers
 {
     public static class ExtensionMethods
     {

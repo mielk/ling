@@ -51,8 +51,6 @@
     <Compile Include="Entities\User.cs" />
     <Compile Include="Entities\UserLoginData.cs" />
     <Compile Include="Entities\UserRegistrationData.cs" />
-    <Compile Include="Helpers\ExtensionMethods.cs" />
-    <Compile Include="Helpers\SHA1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -60,6 +58,12 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Typer.Common\Typer.Common.csproj">
+      <Project>{11b5fd2f-c19c-4377-9e1c-342d55156882}</Project>
+      <Name>Typer.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

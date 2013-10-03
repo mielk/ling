@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Typer.Domain.Helpers
+namespace Typer.Common.Helpers
 {
     public class SHA1
     {
