@@ -47,6 +47,10 @@
             <!-- Confirm password -->
             <div id="div_confirm_password" class="field">
                 @Html.LabelFor(u => u.ConfirmPassword, new { @class="label" })
+                <div class="error">
+                    <div class="error_content"></div>
+                </div>
+                <span class="icon"></span>
                 <span>
                     @Html.PasswordFor(u => u.ConfirmPassword, new{  
                         @class="default", 
@@ -64,7 +68,7 @@
                 </div>
                 <span class="icon"></span>
                 <span>
-                    @Html.TextBoxFor(u => u.Password, new{  
+                    @Html.TextBoxFor(u => u.Email, new{  
                         @class="default", 
                         @placeholder="E-mail", 
                         @id="Mail"

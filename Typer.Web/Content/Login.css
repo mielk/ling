@@ -59,7 +59,7 @@ header, footer, nav, section
 #account input[type="submit"]:disabled
 {
     background-color: #BBB;
-    color: #222;
+    color: #777;
 }
 
 #account input.default
@@ -129,22 +129,23 @@ header, footer, nav, section
 #account .icon
 {
     float: right;
-    width: 33px;
-    height: 33px;
+    width: 32px;
+    height: 32px;
     margin-left: 3px;
-    background-color: green;
-    border: 1px solid #777777;
+    border: 1px solid transparent;
 }
 
 
 #account .iconValid
 {
-    background-color: green;
+    background-image: url('images/icon_valid.png');
+    /*background-color: green;*/
 }
 
 #account .iconInvalid
 {
-    background-color: red;
+    background-image: url('images/icon_invalid.png');
+    /*background-color: red;*/
 }
 
 

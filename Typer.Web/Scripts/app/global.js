@@ -49,6 +49,14 @@ var dict = dict || {
     IllegalPasswordFormat: {
         POL: 'Hasło musi zawierać co najmniej jedną literę i jedną cyfrę',
         ENG: 'Password must contain at least one letter and one digit'
+    },
+    ConfirmPasswordCannotBeEmpty: {
+        POL: 'Potwierdzenie hasła nie może być puste',
+        ENG: 'Confirm password cannot be empty'
+    },
+    PasswordsDontMatch: {
+        POL: 'Podane hasła różnią się od siebie',
+        ENG: "Passwords don't match"
     }
 }
 
