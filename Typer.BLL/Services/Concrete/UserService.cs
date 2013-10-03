@@ -14,10 +14,16 @@ namespace Typer.BLL.Services
             this.repository = repository;
         }
 
-
         public bool IsAuthenticated(UserLoginData loginData)
         {
             return repository.userExists(loginData.Username, SHA1.Encode(loginData.Password));
+    }
+
+        public bool addUser(User user)
+        {
+            user.IsActive = false;
+            repository.addUser(user);
+            return false;
         }
 
     }

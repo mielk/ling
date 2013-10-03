@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Typer.Domain.Helpers;
 
 namespace Typer.Domain.Entities
 {
@@ -45,6 +46,15 @@ namespace Typer.Domain.Entities
 
         //
         #endregion Instance properties.
+
+
+        public User(UserRegistrationData urd)
+        {
+            UserName = urd.UserName;
+            Password = SHA1.Encode(urd.Password);
+            Email = urd.Email;
+        }
+
 
     }
 }

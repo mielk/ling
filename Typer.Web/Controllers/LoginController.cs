@@ -2,6 +2,7 @@
 using System.Web.Security;
 using Typer.Domain.Entities;
 using Typer.BLL.Services;
+using System;
 
 namespace Typer.Web.Controllers
 {
@@ -80,16 +81,29 @@ namespace Typer.Web.Controllers
         public ActionResult Register(UserRegistrationData data)
         {
 
-            FormsAuthentication.SetAuthCookie("test", false);
-            return RedirectToAction("Karo", "Home");
+            if (ModelState.IsValid)
+            {
 
-            //if (ModelState.IsValid)
-            //{
+                data.Password = "";
 
-            //}
-            //return View(data);
+                if (data.isValid())
+                {
+                    User user = new User(data);
+                    userService.addUser(user);
+                    return RedirectToAction("AccountCreated", "Login");
+                }
+            }
+
+            return View(data);
+
         }
 
+
+        [AllowAnonymous]
+        public ActionResult AccountCreated()
+        {
+            return View();
+        }
 
 
 

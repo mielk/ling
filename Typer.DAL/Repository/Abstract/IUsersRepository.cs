@@ -6,5 +6,6 @@ namespace Typer.DAL.Repositories
     {
         User getUser(int userID);
         bool userExists(string username, string password);
+        bool addUser(User user);
     }
 }
