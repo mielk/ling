@@ -202,8 +202,8 @@ function checkUsername(username) {
         return MessageBundle.get(dict.UsernameMustStartWithLetter);
     } else if (!text.containLettersNumbersUnderscore(username)) {
         return MessageBundle.get(dict.UsernameContainsIllegalChar);
-    } else if (userAlreadyExists(username)) {
-        return MessageBundle.get(dict.UsernameAlreadyExists);
+ //   } else if (userAlreadyExists(username)) {
+ //       return MessageBundle.get(dict.UsernameAlreadyExists);
     } else {
         return true;
     }

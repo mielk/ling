@@ -24,9 +24,9 @@ namespace Typer.Domain.Entities
         //[Display(Name = "Last name")]
         public string LastName { get; set; }
 
-        [Required]
-        [DataType(DataType.Password)]
-        [Display(Name = "Password")]
+        //[Required]
+        //[DataType(DataType.Password)]
+        //[Display(Name = "Password")]
         public string Password { get; set; }
 
         //[Required]
