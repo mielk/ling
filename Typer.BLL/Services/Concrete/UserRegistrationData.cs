@@ -86,10 +86,17 @@ namespace Typer.BLL.Services
             if (UserName == null || UserName.Length < UserNameMinimumLength || UserName.Length > UserNameMaximumLength)
                 return false;
 
-            
+            if (!isUsernameUnique())
+                return false;
 
             return true;
 
+        }
+
+        private bool isUsernameUnique()
+        {
+            IUserService service = UserServicesFactory.Instance().getUserService();
+            return !service.userExists(UserName);
         }
 
         private bool isPasswordValid()

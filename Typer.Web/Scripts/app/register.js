@@ -199,11 +199,31 @@ function checkUsername(username) {
         return MessageBundle.get(dict.UsernameMustStartWithLetter);
     } else if (!text.containLettersNumbersUnderscore(username)) {
         return MessageBundle.get(dict.UsernameContainsIllegalChar);
+    } else if (userAlreadyExists(username)) {
+        return MessageBundle.get(dict.UsernameAlreadyExists);
     } else {
         return true;
     }
 
 }
+
+function userAlreadyExists(username) {
+    $.ajax({
+        type: "POST",
+        url: "LoginController/usernameAlreadyExists",
+        data: "{'username':'" + username + "'}",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        async: false,
+        success: function (msg) {
+            alert(msg);
+        },
+        error: function () {
+            alert('error');
+        }
+    });
+}
+
 
 function checkPassword(password) {
     var MIN_LENGTH = 6;

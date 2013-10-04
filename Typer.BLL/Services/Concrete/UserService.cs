@@ -1,4 +1,5 @@
 ﻿using Typer.DAL.Repositories;
+using Typer.DAL.Infrastructure;
 using Typer.Common.Helpers;
 using Typer.Domain.Entities;
 
@@ -11,7 +12,14 @@ namespace Typer.BLL.Services
 
         public UserService(IUsersRepository repository)
         {
-            this.repository = repository;
+            if (repository == null)
+            {
+                this.repository = RepositoryFactory.getUsersRepository();
+            }
+            else
+            {
+                this.repository = repository;
+            }
         }
 
         public bool IsAuthenticated(UserLoginData loginData)

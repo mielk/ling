@@ -45,6 +45,7 @@
     <Compile Include="Services\Concrete\UserLoginData.cs" />
     <Compile Include="Services\Concrete\UserRegistrationData.cs" />
     <Compile Include="Services\Concrete\UserService.cs" />
+    <Compile Include="Services\Factories\UserServicesFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Typer.Common\Typer.Common.csproj">

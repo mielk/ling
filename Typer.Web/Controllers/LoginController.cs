@@ -1,7 +1,7 @@
 ﻿using System.Web.Mvc;
 using System.Web.Security;
 using Typer.BLL.Services;
-using System;
+using System.Web.Services;
 
 namespace Typer.Web.Controllers
 {
@@ -41,7 +41,7 @@ namespace Typer.Web.Controllers
                 if (userService.IsAuthenticated(data))
                 {
                     FormsAuthentication.SetAuthCookie(data.Username, false);
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Test", "Home");
                 }
                 else
                 {
@@ -92,6 +92,18 @@ namespace Typer.Web.Controllers
             return View(data);
 
         }
+
+
+
+
+        [WebMethod]
+        public static bool usernameAlreadyExists(string username)
+        {
+            IUserService service = UserServicesFactory.Instance().getUserService();
+            bool result = service.userExists(username);
+            return service.userExists(username);
+        }
+
 
 
         [AllowAnonymous]
