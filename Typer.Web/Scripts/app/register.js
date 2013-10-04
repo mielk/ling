@@ -2,6 +2,7 @@
 
 $(document).ready(function () {
     adjustPlaceholder();
+    setFocusForUsernameControl();
     model = modelConstructor();
 });
 
@@ -11,7 +12,9 @@ function adjustPlaceholder() {
     $("#account label").css({ 'display': 'block' });
 }
 
-
+function setFocusForUsernameControl() {
+    $("#Username").focus();
+}
 
 
 var modelConstructor = function () {
@@ -210,19 +213,27 @@ function checkUsername(username) {
 function userAlreadyExists(username) {
     $.ajax({
         type: "POST",
-        url: "LoginController/usernameAlreadyExists",
+        url: "Login/checkUsername",
         data: "{'username':'" + username + "'}",
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         async: false,
         success: function (msg) {
-            alert(msg);
+            alert(msg + ":" + msg.d);
+            alert("OK");
+            return true;
         },
-        error: function () {
+        error: function (msg) {
+            alert(msg.status + ":" + msg.statusText);
             alert('error');
+            return false;
         }
     });
+
 }
+
+
+
 
 
 function checkPassword(password) {
