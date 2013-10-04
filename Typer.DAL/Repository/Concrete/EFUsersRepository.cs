@@ -17,6 +17,11 @@ namespace Typer.DAL.Repositories
             return context.Users.Single(u => u.UserID == userID);
         }
 
+        private User getUser(string username)
+        {
+            return context.Users.SingleOrDefault(u => u.UserName == username);
+        }
+
         private User getUser(string username, string password)
         {
             return context.Users.SingleOrDefault(u => u.UserName == username && u.Password == password && u.IsActive == true);
@@ -24,6 +29,12 @@ namespace Typer.DAL.Repositories
 
 
 
+
+        public bool userExists(string username)
+        {
+            User user = getUser(username);
+            return (user != null);
+        }
 
         public bool userExists(string username, string password)
         {

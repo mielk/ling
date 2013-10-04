@@ -14,6 +14,9 @@ namespace Typer.BLL.Services
         public static readonly int PasswordMinimumLength = 6;
 
 
+        //=========================
+        #region Properties.
+
         [Required]
         [Display(Name = "User name", Prompt = "Enter user name")]
         public string UserName { get; set; }
@@ -51,6 +54,12 @@ namespace Typer.BLL.Services
         //[Display(Name = "Date of birth")]
         public DateTime DateOfBirth { get; set; }
 
+        #endregion Properties.
+        //=========================
+
+
+        //=========================
+        #region Validation.
 
 
         public bool isValid()
@@ -109,6 +118,12 @@ namespace Typer.BLL.Services
         {
             return Email.isLegalMail();
         }
+
+
+        #endregion Validation.
+        //=========================
+
+
 
         public User toUser()
         {

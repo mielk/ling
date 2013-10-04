@@ -6,5 +6,6 @@ namespace Typer.BLL.Services
     {
         bool IsAuthenticated(UserLoginData loginData);
         bool addUser(UserRegistrationData userData);
+        bool userExists(string username);
     }
 }

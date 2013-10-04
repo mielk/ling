@@ -27,5 +27,10 @@ namespace Typer.BLL.Services
             return false;
         }
 
+        public bool userExists(string username)
+        {
+            return (repository.userExists(username));
+        }
+
     }
 }
