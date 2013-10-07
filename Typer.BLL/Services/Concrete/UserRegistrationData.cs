@@ -9,12 +9,25 @@ namespace Typer.BLL.Services
     public class UserRegistrationData
     {
 
+        private readonly IUserService service;
+
         public static readonly int UserNameMinimumLength = 5;
         public static readonly int UserNameMaximumLength = 20;
         public static readonly int PasswordMinimumLength = 6;
 
 
-        //=========================
+        public UserRegistrationData()
+        {
+            this.service = UserServicesFactory.Instance().getUserService();
+        }
+
+        public UserRegistrationData(IUserService service)
+        {
+            this.service = service;
+        }
+
+
+        
         #region Properties.
 
         [Required]
@@ -55,10 +68,10 @@ namespace Typer.BLL.Services
         public DateTime DateOfBirth { get; set; }
 
         #endregion Properties.
-        //=========================
+        
 
 
-        //=========================
+        
         #region Validation.
 
 
@@ -95,7 +108,6 @@ namespace Typer.BLL.Services
 
         private bool isUserNameUnique()
         {
-            IUserService service = UserServicesFactory.Instance().getUserService();
             return !service.userExists(UserName);
         }
 
@@ -128,7 +140,7 @@ namespace Typer.BLL.Services
 
 
         #endregion Validation.
-        //=========================
+        
 
 
 
