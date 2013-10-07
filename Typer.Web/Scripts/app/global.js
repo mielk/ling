@@ -31,8 +31,8 @@ var dict = dict || {
         ENG: 'Username can contain only letters, digits and underscore (_)'
     },
     UsernameAlreadyExists: {
-        POL: 'Użytkownik o takiej nazwie już',
-        ENG: 'Username can contain only letters, digits and underscore (_)'
+        POL: 'Użytkownik o takiej nazwie już istnieje',
+        ENG: 'This name is already used'
     },
     MailCannotBeEmpty: {
         POL: 'Pole e-mail nie może pozostać puste',

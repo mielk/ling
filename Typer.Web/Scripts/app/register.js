@@ -184,10 +184,14 @@ ControlGroup.prototype.validate = function () {
 
 
 
+
+
 /*
  * Username must have 6-20 characters. Only letters,
  * digits and underscore are accepted.
  */
+var userExists = false;
+
 function checkUsername(username) {
     var MIN_LENGTH = 5;
     var MAX_LENGTH = 20;
@@ -202,38 +206,37 @@ function checkUsername(username) {
         return MessageBundle.get(dict.UsernameMustStartWithLetter);
     } else if (!text.containLettersNumbersUnderscore(username)) {
         return MessageBundle.get(dict.UsernameContainsIllegalChar);
- //   } else if (userAlreadyExists(username)) {
- //       return MessageBundle.get(dict.UsernameAlreadyExists);
     } else {
-        return true;
+        userAlreadyExists(username);
+
+        if (userExists) {
+            return MessageBundle.get(dict.UsernameAlreadyExists);
+        } else {
+            return true;
+        }
+
     }
 
 }
 
+
 function userAlreadyExists(username) {
     $.ajax({
-        type: "POST",
-        url: "Login/CheckUser",
-        //data: "{'username':'" + username + "'}",
-        data: JSON.stringify({ username: "xyz" }),
+        url: "CheckUsername",
+        type: "post",
+        data: JSON.stringify({ username: username }),
         contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: function (msg) {
-            alert(msg + ":" + msg.d);
-            alert("OK");
-            return true;
+        datatype: "json",
+        async: false,
+        success: function (result) {
+            userExists = (result.IsExisting === true);
         },
         error: function (msg) {
-            alert(msg.status + ":" + msg.statusText);
-            alert('error');
-            return false;
+            alert("[register.js::userAlreadyExists] " + msg.status + " | " + msg.statusText);
         }
     });
 
 }
-
-
-
 
 
 function checkPassword(password) {

@@ -95,29 +95,13 @@ namespace Typer.Web.Controllers
 
 
 
-
-
-        //[HttpGet]
-        //public ActionResult CheckUser(string username)
-        //{
-        //    IUserService service = UserServicesFactory.Instance().getUserService();
-        //    bool result = service.userExists(username);
-        //    return Json(new { IsExisting = result }, JsonRequestBehavior.AllowGet);
-        //}
-
+        
         [HttpPost]
-        public ActionResult checkUsername(string username)
+        [AllowAnonymous]
+        public ActionResult CheckUsername(string username)
         {
-            IUserService service = UserServicesFactory.Instance().getUserService();
-            string result = service.userExists(username) ? "true" : "false";
-            return Json(new { r = result } );
-        }
-
-
-        [WebMethod]
-        public bool CheckUser(string username)
-        {
-            return true;
+            bool IsExisting = userService.userExists(username);
+            return Json(new { IsExisting = IsExisting }, JsonRequestBehavior.AllowGet);
         }
 
         

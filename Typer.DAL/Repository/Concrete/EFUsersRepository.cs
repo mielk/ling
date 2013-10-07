@@ -7,7 +7,7 @@ namespace Typer.DAL.Repositories
     public class EFUsersRepository : IUsersRepository
     {
 
-        private EFDbContext context = new EFDbContext();
+        private static readonly EFDbContext context = EFDbContext.getInstance();
 
 
 
@@ -43,15 +43,12 @@ namespace Typer.DAL.Repositories
         }
 
 
-
-
         public bool addUser(User user)
         {
             context.Users.Add(user);
             context.SaveChanges();
             return false;
         }
-
 
 
 
