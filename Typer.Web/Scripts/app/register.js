@@ -213,11 +213,11 @@ function checkUsername(username) {
 function userAlreadyExists(username) {
     $.ajax({
         type: "POST",
-        url: "Login/checkUsername",
-        data: "{'username':'" + username + "'}",
+        url: "Login/CheckUser",
+        //data: "{'username':'" + username + "'}",
+        data: JSON.stringify({ username: "xyz" }),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
-        async: false,
         success: function (msg) {
             alert(msg + ":" + msg.d);
             alert("OK");

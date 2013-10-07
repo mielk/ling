@@ -113,6 +113,13 @@ namespace Typer.Web.Controllers
             return Json(new { r = result } );
         }
 
+
+        [WebMethod]
+        public bool CheckUser(string username)
+        {
+            return true;
+        }
+
         
 
 
