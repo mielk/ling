@@ -1,14 +1,46 @@
-﻿@{
+﻿@model Typer.BLL.Services.UserRegistrationData
+
+@{
     ViewBag.Title = "MailInactive";
+    Layout = "~/Views/Shared/Sign.cshtml";
+    @Scripts.Render("~/bundles/login")
 }
 
-<h2>Your account is not active yet.</h2>
 
-<h2>A confirmation e-mail has been sent to the account you gave us during registration process.
-    Please follow instructions from e-mail to activate your account.
-</h2>
 
-<h2>If you haven't received any e-mail from us, please click [Re-send verification mail] button on the bottom of this page in order to get another one.</h2>
+<div id="message">
+
+    <div class="line">
+        Your account is not active yet.
+    </div>
+
+    <div class="line">
+        A confirmation e-mail has been sent to the account you gave us during registration process. Please follow instructions from e-mail to activate your account.
+    </div>
+
+    <div class="line newLine">
+        If you haven't received any e-mail from us, please enter your e-mail address in the textbox below and click [Send verification mail] button.
+    </div>
+
+   
+    <fieldset>
+        <div class="field">
+            @Html.LabelFor(u => u.Email, new { @class="label" })
+            <span>
+                @Html.TextBoxFor(u => u.Email, new{  
+                    @class="default", 
+                    @placeholder="E-mail", 
+                    @id="Email"
+                })
+            </span>
+        </div>
+    </fieldset>
+
+
+</div>
+
+
+
 
 
 @*Pole do wpisania adresu e-mail, na który ma zostać przesłany mail aktywacyjny.*@

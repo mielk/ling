@@ -10,6 +10,72 @@ header, footer, nav, section
     display: block;
 }
 
+label
+{
+    display: block;
+    float: left;
+    width: 120px;
+    color: #DDD;
+    height: 21px;
+    line-height: 21px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+fieldset
+{
+    border: none;
+    margin: 0;
+    padding: 8px;
+}
+
+span
+{
+    display: block;
+    overflow: hidden;
+    margin: 0;
+}
+
+
+.field
+{
+    padding-bottom: 5px;
+    margin: 0;
+    width: 100%;
+    overflow: visible;
+}
+
+
+
+
+
+
+
+
+.validation-summary-errors
+{
+    color: red;
+    box-sizing: border-box;
+    margin: 3px 0px;
+    padding: 6px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.validation-summary-errors ul
+{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+
+
+
+
+
+
+
 #account
 {
     display: block;
@@ -19,14 +85,6 @@ header, footer, nav, section
     margin: 10% 32% 70% 32%;
     background-color: #eee;
     border: none;
-}
-
-#account .field
-{
-    padding-bottom: 5px;
-    margin: 0;
-    width: 100%;
-    overflow: visible;
 }
 
 #account input[type=text], input[type=password]
@@ -92,38 +150,18 @@ header, footer, nav, section
 }
 
 
-#account fieldset
+#account label
 {
-    border: none;
-    margin: 0;
-    padding: 8px;
+    padding: 7px;
+    color: #222;
 }
+
 
 #account input
 {
     font-family: Calibri, Arial, Tahoma, Georgia, serif;
     margin: 0;
     border: 1px solid #555;
-}
-
-#account label
-{
-    display: block;
-    float: left;
-    width: 120px;
-    color: #222;
-    padding: 7px;
-    height: 21px;
-    line-height: 21px;
-    font-size: 13px;
-    font-weight: bold;
-}
-
-#account span
-{
-    display: block;
-    overflow: hidden;
-    margin: 0;
 }
 
 #account .icon
@@ -208,19 +246,65 @@ header, footer, nav, section
     margin-right: 12px;
 }
 
-.validation-summary-errors
+
+
+
+
+
+
+#message
 {
-    color: red;
-    box-sizing: border-box;
-    margin: 3px 0px;
-    padding: 6px;
-    text-align: center;
-    font-weight: bold;
+    width: 60%;
+    height: auto;
+    margin: 10% 20% 70% 20%;
+    padding: 5%;
+    background-color: #222;
+    color: #DDD;
+    border: none;
 }
 
-.validation-summary-errors ul
+#message .line
 {
-    margin: 0;
+    font-size: 14px;
     padding: 0;
-    list-style-type: none;
+    margin: 9px 0px;
+}
+
+#message .newLine
+{
+    margin-top: 48px;
+}
+
+#message fieldset
+{
+    padding: 8px 0px;
+}
+
+
+#message label
+{
+    padding: 7px 0px;
+    color: #DDD;
+}
+
+#message input[type=text]
+{
+    font-size: 17px;
+    border: 1px solid transparent;
+}
+
+#message input.default
+{
+    padding: 3px;
+    color: #222;
+    background-color: rgb(229, 230, 231);
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+#message input.default:focus
+{
+    border-color: rgb(56, 71, 120);
+    background-color: rgb(186, 210, 223);
 }
