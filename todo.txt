@@ -1,0 +1,3 @@
+Login form
+- Confirm password musi byæ sprawdzane za ka¿dym razem, kiedy zmieniane jest has³o.
+- Confirm password musi byæ sprawdzane tak¿e pod k¹tem poprawnoœci has³a, a nie tylko zgodnoœci z has³em oryginalnym.

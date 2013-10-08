@@ -42,6 +42,15 @@ var modelConstructor = function () {
             value.validate();
         }
     );
+    
+    //Creating links between data fields (i.e. [ConfirmPassword] must 
+    //be verified every time [Password] field is being changed.
+    (function () {
+        var pswd = controls.getItem('password');
+        var confPswd = controls.getItem('confirmPassword');
+        pswd.addLinked('confirmPassword', confPswd);
+    })();
+
 
 
     function isValid() {
@@ -83,6 +92,7 @@ function ControlGroup(_id, _fn) {
 
     this.id = _id;
     this.container = $('#' + _id)[0];
+    this.linked = new HashTable(null);
 
     this.getControl = function (selector) {
         return $(this.container).find('.' + selector)[0];
@@ -113,6 +123,10 @@ function ControlGroup(_id, _fn) {
     }
 
     this._validate = function () {
+
+        //Verify linked controls.
+        verifyLinked();
+
         var isValid = _fn(me.getValue());
         if (isValid === true) {
             me.format(true);
@@ -128,6 +142,15 @@ function ControlGroup(_id, _fn) {
             status: (isValid === true ? true : false)
         });
 
+    }
+
+
+    var verifyLinked = function () {
+        me.linked.each(
+            function (key, value) {
+                value.validate();
+            }
+        );
     }
 
 
@@ -150,6 +173,9 @@ function ControlGroup(_id, _fn) {
         }
     });
 
+}
+ControlGroup.prototype.addLinked = function (key, value) {
+    this.linked.setItem(key, value);
 }
 ControlGroup.prototype.getContainer = function () {
     return this.container;
@@ -262,7 +288,10 @@ function matchPasswords(confirmPassword) {
 }
 
 function checkIfPasswordsMatch(password, confirmPassword) {
-    if (password !== confirmPassword) {
+    var pswdVerification = checkPassword(password);
+    if (pswdVerification !== true) {
+        return pswdVerification;
+    } else if (password !== confirmPassword) {
         return MessageBundle.get(dict.PasswordsDontMatch);
     } else {
         return true;
