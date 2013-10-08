@@ -155,8 +155,8 @@ namespace Typer.BLL.Services
                 CountryId = null,
                 DateOfBirth = null,
                 RegistrationDate = DateTime.Now,
-                ConfirmationCode = Guid.NewGuid().ToString(),
-                ConfirmationDate = null
+                IsActive = true,
+                MailVerified = false
             };
 
             return user;

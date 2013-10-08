@@ -22,10 +22,17 @@ namespace Typer.BLL.Services
             }
         }
 
+
+
+        public User getUser(UserLoginData loginData)
+        {
+            return repository.getUser(loginData.Username, SHA1.Encode(loginData.Password));
+        }
+
         public bool IsAuthenticated(UserLoginData loginData)
         {
             return repository.userExists(loginData.Username, SHA1.Encode(loginData.Password));
-    }
+        }
 
         public bool addUser(UserRegistrationData userData)
         {
@@ -37,7 +44,12 @@ namespace Typer.BLL.Services
 
         public bool userExists(string username)
         {
-            return (repository.userExists(username));
+            return repository.userExists(username);
+        }
+
+        public bool mailExists(string mail)
+        {
+            return repository.mailExists(mail);
         }
 
     }

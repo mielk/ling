@@ -42,10 +42,12 @@ namespace Typer.Domain.Entities
         public DateTime? DateOfBirth { get; set; }
         public DateTime? RegistrationDate { get; set; }
 
-        public string ConfirmationCode { get; set; }
-        public DateTime? ConfirmationDate { get; set; }
+        //public string ConfirmationCode { get; set; }
+        //public DateTime? ConfirmationDate { get; set; }
 
         public bool IsActive { get; set; }
+
+        public bool MailVerified { get; set; }
 
         //
         #endregion Instance properties.

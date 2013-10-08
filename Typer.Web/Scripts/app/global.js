@@ -32,7 +32,7 @@ var dict = dict || {
     },
     UsernameAlreadyExists: {
         POL: 'Użytkownik o takiej nazwie już istnieje',
-        ENG: 'This name is already used'
+        ENG: 'This name has been used already'
     },
     MailCannotBeEmpty: {
         POL: 'Pole e-mail nie może pozostać puste',
@@ -41,6 +41,10 @@ var dict = dict || {
     IllegalMailFormat: {
         POL: 'Nieprawidłowy format adresu e-mail',
         ENG: 'Illegal e-mail format'
+    },
+    MailAlreadyExists: {
+        POL: 'Podany e-mail jest już zarejestrowany w naszej bazie',
+        ENG: 'This e-mail has been used already'
     },
     PasswordCannotBeEmpty: {
         POL: 'Hasło nie może być puste',

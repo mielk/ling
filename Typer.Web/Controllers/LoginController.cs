@@ -2,6 +2,7 @@
 using System.Web.Security;
 using Typer.BLL.Services;
 using System.Web.Services;
+using Typer.Domain.Entities;
 
 namespace Typer.Web.Controllers
 {
@@ -38,14 +39,25 @@ namespace Typer.Web.Controllers
             if (ModelState.IsValid)
             {
 
-                if (userService.IsAuthenticated(data))
+                User user = userService.getUser(data);
+
+                if (user == null)
                 {
-                    FormsAuthentication.SetAuthCookie(data.Username, false);
-                    return RedirectToAction("Test", "Home");
+                    ModelState.AddModelError("", "Login or password is incorrect. Please try again.");
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Login or password is incorrect. Please try again.");
+
+                    if (user.MailVerified)
+                    {
+                        FormsAuthentication.SetAuthCookie(data.Username, false);
+                        return RedirectToAction("Test", "Home");
+                    }
+                    else
+                    {
+                        return RedirectToAction("MailInactive", "Home");
+                    }
+
                 }
 
             }
@@ -100,8 +112,16 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult CheckUsername(string username)
         {
-            bool IsExisting = userService.userExists(username);
-            return Json(new { IsExisting = IsExisting }, JsonRequestBehavior.AllowGet);
+            bool isExisting = userService.userExists(username);
+            return Json(new { IsExisting = isExisting }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult CheckMail(string mail)
+        {
+            bool isExisting = userService.mailExists(mail);
+            return Json(new { IsExisting = isExisting }, JsonRequestBehavior.AllowGet);
         }
 
         

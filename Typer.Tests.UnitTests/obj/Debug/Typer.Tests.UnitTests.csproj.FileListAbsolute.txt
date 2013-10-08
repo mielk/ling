@@ -36,3 +36,5 @@ C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTes
 C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Typer.BLL.pdb
 C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Typer.Common.dll
 C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Typer.Common.pdb
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Typesafe.Mailgun.dll
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Typesafe.Mailgun.xml

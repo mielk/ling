@@ -146,3 +146,5 @@ C:\Users\Tomek\Documents\Visual Studio 2012\Projects\typer2\Typer.Web\bin\Typer.
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\typer2\Typer.Web\obj\Debug\Typer.Web.csprojResolveAssemblyReference.cache
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\typer2\Typer.Web\obj\Debug\Typer.Web.dll
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\typer2\Typer.Web\obj\Debug\Typer.Web.pdb
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Web\bin\Typesafe.Mailgun.dll
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.Web\bin\Typesafe.Mailgun.xml

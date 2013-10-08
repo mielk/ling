@@ -298,12 +298,38 @@ function checkIfPasswordsMatch(password, confirmPassword) {
     }
 }
 
+
+
+var mailExists = false;
 function checkMail(mail) {
     if (!mail) {
         return MessageBundle.get(dict.MailCannotBeEmpty);
     } else if (!text.isValidMail(mail)) {
         return MessageBundle.get(dict.IllegalMailFormat);
     } else {
-        return true;
+        mailAlreadyExists(mail);
+        if (mailExists) {
+            return MessageBundle.get(dict.MailAlreadyExists);
+        } else {
+            return true;
+        }
     }
+}
+
+function mailAlreadyExists(mail) {
+    $.ajax({
+        url: "CheckMail",
+        type: "post",
+        data: JSON.stringify({ mail: mail }),
+        contentType: "application/json; charset=utf-8",
+        datatype: "json",
+        async: false,
+        success: function (result) {
+            mailExists = (result.IsExisting === true);
+        },
+        error: function (msg) {
+            alert("[register.js::mailAlreadyExists] " + msg.status + " | " + msg.statusText);
+        }
+    });
+
 }

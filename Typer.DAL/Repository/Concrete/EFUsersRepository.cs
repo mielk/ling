@@ -17,12 +17,12 @@ namespace Typer.DAL.Repositories
             return context.Users.Single(u => u.UserID == userID);
         }
 
-        private User getUser(string username)
+        public User getUser(string username)
         {
             return context.Users.SingleOrDefault(u => u.UserName == username);
         }
 
-        private User getUser(string username, string password)
+        public User getUser(string username, string password)
         {
             return context.Users.SingleOrDefault(u => u.UserName == username && u.Password == password && u.IsActive == true);
         }
@@ -42,6 +42,11 @@ namespace Typer.DAL.Repositories
             return (user != null);
         }
 
+        public bool mailExists(string mail)
+        {
+            int records = context.Users.Count(u => u.Email == mail);
+            return (records > 0 ? true : false);
+        }
 
         public bool addUser(User user)
         {

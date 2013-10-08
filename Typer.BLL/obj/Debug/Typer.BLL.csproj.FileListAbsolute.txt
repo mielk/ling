@@ -38,3 +38,7 @@ C:\Users\Tomek\Documents\Visual Studio 2012\Projects\typer2\Typer.BLL\bin\Debug\
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\typer2\Typer.BLL\obj\Debug\Typer.BLL.csprojResolveAssemblyReference.cache
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\typer2\Typer.BLL\obj\Debug\Typer.BLL.dll
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\typer2\Typer.BLL\obj\Debug\Typer.BLL.pdb
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.BLL\bin\Debug\Newtonsoft.Json.dll
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.BLL\bin\Debug\Typesafe.Mailgun.dll
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.BLL\bin\Debug\Newtonsoft.Json.xml
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\Typer\Typer.BLL\bin\Debug\Typesafe.Mailgun.xml
