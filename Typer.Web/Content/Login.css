@@ -304,6 +304,7 @@ input
 
 #message label
 {
+    width: 70px;
     padding: 7px 0px;
     color: #DDD;
 }
@@ -322,7 +323,7 @@ input
 #message .error
 {
     height: 29px;
-    width: 300px;
+    width: 250px;
     margin-right: 0;
     margin-left: 9px;
 }

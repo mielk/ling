@@ -1,3 +1,9 @@
-Login form
-- Confirm password musi byæ sprawdzane za ka¿dym razem, kiedy zmieniane jest has³o.
-- Confirm password musi byæ sprawdzane tak¿e pod k¹tem poprawnoœci has³a, a nie tylko zgodnoœci z has³em oryginalnym.
+[MailInactive.cshtml]
+Wyœrodkowanie buttona do wysy³ania maila aktywacyjnego.
+Dodaæ przycisk do zamykania okna i powrotu do poprzedniej strony.
+
+[Register.cshtml]
+Dodaæ przycisk do zamykania okna i powrotu do poprzedniej strony.
+
+[Login.cshtml]
+Dodaæ przycisk do zamykania okna i powrotu do poprzedniej strony.
