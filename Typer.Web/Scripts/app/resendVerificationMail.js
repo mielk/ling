@@ -73,7 +73,7 @@ var mailValidator = function () {
         } else {
             //Add error message.
             this.formatAsInvalid();
-            $(errorContainer).text(validation);
+            $(errorContent).text(validation);
             isValid = false;
         }
 
@@ -123,18 +123,23 @@ var mailValidator = function () {
 var mailExists = false;
 var mailVerified = false;
 function checkMail(mail) {
-    mailAlreadyExists(mail);
-    if (mailExists === true) {
-        return (mailVerified === true ? MessageBundle.get(dict.MailAlreadyActivated) : true);
+
+    if (!mail) {
+        return MessageBundle.get(dict.MailCannotBeEmpty);
     } else {
-        return MessageBundle.get(dict.MailDoesntExists);
+        mailAlreadyExists(mail);
+        if (mailExists === true) {
+            return (mailVerified === true ? MessageBundle.get(dict.MailAlreadyActivated) : true);
+        } else {
+            return MessageBundle.get(dict.MailDoesntExists);
+        }
     }
     
 }
 
 function mailAlreadyExists(mail) {
     $.ajax({
-        url: "VerifyMailActivation",
+        url: "CheckMail",
         type: "post",
         data: JSON.stringify({ mail: mail }),
         contentType: "application/json; charset=utf-8",

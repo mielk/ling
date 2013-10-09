@@ -76,6 +76,16 @@ input.default:focus
     border: 1px solid #777777;
 }
 
+.error_content
+{
+    display: table-cell; 
+    vertical-align: middle; 
+    text-align: center;
+    font-size: 13px;
+}
+
+
+
 
 input.valid
 {
@@ -220,15 +230,6 @@ input
     width: 200px;
     margin-right: -218px;
 }
-
-#account .error_content
-{
-    display: table-cell; 
-    vertical-align: middle; 
-    text-align: center;
-    font-size: 13px;
-}
-
 
 #account .footer
 {

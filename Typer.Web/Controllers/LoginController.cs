@@ -122,7 +122,7 @@ namespace Typer.Web.Controllers
             bool isExisting = (user == null ? false : true);
             bool isVerified = (user == null ? false : user.MailVerified);
             return Json(new { 
-                IsExisting = isExisting,
+                IsExisting = isExisting, 
                 IsVerified = isVerified
             }, JsonRequestBehavior.AllowGet);
         }
