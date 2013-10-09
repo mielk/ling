@@ -13,30 +13,30 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult Index()
         {
-            //var result = sendMail();
-            //@ViewBag.Result = result;
+            var result = sendMail();
+            @ViewBag.Result = result;
             return View();
         }
 
 
-        //private bool sendMail()
-        //{
-        //    //var client = new MailgunClient("https://api.mailgun.net/v2", "key-5494yn0jsum8ysjf5ly9bsd762k0d0a5");//https://api.mailgun.net/v2
-        //    //client.SendMail(new MailMessage("mielk@o2.pl", "tomasz.mielniczek@elavon.com", "Title", "Test" ));
+        private bool sendMail()
+        {
+            //var client = new mailgunclient("https://api.mailgun.net/v2", "key-5494yn0jsum8ysjf5ly9bsd762k0d0a5");//https://api.mailgun.net/v2
+            //client.sendmail(new mailmessage("mielk@o2.pl", "tomasz.mielniczek@elavon.com", "title", "test" ));
 
-        //    try
-        //    {
-        //        SmtpClient mailer = new SmtpClient();
-        //        mailer.Send("mielk@o2.pl", "tomasz.mielniczek@o2.pl", "test", "test");
-        //        return true;
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        return false;
-        //    }
+            try
+            {
+                SmtpClient mailer = new SmtpClient();
+                mailer.Send("mielk@o2.pl", "tomasz-mielniczek@o2.pl", "test", "test");
+                return true;
+            }
+            catch (Exception exception)
+            {
+                return false;
+            }
 
 
-        //}
+        }
 
 
         public ActionResult Test()
@@ -54,10 +54,3 @@ namespace Typer.Web.Controllers
 
     }
 }
-
-
-//MAILGUN_SMTP_LOGIN	    postmaster@app6599.mailgun.org	
-//MAILGUN_SMTP_SERVER	    smtp.mailgun.org	
-//MAILGUN_API_KEY	        key-5494yn0jsum8ysjf5ly9bsd762k0d0a5	
-//MAILGUN_SMTP_PORT	        587	
-//MAILGUN_SMTP_PASSWORD	    2injq2mbo038
