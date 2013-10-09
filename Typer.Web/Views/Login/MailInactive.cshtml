@@ -3,7 +3,8 @@
 @{
     ViewBag.Title = "MailInactive";
     Layout = "~/Views/Shared/Sign.cshtml";
-    @Scripts.Render("~/bundles/login")
+    @Scripts.Render("~/bundles/global")
+    @Scripts.Render("~/bundles/resend")
 }
 
 
@@ -19,13 +20,16 @@
     </div>
 
     <div class="line newLine">
-        If you haven't received any e-mail from us, please enter your e-mail address in the textbox below and click [Send verification mail] button.
+        If you haven't received any e-mail from us, please enter your e-mail address in the textbox below and click [Send verification e-mail] button.
     </div>
 
    
     <fieldset>
-        <div class="field">
+        <div id="div_mail" class="field">
             @Html.LabelFor(u => u.Email, new { @class="label" })
+            <div class="error">
+                <div class="error_content"></div>
+            </div>
             <span>
                 @Html.TextBoxFor(u => u.Email, new{  
                     @class="default", 
@@ -33,15 +37,14 @@
                     @id="Email"
                 })
             </span>
+
         </div>
+
     </fieldset>
 
+    <fieldset class="centered">
+        <input id="btnSend" type="submit" value="Send verification e-mail" />
+    </fieldset>
+    
 
 </div>
-
-
-
-
-
-@*Pole do wpisania adresu e-mail, na który ma zostać przesłany mail aktywacyjny.*@
-@*<button>Wysyłanie kolejnego maila weryfikacyjnego.</button>*@

@@ -46,6 +46,14 @@ var dict = dict || {
         POL: 'Podany e-mail jest już zarejestrowany w naszej bazie',
         ENG: 'This e-mail has been used already'
     },
+    MailDoesntExists: {
+        POL: 'Podany e-mail nie jest zarejestrowany w naszej bazie. Proszę użyć adresu e-mail podanego podczas rejestracji.',
+        ENG: 'This e-mail is not registered in our database. Please use the e-mail given during registration.'
+    },
+    MailAlreadyActivated: {
+        POL: 'Konto powiązane z tym adresem e-mail zostało już aktywowane.',
+        ENG: 'Account linked to this e-mail has been already activated'
+    },
     PasswordCannotBeEmpty: {
         POL: 'Hasło nie może być puste',
         ENG: 'Password cannot be empty'

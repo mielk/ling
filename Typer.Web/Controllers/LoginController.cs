@@ -7,8 +7,6 @@ using Typer.Domain.Entities;
 namespace Typer.Web.Controllers
 {
 
-
-
     public class LoginController : Controller
     {
 
@@ -55,7 +53,7 @@ namespace Typer.Web.Controllers
                     }
                     else
                     {
-                        return RedirectToAction("MailInactive", "Home");
+                        return RedirectToAction("MailInactive", "Login");
                     }
 
                 }
@@ -120,15 +118,26 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult CheckMail(string mail)
         {
-            bool isExisting = userService.mailExists(mail);
-            return Json(new { IsExisting = isExisting }, JsonRequestBehavior.AllowGet);
+            User user = userService.getUserByMail(mail);
+            bool isExisting = (user == null ? false : true);
+            bool isVerified = (user == null ? false : user.MailVerified);
+            return Json(new { 
+                IsExisting = isExisting,
+                IsVerified = isVerified
+            }, JsonRequestBehavior.AllowGet);
         }
-
         
 
 
         [AllowAnonymous]
         public ActionResult AccountCreated()
+        {
+            return View();
+        }
+
+
+        [AllowAnonymous]
+        public ActionResult MailInactive()
         {
             return View();
         }

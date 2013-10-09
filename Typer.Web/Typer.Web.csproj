@@ -217,6 +217,7 @@
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\app\global.js" />
     <Content Include="Scripts\app\register.js" />
+    <Content Include="Scripts\app\resendVerificationMail.js" />
     <Content Include="Scripts\app\util.js" />
     <Content Include="Scripts\jquery-1.7.1.js" />
     <Content Include="Scripts\jquery-1.7.1.min.js" />
@@ -253,7 +254,7 @@
     <Content Include="Views\Login\Register.cshtml" />
     <Content Include="Views\Login\AccountCreated.cshtml" />
     <Content Include="Views\Home\Test.cshtml" />
-    <Content Include="Views\Home\MailInactive.cshtml" />
+    <Content Include="Views\Login\MailInactive.cshtml" />
     <Content Include="Views\Home\MailSend.cshtml" />
   </ItemGroup>
   <ItemGroup>

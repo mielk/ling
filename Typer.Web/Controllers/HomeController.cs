@@ -44,12 +44,6 @@ namespace Typer.Web.Controllers
             return View();
         }
 
-        [AllowAnonymous]
-        public ActionResult MailInactive()
-        {
-            return View();
-        }
-
 
         [AllowAnonymous]
         public ActionResult MailSend(User user)

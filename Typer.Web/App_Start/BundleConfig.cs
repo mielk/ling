@@ -18,14 +18,18 @@ namespace Typer.Web
                         "~/Scripts/jquery.unobtrusive*",
                         "~/Scripts/jquery.validate*"));
 
+            bundles.Add(new ScriptBundle("~/bundles/global").Include(
+                        "~/Scripts/app/util.js",
+                        "~/Scripts/app/global.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/login").Include(
-                                    "~/Scripts/app/global.js",
-                                    "~/Scripts/app/login.js"));
+                        "~/Scripts/app/login.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/registration").Include(
-                                    "~/Scripts/app/util.js",
-                                    "~/Scripts/app/global.js",
-                                    "~/Scripts/app/register.js"));
+                        "~/Scripts/app/register.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/resend").Include(
+                        "~/Scripts/app/resendVerificationMail.js"));
 
             // Use the development version of Modernizr to develop with and learn from. Then, when you're
             // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.

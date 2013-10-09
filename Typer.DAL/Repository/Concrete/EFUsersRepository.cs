@@ -27,6 +27,11 @@ namespace Typer.DAL.Repositories
             return context.Users.SingleOrDefault(u => u.UserName == username && u.Password == password && u.IsActive == true);
         }
 
+        public User getUserByMail(string mail)
+        {
+            return context.Users.SingleOrDefault(u => u.Email == mail);
+        }
+
 
 
 

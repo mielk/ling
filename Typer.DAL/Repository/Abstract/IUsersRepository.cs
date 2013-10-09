@@ -7,6 +7,7 @@ namespace Typer.DAL.Repositories
         User getUser(int userID);
         User getUser(string username);
         User getUser(string username, string password);
+        User getUserByMail(string mail);
         bool userExists(string username);
         bool userExists(string username, string password);
         bool mailExists(string mail);

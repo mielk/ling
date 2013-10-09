@@ -29,6 +29,11 @@ namespace Typer.BLL.Services
             return repository.getUser(loginData.Username, SHA1.Encode(loginData.Password));
         }
 
+        public User getUserByMail(string mail)
+        {
+            return repository.getUserByMail(mail);
+        }
+
         public bool IsAuthenticated(UserLoginData loginData)
         {
             return repository.userExists(loginData.Username, SHA1.Encode(loginData.Password));
