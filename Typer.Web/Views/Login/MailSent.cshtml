@@ -1,0 +1,31 @@
+﻿@model Typer.BLL.Services.UserRegistrationData
+
+@{
+    ViewBag.Title = "MailInactive";
+    Layout = "~/Views/Shared/Sign.cshtml";
+    @Scripts.Render("~/bundles/global")
+    @Scripts.Render("~/bundles/resend")
+}
+
+
+
+<div id="message">
+
+    @using (Html.BeginForm("NavigateToHomePage", "Login", FormMethod.Post))
+    {
+            
+        <div class="line">
+            <h2>Confirmation e-mail has been sent to @Model.Email .</h2>
+        </div>
+
+        <div class="line">
+            A confirmation e-mail has been sent to the account you gave us during registration process. Please follow instructions from e-mail to activate your account.
+            (...)
+        </div>
+
+        <fieldset>
+            <input id="btnBack" type="submit" value="Back" />
+        </fieldset>
+    }
+
+</div>

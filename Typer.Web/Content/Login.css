@@ -336,4 +336,6 @@ input
 #message input[type=submit]
 {
     width: auto;
+    padding-left: 18px;
+    padding-right: 18px;
 }

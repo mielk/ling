@@ -1,0 +1,26 @@
+﻿@model Typer.BLL.Services.UserRegistrationData
+
+@{
+    ViewBag.Title = "MailInactive";
+    Layout = "~/Views/Shared/Sign.cshtml";
+    @Scripts.Render("~/bundles/global")
+    @Scripts.Render("~/bundles/resend")
+}
+
+
+
+<div id="message">
+
+    @using (Html.BeginForm("NavigateToHomePage", "Login", FormMethod.Post))
+    {
+        <div class="line">
+            Error occurred when trying to send validation message to @Model.Email. Please try again later.
+        </div>
+
+        <fieldset>
+            <input id="btnBack" type="submit" value="Back" />
+        </fieldset>
+    }
+
+</div>
+<h2></h2>

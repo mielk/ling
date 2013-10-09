@@ -254,8 +254,10 @@
     <Content Include="Views\Login\Register.cshtml" />
     <Content Include="Views\Login\AccountCreated.cshtml" />
     <Content Include="Views\Home\Test.cshtml" />
-    <Content Include="Views\Login\MailInactive.cshtml" />
+    <Content Include="Views\Login\InactiveMail.cshtml" />
     <Content Include="Views\Home\MailSend.cshtml" />
+    <Content Include="Views\Login\MailSent.cshtml" />
+    <Content Include="Views\Login\ValidationMailSendingError.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

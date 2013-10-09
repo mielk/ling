@@ -19,7 +19,7 @@ namespace Typer.Web.Controllers
         }
 
 
-        //------------------------
+        
         #region Login
 
         [HttpGet]
@@ -53,7 +53,7 @@ namespace Typer.Web.Controllers
                     }
                     else
                     {
-                        return RedirectToAction("MailInactive", "Login");
+                        return RedirectToAction("InactiveMail", "Login");
                     }
 
                 }
@@ -69,12 +69,11 @@ namespace Typer.Web.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+
         #endregion Login
-        //------------------------
+        
 
-
-
-        //------------------------
+        
         #region Registration
 
         [HttpGet]
@@ -103,8 +102,6 @@ namespace Typer.Web.Controllers
 
         }
 
-
-
         
         [HttpPost]
         [AllowAnonymous]
@@ -126,7 +123,6 @@ namespace Typer.Web.Controllers
                 IsVerified = isVerified
             }, JsonRequestBehavior.AllowGet);
         }
-        
 
 
         [AllowAnonymous]
@@ -136,18 +132,68 @@ namespace Typer.Web.Controllers
         }
 
 
+        #endregion Registration
+
+
+
+
+        #region Email verification.
+
         [AllowAnonymous]
-        public ActionResult MailInactive()
+        [HttpGet]
+        public ActionResult InactiveMail()
         {
             return View();
         }
 
 
+        [AllowAnonymous]
+        [HttpPost]
+        public ActionResult InactiveMail(UserRegistrationData urd)
+        {
+            var emailSent = false;//Send e-mail.
+            
+            if (emailSent){
+                return View("MailSent", urd);
+            } else {
+                return View("ValidationMailSendingError", urd);
+            }
+        }
 
-        #endregion Registration
-        //------------------------
+
+        [AllowAnonymous]
+        [HttpPost]
+        //Close current subpage and navigate to start page.
+        public ActionResult NavigateToHomePage()
+        {
+            return RedirectToAction("Index", "Home");
+            //return Redirect(Request.UrlReferrer.ToString());
+        }
 
 
+        #endregion Email verification.
+
+
+
+
+        #region Generate new password.
+
+        [AllowAnonymous]
+        [HttpPost]
+        public ActionResult NewPasswordSent()
+        {
+            return null;
+        }
+
+
+        [AllowAnonymous]
+        [HttpGet]
+        public ActionResult NewPasswordSendingError()
+        {
+            return View();
+        }
+
+        #endregion Generate new password.
 
 
     }

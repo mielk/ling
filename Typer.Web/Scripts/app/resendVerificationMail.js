@@ -119,9 +119,12 @@ var mailValidator = function () {
 
 
 
-
+/*
+ * Weryfikacja maila.
+ */
 var mailExists = false;
 var mailVerified = false;
+
 function checkMail(mail) {
 
     if (!mail) {
