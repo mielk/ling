@@ -1,5 +1,29 @@
-﻿@{
+﻿@model Typer.BLL.Services.UserRegistrationData
+
+@{
     ViewBag.Title = "AccountCreated";
+    Layout = "~/Views/Shared/Sign.cshtml";
+    @Scripts.Render("~/bundles/global")
+    @Scripts.Render("~/bundles/resend")
 }
 
-<h2>Konto zostało założone</h2>
+
+<div id="message">
+
+    @using (Html.BeginForm("NavigateToHomePage", "Login", FormMethod.Post))
+    {
+
+        <div class="line">
+            <h2>Account <b>@Model.UserName</b> has been created!</h2>
+        </div>
+        
+        <div class="line">
+            We have sent a confirmation e-mail to @Model.Email. Please follow instructions from e-mail to activate your account.
+        </div>
+
+        <fieldset>
+            <input id="btnBack" type="submit" value="Back" />
+        </fieldset>
+    }
+
+</div>

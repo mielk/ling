@@ -42,7 +42,8 @@ namespace Typer.BLL.Services
         public bool addUser(UserRegistrationData userData)
         {
             User user = userData.toUser();
-            user.IsActive = false;
+            user.IsActive = true;
+            user.MailVerified = false;
             repository.addUser(user);
             return false;
         }

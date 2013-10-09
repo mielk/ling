@@ -94,7 +94,7 @@ namespace Typer.Web.Controllers
                 if (data.isValid())
                 {
                     userService.addUser(data);
-                    return RedirectToAction("AccountCreated", "Login");
+                    //return View("AccountCreated", data);
                 }
             }
 
@@ -125,10 +125,21 @@ namespace Typer.Web.Controllers
         }
 
 
+        //[HttpPost]
+        //[AllowAnonymous]
+        //public ActionResult AccountCreated(UserRegistrationData data)
+        //{
+        //    return View(data);
+        //}
+
+
         [AllowAnonymous]
-        public ActionResult AccountCreated()
+        [HttpPost]
+        //Close current subpage and navigate to start page.
+        public ActionResult NavigateToHomePage()
         {
-            return View();
+            return RedirectToAction("Index", "Home");
+            //return Redirect(Request.UrlReferrer.ToString());
         }
 
 
@@ -151,7 +162,7 @@ namespace Typer.Web.Controllers
         [HttpPost]
         public ActionResult InactiveMail(UserRegistrationData urd)
         {
-            var emailSent = false;//Send e-mail.
+            var emailSent = true;//Send e-mail.
             
             if (emailSent){
                 return View("MailSent", urd);
@@ -159,17 +170,6 @@ namespace Typer.Web.Controllers
                 return View("ValidationMailSendingError", urd);
             }
         }
-
-
-        [AllowAnonymous]
-        [HttpPost]
-        //Close current subpage and navigate to start page.
-        public ActionResult NavigateToHomePage()
-        {
-            return RedirectToAction("Index", "Home");
-            //return Redirect(Request.UrlReferrer.ToString());
-        }
-
 
         #endregion Email verification.
 

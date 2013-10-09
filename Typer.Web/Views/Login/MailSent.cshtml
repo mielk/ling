@@ -1,12 +1,11 @@
 ﻿@model Typer.BLL.Services.UserRegistrationData
 
 @{
-    ViewBag.Title = "MailInactive";
+    ViewBag.Title = "MailSent";
     Layout = "~/Views/Shared/Sign.cshtml";
     @Scripts.Render("~/bundles/global")
     @Scripts.Render("~/bundles/resend")
 }
-
 
 
 <div id="message">
@@ -15,7 +14,7 @@
     {
             
         <div class="line">
-            <h2>Confirmation e-mail has been sent to @Model.Email .</h2>
+            <h2>Confirmation e-mail has been sent to @Model.Email.</h2>
         </div>
 
         <div class="line">
