@@ -11,6 +11,7 @@ namespace Typer.Web.Controllers
     {
 
         private readonly IUserService userService;
+        private RedirectResult redirectPoint;
 
 
         public LoginController(IUserService userService)
@@ -26,6 +27,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult Login()
         {
+            redirectPoint = Redirect(Request.UrlReferrer.ToString());
             return View();
         }
 
@@ -49,7 +51,16 @@ namespace Typer.Web.Controllers
                     if (user.MailVerified)
                     {
                         FormsAuthentication.SetAuthCookie(data.Username, false);
-                        return RedirectToAction("Test", "Home");
+                        if (redirectPoint != null)
+                        {
+                            return redirectPoint;
+                        }
+                        else
+                        {
+                            return RedirectToAction("Test", "Home");
+                        }
+                        //return Redirect(Request.UrlReferrer.ToString());
+                        //return 
                     }
                     else
                     {
@@ -123,14 +134,6 @@ namespace Typer.Web.Controllers
                 IsVerified = isVerified
             }, JsonRequestBehavior.AllowGet);
         }
-
-
-        //[HttpPost]
-        //[AllowAnonymous]
-        //public ActionResult AccountCreated(UserRegistrationData data)
-        //{
-        //    return View(data);
-        //}
 
 
         [AllowAnonymous]
