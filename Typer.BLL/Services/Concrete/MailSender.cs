@@ -9,5 +9,7 @@ namespace Typer.BLL.Services
     public class MailSender : IMailSender
     {
 
+        
+
     }
 }

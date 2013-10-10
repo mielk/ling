@@ -135,7 +135,14 @@ namespace Typer.BLL.Services
 
         private bool isMailValid()
         {
-            return Email.isLegalMail();
+            if (!Email.isLegalMail())
+                return false;
+
+            if (service.mailExists(Email))
+                return false;
+
+            return true;
+
         }
 
 

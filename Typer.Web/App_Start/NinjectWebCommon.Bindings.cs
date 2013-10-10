@@ -16,7 +16,8 @@ namespace Typer.Web
         private static void RegisterServices(IKernel kernel)
         {
             kernel.Bind<IUserService>().To<UserService>();
-            kernel.Bind<IUsersRepository>().To<EFUsersRepository>();			
+            kernel.Bind<IUsersRepository>().To<EFUsersRepository>();
+            kernel.Bind<IMailSender>().To<MailSender>();
         }
     }
 }

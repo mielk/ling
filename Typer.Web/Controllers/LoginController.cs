@@ -11,6 +11,7 @@ namespace Typer.Web.Controllers
     {
 
         private readonly IUserService userService;
+        private readonly IMailSender mailSender;
         private RedirectResult redirectPoint;
 
 
