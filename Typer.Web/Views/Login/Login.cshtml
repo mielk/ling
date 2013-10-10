@@ -42,7 +42,7 @@
 
         <div class="footer">
             <input type="submit" value="Sign in" />
-            <a href="" class="reset">Reset my password</a>
+            @Html.ActionLink("Reset password", "ResetPassword", "Login", new { @class = "reset" })
             @Html.ActionLink("Register", "Register", "Login", new { @class = "signup" })
 
         </div>

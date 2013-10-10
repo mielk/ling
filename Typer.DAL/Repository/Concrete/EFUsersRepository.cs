@@ -100,5 +100,19 @@ namespace Typer.DAL.Repositories
             }
         }
 
+        public bool resetPassword(User user, string password)
+        {
+            try
+            {
+                user.Password = password;
+                context.SaveChanges();
+                return true;
+            }
+            catch (Exception exception)
+            {
+                return false;
+            }
+        }
+
     }
 }

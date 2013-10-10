@@ -14,5 +14,7 @@ namespace Typer.DAL.Repositories
         bool addUser(User user);
         bool verifyMail(int userId);
         bool resetVerificationCode(int userId);
+        bool resetPassword(User user, string password);
+        
     }
 }

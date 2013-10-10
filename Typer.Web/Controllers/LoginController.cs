@@ -4,6 +4,7 @@ using System.Web.Services;
 using Typer.BLL.Services;
 using Typer.Domain.Entities;
 using Typer.Common.Helpers;
+using System;
 
 
 namespace Typer.Web.Controllers
@@ -188,17 +189,48 @@ namespace Typer.Web.Controllers
 
         private bool sendConfirmationMail(User user)
         {
-            return mailSender.Send(user.Email, "Account created", createMailContent(user));
+            return mailSender.Send(user.Email, "Account created", createVerificationMailContent(user));
         }
 
 
-        private string createMailContent(User user)
+        private string createVerificationMailContent(User user)
         {
             string url = this.Url.AbsoluteAction("Verify", "Login") + "/?" +
                         @"username=" + user.UserName + @"&token=" + user.VerificationCode;
             string content = string.Format(@"<a href=""{0}"">Click here to activate your account.</a>", url);
             return content;
         }
+
+
+        private bool sendNewPassword(User user)
+        {
+            string pswd = generatePassword(12);
+            string encryptedPassword = SHA1.Encode(pswd);
+
+            if (!userService.resetPassword(user, pswd))
+                return false;
+
+            if (!mailSender.Send(user.Email, "New password", createPasswordMailContent(user, pswd)));
+                return false;
+
+            return true;
+
+        }
+
+
+        private string generatePassword(int length)
+        {
+            return Guid.NewGuid().ToString().Replace("-", "").Substring(0, length);
+        }
+
+
+        private string createPasswordMailContent(User user, string password)
+        {
+            return "New password for user " + user.UserName + ": " + password;
+        }
+
+
+
 
         #endregion
 
@@ -268,27 +300,43 @@ namespace Typer.Web.Controllers
 
 
 
-
-
-
         #region Generate new password.
 
-        [AllowAnonymous]
-        [HttpPost]
-        public ActionResult NewPasswordSent()
-        {
-            return null;
-        }
-
-
-        [AllowAnonymous]
         [HttpGet]
-        public ActionResult NewPasswordSendingError()
+        [AllowAnonymous]
+        public ActionResult ResetPassword()
         {
             return View();
         }
 
-        #endregion Generate new password.
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult ResetPassword(UserRegistrationData data)
+        {
+
+            User user = userService.getUserByName(data.UserName);
+            if (user == null || user.Email != data.Email)
+            {
+                ViewBag.Message = "User name or password are incorrect";
+            }
+            else
+            {
+                if (sendNewPassword(user))
+                {
+                    return View("ResetPasswordSuccess", user);
+                }
+                else
+                {
+                    ViewBag.Message = "Please try again in a few minutes";
+                }
+            }
+
+            return View("ResetPasswordError");
+
+        }
+
+        #endregion
 
 
     }

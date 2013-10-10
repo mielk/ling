@@ -13,5 +13,6 @@ namespace Typer.BLL.Services
         bool mailExists(string mail);
         bool verifyMail(int userId);
         bool resetVerificationCode(int userId);
+        bool resetPassword(User user, string password);
     }
 }

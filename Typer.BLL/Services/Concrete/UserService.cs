@@ -70,5 +70,10 @@ namespace Typer.BLL.Services
             return repository.resetVerificationCode(userId);
         }
 
+        public bool resetPassword(User user, string password)
+        {
+            return repository.resetPassword(user, password);
+        }
+
     }
 }
