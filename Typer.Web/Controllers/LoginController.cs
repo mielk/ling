@@ -12,13 +12,23 @@ namespace Typer.Web.Controllers
 
         private readonly IUserService userService;
         private readonly IMailSender mailSender;
-        private RedirectResult redirectPoint;
+        private RedirectResult navigationPoint;
 
 
-        public LoginController(IUserService userService)
+        public LoginController(IUserService userService, IMailSender mailSender)
         {
             this.userService = userService;
+            this.mailSender = mailSender;
         }
+
+        private void setNavigationPoint()
+        {
+            navigationPoint = Redirect(Request.UrlReferrer.ToString());
+        }
+
+
+
+
 
 
         
@@ -28,7 +38,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult Login()
         {
-            redirectPoint = Redirect(Request.UrlReferrer.ToString());
+            setNavigationPoint();
             return View();
         }
 
@@ -52,9 +62,9 @@ namespace Typer.Web.Controllers
                     if (user.MailVerified)
                     {
                         FormsAuthentication.SetAuthCookie(data.Username, false);
-                        if (redirectPoint != null)
+                        if (navigationPoint != null)
                         {
-                            return redirectPoint;
+                            return navigationPoint;
                         }
                         else
                         {
@@ -92,6 +102,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
+            setNavigationPoint();
             return View();
         }
 
@@ -106,7 +117,7 @@ namespace Typer.Web.Controllers
                 if (data.isValid())
                 {
                     userService.addUser(data);
-                    //return View("AccountCreated", data);
+                    return View("AccountCreated", data);
                 }
             }
 
@@ -142,8 +153,16 @@ namespace Typer.Web.Controllers
         //Close current subpage and navigate to start page.
         public ActionResult NavigateToHomePage()
         {
-            return RedirectToAction("Index", "Home");
-            //return Redirect(Request.UrlReferrer.ToString());
+
+            if (navigationPoint != null)
+            {
+                return navigationPoint;
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
         }
 
 
