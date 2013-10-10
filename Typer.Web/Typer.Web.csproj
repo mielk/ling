@@ -258,6 +258,8 @@
     <Content Include="Views\Home\MailSend.cshtml" />
     <Content Include="Views\Login\MailSent.cshtml" />
     <Content Include="Views\Login\ValidationMailSendingError.cshtml" />
+    <Content Include="Views\Login\Verify.cshtml" />
+    <Content Include="Views\Login\AccountCreationError.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -270,6 +272,10 @@
     <ProjectReference Include="..\Typer.BLL\Typer.BLL.csproj">
       <Project>{e8628122-b26f-4c8b-94bc-2c0a25f0115c}</Project>
       <Name>Typer.BLL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Typer.Common\Typer.Common.csproj">
+      <Project>{11b5fd2f-c19c-4377-9e1c-342d55156882}</Project>
+      <Name>Typer.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\Typer.DAL\Typer.DAL.csproj">
       <Project>{401d8a84-3df6-4b9b-9de4-79dc508ce143}</Project>

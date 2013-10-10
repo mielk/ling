@@ -49,6 +49,10 @@ namespace Typer.Domain.Entities
 
         public bool MailVerified { get; set; }
 
+        public string VerificationCode { get; set; }
+
+        public DateTime? VerificationDate { get; set; }
+
         //
         #endregion Instance properties.
 

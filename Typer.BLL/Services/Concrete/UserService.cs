@@ -2,6 +2,7 @@
 using Typer.DAL.Infrastructure;
 using Typer.Common.Helpers;
 using Typer.Domain.Entities;
+using System;
 
 namespace Typer.BLL.Services
 {
@@ -39,13 +40,9 @@ namespace Typer.BLL.Services
             return repository.userExists(loginData.Username, SHA1.Encode(loginData.Password));
         }
 
-        public bool addUser(UserRegistrationData userData)
+        public bool addUser(User user)
         {
-            User user = userData.toUser();
-            user.IsActive = true;
-            user.MailVerified = false;
-            repository.addUser(user);
-            return false;
+            return repository.addUser(user);            
         }
 
         public bool userExists(string username)

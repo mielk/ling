@@ -1,6 +1,7 @@
-﻿using System.Linq;
-using Typer.Domain.Entities;
+﻿using System;
+using System.Linq;
 using Typer.DAL.Infrastructure;
+using Typer.Domain.Entities;
 
 namespace Typer.DAL.Repositories
 {
@@ -55,12 +56,17 @@ namespace Typer.DAL.Repositories
 
         public bool addUser(User user)
         {
-            context.Users.Add(user);
-            context.SaveChanges();
-            return false;
+            try
+            {
+                context.Users.Add(user);
+                context.SaveChanges();
+                return true;
+            }
+            catch (Exception exception)
+            {
+                return false;
+            }
         }
-
-
 
     }
 }

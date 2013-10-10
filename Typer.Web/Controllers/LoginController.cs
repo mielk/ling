@@ -1,8 +1,10 @@
 ﻿using System.Web.Mvc;
 using System.Web.Security;
-using Typer.BLL.Services;
 using System.Web.Services;
+using Typer.BLL.Services;
 using Typer.Domain.Entities;
+using Typer.Common.Helpers;
+
 
 namespace Typer.Web.Controllers
 {
@@ -116,8 +118,18 @@ namespace Typer.Web.Controllers
             {
                 if (data.isValid())
                 {
-                    userService.addUser(data);
-                    return View("AccountCreated", data);
+
+                    User user = data.toUser();
+
+                    if (userService.addUser(user))
+                    {
+                        sendConfirmationMail(user);
+                        return View("AccountCreated", user);
+                    }
+                    else
+                    {
+                        return View("AccountCreationError", user);
+                    }
                 }
             }
 
@@ -125,28 +137,13 @@ namespace Typer.Web.Controllers
 
         }
 
-        
-        [HttpPost]
-        [AllowAnonymous]
-        public ActionResult CheckUsername(string username)
-        {
-            bool isExisting = userService.userExists(username);
-            return Json(new { IsExisting = isExisting }, JsonRequestBehavior.AllowGet);
-        }
 
-        [HttpPost]
-        [AllowAnonymous]
-        public ActionResult CheckMail(string mail)
-        {
-            User user = userService.getUserByMail(mail);
-            bool isExisting = (user == null ? false : true);
-            bool isVerified = (user == null ? false : user.MailVerified);
-            return Json(new { 
-                IsExisting = isExisting, 
-                IsVerified = isVerified
-            }, JsonRequestBehavior.AllowGet);
-        }
+        #endregion
 
+
+
+
+        #region Helpers
 
         [AllowAnonymous]
         [HttpPost]
@@ -166,12 +163,51 @@ namespace Typer.Web.Controllers
         }
 
 
-        #endregion Registration
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult CheckUsername(string username)
+        {
+            bool isExisting = userService.userExists(username);
+            return Json(new { IsExisting = isExisting }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult CheckMail(string mail)
+        {
+            User user = userService.getUserByMail(mail);
+            bool isExisting = (user == null ? false : true);
+            bool isVerified = (user == null ? false : user.MailVerified);
+            return Json(new
+            {
+                IsExisting = isExisting,
+                IsVerified = isVerified
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+
+        private bool sendConfirmationMail(User user)
+        {
+            return mailSender.Send(user.Email, "Account created", createMailContent(user));
+        }
+
+
+        private string createMailContent(User user)
+        {
+
+            string url = this.Url.AbsoluteAction("Verify", "Login") + "/?" +
+                        @"username=" + user.UserName + @"&token=" + user.VerificationCode;
+            string content = string.Format(@"<a href=""{0}"">Click here to activate your account.</a>", url);
+
+            return content;
+        }
+
+        #endregion
 
 
 
 
-        #region Email verification.
+        #region Email verification
 
         [AllowAnonymous]
         [HttpGet]
@@ -183,18 +219,38 @@ namespace Typer.Web.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public ActionResult InactiveMail(UserRegistrationData urd)
+        public ActionResult InactiveMail(UserRegistrationData data)
         {
-            var emailSent = true;//Send e-mail.
+
+            User user = userService.getUserByMail(data.Email);
+
+            var emailSent = sendConfirmationMail(user);
             
             if (emailSent){
-                return View("MailSent", urd);
+                return View("MailSent", user);
             } else {
-                return View("ValidationMailSendingError", urd);
+                return View("ValidationMailSendingError", user);
             }
         }
 
-        #endregion Email verification.
+
+        
+        [AllowAnonymous]
+        public ViewResult Verify(string username, string verificationCode)
+        {
+
+            
+
+            return null;
+
+        }
+
+
+        #endregion Email verification
+
+
+
+
 
 
 

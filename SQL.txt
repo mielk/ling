@@ -9,9 +9,23 @@ CREATE TABLE [dbo].[Users] (
     [RegistrationDate] DATETIME       DEFAULT (getdate()) NOT NULL,
     [Email]            NVARCHAR (50)  NOT NULL,
     [IsActive]         BIT            DEFAULT ((1)) NOT NULL,
-    [MailVerified]     BIT	      DEFAULT ((0)) NOT NULL,
+    [MailVerified]     BIT            DEFAULT ((0)) NOT NULL,
+    [VerificationCode] NVARCHAR(MAX) NULL, 
+    [VerificationDate] DATETIME NULL, 
     PRIMARY KEY CLUSTERED ([UserId] ASC),
     CONSTRAINT [Unique_Mail] UNIQUE NONCLUSTERED ([Email] ASC),
     CONSTRAINT [Unique_Username] UNIQUE NONCLUSTERED ([Username] ASC),
     CONSTRAINT [FK_User_Country] FOREIGN KEY ([CountryId]) REFERENCES [dbo].[Countries] ([Id])
 );
+
+
+
+
+CREATE TABLE [dbo].[UserVerificationData]
+(
+	[UserId] INT NOT NULL PRIMARY KEY,
+	[VerificationCode] NVARCHAR(MAX) NOT NULL,
+	[VerificationDate] DATETIME NULL,
+    [IsVerified] BIT NOT NULL DEFAULT 0, 
+    CONSTRAINT [FK_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[Users] ([UserId])
+)

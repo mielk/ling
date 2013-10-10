@@ -7,7 +7,7 @@ namespace Typer.BLL.Services
         User getUser(UserLoginData loginData);
         User getUserByMail(string mail);
         bool IsAuthenticated(UserLoginData loginData);
-        bool addUser(UserRegistrationData userData);
+        bool addUser(User user);
         bool userExists(string username);
         bool mailExists(string mail);
     }

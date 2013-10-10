@@ -163,11 +163,14 @@ namespace Typer.BLL.Services
                 DateOfBirth = null,
                 RegistrationDate = DateTime.Now,
                 IsActive = true,
-                MailVerified = false
+                MailVerified = false,
+                VerificationCode = Guid.NewGuid().ToString().Replace("-", ""),
+                VerificationDate = null
             };
 
             return user;
         }
+
 
 
     }
