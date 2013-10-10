@@ -247,17 +247,16 @@ namespace Typer.Web.Controllers
 
                 if (userService.verifyMail(user.UserID))
                 {
-                    return View("AccountActivated", user);
                     //Konto zostało aktywowane.
                     //Pokaż ekran z informacją o aktywacji konta.
+                    return View("AccountActivated", user);
                 }
                 
             }
 
             //Problem podczas weryfikacji konta.
             //Wysłanie jeszcze jednego maila.
-            user.generateVerificationData();
-            //userService.updateVerificationData(user);
+            userService.resetVerificationCode(user.UserID);
             return View("AccountActivationError", user);
 
         }

@@ -2,6 +2,27 @@
 
 @{
     ViewBag.Title = "AccountActivated";
+    Layout = "~/Views/Shared/Sign.cshtml";
+    @Scripts.Render("~/bundles/global")
 }
 
-<h2>AccountActivated</h2>
+
+
+<div id="message">
+
+    @using (Html.BeginForm("Login", "Login", FormMethod.Post))
+    {
+        <div class="line">
+            <h2>Account @Model.UserName has been successfully activated.</h2>
+        </div>
+        
+        <div class="line">
+            In order to log into your account click Back button below.
+        </div>
+
+        <fieldset>
+            <input id="btnBack" type="submit" value="Back" />
+        </fieldset>
+    }
+
+</div>

@@ -258,7 +258,6 @@
     <Content Include="Views\Home\MailSend.cshtml" />
     <Content Include="Views\Login\MailSent.cshtml" />
     <Content Include="Views\Login\ValidationMailSendingError.cshtml" />
-    <Content Include="Views\Login\Verify.cshtml" />
     <Content Include="Views\Login\AccountCreationError.cshtml" />
     <Content Include="Views\Login\AccountActivated.cshtml" />
     <Content Include="Views\Login\AccountActivationError.cshtml" />

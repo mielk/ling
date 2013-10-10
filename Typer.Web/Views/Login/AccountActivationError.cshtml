@@ -2,6 +2,27 @@
 
 @{
     ViewBag.Title = "AccountActivationError";
+    Layout = "~/Views/Shared/Sign.cshtml";
+    @Scripts.Render("~/bundles/global")
 }
 
-<h2>AccountActivationError</h2>
+
+
+<div id="message">
+
+    @using (Html.BeginForm("NavigateToHomePage", "Login", FormMethod.Post))
+    {
+        <div class="line">
+            Error occurred when activating account @Model.UserName. 
+        </div>
+        
+        <div class="line">
+            We have just sent another activation link to @Model.Email. Please follow instructions in e-mail in order to activate your account.
+        </div>
+
+        <fieldset>
+            <input id="btnBack" type="submit" value="Back" />
+        </fieldset>
+    }
+
+</div>

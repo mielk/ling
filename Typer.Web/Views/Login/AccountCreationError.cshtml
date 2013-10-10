@@ -2,6 +2,23 @@
 
 @{
     ViewBag.Title = "AccountCreationError";
+    Layout = "~/Views/Shared/Sign.cshtml";
+    @Scripts.Render("~/bundles/global")
 }
 
-<h2>AccountCreationError</h2>
+
+
+<div id="message">
+
+    @using (Html.BeginForm("NavigateToHomePage", "Login", FormMethod.Post))
+    {
+        <div class="line">
+            Error occurred when creating account. Please try again in a few minutes.
+        </div>
+
+        <fieldset>
+            <input id="btnBack" type="submit" value="Back" />
+        </fieldset>
+    }
+
+</div>

@@ -1,5 +1,26 @@
-﻿@{
+﻿@model Typer.Domain.Entities.User
+
+@{
     ViewBag.Title = "AccountDeleted";
+    Layout = "~/Views/Shared/Sign.cshtml";
+    @Scripts.Render("~/bundles/global")
 }
 
-<h2>AccountDeleted</h2>
+
+
+<div id="message">
+
+    @using (Html.BeginForm("NavigateToHomePage", "Login", FormMethod.Post))
+    {
+        <div class="line">
+            There is no account with such username and e-mail in our database.<br />
+            Your account may have been deleted if you hadn't clicked activation link for longer than 30 days.<br />
+            Please create a new account.
+        </div>
+
+        <fieldset>
+            <input id="btnBack" type="submit" value="Back" />
+        </fieldset>
+    }
+
+</div>
