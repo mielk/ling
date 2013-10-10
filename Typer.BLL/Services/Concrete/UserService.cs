@@ -35,6 +35,11 @@ namespace Typer.BLL.Services
             return repository.getUserByMail(mail);
         }
 
+        public User getUserByName(string username)
+        {
+            return repository.getUser(username);
+        }
+
         public bool IsAuthenticated(UserLoginData loginData)
         {
             return repository.userExists(loginData.Username, SHA1.Encode(loginData.Password));
@@ -53,6 +58,16 @@ namespace Typer.BLL.Services
         public bool mailExists(string mail)
         {
             return repository.mailExists(mail);
+        }
+
+        public bool verifyMail(int userId)
+        {
+            return repository.verifyMail(userId);
+        }
+
+        public bool resetVerificationCode(int userId)
+        {
+            return repository.resetVerificationCode(userId);
         }
 
     }

@@ -260,6 +260,9 @@
     <Content Include="Views\Login\ValidationMailSendingError.cshtml" />
     <Content Include="Views\Login\Verify.cshtml" />
     <Content Include="Views\Login\AccountCreationError.cshtml" />
+    <Content Include="Views\Login\AccountActivated.cshtml" />
+    <Content Include="Views\Login\AccountActivationError.cshtml" />
+    <Content Include="Views\Login\AccountDeleted.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -12,5 +12,7 @@ namespace Typer.DAL.Repositories
         bool userExists(string username, string password);
         bool mailExists(string mail);
         bool addUser(User user);
+        bool verifyMail(int userId);
+        bool resetVerificationCode(int userId);
     }
 }

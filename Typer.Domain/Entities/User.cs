@@ -57,5 +57,13 @@ namespace Typer.Domain.Entities
         #endregion Instance properties.
 
 
+        public void generateVerificationData()
+        {
+            MailVerified = false;
+            VerificationCode = Guid.NewGuid().ToString().Replace("-", "");
+            VerificationDate = null;
+        }
+
+
     }
 }

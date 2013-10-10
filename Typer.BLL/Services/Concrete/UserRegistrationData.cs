@@ -162,11 +162,9 @@ namespace Typer.BLL.Services
                 CountryId = null,
                 DateOfBirth = null,
                 RegistrationDate = DateTime.Now,
-                IsActive = true,
-                MailVerified = false,
-                VerificationCode = Guid.NewGuid().ToString().Replace("-", ""),
-                VerificationDate = null
+                IsActive = true
             };
+            user.generateVerificationData();
 
             return user;
         }

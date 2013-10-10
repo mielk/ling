@@ -145,8 +145,8 @@ namespace Typer.Web.Controllers
 
         #region Helpers
 
-        [AllowAnonymous]
         [HttpPost]
+        [AllowAnonymous]
         //Close current subpage and navigate to start page.
         public ActionResult NavigateToHomePage()
         {
@@ -194,11 +194,9 @@ namespace Typer.Web.Controllers
 
         private string createMailContent(User user)
         {
-
             string url = this.Url.AbsoluteAction("Verify", "Login") + "/?" +
                         @"username=" + user.UserName + @"&token=" + user.VerificationCode;
             string content = string.Format(@"<a href=""{0}"">Click here to activate your account.</a>", url);
-
             return content;
         }
 
@@ -223,7 +221,6 @@ namespace Typer.Web.Controllers
         {
 
             User user = userService.getUserByMail(data.Email);
-
             var emailSent = sendConfirmationMail(user);
             
             if (emailSent){
@@ -236,12 +233,32 @@ namespace Typer.Web.Controllers
 
         
         [AllowAnonymous]
-        public ViewResult Verify(string username, string verificationCode)
+        public ViewResult Verify(string username, string token)
         {
 
-            
+            User user = userService.getUserByName(username);
 
-            return null;
+            if (user == null)
+                //User prawdopodobnie został skasowany, bo za długo zwlekał z aktywacją konta.
+                return View("AccountDeleted");
+
+            if (token == user.VerificationCode)
+            {
+
+                if (userService.verifyMail(user.UserID))
+                {
+                    return View("AccountActivated", user);
+                    //Konto zostało aktywowane.
+                    //Pokaż ekran z informacją o aktywacji konta.
+                }
+                
+            }
+
+            //Problem podczas weryfikacji konta.
+            //Wysłanie jeszcze jednego maila.
+            user.generateVerificationData();
+            //userService.updateVerificationData(user);
+            return View("AccountActivationError", user);
 
         }
 

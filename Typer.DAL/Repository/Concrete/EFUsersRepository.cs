@@ -68,5 +68,37 @@ namespace Typer.DAL.Repositories
             }
         }
 
+
+        public bool verifyMail(int userId)
+        {
+            try
+            {
+                User user = getUser(userId);
+                user.MailVerified = true;
+                user.VerificationDate = DateTime.Now;
+                context.SaveChanges();
+                return true;
+            }
+            catch (Exception exception)
+            {
+                return false;
+            }
+        }
+
+        public bool resetVerificationCode(int userId)
+        {
+            try
+            {
+                User user = getUser(userId);
+                user.generateVerificationData();
+                context.SaveChanges();
+                return true;
+            }
+            catch (Exception exception)
+            {
+                return false;
+            }
+        }
+
     }
 }
