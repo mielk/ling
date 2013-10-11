@@ -10,72 +10,82 @@
 }
 
 <div id="account">
+
     @using (Html.BeginForm())
     {
+        
+        <div class="close">
+            @Html.ActionLink(" ", "NavigateToHomePage", "Login", new { @class = "closeButton" })
+        </div>
+        
         <fieldset>
 
             <!-- User name -->
             <div id="div_username" class="field">
-                @Html.LabelFor(u => u.Username, new { @class="label" })
+                @Html.LabelFor(u => u.Username, new { @class = "label" })
                 <div class="error">
                     <div class="error_content"></div>
                 </div>
                 <span class="icon"></span>
                 <span>
-                    @Html.TextBoxFor(u => u.Username, new{  
-                        @class="default", 
-                        @placeholder="Username", 
-                        @id="Username"
-                    })
+                    @Html.TextBoxFor(u => u.Username, new
+               {
+                   @class = "default",
+                   @placeholder = "Username",
+                   @id = "Username"
+               })
                 </span>
             </div>
 
             <!-- Password -->
             <div id="div_password" class="field">
-                @Html.LabelFor(u => u.Password, new { @class="label" })
+                @Html.LabelFor(u => u.Password, new { @class = "label" })
                 <div class="error">
                     <div class="error_content"></div>
                 </div>
                 <span class="icon"></span>
                 <span>
-                    @Html.PasswordFor(u => u.Password, new{  
-                        @class="default", 
-                        @placeholder="Password", 
-                        @id="Password"
-                    })
+                    @Html.PasswordFor(u => u.Password, new
+               {
+                   @class = "default",
+                   @placeholder = "Password",
+                   @id = "Password"
+               })
                 </span>
 
             </div>
 
             <!-- Confirm password -->
             <div id="div_confirm_password" class="field">
-                @Html.LabelFor(u => u.ConfirmPassword, new { @class="label" })
+                @Html.LabelFor(u => u.ConfirmPassword, new { @class = "label" })
                 <div class="error">
                     <div class="error_content"></div>
                 </div>
                 <span class="icon"></span>
                 <span>
-                    @Html.PasswordFor(u => u.ConfirmPassword, new{  
-                        @class="default", 
-                        @placeholder="Confirm password", 
-                        @id="ConfirmPassword"
-                    })
+                    @Html.PasswordFor(u => u.ConfirmPassword, new
+               {
+                   @class = "default",
+                   @placeholder = "Confirm password",
+                   @id = "ConfirmPassword"
+               })
                 </span>
             </div>
 
             <!-- Mail -->
             <div id="div_mail" class="field">
-                @Html.LabelFor(u => u.Email, new { @class="label" })
+                @Html.LabelFor(u => u.Email, new { @class = "label" })
                 <div class="error">
                     <div class="error_content"></div>
                 </div>
                 <span class="icon"></span>
                 <span>
-                    @Html.TextBoxFor(u => u.Email, new{  
-                        @class="default", 
-                        @placeholder="E-mail", 
-                        @id="Mail"
-                    })
+                    @Html.TextBoxFor(u => u.Email, new
+               {
+                   @class = "default",
+                   @placeholder = "E-mail",
+                   @id = "Mail"
+               })
                 </span>
             </div>
 

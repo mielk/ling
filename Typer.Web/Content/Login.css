@@ -180,13 +180,26 @@ input
 
 #account
 {
-    display: block;
-    position: relative;
-    width: 36%;
-    height: 20%;
-    margin: 10% 32% 70% 32%;
-    background-color: #eee;
+    box-sizing: border-box;
+    position: absolute;
+    width: 50%;
+    top: 10%;
+    left: 20%;
+    height: auto;
+    /*margin: 10% 32% 70% 32%;*/
+    padding: 5%;
+    background-color: #222;
+    color: #ddd;
     border: none;
+}
+
+
+#account [form]
+{
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
 }
 
 #account input[type=text], input[type=password]
@@ -215,7 +228,7 @@ input
 #account label
 {
     padding: 7px;
-    color: #222;
+    color: #ddd;
 }
 
 
@@ -267,17 +280,23 @@ input
     border: none;
     line-height: 28px;
     font-size: 14px;
-    color: rgb(60, 105, 165);
+    /*background-color: rgb(60, 105, 165);*/
+    background-color: rgb(200, 229, 237);
+    color: #222;
     text-decoration: none;
 }
 
 #account a:hover
 {
-    color: rgb(104, 152, 217);
+    /*background-color: rgb(104, 152, 217);*/
+    background-color: rgb(236, 245, 248);
+    color: #222;
 }
 
 #account a.signup
 {
+    padding-left: 18px;
+    padding-right: 18px;
     float: left;
 }
 
@@ -286,8 +305,6 @@ input
     float: right;
     margin-right: 12px;
 }
-
-
 
 
 
@@ -352,4 +369,24 @@ input
     width: auto;
     padding-left: 18px;
     padding-right: 18px;
+}
+
+
+
+.close
+{
+    display: block;
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    top: 0px;
+    right: 0px;
+    background-color: red;
+}
+
+a.closeButton
+{
+    display: block;
+    width: 100%;
+    height: 100%;
 }
