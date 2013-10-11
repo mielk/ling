@@ -58,6 +58,13 @@ input.default:focus
     background-color: rgb(186, 210, 223);
 }
 
+
+input[type=submit].centered
+{
+    display: inline;
+    float: none;
+}
+
 .field
 {
     padding-bottom: 5px;
@@ -84,10 +91,20 @@ input.default:focus
     font-size: 13px;
 }
 
-.center
+.centerize
 {
+    display: block;
+    height: auto;
+    margin: 0 auto;
     text-align: center;
 }
+
+.newLine
+{
+    margin-top: 48px;
+}
+
+
 
 
 
@@ -132,8 +149,6 @@ input
     margin: 0;
     border: 1px solid #555;
 }
-
-
 
 
 
@@ -294,11 +309,6 @@ input
     font-size: 14px;
     padding: 0;
     margin: 9px 0px;
-}
-
-#message .newLine
-{
-    margin-top: 48px;
 }
 
 #message fieldset

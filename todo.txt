@@ -22,5 +22,3 @@ Walidacja username i maila - asynchronicznie, ¿eby nie blokowa³o wpisywania.
 
 Scenariusz, je¿eli user kliknie link aktywacyjny dla konta
 , które zosta³o ju¿ wczeœniej aktywowane.
-
-Username powinien akceptowaæ tylko ma³e litery, wielkie powinny byæ automatycznie zamieniane na ma³e.
