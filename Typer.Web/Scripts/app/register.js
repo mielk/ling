@@ -157,9 +157,9 @@ function ControlGroup(_id, _fn) {
     //Bind change event to value control.
     var valueControl = $(this.getValueControl());
     valueControl.bind({
-        'keyup': function () {
-            me._validate();
-        },
+        //'keyup': function () {
+        //    me._validate();
+        //},
         'change': function () {
             me._validate();
         },

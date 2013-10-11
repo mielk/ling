@@ -20,12 +20,12 @@ namespace Typer.DAL.Repositories
 
         public User getUser(string username)
         {
-            return context.Users.SingleOrDefault(u => u.UserName == username);
+            return context.Users.SingleOrDefault(u => u.Username == username);
         }
 
         public User getUser(string username, string password)
         {
-            return context.Users.SingleOrDefault(u => u.UserName == username && u.Password == password && u.IsActive == true);
+            return context.Users.SingleOrDefault(u => u.Username == username && u.Password == password && u.IsActive == true);
         }
 
         public User getUserByMail(string mail)

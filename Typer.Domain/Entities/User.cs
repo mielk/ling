@@ -14,7 +14,18 @@ namespace Typer.Domain.Entities
 
         //[Required]
         //[Display(Name = "User name", Prompt = "Enter user name")]
-        public string UserName { get; set; }
+        private string username { get; set; }
+        public string Username
+        {
+            get
+            {
+                return username == null ? null : username.ToLower();
+            }
+            set
+            {
+                username = (value == null ? value : value.ToLower());
+            }
+        }
 
         //[Required]
         //[Display(Name = "First name")]

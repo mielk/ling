@@ -7,7 +7,19 @@ namespace Typer.BLL.Services
 
         [Required]
         [Display(Name = "User name", Prompt = "Enter user name")]
-        public string Username { get; set; }
+        private string username { get; set; }
+        public string Username
+        {
+            get
+            {
+                return username == null ? null : username.ToLower();
+            }
+            set
+            {
+                username = (value == null ? value : value.ToLower());
+            }
+        }
+
 
         [Required]
         [DataType(DataType.Password)]

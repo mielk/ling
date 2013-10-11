@@ -49,10 +49,10 @@ namespace Typer.Tests.UnitTests.Domain
         public void if_username_is_too_short_data_are_invalid()
         {
             assignValidDataSet(urd);
-            urd.UserName = "a";
+            urd.Username = "a";
             Assert.IsFalse(urd.isValid());
 
-            urd.UserName = new string('a', UserRegistrationData.UserNameMinimumLength - 1);
+            urd.Username = new string('a', UserRegistrationData.UserNameMinimumLength - 1);
             Assert.IsFalse(urd.isValid());
 
         }
@@ -62,7 +62,7 @@ namespace Typer.Tests.UnitTests.Domain
         public void if_username_is_too_long_data_are_invalid()
         {
             assignValidDataSet(urd);
-            urd.UserName = new string('a', UserRegistrationData.UserNameMaximumLength + 1);
+            urd.Username = new string('a', UserRegistrationData.UserNameMaximumLength + 1);
             Assert.IsFalse(urd.isValid());
         }
 
@@ -71,10 +71,10 @@ namespace Typer.Tests.UnitTests.Domain
         public void if_username_is_empty_or_null_data_are_invalid()
         {
             assignValidDataSet(urd);
-            urd.UserName = "";
+            urd.Username = "";
             Assert.IsFalse(urd.isValid());
 
-            urd.UserName = null;
+            urd.Username = null;
             Assert.IsFalse(urd.isValid());
         }
 
@@ -83,7 +83,7 @@ namespace Typer.Tests.UnitTests.Domain
         public void for_existing_username_data_are_invalid()
         {
             assignValidDataSet(urd);
-            urd.UserName = existingUsername;
+            urd.Username = existingUsername;
             Assert.IsFalse(urd.isValid());
         }
 
@@ -180,7 +180,7 @@ namespace Typer.Tests.UnitTests.Domain
             assignValidDataSet(urd);
             User user = urd.toUser();
 
-            Assert.AreEqual(username, user.UserName);
+            Assert.AreEqual(username, user.Username);
             Assert.AreEqual(SHA1.Encode(password), user.Password);
             Assert.AreEqual(email, user.Email);
             Assert.IsFalse(user.MailVerified);
@@ -199,7 +199,7 @@ namespace Typer.Tests.UnitTests.Domain
 
         private void assignValidDataSet(UserRegistrationData urd)
         {
-            urd.UserName = username;
+            urd.Username = username;
             urd.Password = password;
             urd.ConfirmPassword = confirmPassword;
             urd.Email = email;

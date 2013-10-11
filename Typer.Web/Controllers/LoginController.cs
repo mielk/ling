@@ -195,8 +195,8 @@ namespace Typer.Web.Controllers
 
         private string createVerificationMailContent(User user)
         {
-            string url = this.Url.Action("Verify", "Login", new { username = user.UserName, token = user.VerificationCode }, "https");
-            string content = string.Format(@"<a href=""{0}"">Click here to activate your account.</a>", url);
+            string url = this.Url.Action("Verify", "Login", new { username = user.Username, token = user.VerificationCode }, "https");
+            string content = string.Format(@"We have received the request for account at Typer.com for username {0}<br /><a href=""{1}"">Please click here to activate your account.</a>", user.Username, url);
             return content;
         }
 
@@ -225,7 +225,7 @@ namespace Typer.Web.Controllers
 
         private string createPasswordMailContent(User user, string password)
         {
-            return "New password for user " + user.UserName + ": " + password;
+            return "New password for user " + user.Username + ": " + password;
         }
 
 
@@ -314,7 +314,7 @@ namespace Typer.Web.Controllers
         public ActionResult ResetPassword(UserRegistrationData data)
         {
 
-            User user = userService.getUserByName(data.UserName);
+            User user = userService.getUserByName(data.Username);
             if (user == null || user.Email != data.Email)
             {
                 ViewBag.Message = "User name or password are incorrect";

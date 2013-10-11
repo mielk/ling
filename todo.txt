@@ -16,3 +16,11 @@ Checkowanie maila - sprawdza format maila.
 Je¿eli mail jest prawid³owy, szuka go w bazie, je¿eli nie ma takiego - komunikat.
 Je¿eli mail istnieje w bazie, sprawdza czy user jest aktywny - jeœli nie, ka¿e najpierw aktywowaæ konto.
 [+] Po wciœniêciu resetuj, wys³anie nowego has³a na maila + przejœcie na stronê informuj¹c¹ o zmianie has³a (lub message box).
+
+
+Walidacja username i maila - asynchronicznie, ¿eby nie blokowa³o wpisywania.
+
+Scenariusz, je¿eli user kliknie link aktywacyjny dla konta
+, które zosta³o ju¿ wczeœniej aktywowane.
+
+Username powinien akceptowaæ tylko ma³e litery, wielkie powinny byæ automatycznie zamieniane na ma³e.

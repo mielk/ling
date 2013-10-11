@@ -32,7 +32,18 @@ namespace Typer.BLL.Services
 
         [Required]
         [Display(Name = "User name", Prompt = "Enter user name")]
-        public string UserName { get; set; }
+        private string username { get; set; }
+        public string Username
+        {
+            get
+            {
+                return username == null ? null : username.ToLower();
+            }
+            set
+            {
+                username = (value == null ? null : value.ToLower());
+            }
+        }
 
 
         [Required]
@@ -96,7 +107,7 @@ namespace Typer.BLL.Services
 
         private bool isUserNameValid()
         {
-            if (UserName == null || UserName.Length < UserNameMinimumLength || UserName.Length > UserNameMaximumLength)
+            if (Username == null || Username.Length < UserNameMinimumLength || Username.Length > UserNameMaximumLength)
                 return false;
 
             if (!isUserNameUnique())
@@ -108,7 +119,7 @@ namespace Typer.BLL.Services
 
         private bool isUserNameUnique()
         {
-            return !service.userExists(UserName);
+            return !service.userExists(Username);
         }
 
         private bool isPasswordValid()
@@ -154,7 +165,7 @@ namespace Typer.BLL.Services
         public User toUser()
         {
             User user = new User { 
-                UserName = UserName, 
+                Username = Username, 
                 Password = SHA1.Encode(Password),
                 Email = Email,
                 FirstName = null,

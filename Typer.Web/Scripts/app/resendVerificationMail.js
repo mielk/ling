@@ -85,9 +85,9 @@ var mailValidator = function () {
     //Bind change event to value control.
     var valueControl = $(value);
     valueControl.bind({
-        'keyup': function () {
-            me._validate();
-        },
+        //'keyup': function () {
+        //    me._validate();
+        //},
         'change': function () {
             me._validate();
         },
