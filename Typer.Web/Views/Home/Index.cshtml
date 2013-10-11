@@ -4,4 +4,10 @@
 }
 
 <h2>Home</h2>
+
+<span>
+    @Url.Action("Index", "Home", null, Request.Url.Scheme)
+    <a href='@Url.Action("About", "Home", null, Request.Url.Scheme)'>this link</a> 
+</span>
+
 @*<h3>@ViewBag.Result</h3>*@
