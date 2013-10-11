@@ -195,8 +195,7 @@ namespace Typer.Web.Controllers
 
         private string createVerificationMailContent(User user)
         {
-            string url = this.Url.AbsoluteAction("Verify", "Login") + "/?" +
-                        @"username=" + user.UserName + @"&token=" + user.VerificationCode;
+            string url = this.Url.Action("Verify", "Login", new { username = user.UserName, token = user.VerificationCode }, "https");
             string content = string.Format(@"<a href=""{0}"">Click here to activate your account.</a>", url);
             return content;
         }
@@ -210,7 +209,7 @@ namespace Typer.Web.Controllers
             if (!userService.resetPassword(user, pswd))
                 return false;
 
-            if (!mailSender.Send(user.Email, "New password", createPasswordMailContent(user, pswd)));
+            if (!mailSender.Send(user.Email, "New password", createPasswordMailContent(user, pswd)))
                 return false;
 
             return true;
