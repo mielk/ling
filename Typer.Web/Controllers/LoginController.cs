@@ -26,7 +26,10 @@ namespace Typer.Web.Controllers
 
         private void setNavigationPoint()
         {
-            navigationPoint = Redirect(Request.UrlReferrer.ToString());
+            if (Request.UrlReferrer != null)
+            {
+                navigationPoint = Redirect(Request.UrlReferrer.ToString());
+            }
         }
 
 

@@ -99,6 +99,13 @@ input[type=submit].centered
     text-align: center;
 }
 
+.line
+{
+    font-size: 14px;
+    padding: 0;
+    margin: 9px 0px;
+}
+
 .newLine
 {
     margin-top: 48px;
@@ -126,6 +133,9 @@ input[type=submit]
     float: right;
     width: 100px;
     height: 32px;
+    /*width: auto;*/
+    padding-left: 18px;
+    padding-right: 18px;
     border: 1px solid #555;
     font-size: 16px;
     box-shadow: 1px 1px 0px 0px rgba(255,255,255,0.25);
@@ -333,13 +343,6 @@ input
 }
 
 
-
-#message .line
-{
-    font-size: 14px;
-    padding: 0;
-    margin: 9px 0px;
-}
 
 #message fieldset
 {

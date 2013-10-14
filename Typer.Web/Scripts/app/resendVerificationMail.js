@@ -83,11 +83,17 @@ var mailValidator = function () {
 
 
     //Bind change event to value control.
+    var timer;
     var valueControl = $(value);
     valueControl.bind({
-        //'keyup': function () {
-        //    me._validate();
-        //},
+        'keyup': function () {
+            if (timer) {
+                clearTimeout(timer);
+            }
+            timer = setTimeout(function () {
+                me._validate();
+            }, 50);
+        },
         'change': function () {
             me._validate();
         },
