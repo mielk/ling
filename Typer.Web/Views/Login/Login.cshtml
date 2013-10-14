@@ -11,6 +11,9 @@
 <div id="account">
     @using (Html.BeginForm())
     {
+        
+        @Html.ActionLink(" ", "NavigateToHomePage", "Login", new { @class = "close" })
+        
         <fieldset>
             <!-- User name -->
             <div class="field">

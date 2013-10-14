@@ -146,7 +146,6 @@ namespace Typer.Web.Controllers
 
         #region Helpers
 
-        [HttpPost]
         [AllowAnonymous]
         //Close current subpage and navigate to start page.
         public ActionResult NavigateToHomePage()

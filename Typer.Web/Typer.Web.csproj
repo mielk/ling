@@ -256,7 +256,9 @@
     <Content Include="Views\Home\Test.cshtml" />
     <Content Include="Views\Login\InactiveMail.cshtml" />
     <Content Include="Views\Home\MailSend.cshtml" />
-    <Content Include="Views\Login\MailSent.cshtml" />
+    <Content Include="Views\Login\MailSent.cshtml">
+      <BrowseToURL>~/Login/MailSent</BrowseToURL>
+    </Content>
     <Content Include="Views\Login\ValidationMailSendingError.cshtml" />
     <Content Include="Views\Login\AccountCreationError.cshtml" />
     <Content Include="Views\Login\AccountActivated.cshtml" />
