@@ -129,8 +129,8 @@ input[type=submit]
     border: 1px solid #555;
     font-size: 16px;
     box-shadow: 1px 1px 0px 0px rgba(255,255,255,0.25);
-    outline-width: 0px;
-    outline-style: none;
+    outline-width: 1px;
+    outline-style: dotted;
     outline-color: invert;
     background-color: rgb(65, 218, 101);
     color: white;

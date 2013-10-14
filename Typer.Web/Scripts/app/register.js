@@ -155,11 +155,17 @@ function ControlGroup(_id, _fn) {
 
 
     //Bind change event to value control.
+    var timer;
     var valueControl = $(this.getValueControl());
     valueControl.bind({
-        //'keyup': function () {
-        //    me._validate();
-        //},
+        'keyup': function () {
+            if (timer) {
+                clearTimeout(timer);
+            }
+            timer = setTimeout(function () {
+                me._validate();
+            }, 50);
+        },
         'change': function () {
             me._validate();
         },
@@ -174,6 +180,10 @@ function ControlGroup(_id, _fn) {
     });
 
 }
+
+
+
+
 ControlGroup.prototype.addLinked = function (key, value) {
     this.linked.setItem(key, value);
 }
