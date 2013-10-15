@@ -94,7 +94,7 @@ var mailValidator = function () {
             }
             timer = setTimeout(function () {
                 me._validate();
-            }, 50);
+            }, 150);
         },
         'change': function () {
             me._validate();

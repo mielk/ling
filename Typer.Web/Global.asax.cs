@@ -10,6 +10,8 @@ using System.Web.Routing;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.Repositories;
 using Ninject;
+using Typer.Domain.Entities;
+using Typer.Web.Binders;
 
 namespace Typer.Web
 {
@@ -28,6 +30,9 @@ namespace Typer.Web
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             Database.SetInitializer<EFDbContext>(null);
+
+
+            ModelBinders.Binders.Add(typeof(User), new UserModelBinder());
 
         }
 

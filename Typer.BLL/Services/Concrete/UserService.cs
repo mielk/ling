@@ -6,6 +6,7 @@ using System;
 
 namespace Typer.BLL.Services
 {
+
     public class UserService : IUserService
     {
 
@@ -76,4 +77,5 @@ namespace Typer.BLL.Services
         }
 
     }
+
 }

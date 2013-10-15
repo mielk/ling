@@ -164,7 +164,7 @@ function ControlGroup(_id, _fn) {
             }
             timer = setTimeout(function () {
                 me._validate();
-            }, 50);
+            }, 150);
         },
         'change': function () {
             me._validate();

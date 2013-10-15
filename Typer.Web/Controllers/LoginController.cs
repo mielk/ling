@@ -1,18 +1,16 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 using System.Web.Security;
-using System.Web.Services;
 using Typer.BLL.Services;
 using Typer.Domain.Entities;
 using Typer.Common.Helpers;
-using System;
-
 
 namespace Typer.Web.Controllers
 {
 
     public class LoginController : Controller
     {
-
+        private const string USER_KEY = "User";
         private readonly IUserService userService;
         private readonly IMailSender mailSender;
         private RedirectResult navigationPoint;
@@ -68,6 +66,7 @@ namespace Typer.Web.Controllers
                     if (user.MailVerified)
                     {
                         FormsAuthentication.SetAuthCookie(data.Username, false);
+                        HttpContext.Session[USER_KEY] = user;
                         if (navigationPoint != null)
                         {
                             return navigationPoint;
@@ -94,6 +93,7 @@ namespace Typer.Web.Controllers
         public ActionResult Logout()
         {
             FormsAuthentication.SignOut();
+            HttpContext.Session[USER_KEY] = null;
             return RedirectToAction("Index", "Home");
         }
 
@@ -143,7 +143,6 @@ namespace Typer.Web.Controllers
 
 
         #endregion
-
 
 
 
@@ -239,7 +238,6 @@ namespace Typer.Web.Controllers
 
 
 
-
         #region Email verification
 
         [AllowAnonymous]
@@ -301,8 +299,6 @@ namespace Typer.Web.Controllers
 
 
 
-
-
         #region Generate new password.
 
         [HttpGet]
@@ -340,6 +336,15 @@ namespace Typer.Web.Controllers
         }
 
         #endregion
+
+
+
+        [AllowAnonymous]
+        public PartialViewResult Summary(User user)
+        {            
+            return PartialView(user);
+        }
+        
 
 
     }
