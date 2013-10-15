@@ -316,7 +316,7 @@ namespace Typer.Web.Controllers
         public ActionResult ResetPassword(UserRegistrationData data)
         {
 
-            User user = userService.getUserByName(data.Username);
+            User user = userService.getUserByMail(data.Email);
             if (user == null || user.Email != data.Email)
             {
                 ViewBag.Message = "User name or password are incorrect";
