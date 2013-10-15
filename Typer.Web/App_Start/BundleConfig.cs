@@ -29,7 +29,7 @@ namespace Typer.Web
                         "~/Scripts/app/register.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/resend").Include(
-                        "~/Scripts/app/resendVerificationMail.js"));
+                        "~/Scripts/app/mailValidation.js"));
 
             // Use the development version of Modernizr to develop with and learn from. Then, when you're
             // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.

@@ -27,9 +27,10 @@
             If you haven't received any e-mail from us, please enter your e-mail address in the textbox below and click [Send verification e-mail] button.
         </div>
 
-   
+
+
         <fieldset>
-            <div id="div_mail" class="field">
+            <div id="div_mail" class="field mailValidation">
                 @Html.LabelFor(u => u.Email, new { @class="label" })
                 <div class="error">
                     <div class="error_content"></div>
@@ -41,9 +42,7 @@
                         @id="Email"
                     })
                 </span>
-
             </div>
-
         </fieldset>
 
         <div class="centerize">

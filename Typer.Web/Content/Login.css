@@ -131,9 +131,9 @@ input[type=submit]
 {
     display: block;
     float: right;
-    width: 100px;
+    /*width: 100px;*/
     height: 32px;
-    /*width: auto;*/
+    width: auto;
     padding-left: 18px;
     padding-right: 18px;
     border: 1px solid #555;

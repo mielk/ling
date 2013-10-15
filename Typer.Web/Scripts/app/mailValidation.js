@@ -2,7 +2,7 @@
 
 $(document).ready(function () {
     adjustPlaceholder();
-    setFocusForUsernameControl();
+    setFocusForMailControl();
     validator = mailValidator();
 });
 
@@ -12,7 +12,7 @@ function adjustPlaceholder() {
     $("#account label").css({ 'display': 'block' });
 }
 
-function setFocusForUsernameControl() {
+function setFocusForMailControl() {
     $("#Email").focus();
 }
 
@@ -35,6 +35,10 @@ var mailValidator = function () {
     this.getControl = function (selector) {
         return $(container).find('.' + selector)[0];
     }
+    this.isPassword = function () {
+        var PSWD_RESET_CSS_CLASS = "passwordReset";
+        return $(container).hasClass(PSWD_RESET_CSS_CLASS);
+    }();
 
     //E-mail text button.
     var value = $("#Email")[0];
@@ -42,8 +46,6 @@ var mailValidator = function () {
     //Error controls.
     var errorContainer = this.getControl('error');
     var errorContent = this.getControl('error_content');
-
-
 
 
     this.formatAsValid = function () {
@@ -66,7 +68,7 @@ var mailValidator = function () {
     
 
     this._validate = function () {
-        var validation = checkMail($(value).val());
+        var validation = checkMail($(value).val(), this.isPassword);
         if (validation === true) {
             this.formatAsValid();
             isValid = true;
@@ -131,7 +133,7 @@ var mailValidator = function () {
 var mailExists = false;
 var mailVerified = false;
 
-function checkMail(mail) {
+function checkMail(mail, isPasswordReset) {
 
     if (!mail) {
         return MessageBundle.get(dict.MailCannotBeEmpty);
@@ -140,7 +142,7 @@ function checkMail(mail) {
     } else {
         mailAlreadyExists(mail);
         if (mailExists === true) {
-            return (mailVerified === true ? MessageBundle.get(dict.MailAlreadyActivated) : true);
+            return (isPasswordReset || mailVerified !== true ? true : MessageBundle.get(dict.MailAlreadyActivated));
         } else {
             return MessageBundle.get(dict.MailDoesntExists);
         }
