@@ -208,7 +208,7 @@ namespace Typer.Web.Controllers
             string pswd = generatePassword(12);
             string encryptedPassword = SHA1.Encode(pswd);
 
-            if (!userService.resetPassword(user, pswd))
+            if (!userService.resetPassword(user, encryptedPassword))
                 return false;
 
             if (!mailSender.Send(user.Email, "New password", createPasswordMailContent(user, pswd)))
