@@ -5,13 +5,12 @@
         <meta name="viewport" content="width=device-width" />
         <title>@ViewBag.Title</title>
         @Styles.Render("~/Content/css")
+        @Styles.Render("~/Content/user")
         @Scripts.Render("~/bundles/modernizr")
     </head>
     <body>
 
-        <div style="width: auto; background-color: #728ea7;">
-            @{Html.RenderAction("Summary", "Login");}
-        </div>
+        @{Html.RenderAction("Summary", "Login");}
 
         @RenderBody()
         @Scripts.Render("~/bundles/jquery")

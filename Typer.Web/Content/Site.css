@@ -59,3 +59,28 @@ textarea {
 .validation-summary-valid {
     display: none;
 }
+
+
+
+/* Other styles 
+-----------------------------------------------------------*/
+.container
+{
+    display: table;
+    width: 980px;
+    height: 100%;
+    margin: 0;
+    margin-right: auto;
+    margin-left: auto;
+    padding: 6px 0px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+
+.vert-center
+{
+    display: table-cell; 
+    vertical-align: middle; 
+}

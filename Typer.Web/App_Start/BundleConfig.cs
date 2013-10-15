@@ -38,7 +38,10 @@ namespace Typer.Web
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                         "~/Content/normalize.css",
-                        "~/Content/site.css"));
+                        "~/Content/Site.css"));
+
+            bundles.Add(new StyleBundle("~/Content/user").Include(
+                                    "~/Content/UserPanel.css"));
 
             bundles.Add(new StyleBundle("~/Content/login").Include(
                         "~/Content/normalize.css", 

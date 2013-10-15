@@ -1,16 +1,23 @@
 ﻿@model Typer.Domain.Entities.User
 
-<div id="cart">
-    @if (Request.IsAuthenticated) {
-        @Model.Username
-        <span> | </span>
-        @Model.Email
-        <span> | </span>
-        @Html.ActionLink("Sign Out", "Logout", "Login")
-    }
-    else {
-        @Html.ActionLink("Register", "Register", "Login")
-        <span> | </span>
-        @Html.ActionLink("Sign In", "Login", "Login")
-    }
+<div id="user">
+
+    <div class="container">
+        <div class="vert-center">
+            @if (Request.IsAuthenticated) {
+                @Model.Username
+                <span> | </span>
+                @Model.Email
+                <span> | </span>
+                @Html.ActionLink("Sign Out", "Logout", "Login")
+            }
+            else {
+                @Html.ActionLink("Register", "Register", "Login")
+                <span> | </span>
+                @Html.ActionLink("Sign In", "Login", "Login")
+            }
+        </div>
+    </div>
+
+
 </div>
