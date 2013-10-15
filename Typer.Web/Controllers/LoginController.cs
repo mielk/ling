@@ -227,7 +227,9 @@ namespace Typer.Web.Controllers
 
         private string createPasswordMailContent(User user, string password)
         {
-            return "New password for user " + user.Username + ": " + password;
+            return "Password recovery" + "<br />" + 
+                   "User: " + user.Username + "<br />" + 
+                   "Password: " + password;
         }
 
 
