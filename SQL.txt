@@ -19,13 +19,20 @@ CREATE TABLE [dbo].[Users] (
 );
 
 
-
-
-CREATE TABLE [dbo].[UserVerificationData]
+CREATE TABLE [dbo].[Questions]
 (
-	[UserId] INT NOT NULL PRIMARY KEY,
-	[VerificationCode] NVARCHAR(MAX) NOT NULL,
-	[VerificationDate] DATETIME NULL,
-    [IsVerified] BIT NOT NULL DEFAULT 0, 
-    CONSTRAINT [FK_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[Users] ([UserId])
+	[Id]           INT            IDENTITY (1, 1) NOT NULL,
+	[Name]			VARCHAR(MAX)	NOT NULL,
+	[Weight]		INT				DEFAULT 0 NOT NULL,
+	[IsActive]		BIT				DEFAULT 1 NOT NULL,
+	[CreatorId]		INT				NOT NULL,
+	[CreateDate]	DATETIME		DEFAULT (getdate()) NOT NULL,
+	[IsApproved]	BIT				DEFAULT 0 NOT NULL,
+	[Positive]		INT				DEFAULT 0 NOT NULL,
+	[Negative]		INT				DEFAULT 0 NOT NULL,
+	[IsExpression]	BIT				DEFAULT 1 NOT NULL,
+	PRIMARY KEY CLUSTERED ([Id] ASC),
+	CONSTRAINT [Unique_Name] UNIQUE NONCLUSTERED ([Name] ASC),
+	CONSTRAINT [FK_Creator_User] FOREIGN KEY ([CreatorId]) REFERENCES [dbo].[Users] ([UserId]),
+	CONSTRAINT [Check_Weight] CHECK (Weight>=0 AND Weight<=10)
 )

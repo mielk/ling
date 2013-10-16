@@ -6,8 +6,8 @@
             @if (Request.IsAuthenticated) {
                 
                 
-                @Html.ActionLink("Test", "Index", "Test", new { @class = "left block" })
-                @Html.ActionLink("Edit", "Index", "Edit", new { @class = "left block" })
+                @Html.ActionLink("Test", "Index", "Test", new { Area = "" }, new { @class = "left block" })
+                @Html.ActionLink("Edit", "Index", "Edit", new { Area = "" }, new { @class = "left block" })
                 
                 @Html.ActionLink("Sign Out", "Logout", "Login", new { @class = "right block" })
                 <span class="right block"> | </span>
