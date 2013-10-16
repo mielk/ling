@@ -1,4 +1,5 @@
-﻿body {
+﻿body 
+{
     font-size: .85em;
     font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
     color: #fff;
@@ -185,8 +186,6 @@ input
 
 
 
-
-
 #account
 {
     display: block;
@@ -253,13 +252,15 @@ input
 
 #account .iconValid
 {
-    background-image: url('images/icon_valid.png');
+    background-image: url('images/icon_valid2.png');
+    background-position: center;
     /*background-color: green;*/
 }
 
 #account .iconInvalid
 {
     background-image: url('images/icon_invalid.png');
+    background-position: center;
     /*background-color: red;*/
 }
 
@@ -398,5 +399,6 @@ a.close
     height: 32px !important;
     padding: 0px !important;
     margin: 0px !important;
-    background-color: red !important;
+    background-image: url('images/close.png') !important;
+    background-position: center;
 }

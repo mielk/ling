@@ -13,3 +13,11 @@
     border-bottom: 1px solid rgb(210, 210, 210);
 
 }
+
+.right
+{
+    display: block;
+    position: relative;
+    float: right;
+    margin-left: 12px;
+}

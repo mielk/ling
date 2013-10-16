@@ -75,8 +75,6 @@ namespace Typer.Web.Controllers
                         {
                             return RedirectToAction("Test", "Home");
                         }
-                        //return Redirect(Request.UrlReferrer.ToString());
-                        //return 
                     }
                     else
                     {

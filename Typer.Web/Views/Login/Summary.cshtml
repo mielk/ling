@@ -1,23 +1,21 @@
 ﻿@model Typer.Domain.Entities.User
 
 <div id="user">
-
     <div class="container">
         <div class="vert-center">
             @if (Request.IsAuthenticated) {
-                @Model.Username
-                <span> | </span>
-                @Model.Email
-                <span> | </span>
-                @Html.ActionLink("Sign Out", "Logout", "Login")
+                @Html.ActionLink("Sign Out", "Logout", "Login", new { @class = "right" })
+                <span class="right"> | </span>
+                <span class="right">@Model.Email</span>
+                <span class="right"> | </span>
+                <span class="right">@Model.Username</span>                
             }
-            else {
-                @Html.ActionLink("Register", "Register", "Login")
-                <span> | </span>
-                @Html.ActionLink("Sign In", "Login", "Login")
+            else
+            {
+                @Html.ActionLink("Register", "Register", "Login", new { @class = "right" })
+                <span class="right"> | </span>
+                @Html.ActionLink("Sign In", "Login", "Login", new { @class = "right" })
             }
         </div>
     </div>
-
-
 </div>
