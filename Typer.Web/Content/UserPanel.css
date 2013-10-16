@@ -14,10 +14,20 @@
 
 }
 
-.right
+.block
 {
     display: block;
     position: relative;
+}
+
+.right
+{
     float: right;
     margin-left: 12px;
+}
+
+.left
+{
+    float: left;
+    margin-right: 12px;
 }

@@ -4,6 +4,10 @@
     <div class="container">
         <div class="vert-center">
             @if (Request.IsAuthenticated) {
+                
+                
+                
+                
                 @Html.ActionLink("Sign Out", "Logout", "Login", new { @class = "right" })
                 <span class="right"> | </span>
                 <span class="right">@Model.Email</span>
