@@ -6,19 +6,20 @@
             @if (Request.IsAuthenticated) {
                 
                 
+                @Html.ActionLink("Test", "Index", "Test", new { @class = "left block" })
+                @Html.ActionLink("Edit", "Index", "Edit", new { @class = "left block" })
                 
-                
-                @Html.ActionLink("Sign Out", "Logout", "Login", new { @class = "right" })
-                <span class="right"> | </span>
-                <span class="right">@Model.Email</span>
-                <span class="right"> | </span>
-                <span class="right">@Model.Username</span>                
+                @Html.ActionLink("Sign Out", "Logout", "Login", new { @class = "right block" })
+                <span class="right block"> | </span>
+                <span class="right block">@Model.Email</span>
+                <span class="right block"> | </span>
+                <span class="right block">@Model.Username</span>                
             }
             else
             {
-                @Html.ActionLink("Register", "Register", "Login", new { @class = "right" })
-                <span class="right"> | </span>
-                @Html.ActionLink("Sign In", "Login", "Login", new { @class = "right" })
+                @Html.ActionLink("Register", "Register", "Login", new { @class = "right block" })
+                <span class="right block"> | </span>
+                @Html.ActionLink("Sign In", "Login", "Login", new { @class = "right block" })
             }
         </div>
     </div>
