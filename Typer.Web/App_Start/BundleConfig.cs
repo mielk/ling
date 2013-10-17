@@ -40,6 +40,10 @@ namespace Typer.Web
                         "~/Content/normalize.css",
                         "~/Content/Site.css"));
 
+            bundles.Add(new StyleBundle("~/Content/edit").Include(
+                        "~/Content/normalize.css",
+                        "~/Content/Edit.css"));
+
             bundles.Add(new StyleBundle("~/Content/user").Include(
                                     "~/Content/UserPanel.css"));
 

@@ -63,6 +63,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Controllers\EditControllerUnitTests.cs" />
     <Compile Include="Domain\UserRepositoryUnitTests.cs" />
     <Compile Include="Services\UserRegistrationDataTests.cs" />
     <Compile Include="Services\UserServiceUnitTests.cs" />
@@ -96,9 +97,7 @@
       <Name>Typer.Web</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

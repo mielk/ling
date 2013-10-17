@@ -1,0 +1,81 @@
+﻿div.pager { 
+    text-align:right; 
+    border-top: 2px solid silver;
+    padding: .5em 0 0 0; 
+    margin-top: 1em; 
+}
+
+div.pager a {
+    font-size: 1.1em; 
+    color: #666; 
+    text-decoration: none;
+    padding: 0 .4em 0 .4em; 
+}
+
+div.pager a:hover { 
+    background-color: silver; 
+}
+
+div.pager a.selected { 
+    background-color: #353535; 
+    color: white;
+}
+
+.question
+{
+    display: table;
+    position: relative;
+    width: 100%;
+    border-bottom: 1px solid #ccc;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.question div
+{
+    display: table-cell;
+    position: relative;
+    height: 100%;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.question .id
+{
+    float: left;
+    width: 40px;
+    padding: 0px 6px;
+    margin-right: 6px;
+}
+
+.question .name
+{
+    float: left;
+    width: 400px;
+    padding: 0px 12px;
+    background-color: blue;
+}
+
+
+.question a.weight
+{
+    display: table-cell;
+    position: relative;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 18px;
+    height: 18px;
+    margin-right: 3px;
+    font-size: 0px;
+    border: 1px solid #999999;
+}
+
+.question a.checked
+{
+    background-color: green;
+}

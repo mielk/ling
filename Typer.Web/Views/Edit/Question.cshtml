@@ -1,0 +1,23 @@
+﻿@model Typer.Domain.Entities.Question
+
+<div class="question">
+    <div class="id">@Model.Id</div>
+    <div class="name">@Model.Name</div>
+    @for (int i = 0; i < Model.Weight; i++)
+    {
+        @Html.ActionLink(" ", "ChangeWeight", "Edit", new { id = Model.Id, weight = i + 1 }, new { @class = "weight checked" });
+    }
+
+    @for (int i = Model.Weight; i < 10; i++)
+    {
+        @Html.ActionLink(" ", "ChangeWeight", "Edit", new { id = Model.Id, weight = i + 1 }, new { @class = "weight" });
+    }
+
+
+    @*Categories*@
+    
+    @Html.ActionLink("Edit", "Edit", "Edit", new{ @class = "reset" } )
+    @Html.ActionLink("Deactivate", "Deactivate", "Edit", new{ @class = "reset" } )
+
+
+</div>

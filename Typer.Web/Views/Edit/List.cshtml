@@ -1,0 +1,17 @@
+﻿@model Typer.Web.Models.QuestionsListViewModel
+
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @Styles.Render("~/Content/edit")
+}
+
+
+@foreach (var q in Model.Questions) {
+    Html.RenderPartial("Question", q);
+}
+
+
+<div class="pager">
+    @Html.PageLinks(Model.PagingInfo, x => Url.Action("List", new {page = x}))
+</div>

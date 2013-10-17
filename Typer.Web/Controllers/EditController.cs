@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Typer.DAL.Repositories;
+using Typer.Domain.Entities;
+using Typer.Web.Models;
 
 namespace Typer.Web.Controllers
 {
@@ -11,6 +13,8 @@ namespace Typer.Web.Controllers
     {
 
         private IQuestionsRepository repository;
+        public int PageSize = 10;
+
 
         public EditController(IQuestionsRepository repository)
         {
@@ -19,10 +23,46 @@ namespace Typer.Web.Controllers
 
 
         [AllowAnonymous]
-        public ActionResult Index()
+        public ViewResult List(int page = 1)
         {
-            return View(repository.getQuestions());
+
+            QuestionsListViewModel model = new QuestionsListViewModel {
+                Questions = repository.getQuestions().
+                OrderBy(q => q.Id).
+                Skip((page - 1) * PageSize).
+                Take(PageSize),
+                PagingInfo = new PagingInfo {
+                    CurrentPage = page,
+                    ItemsPerPage = PageSize,
+                    TotalItems = repository.getQuestions().Count()
+                }
+            };
+            return View(model);
+
         }
+
+
+        [AllowAnonymous]
+        public ActionResult ChangeWeight(int id, int weight)
+        {
+
+            return null;
+        }
+
+
+        [AllowAnonymous]
+        public ActionResult Edit(Question question)
+        {
+            return null;
+        }
+
+
+        [AllowAnonymous]
+        public ActionResult Deactivate(Question question)
+        {
+            return null;
+        }
+
 
     }
 }
