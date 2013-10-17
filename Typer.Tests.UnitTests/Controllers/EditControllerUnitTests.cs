@@ -9,6 +9,7 @@ using Typer.Web.HtmlHelpers;
 using System.Web.Mvc;
 using Typer.Web.Models;
 using System;
+using Typer.BLL.Services;
 
 namespace Typer.Tests.UnitTests.Controllers
 {
@@ -18,7 +19,7 @@ namespace Typer.Tests.UnitTests.Controllers
         [TestMethod]
         public void Can_Paginate()
         {
-            Mock<IQuestionsRepository> mock = new Mock<IQuestionsRepository>();
+            Mock<IQuestionService> mock = new Mock<IQuestionService>();
             mock.Setup(m => m.getQuestions()).Returns(new Question[] {
                 new Question { Name = "test1", Weight = 1 },
                 new Question { Name = "test2", Weight = 2 },
@@ -74,7 +75,7 @@ namespace Typer.Tests.UnitTests.Controllers
         public void Can_Send_Pagination_View_Model()
         {
             // Arrange
-            Mock<IQuestionsRepository> mock = new Mock<IQuestionsRepository>();
+            Mock<IQuestionService> mock = new Mock<IQuestionService>();
             mock.Setup(m => m.getQuestions()).Returns(new Question[] {
                 new Question { Name = "test1", Weight = 1 },
                 new Question { Name = "test2", Weight = 2 },

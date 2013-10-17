@@ -64,6 +64,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Controllers\EditControllerUnitTests.cs" />
+    <Compile Include="Controllers\IQuestionsService.cs" />
     <Compile Include="Domain\UserRepositoryUnitTests.cs" />
     <Compile Include="Services\UserRegistrationDataTests.cs" />
     <Compile Include="Services\UserServiceUnitTests.cs" />

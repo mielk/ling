@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Typer.BLL.Services;
 using Typer.DAL.Repositories;
 using Typer.Domain.Entities;
 using Typer.Web.Models;
@@ -12,13 +13,13 @@ namespace Typer.Web.Controllers
     public class EditController : Controller
     {
 
-        private IQuestionsRepository repository;
+        private readonly IQuestionService service;
         public int PageSize = 10;
 
 
-        public EditController(IQuestionsRepository repository)
+        public EditController(IQuestionService service)
         {
-            this.repository = repository;
+            this.service = service;
         }
 
 
@@ -27,14 +28,14 @@ namespace Typer.Web.Controllers
         {
 
             QuestionsListViewModel model = new QuestionsListViewModel {
-                Questions = repository.getQuestions().
+                Questions = service.getQuestions().
                 OrderBy(q => q.Id).
                 Skip((page - 1) * PageSize).
                 Take(PageSize),
                 PagingInfo = new PagingInfo {
                     CurrentPage = page,
                     ItemsPerPage = PageSize,
-                    TotalItems = repository.getQuestions().Count()
+                    TotalItems = service.getQuestions().Count()
                 }
             };
             return View(model);
