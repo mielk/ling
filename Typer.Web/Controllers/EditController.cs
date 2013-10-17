@@ -26,7 +26,6 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ViewResult List(int page = 1)
         {
-
             QuestionsListViewModel model = new QuestionsListViewModel {
                 Questions = service.getQuestions().
                 OrderBy(q => q.Id).
@@ -46,8 +45,8 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult ChangeWeight(int id, int weight)
         {
-
-            return null;
+            service.changeWeight(id, weight);
+            return Redirect(Request.UrlReferrer.ToString());
         }
 
 
