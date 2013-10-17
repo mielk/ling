@@ -48,6 +48,18 @@ namespace Typer.BLL.Services
         }
 
 
+        public bool activate(int id)
+        {
+            return repository.activate(id);
+        }
+
+
+        public bool deactivate(int id)
+        {
+            return repository.deactivate(id);
+        }
+
+
 
     }
 }

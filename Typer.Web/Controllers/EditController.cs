@@ -61,13 +61,16 @@ namespace Typer.Web.Controllers
         public ActionResult Deactivate(int id)
         {
             return null;
+            service.deactivate(id);
+            return Redirect(Request.UrlReferrer.ToString());
         }
 
 
         [AllowAnonymous]
         public ActionResult Activate(int id)
         {
-            return null;
+            service.activate(id);
+            return Redirect(Request.UrlReferrer.ToString());
         }
 
     }

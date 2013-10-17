@@ -40,5 +40,42 @@ namespace Typer.DAL.Repositories
         }
 
 
+        public bool activate(int id)
+        {
+            Question question = getQuestion(id);
+            if (question != null)
+            {
+                if (question.IsActive)
+                    return true;
+
+                question.IsActive = true;
+                context.SaveChanges();
+                return true;
+            }
+
+            return false;
+
+        }
+
+
+        public bool deactivate(int id)
+        {
+            Question question = getQuestion(id);
+            if (question != null)
+            {
+
+                if (!question.IsActive)
+                    return false;
+
+                question.IsActive = false;
+                context.SaveChanges();
+                return true;
+            }
+
+            return false;
+
+        }
+
+
     }
 }

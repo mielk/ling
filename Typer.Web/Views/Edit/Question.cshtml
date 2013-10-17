@@ -20,9 +20,9 @@
 
     @if (Model.IsActive)
     {
-        @Html.ActionLink("Deactivate", "Deactivate", "Edit");
+        @Html.ActionLink("Deactivate", "Deactivate", "Edit", new { id = Model.Id }, null);
     } else {
-        @Html.ActionLink("Activate", "Activate", "Edit");
+        @Html.ActionLink("Activate", "Activate", "Edit", new { id = Model.Id }, null);
     }
 
 

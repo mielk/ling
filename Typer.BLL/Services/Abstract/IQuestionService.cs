@@ -12,5 +12,7 @@ namespace Typer.BLL.Services
         IEnumerable<Question> getQuestions();
         Question getQuestion(int id);
         bool changeWeight(int id, int weight);
+        bool activate(int id);
+        bool deactivate(int id);
     }
 }
