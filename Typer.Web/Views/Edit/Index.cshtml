@@ -1,6 +1,13 @@
-﻿@{
+﻿@model IEnumerable<Typer.Domain.Entities.Question>
+
+@{
     ViewBag.Title = "Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Edit</h2>
+@foreach (var q in Model) {
+    <div class="item">
+        <h3>@q.Name</h3>
+        @q.Weight
+    </div>
+}

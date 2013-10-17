@@ -9,6 +9,7 @@ namespace Typer.DAL.Infrastructure
         private static EFDbContext instance;
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Question> Questions { get; set; }
 
 
         private EFDbContext()

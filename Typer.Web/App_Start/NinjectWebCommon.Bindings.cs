@@ -17,6 +17,7 @@ namespace Typer.Web
         {
             kernel.Bind<IUserService>().To<UserService>();
             kernel.Bind<IUsersRepository>().To<EFUsersRepository>();
+            kernel.Bind<IQuestionsRepository>().To<EFQuestionsRepository>();
             kernel.Bind<IMailSender>().To<MailSender>();
         }
     }

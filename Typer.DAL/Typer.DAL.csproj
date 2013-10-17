@@ -47,7 +47,9 @@
   <ItemGroup>
     <Compile Include="Infrastructure\EFDbContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\Abstract\IQuestionsRepository.cs" />
     <Compile Include="Repository\Abstract\IUsersRepository.cs" />
+    <Compile Include="Repository\Concrete\EFQuestionsRepository.cs" />
     <Compile Include="Repository\Concrete\EFUsersRepository.cs" />
     <Compile Include="Infrastructure\RepositoryFactory.cs" />
   </ItemGroup>
