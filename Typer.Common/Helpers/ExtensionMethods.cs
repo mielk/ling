@@ -34,5 +34,23 @@ namespace Typer.Common.Helpers
         }
 
 
+        public static int ToRange(this int number, int low, int up)
+        {
+            if (number >= low && number <= up)
+            {
+                return number;
+            }
+            else if (number < low)
+            {
+                return low;
+            }
+            else
+            {
+                return up;
+            }
+
+        }
+
+
     }
 }

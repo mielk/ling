@@ -25,6 +25,20 @@ namespace Typer.DAL.Repositories
             return context.Questions.Single(q => q.Id == id);
         }
 
+        public bool changeWeight(int id, int weight)
+        {
+            Question question = getQuestion(id);
+            if (question != null)
+            {
+                question.Weight = weight;
+                context.SaveChanges();
+                return true;
+            }
+
+            return false;
+
+        }
+
 
     }
 }

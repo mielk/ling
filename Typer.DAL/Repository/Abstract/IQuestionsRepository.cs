@@ -7,5 +7,6 @@ namespace Typer.DAL.Repositories
     {
         IEnumerable<Question> getQuestions();
         Question getQuestion(int id);
+        bool changeWeight(int id, int weight);
     }
 }

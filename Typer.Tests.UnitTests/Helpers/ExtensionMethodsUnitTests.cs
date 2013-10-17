@@ -59,5 +59,28 @@ namespace Typer.Tests.UnitTests.Helpers
         }
 
 
+        [TestMethod]
+        public void ToRange_number_in_range_returns_the_same_number()
+        {
+            int number = 5;
+            Assert.AreEqual(5, number.ToRange(1, 10));
+        }
+
+        [TestMethod]
+        public void ToRange_lower_number_returns_low_bound()
+        {
+            int number = -1;
+            Assert.AreEqual(1, number.ToRange(1, 10));
+        }
+
+        [TestMethod]
+        public void ToRange_higher_number_returns_high_bound()
+        {
+            int number = 11;
+            Assert.AreEqual(10, number.ToRange(1, 10));
+        }
+
+
+
     }
 }

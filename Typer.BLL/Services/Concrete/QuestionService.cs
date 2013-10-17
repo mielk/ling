@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.Repositories;
 using Typer.Domain.Entities;
+using Typer.Common.Helpers;
 
 namespace Typer.BLL.Services
 {
@@ -34,16 +35,18 @@ namespace Typer.BLL.Services
             return repository.getQuestions();
         }
 
-        public bool changeWeight(int id, int weight)
-        {
-            
-            return false;
-        }
-
         public Question getQuestion(int id)
         {
             return repository.getQuestion(id);
         }
+
+
+
+        public bool changeWeight(int id, int weight)
+        {
+            return repository.changeWeight(id, weight.ToRange(Question.MinWeight, Question.MaxWeight));
+        }
+
 
 
     }

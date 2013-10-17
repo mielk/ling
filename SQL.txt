@@ -19,20 +19,21 @@ CREATE TABLE [dbo].[Users] (
 );
 
 
-CREATE TABLE [dbo].[Questions]
-(
-	[Id]           INT            IDENTITY (1, 1) NOT NULL,
-	[Name]			VARCHAR(MAX)	NOT NULL,
-	[Weight]		INT				DEFAULT 0 NOT NULL,
-	[IsActive]		BIT				DEFAULT 1 NOT NULL,
-	[CreatorId]		INT				NOT NULL,
-	[CreateDate]	DATETIME		DEFAULT (getdate()) NOT NULL,
-	[IsApproved]	BIT				DEFAULT 0 NOT NULL,
-	[Positive]		INT				DEFAULT 0 NOT NULL,
-	[Negative]		INT				DEFAULT 0 NOT NULL,
-	[IsExpression]	BIT				DEFAULT 1 NOT NULL,
-	PRIMARY KEY CLUSTERED ([Id] ASC),
-	CONSTRAINT [Unique_Name] UNIQUE NONCLUSTERED ([Name] ASC),
-	CONSTRAINT [FK_Creator_User] FOREIGN KEY ([CreatorId]) REFERENCES [dbo].[Users] ([UserId]),
-	CONSTRAINT [Check_Weight] CHECK (Weight>=0 AND Weight<=10)
-)
+
+CREATE TABLE [dbo].[Questions] (
+    [Id]         INT           IDENTITY (1, 1) NOT NULL,
+    [Name]       VARCHAR (255) NOT NULL,
+    [Weight]     INT           DEFAULT ((0)) NOT NULL,
+    [IsActive]   BIT           DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT           NOT NULL,
+    [CreateDate] DATETIME      DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT           DEFAULT ((0)) NOT NULL,
+    [Positive]   INT           DEFAULT ((0)) NOT NULL,
+    [Negative]   INT           DEFAULT ((0)) NOT NULL,
+    [IsComplex]  BIT           DEFAULT ((1)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [Unique_Name] UNIQUE NONCLUSTERED ([Name] ASC),
+    CONSTRAINT [FK_Creator_User] FOREIGN KEY ([CreatorId]) REFERENCES [dbo].[Users] ([UserId]),
+    CONSTRAINT [Check_Weight] CHECK ([Weight]>(0) AND [Weight]<=(10))
+);
+

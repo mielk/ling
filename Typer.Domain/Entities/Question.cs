@@ -9,6 +9,9 @@ namespace Typer.Domain.Entities
     public class Question
     {
 
+        public const int MinWeight = 1;
+        public const int MaxWeight = 10;
+
         public int Id { get; set; }
         public string Name { get; set; }
         public int Weight { get; set; }
