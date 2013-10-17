@@ -14,6 +14,7 @@ namespace Typer.Web.Controllers
     {
 
         private readonly IQuestionService service;
+        private RedirectResult navigationPoint;
         public int PageSize = 10;
 
 
@@ -21,6 +22,17 @@ namespace Typer.Web.Controllers
         {
             this.service = service;
         }
+
+
+        private void setNavigationPoint()
+        {
+            if (Request.UrlReferrer != null)
+            {
+                navigationPoint = Redirect(Request.UrlReferrer.ToString());
+            }
+        }
+
+
 
 
         [AllowAnonymous]
@@ -50,11 +62,36 @@ namespace Typer.Web.Controllers
         }
 
 
+        [HttpGet]
         [AllowAnonymous]
         public ActionResult Edit(int id)
         {
-            return null;
+
+            setNavigationPoint();
+
+            Question question = service.getQuestion(id);
+
+            if (question != null){
+                return View(question);
+            } else {
+                return Redirect(Request.Url.ToString());
+            }
+            
         }
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult Edit(Question question)
+        {
+
+            //Zapisuje zmiany w pytaniu do bazy.
+
+
+
+            return NavigateToHomePage();
+        }
+
 
 
         [AllowAnonymous]
@@ -71,6 +108,27 @@ namespace Typer.Web.Controllers
             service.activate(id);
             return Redirect(Request.UrlReferrer.ToString());
         }
+
+
+
+
+        #region Helpers
+        //Close current subpage and navigate to start page.
+        private ActionResult NavigateToHomePage()
+        {
+
+            if (navigationPoint != null)
+            {
+                return navigationPoint;
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+        }
+        #endregion
+
 
     }
 }

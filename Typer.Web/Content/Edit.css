@@ -1,4 +1,197 @@
-﻿div.pager { 
+﻿body 
+{
+    font-size: .85em;
+    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
+    color: #fff;
+    background-color: #222;
+}
+
+header, footer, nav, section 
+{
+    display: block;
+}
+
+label
+{
+    display: block;
+    float: left;
+    width: 120px;
+    color: #DDD;
+    height: 21px;
+    line-height: 21px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+fieldset
+{
+    border: none;
+    margin: 0;
+    padding: 8px;
+}
+
+fieldset .centered
+{
+    text-align: center;
+}
+
+span
+{
+    display: block;
+    overflow: hidden;
+    margin: 0;
+}
+
+
+input.default
+{
+    width: 100%;
+    color: #222;
+    background-color: rgb(229, 230, 231);
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+input.default:focus
+{
+    border-color: rgb(56, 71, 120);
+    background-color: rgb(186, 210, 223);
+}
+
+
+input[type=submit].centered
+{
+    display: inline;
+    float: none;
+}
+
+.field
+{
+    padding-bottom: 5px;
+    margin: 0;
+    width: 100%;
+    overflow: visible;
+}
+
+.error
+{
+    display: table;
+    vertical-align: middle;
+    float: right;
+    height: 33px;
+    background-color: red;
+    border: 1px solid #777777;
+}
+
+.error_content
+{
+    display: table-cell; 
+    vertical-align: middle; 
+    text-align: center;
+    font-size: 13px;
+}
+
+.centerize
+{
+    display: block;
+    height: auto;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.line
+{
+    font-size: 14px;
+    padding: 0;
+    margin: 9px 0px;
+}
+
+.newLine
+{
+    margin-top: 48px;
+}
+
+
+
+
+
+input.valid
+{
+    border-color: green;
+    background-color: green;
+}
+
+input.invalid
+{
+    border-color: red;
+    background-color: red;
+}
+
+input[type=submit]
+{
+    display: block;
+    float: right;
+    /*width: 100px;*/
+    height: 32px;
+    width: auto;
+    padding-left: 18px;
+    padding-right: 18px;
+    border: 1px solid #555;
+    font-size: 16px;
+    box-shadow: 1px 1px 0px 0px rgba(255,255,255,0.25);
+    outline-width: 1px;
+    outline-style: dotted;
+    outline-color: invert;
+    background-color: rgb(65, 218, 101);
+    color: white;
+    font-weight: bold;
+}
+
+input[type="submit"]:disabled
+{
+    background-color: #BBB;
+    color: #777;
+}
+
+input
+{
+    font-family: Calibri, Arial, Tahoma, Georgia, serif;
+    margin: 0;
+    border: 1px solid #555;
+}
+
+
+
+
+
+.validation-summary-errors
+{
+    color: red;
+    box-sizing: border-box;
+    margin: 3px 0px;
+    padding: 6px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.validation-summary-errors ul
+{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+
+
+
+
+
+
+
+
+
+div.pager { 
     text-align:right; 
     padding: .5em 0 0 0; 
     margin-top: 1em; 
@@ -115,3 +308,22 @@ div.pager a.selected {
 {
     background-color: green;
 }
+
+
+.edit-panel
+{
+    padding: 12px 0px;
+    background-color: #eee;
+}
+
+.field-line
+{
+    display: block;
+    position: relative;
+    width: 100%;
+    background-color: green;
+    padding: 12px 0px;
+}
+
+
+

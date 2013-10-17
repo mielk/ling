@@ -18,7 +18,7 @@
 
     <div class="categories">Categories</div>
 
-    @Html.ActionLink("Edit", "Edit", "Edit")
+    @Html.ActionLink("Edit", "Edit", "Edit", new { id = Model.Id }, null)
 
     @if (Model.IsActive)
     {
