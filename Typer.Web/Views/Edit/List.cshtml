@@ -7,6 +7,14 @@
 }
 
 
+<div class="question header">
+    <div class="id">Id</div>
+    <div class="name">Name</div>
+    <div class="weight">Weight</div>
+    <div class="categories">Categories</div>
+</div>
+
+
 @foreach (var q in Model.Questions) {
     Html.RenderPartial("Question", q);
 }

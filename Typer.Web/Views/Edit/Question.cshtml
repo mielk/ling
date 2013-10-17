@@ -3,15 +3,17 @@
 <div class="question @(Model.IsActive ? "active" : "inactive")">
     <div class="id">@Model.Id</div>
     <div class="name">@Model.Name</div>
-    @for (int i = 0; i < Model.Weight; i++)
-    {
-        @Html.ActionLink(" ", "ChangeWeight", "Edit", new { id = Model.Id, weight = i + 1 }, new { @class = "weight checked" });
-    }
+    <div class="weight">
+        @for (int i = 0; i < Model.Weight; i++)
+        {
+            @Html.ActionLink(" ", "ChangeWeight", "Edit", new { id = Model.Id, weight = i + 1 }, new { @class = "weight checked" });
+        }
 
-    @for (int i = Model.Weight; i < 10; i++)
-    {
-        @Html.ActionLink(" ", "ChangeWeight", "Edit", new { id = Model.Id, weight = i + 1 }, new { @class = "weight" });
-    }
+        @for (int i = Model.Weight; i < 10; i++)
+        {
+            @Html.ActionLink(" ", "ChangeWeight", "Edit", new { id = Model.Id, weight = i + 1 }, new { @class = "weight" });
+        }
+    </div>
 
 
     <div class="categories">Categories</div>
