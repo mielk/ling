@@ -12,13 +12,24 @@
             @Html.LabelFor(q => q.Id, new { @class="label" })
             <span>
                 @Html.TextBoxFor(q => q.Id, new{  
-                    @class="default", 
+                    @class="field id", 
                     @placeholder="Id", 
-                    @id="Id"
+                    @id="Id",
+                    @disabled="disabled"
                 })
             </span>
         </div>
 
+        <div class="field-line">
+            @Html.LabelFor(q => q.Name, new { @class="label" })
+            <span>
+                @Html.TextBoxFor(q => q.Name, new{  
+                    @class="default field", 
+                    @placeholder="Name", 
+                    @id="Name"
+                })
+            </span>
+        </div>
 
     </div>
 </div>

@@ -1,26 +1,18 @@
-﻿body 
-{
-    font-size: .85em;
-    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
-    color: #fff;
-    background-color: #222;
-}
-
-header, footer, nav, section 
+﻿header, footer, nav, section 
 {
     display: block;
 }
 
 label
 {
-    display: block;
-    float: left;
+    display: table-cell;
     width: 120px;
-    color: #DDD;
-    height: 21px;
+    height: 100%;
     line-height: 21px;
     font-size: 13px;
     font-weight: bold;
+    padding-left: 12px;
+    vertical-align: middle;
 }
 
 fieldset
@@ -66,13 +58,6 @@ input[type=submit].centered
     float: none;
 }
 
-.field
-{
-    padding-bottom: 5px;
-    margin: 0;
-    width: 100%;
-    overflow: visible;
-}
 
 .error
 {
@@ -161,8 +146,21 @@ input
     border: 1px solid #555;
 }
 
+input.field
+{
+    padding: 6px;
+    text-align: left;
+}
 
+input.id
+{
+    width: 60px;
+    text-align: center;
+}
 
+input[disabled="disabled"] {
+     /* your CSS style */
+}
 
 
 .validation-summary-errors
@@ -181,6 +179,9 @@ input
     padding: 0;
     list-style-type: none;
 }
+
+
+
 
 
 
@@ -313,17 +314,15 @@ div.pager a.selected {
 .edit-panel
 {
     padding: 12px 0px;
-    background-color: #eee;
 }
 
 .field-line
 {
-    display: block;
+    display: table;
     position: relative;
     width: 100%;
-    background-color: green;
-    padding: 12px 0px;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 12px;
+    overflow: visible;
 }
-
-
-
