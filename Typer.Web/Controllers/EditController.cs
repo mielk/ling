@@ -51,18 +51,24 @@ namespace Typer.Web.Controllers
 
 
         [AllowAnonymous]
-        public ActionResult Edit(Question question)
+        public ActionResult Edit(int id)
         {
             return null;
         }
 
 
         [AllowAnonymous]
-        public ActionResult Deactivate(Question question)
+        public ActionResult Deactivate(int id)
         {
             return null;
         }
 
+
+        [AllowAnonymous]
+        public ActionResult Activate(int id)
+        {
+            return null;
+        }
 
     }
 }

@@ -34,11 +34,18 @@ div.pager a.selected {
     padding-bottom: 12px;
 }
 
+.inactive
+{
+    background-color: #eee;
+    color: #888;
+}
+
 .question div
 {
     display: table-cell;
     position: relative;
     height: 100%;
+    float: left;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -46,22 +53,33 @@ div.pager a.selected {
 
 .question .id
 {
-    float: left;
-    width: 40px;
-    padding: 0px 6px;
+    width: 50px;
+    padding: 0px 12px;
     margin-right: 6px;
+    text-align: right;
 }
 
 .question .name
 {
-    float: left;
     width: 400px;
     padding: 0px 12px;
 }
 
+
+.question .categories
+{
+    width: 200px;
+    margin: 0px 36px;
+}
+
+
+
+
 .question a
 {
     float: left;
+    margin-right: 21px;
+    margin-left: 21px;
 }
 
 .question a.weight
@@ -73,6 +91,7 @@ div.pager a.selected {
     box-sizing: border-box;
     width: 18px;
     height: 18px;
+    margin-left: 0px;
     margin-right: 3px;
     font-size: 0px;
     border: 1px solid #999999;
