@@ -57,9 +57,12 @@ div.pager a.selected {
     float: left;
     width: 400px;
     padding: 0px 12px;
-    background-color: blue;
 }
 
+.question a
+{
+    float: left;
+}
 
 .question a.weight
 {
