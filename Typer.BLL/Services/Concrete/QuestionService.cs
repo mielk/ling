@@ -36,7 +36,13 @@ namespace Typer.BLL.Services
 
         public bool changeWeight(int id, int weight)
         {
+            
             return false;
+        }
+
+        public Question getQuestion(int id)
+        {
+            return repository.getQuestion(id);
         }
 
 

@@ -20,5 +20,11 @@ namespace Typer.DAL.Repositories
             return context.Questions;
         }
 
+        public Question getQuestion(int id)
+        {
+            return context.Questions.Single(q => q.Id == id);
+        }
+
+
     }
 }

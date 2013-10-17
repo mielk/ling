@@ -6,5 +6,6 @@ namespace Typer.DAL.Repositories
     public interface IQuestionsRepository
     {
         IEnumerable<Question> getQuestions();
+        Question getQuestion(int id);
     }
 }

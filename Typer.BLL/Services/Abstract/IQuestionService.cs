@@ -10,6 +10,7 @@ namespace Typer.BLL.Services
     public interface IQuestionService
     {
         IEnumerable<Question> getQuestions();
+        Question getQuestion(int id);
         bool changeWeight(int id, int weight);
     }
 }
