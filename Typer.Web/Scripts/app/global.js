@@ -73,6 +73,18 @@ var dict = dict || {
     PasswordsDontMatch: {
         POL: 'Podane hasła różnią się od siebie',
         ENG: "Passwords don't match"
+    },
+    NameCannotBeEmpty: {
+        POL: 'Nazwa nie może być pusta',
+        ENG: 'Name cannot be empty'
+    }, 
+    NameCannotBeLongerThan: {
+        POL: 'Nazwa nie może być dłuższa niż {0} znaków',
+        ENG: 'Name cannot be longer than {0} characters'
+    },
+    NameAlreadyExists: {
+        POL: 'Istnieje już zapytanie o takiej nazwie',
+        ENG: 'This name has been used already'
     }
 }
 

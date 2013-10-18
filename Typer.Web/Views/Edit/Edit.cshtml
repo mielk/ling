@@ -8,28 +8,36 @@
 <div class="container">
     <div class="vert-center edit-panel">
 
-        <div class="field-line">
-            @Html.LabelFor(q => q.Id, new { @class="label" })
-            <span>
-                @Html.TextBoxFor(q => q.Id, new{  
-                    @class="field id", 
-                    @placeholder="Id", 
-                    @id="Id",
-                    @disabled="disabled"
-                })
-            </span>
-        </div>
+        <fieldset>
+            
+            <div id="div_id" class="field-line">
+                @Html.LabelFor(q => q.Id, new { @class="label" })
+                <span>
+                    @Html.TextBoxFor(q => q.Id, new{  
+                        @class="field id", 
+                        @placeholder="Id", 
+                        @id="Id",
+                        @disabled="disabled"
+                    })
+                </span>
+            </div>
 
-        <div class="field-line">
-            @Html.LabelFor(q => q.Name, new { @class="label" })
-            <span>
-                @Html.TextBoxFor(q => q.Name, new{  
-                    @class="default field", 
-                    @placeholder="Name", 
-                    @id="Name"
-                })
-            </span>
-        </div>
+            <div id="div_name" class="field-line">
+                @Html.LabelFor(q => q.Name, new { @class="label" })
+                <div class="error">
+                    <div class="error_content"></div>
+                </div>
+                <span class="icon"></span>
+                <span>
+                    @Html.TextBoxFor(q => q.Name, new{  
+                        @class="field default", 
+                        @placeholder="Name", 
+                        @id="Name"
+                    })
+                </span>
+            </div>
+
+        </fieldset>
 
     </div>
 </div>

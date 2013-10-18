@@ -8,7 +8,7 @@ label
     display: table-cell;
     width: 120px;
     height: 100%;
-    line-height: 21px;
+    line-height: 100%;
     font-size: 13px;
     font-weight: bold;
     padding-left: 12px;
@@ -39,10 +39,7 @@ input.default
 {
     width: 100%;
     color: #222;
-    background-color: rgb(229, 230, 231);
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
+    background-color: rgb(245, 245, 245);
 }
 
 input.default:focus
@@ -64,15 +61,18 @@ input[type=submit].centered
     display: table;
     vertical-align: middle;
     float: right;
-    height: 33px;
+    height: 34px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
     background-color: red;
     border: 1px solid #777777;
 }
 
 .error_content
 {
-    display: table-cell; 
-    vertical-align: middle; 
+    display: table-cell;
+    vertical-align: middle;
     text-align: center;
     font-size: 13px;
 }
@@ -148,6 +148,10 @@ input
 
 input.field
 {
+    height: 34px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
     padding: 6px;
     text-align: left;
 }
@@ -321,8 +325,44 @@ div.pager a.selected {
     display: table;
     position: relative;
     width: 100%;
+    height: 34px;
     padding: 0;
     margin: 0;
     margin-bottom: 12px;
     overflow: visible;
+    background-color: #999;
+}
+
+
+
+
+
+.edit-panel .icon
+{
+    float: right;
+    width: 32px;
+    height: 32px;
+    margin-left: 9px;
+    border: 1px solid transparent;
+}
+
+.edit-panel .iconValid
+{
+    background-image: url('images/icon_valid2.png');
+    background-position: center;
+    /*background-color: green;*/
+}
+
+.edit-panel .iconInvalid
+{
+    background-image: url('images/icon_invalid.png');
+    background-position: center;
+    /*background-color: red;*/
+}
+
+.edit-panel .error
+{
+    width: 200px;
+    margin-left: 9px;
+    /*margin-right: -218px;*/
 }

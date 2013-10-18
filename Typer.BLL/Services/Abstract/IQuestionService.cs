@@ -14,5 +14,6 @@ namespace Typer.BLL.Services
         bool changeWeight(int id, int weight);
         bool activate(int id);
         bool deactivate(int id);
+        bool nameExists(string name);
     }
 }

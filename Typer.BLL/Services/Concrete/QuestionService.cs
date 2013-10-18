@@ -59,6 +59,11 @@ namespace Typer.BLL.Services
             return repository.deactivate(id);
         }
 
+        public bool nameExists(string name)
+        {
+            return repository.nameExists(name);
+        }
+
 
 
     }

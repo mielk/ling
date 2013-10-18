@@ -127,6 +127,17 @@ namespace Typer.Web.Controllers
             }
 
         }
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult CheckName(string name)
+        {
+            bool isExisting = service.nameExists(name);
+            return Json(new { IsExisting = isExisting }, JsonRequestBehavior.AllowGet);
+        }
+
+
         #endregion
 
 
