@@ -15,5 +15,6 @@ namespace Typer.BLL.Services
         bool activate(int id);
         bool deactivate(int id);
         bool nameExists(string name);
+        bool nameExists(int id, string name);
     }
 }

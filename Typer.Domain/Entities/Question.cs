@@ -43,5 +43,8 @@ namespace Typer.Domain.Entities
         [Display(Name = "Is complex")]
         public bool IsComplex { get; set; }
 
+
+        //[Display(Name = "Categories")]
+        
     }
 }

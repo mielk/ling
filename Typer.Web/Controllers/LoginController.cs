@@ -10,7 +10,7 @@ namespace Typer.Web.Controllers
 
     public class LoginController : Controller
     {
-        private const string USER_KEY = "User";
+        public const string USER_KEY = "User";
         private readonly IUserService userService;
         private readonly IMailSender mailSender;
         private RedirectResult navigationPoint;

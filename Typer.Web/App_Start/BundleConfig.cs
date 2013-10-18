@@ -28,6 +28,9 @@ namespace Typer.Web
             bundles.Add(new ScriptBundle("~/bundles/registration").Include(
                         "~/Scripts/app/register.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/edit").Include(
+                                    "~/Scripts/app/edit.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/resend").Include(
                         "~/Scripts/app/mailValidation.js"));
 

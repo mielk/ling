@@ -1,4 +1,8 @@
-﻿var model;
+﻿var getId = function () {
+    var ctrl = $('#Id');
+    return ctrl ? ctrl.val() : 0;
+};
+var model;
 
 $(document).ready(function () {
     adjustPlaceholder();
@@ -16,11 +20,13 @@ function setFocusForUsernameControl() {
     $("#Name").focus();
 }
 
-
 var modelConstructor = function () {
 
     //Confirmation button.
     var btn = $("#btnSave")[0];
+
+    //Id label.
+    var id = $("#Id")[0];
 
     //Inactive controls.
     var inactive = new HashTable(null);
@@ -62,7 +68,6 @@ var modelConstructor = function () {
         }
         checkState();
     }
-
 
 };
 
@@ -211,7 +216,7 @@ function checkName(name) {
 
     if (!name) {
         return MessageBundle.get(dict.NameCannotBeEmpty);
-    } else if (username.length > MAX_LENGTH) {
+    } else if (name.length > MAX_LENGTH) {
         return MessageBundle.get(dict.NameCannotBeLongerThan, [MAX_LENGTH]);
     } else {
         nameAlreadyExists(name);
@@ -227,11 +232,14 @@ function checkName(name) {
 }
 
 
-function userAlreadyExists(name) {
+function nameAlreadyExists(name) {
     $.ajax({
-        url: "CheckName",
+        url: "/Edit/CheckName",
         type: "post",
-        data: JSON.stringify({ name: name }),
+        data: JSON.stringify({
+            name: name,
+            id: getId()
+        }),
         contentType: "application/json; charset=utf-8",
         datatype: "json",
         async: false,

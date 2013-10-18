@@ -22,12 +22,12 @@ namespace Typer.DAL.Repositories
 
         public Question getQuestion(int id)
         {
-            return context.Questions.Single(q => q.Id == id);
+            return context.Questions.SingleOrDefault(q => q.Id == id);
         }
 
         public Question getQuestion(string name)
         {
-            return context.Questions.Single(q => q.Name == name);
+            return context.Questions.SingleOrDefault(q => q.Name == name);
         }
 
         public bool changeWeight(int id, int weight)
@@ -86,6 +86,21 @@ namespace Typer.DAL.Repositories
         {
             Question question = getQuestion(name);
             return (question != null);
+        }
+
+
+        public bool nameExists(int id, string name)
+        {
+            Question question = getQuestion(name);
+            if (question == null || question.Id == id)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
         }
 
 

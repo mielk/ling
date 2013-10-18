@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Typer.BLL.Services;
 using Typer.DAL.Repositories;
 using Typer.Domain.Entities;
+using Typer.Domain.ViewModels;
 using Typer.Web.Models;
 
 namespace Typer.Web.Controllers
@@ -69,9 +70,14 @@ namespace Typer.Web.Controllers
 
             setNavigationPoint();
 
-            Question question = service.getQuestion(id);
+            QuestionEditViewModel question = new QuestionEditViewModel()
+            {
+                Question = service.getQuestion(id),
+                User = (User)HttpContext.Session[LoginController.USER_KEY]
+            };
+            
 
-            if (question != null){
+            if (question != null && question.isValid()){
                 return View(question);
             } else {
                 return Redirect(Request.Url.ToString());
@@ -82,7 +88,7 @@ namespace Typer.Web.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult Edit(Question question)
+        public ActionResult Edit(QuestionEditViewModel question)
         {
 
             //Zapisuje zmiany w pytaniu do bazy.
@@ -129,14 +135,14 @@ namespace Typer.Web.Controllers
         }
 
 
+
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult CheckName(string name)
+        public ActionResult CheckName(int id, string name)
         {
-            bool isExisting = service.nameExists(name);
+            bool isExisting = service.nameExists(id, name);
             return Json(new { IsExisting = isExisting }, JsonRequestBehavior.AllowGet);
         }
-
 
         #endregion
 

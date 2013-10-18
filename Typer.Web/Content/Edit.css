@@ -247,6 +247,11 @@ div.pager a.selected {
     color: #888;
 }
 
+.invisible
+{
+    visibility: hidden;
+}
+
 .question div
 {
     display: table-cell;
@@ -330,7 +335,6 @@ div.pager a.selected {
     margin: 0;
     margin-bottom: 12px;
     overflow: visible;
-    background-color: #999;
 }
 
 
@@ -365,4 +369,15 @@ div.pager a.selected {
     width: 200px;
     margin-left: 9px;
     /*margin-right: -218px;*/
+}
+
+
+
+#languages_panel
+{
+    display: block;
+    position: relative;
+    border-top: 1px solid #888;
+    border-bottom: 1px solid #888;
+    background-color: green;
 }

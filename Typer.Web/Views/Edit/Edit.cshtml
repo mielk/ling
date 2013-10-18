@@ -1,8 +1,12 @@
-﻿@model Typer.Domain.Entities.Question
+﻿@model Typer.Domain.ViewModels.QuestionEditViewModel
 
 @{
     ViewBag.Title = "Edit";
     @Styles.Render("~/Content/edit")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/global")
+    @Scripts.Render("~/bundles/edit")
 }
 
 <div class="container">
@@ -29,13 +33,37 @@
                 </div>
                 <span class="icon"></span>
                 <span>
-                    @Html.TextBoxFor(q => q.Name, new{  
+                    @Html.TextBoxFor(q => q.Name, new{
                         @class="field default", 
                         @placeholder="Name", 
                         @id="Name"
                     })
                 </span>
             </div>
+
+@*            <div id="div_categories" class="field-line">
+                @Html.LabelFor(q => q.Name, new { @class="label" })
+                <div class="invisible error">
+                    <div class="error_content"></div>
+                </div>
+                <span class="add icon"></span>
+                <span>
+                    @Html.TextBoxFor(q => q.Name, new{  
+                        @class="field default", 
+                        @placeholder="Categories", 
+                        @id="Categories",
+                        @disabled="disabled"
+                    })
+                </span>
+            </div>*@
+
+
+            <div id="languages_panel">
+
+
+
+            </div>
+
 
         </fieldset>
 

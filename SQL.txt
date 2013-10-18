@@ -37,3 +37,22 @@ CREATE TABLE [dbo].[Questions] (
     CONSTRAINT [Check_Weight] CHECK ([Weight]>(0) AND [Weight]<=(10))
 );
 
+
+CREATE TABLE [dbo].[UserLanguages]
+(
+	[UserId] INT NOT NULL,
+	[LanguageId] INT NOT NULL,
+	CONSTRAINT [PK_UserLanguage] PRIMARY KEY (UserId, LanguageId),
+	CONSTRAINT [FK_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[Users] ([UserId]),
+	CONSTRAINT [FK_Language] FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id])
+)
+
+
+CREATE TABLE [dbo].[Languages] (
+    [Id]           INT           IDENTITY (1, 1) NOT NULL,
+    [Name]         VARCHAR (255) NOT NULL,
+    [FlagURL]      VARCHAR (MAX) NULL,
+    [IsActive]     BIT           DEFAULT ((1)) NOT NULL,
+    [OriginalName] VARCHAR (255) NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC)
+);
