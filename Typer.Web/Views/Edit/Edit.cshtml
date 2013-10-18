@@ -15,9 +15,9 @@
         <fieldset>
             
             <div id="div_id" class="field-line">
-                @Html.LabelFor(q => q.Id, new { @class="label" })
+                @Html.LabelFor(q => q.Question.Id, new { @class="label" })
                 <span>
-                    @Html.TextBoxFor(q => q.Id, new{  
+                    @Html.TextBoxFor(q => q.Question.Id, new{  
                         @class="field id", 
                         @placeholder="Id", 
                         @id="Id",
@@ -27,13 +27,13 @@
             </div>
 
             <div id="div_name" class="field-line">
-                @Html.LabelFor(q => q.Name, new { @class="label" })
+                @Html.LabelFor(q => q.Question.Name, new { @class="label" })
                 <div class="error">
                     <div class="error_content"></div>
                 </div>
                 <span class="icon"></span>
                 <span>
-                    @Html.TextBoxFor(q => q.Name, new{
+                    @Html.TextBoxFor(q => q.Question.Name, new{
                         @class="field default", 
                         @placeholder="Name", 
                         @id="Name"

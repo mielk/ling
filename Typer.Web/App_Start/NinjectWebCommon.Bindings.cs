@@ -22,6 +22,8 @@ namespace Typer.Web
             kernel.Bind<IQuestionService>().To<QuestionService>();
             kernel.Bind<IQuestionsRepository>().To<EFQuestionsRepository>();
             //kernel.Bind<IQuestionsRepository>().ToConstant(createMockQuestionsRepository());
+            kernel.Bind<ILanguageService>().To<LanguageService>();
+            kernel.Bind<ILanguageRepository>().To<EFLanguageRepository>();
             kernel.Bind<IMailSender>().To<MailSender>();
         }
 

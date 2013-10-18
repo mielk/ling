@@ -47,11 +47,15 @@
   <ItemGroup>
     <Compile Include="Infrastructure\EFDbContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\Abstract\ILanguageRepository.cs" />
     <Compile Include="Repository\Abstract\IQuestionsRepository.cs" />
     <Compile Include="Repository\Abstract\IUsersRepository.cs" />
+    <Compile Include="Repository\Concrete\EFLanguageRepository.cs" />
     <Compile Include="Repository\Concrete\EFQuestionsRepository.cs" />
     <Compile Include="Repository\Concrete\EFUsersRepository.cs" />
     <Compile Include="Infrastructure\RepositoryFactory.cs" />
+    <Compile Include="TransferObjects\LanguageDto.cs" />
+    <Compile Include="TransferObjects\LanguageUserDto.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

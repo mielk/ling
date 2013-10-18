@@ -18,7 +18,13 @@ namespace Typer.Domain.ViewModels
 
         public IEnumerable<Language> getUserLanguages()
         {
+            if (User != null)
+            {
+                //return User.getLanguages();
+            }
+
             return null;
+
         }
 
 
@@ -32,6 +38,31 @@ namespace Typer.Domain.ViewModels
 
         }
 
+
+
+
+
+
+        //public List<AttendeeDto> GetMyRuns(int me)
+        //{
+        //    var mine = (from a in attendees
+        //                join s in sample_runs 
+        //                on a.sample_run_id equals s.sample_run_id
+        //                where a.user_id == me
+        //                orderby a.sample_run_id descending
+        //                select new AttendeeDto
+        //                {
+        //                    SampleRunId = s.sample_run_id,
+        //                    RoleName = a.role.role_name,
+        //                    SampleRunStatusName = s.sample_run_status.sample_run_status_name,
+        //                    ProjectNumber = s.project_number,
+        //                    RunTypeName = s.run_type.run_type_name,
+        //                    Description = s.description
+        //                }).ToList();
+
+        //        return mine;
+        //    }
+        //}
 
     }
 }
