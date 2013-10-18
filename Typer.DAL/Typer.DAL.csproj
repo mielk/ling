@@ -54,7 +54,6 @@
     <Compile Include="Repository\Concrete\EFQuestionsRepository.cs" />
     <Compile Include="Repository\Concrete\EFUsersRepository.cs" />
     <Compile Include="Infrastructure\RepositoryFactory.cs" />
-    <Compile Include="TransferObjects\LanguageDto.cs" />
     <Compile Include="TransferObjects\LanguageUserDto.cs" />
   </ItemGroup>
   <ItemGroup />

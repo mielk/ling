@@ -38,14 +38,18 @@ CREATE TABLE [dbo].[Questions] (
 );
 
 
-CREATE TABLE [dbo].[UserLanguages]
-(
-	[UserId] INT NOT NULL,
-	[LanguageId] INT NOT NULL,
-	CONSTRAINT [PK_UserLanguage] PRIMARY KEY (UserId, LanguageId),
-	CONSTRAINT [FK_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[Users] ([UserId]),
-	CONSTRAINT [FK_Language] FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id])
-)
+
+CREATE TABLE [dbo].[UserLanguages] (
+	[Id]		 INT NOT NULL IDENTITY,
+    [UserId]     INT NOT NULL,
+    [LanguageId] INT NOT NULL,
+	PRIMARY KEY CLUSTERED ([Id] ASC),
+	CONSTRAINT [Unique_Set] UNIQUE NONCLUSTERED ([UserId], [LanguageId]),
+    CONSTRAINT [FK_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[Users] ([UserId]),
+    CONSTRAINT [FK_Language] FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id])
+);
+
+    
 
 
 CREATE TABLE [dbo].[Languages] (
