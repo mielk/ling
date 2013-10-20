@@ -45,6 +45,7 @@ input.default
 input.default:focus
 {
     border-color: rgb(56, 71, 120);
+    color: rgb(56, 71, 120);
     background-color: rgb(186, 210, 223);
 }
 
