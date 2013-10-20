@@ -118,14 +118,16 @@ input[type=submit].centered
 
 input.valid
 {
-    border-color: green;
-    background-color: green;
+    border-color: rgb(46, 129, 46);
+    color: rgb(46, 129, 46);
+    background-color: rgb(170, 255, 168);
 }
 
 input.invalid
 {
-    border-color: red;
-    background-color: red;
+    border-color: rgb(143, 0, 0);
+    color: rgb(143, 0, 0);
+    background-color: rgb(255, 205, 205);
 }
 
 input[type=submit]
