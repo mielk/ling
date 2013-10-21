@@ -6,7 +6,6 @@ using System.Web.Mvc;
 using Typer.BLL.Services;
 using Typer.DAL.Repositories;
 using Typer.Domain.Entities;
-using Typer.Domain.ViewModels;
 using Typer.Web.Models;
 
 namespace Typer.Web.Controllers
@@ -56,11 +55,12 @@ namespace Typer.Web.Controllers
 
 
         [AllowAnonymous]
-        public ActionResult ChangeWeight(int id, int weight)
+        public ActionResult UpdateWeight(int id, int weight)
         {
             service.changeWeight(id, weight);
             return Redirect(Request.UrlReferrer.ToString());
         }
+
 
 
         [HttpGet]
@@ -70,15 +70,18 @@ namespace Typer.Web.Controllers
 
             setNavigationPoint();
 
-            QuestionEditViewModel question = new QuestionEditViewModel()
-            {
-                Question = service.getQuestion(id),
-                User = (User)HttpContext.Session[LoginController.USER_KEY]
-            };
-            
+            Question question = service.getQuestion(id);
+            User user = (User)HttpContext.Session[LoginController.USER_KEY];
 
-            if (question != null && question.isValid()){
-                return View(question);
+            if (user == null || user.UserID == 0)
+                user = new User(){ Username = "test", UserID = 1 };
+
+            QuestionEditViewModel questionViewModel = new QuestionEditViewModel(question, user);
+
+
+            if (questionViewModel != null && questionViewModel.isValid())
+            {
+                return View(questionViewModel);
             } else {
                 return Redirect(Request.Url.ToString());
             }
@@ -88,16 +91,16 @@ namespace Typer.Web.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult Edit(QuestionEditViewModel question)
+        public ActionResult Edit(QuestionEditViewModel questionViewModel)
         {
 
             //Zapisuje zmiany w pytaniu do bazy.
-
-
+            Question question = questionViewModel.Question;
+            service.saveQuestion(question);
 
             return NavigateToHomePage();
-        }
 
+        }
 
 
         [AllowAnonymous]
@@ -114,8 +117,6 @@ namespace Typer.Web.Controllers
             service.activate(id);
             return Redirect(Request.UrlReferrer.ToString());
         }
-
-
 
 
         #region Helpers
@@ -145,7 +146,6 @@ namespace Typer.Web.Controllers
         }
 
         #endregion
-
 
     }
 }

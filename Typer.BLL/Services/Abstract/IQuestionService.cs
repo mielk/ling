@@ -16,5 +16,6 @@ namespace Typer.BLL.Services
         bool deactivate(int id);
         bool nameExists(string name);
         bool nameExists(int id, string name);
+        bool saveQuestion(Question question);
     }
 }

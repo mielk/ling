@@ -155,6 +155,7 @@
     </Compile>
     <Compile Include="HtmlHelpers\PagingHelpers.cs" />
     <Compile Include="Models\PagingInfo.cs" />
+    <Compile Include="Models\QuestionEditViewModel.cs" />
     <Compile Include="Models\QuestionsListViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -284,6 +285,7 @@
     <Content Include="Views\Edit\List.cshtml" />
     <Content Include="Views\Edit\Question.cshtml" />
     <Content Include="Views\Edit\Edit.cshtml" />
+    <Content Include="Views\Edit\EditLanguage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

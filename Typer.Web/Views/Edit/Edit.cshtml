@@ -1,4 +1,4 @@
-﻿@model Typer.Domain.ViewModels.QuestionEditViewModel
+﻿@model Typer.Web.Models.QuestionEditViewModel
 
 @{
     ViewBag.Title = "Edit";
@@ -12,17 +12,14 @@
 <div class="container">
     <div class="vert-center edit-panel">
 
+    @using (Html.BeginForm())
+    {
+
         <fieldset>
             
-            <div id="div_id" class="field-line">
-                @Html.LabelFor(q => q.Question.Id, new { @class="label" })
+            <div id="div_id" class="hidden">
                 <span>
-                    @Html.TextBoxFor(q => q.Question.Id, new{  
-                        @class="field id", 
-                        @placeholder="Id", 
-                        @id="Id",
-                        @disabled="disabled"
-                    })
+                    @Html.TextBoxFor(q => q.Question.Id, new{ @id="Id" })
                 </span>
             </div>
 
@@ -41,7 +38,36 @@
                 </span>
             </div>
 
-@*            <div id="div_categories" class="field-line">
+            <div id="div_weight" class="field-line">
+
+                <div class="hidden">
+                    @Html.TextBoxFor(q => q.Question.Weight)
+                </div>
+
+                @Html.LabelFor(q => q.Question.Weight, new { 
+                    @class="label",
+                    @id="questionWeight"
+                })
+
+
+                <div id="weight-panel">
+                    <div class="weight">
+                    @for (int i = 0; i < Model.Question.Weight; i++)
+                    {
+                        <div class="weight-icon checked">@i.ToString()</div>
+                    }
+
+                    @for (int i = Model.Question.Weight; i < 10; i++)
+                    {
+                        <div class="weight-icon">@i.ToString()</div>
+                    }
+                    </div>
+                </div>
+
+            </div>
+
+
+            @*<div id="div_categories" class="field-line">
                 @Html.LabelFor(q => q.Name, new { @class="label" })
                 <div class="invisible error">
                     <div class="error_content"></div>
@@ -60,12 +86,21 @@
 
             <div id="languages_panel">
 
+                @foreach (var language in Model.UserLanguages) {
+                    Html.RenderPartial("EditLanguage", language);
+                }
+
+            </div>
 
 
+            <div class="footer">
+                <input id="btnSave" type="submit" value="Save" />
             </div>
 
 
         </fieldset>
 
+    }
+        
     </div>
 </div>

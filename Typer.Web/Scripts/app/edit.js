@@ -3,17 +3,19 @@
     return ctrl ? ctrl.val() : 0;
 };
 var model;
+var weightModel;
 
 $(document).ready(function () {
     adjustPlaceholder();
     setFocusForUsernameControl();
     model = modelConstructor();
+    weightModel = weightModelConstructor();
 });
 
 
 function adjustPlaceholder() {
     var supported = Modernizr.input.placeholder;
-    $("#account label").css({ 'display': 'block' });
+    $("#account label").css({ 'display' : 'block' });
 }
 
 function setFocusForUsernameControl() {
@@ -71,7 +73,11 @@ var modelConstructor = function () {
 
 };
 
+var weightModelConstructor = function () {
+    var tbWeight = $("#questionWeight")[0];
 
+
+}
 
 
 function ControlGroup(_id, _fn) {

@@ -30,19 +30,97 @@ namespace Typer.DAL.Repositories
             return context.Questions.SingleOrDefault(q => q.Name == name);
         }
 
-        public bool changeWeight(int id, int weight)
+
+
+
+        #region Update methods.
+
+        public bool updateName(int id, string name)
         {
             Question question = getQuestion(id);
             if (question != null)
             {
-                question.Weight = weight;
+                return updateName(question, name);
+            }
+
+            return false;
+        }
+
+        public bool updateName(Question question, string name)
+        {
+            try
+            {
+                question.Name = name;
                 context.SaveChanges();
                 return true;
+            }
+            catch (Exception exception)
+            {
+                return false;
+            }
+        }
+
+        public bool updateWeight(int id, int weight)
+        {
+            Question question = getQuestion(id);
+            if (question != null)
+            {
+                return updateWeight(question, weight);
             }
 
             return false;
 
         }
+
+        public bool updateWeight(Question question, int weight)
+        {
+            try
+            {
+                question.Weight = weight;
+                context.SaveChanges();
+                return true;
+            }
+            catch (Exception exception)
+            {
+                return false;
+            }
+        }
+
+        public bool updateProperties(int id, string name, int weight)
+        {
+            Question question = getQuestion(id);
+            if (question != null)
+            {
+                return updateProperties(question, name, weight);
+            }
+
+            return false;
+        }
+
+        public bool updateProperties(Question question, string name, int weight)
+        {
+            try
+            {
+                question.Name = name;
+                question.Weight = weight;
+                context.SaveChanges();
+                return true;
+            }
+            catch (Exception exception)
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
+
+
+
+
+
+
+
 
 
         public bool activate(int id)

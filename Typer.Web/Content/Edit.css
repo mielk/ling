@@ -57,6 +57,11 @@ input[type=submit].centered
 }
 
 
+.hidden
+{
+    display: none;
+}
+
 .error
 {
     display: table;
@@ -306,6 +311,7 @@ div.pager a.selected {
 {
     display: table-cell;
     position: relative;
+    float: left;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -382,5 +388,55 @@ div.pager a.selected {
     position: relative;
     border-top: 1px solid #888;
     border-bottom: 1px solid #888;
+    background-color: green;
+}
+
+.language
+{
+    display: block;
+    position: relative;
+    background-color: blue;
+    padding: 6px 0px;
+    border-top: 1px solid #ccc;
+}
+
+#languages_panel .language:first-child {  
+   border-top: none;  
+}
+
+
+
+#weight-panel
+{
+    display: table;
+    height: 34px;
+}
+
+#weight-panel div.weight
+{
+    display: table-cell;
+    width: 210px;
+    margin: 0px 18px;
+    vertical-align: middle;
+}
+
+#weight-panel div.weight-icon
+{
+    display: table-cell;
+    position: relative;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 18px;
+    height: 18px;
+    margin-left: 0px;
+    margin-right: 3px;
+    font-size: 0px;
+    border: 1px solid #999999;
+}
+
+#div_weight div.checked
+{
     background-color: green;
 }

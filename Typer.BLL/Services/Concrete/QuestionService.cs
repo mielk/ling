@@ -44,7 +44,7 @@ namespace Typer.BLL.Services
 
         public bool changeWeight(int id, int weight)
         {
-            return repository.changeWeight(id, weight.ToRange(Question.MinWeight, Question.MaxWeight));
+            return repository.updateWeight(id, weight.ToRange(Question.MinWeight, Question.MaxWeight));
         }
 
 
@@ -69,6 +69,11 @@ namespace Typer.BLL.Services
             return repository.nameExists(id, name);
         }
 
+
+        public bool saveQuestion(Question question)
+        {
+            return repository.updateProperties(question.Id, question.Name, question.Weight);
+        }
 
 
     }

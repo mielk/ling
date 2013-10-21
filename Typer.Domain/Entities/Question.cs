@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace Typer.Domain.Entities
 {
@@ -13,7 +14,7 @@ namespace Typer.Domain.Entities
         public const int MinWeight = 1;
         public const int MaxWeight = 10;
 
-        [Display(Name = "Id")]
+        [HiddenInput(DisplayValue = false)]
         public int Id { get; set; }
 
         [Display(Name = "Name")]

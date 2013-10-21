@@ -4,23 +4,43 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Typer.Domain.Entities;
+using Typer.BLL.Services;
 
-namespace Typer.Domain.ViewModels
+namespace Typer.Web.Models
 {
     public class QuestionEditViewModel
     {
+
+        private ILanguageService languageService = LanguageServicesFactory.Instance().getService();
 
         public Question Question { get; set; }
 
         public User User { get; set; }
 
+        public IEnumerable<Language> UserLanguages { get; set; }
 
 
-        public IEnumerable<Language> getUserLanguages()
+
+        public QuestionEditViewModel()
+        {
+        }
+
+
+        public QuestionEditViewModel(Question question, User user)
+        {
+            Question = question;
+            User = user;
+            UserLanguages = getUserLanguages();
+        }
+
+
+
+
+        private IEnumerable<Language> getUserLanguages()
         {
             if (User != null)
             {
-                //return User.getLanguages();
+                return languageService.getUserLanguages(User.UserID);
             }
 
             return null;
@@ -37,9 +57,6 @@ namespace Typer.Domain.ViewModels
             return false;
 
         }
-
-
-
 
 
 
@@ -63,6 +80,8 @@ namespace Typer.Domain.ViewModels
         //        return mine;
         //    }
         //}
+
+
 
     }
 }
