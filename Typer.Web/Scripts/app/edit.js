@@ -73,11 +73,38 @@ var modelConstructor = function () {
 
 };
 
-var weightModelConstructor = function () {
-    var tbWeight = $("#questionWeight")[0];
 
+
+var weightModelConstructor = function () {
+
+    var tbWeight = $("#Weight")[0];
+
+    var weight = $(tbWeight).val();
+
+    $("#weight-panel").find(".weight-icon").bind({
+        'click': function () {
+            weight = this.innerHTML * 1;
+            $(tbWeight).val(weight);
+            renderIcons();
+        }
+    });
+
+
+    function renderIcons() {
+        $("#weight-panel").find(".weight-icon").each(
+            function (key, value) {
+                var i = this.innerHTML * 1;
+                if (i <= weight) {
+                    $(this).addClass("checked");
+                } else {
+                    $(this).removeClass("checked");
+                }
+            }
+        );
+    }
 
 }
+
 
 
 function ControlGroup(_id, _fn) {
