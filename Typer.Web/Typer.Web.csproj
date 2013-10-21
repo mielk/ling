@@ -162,10 +162,13 @@
   <ItemGroup>
     <Content Include="Content\Edit.css" />
     <Content Include="Content\images\close.png" />
+    <Content Include="Content\images\gold_star.png" />
+    <Content Include="Content\images\gray_star.png" />
     <Content Include="Content\images\icon_invalid.png" />
     <Content Include="Content\images\icon_invalid2.png" />
     <Content Include="Content\images\icon_valid.png" />
     <Content Include="Content\images\icon_valid2.png" />
+    <Content Include="Content\images\white_star.png" />
     <Content Include="Content\Login.css" />
     <Content Include="Content\normalize.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />

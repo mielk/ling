@@ -320,12 +320,13 @@ div.pager a.selected {
     margin-left: 0px;
     margin-right: 3px;
     font-size: 0px;
-    border: 1px solid #999999;
+    border: 1px solid transparent;
+    background-image: url('images/gray_star.png');
 }
 
 .question a.checked
 {
-    background-color: green;
+    background-image: url('images/gold_star.png');
 }
 
 
@@ -433,10 +434,11 @@ div.pager a.selected {
     margin-left: 0px;
     margin-right: 3px;
     font-size: 0px;
-    border: 1px solid #999999;
+    border: 1px solid transparent;
+    background-image: url('images/gray_star.png');
 }
 
 #div_weight div.checked
 {
-    background-color: green;
+    background-image: url('images/gold_star.png');
 }
