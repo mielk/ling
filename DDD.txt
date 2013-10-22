@@ -1,0 +1,2 @@
+http://www.infoq.com/minibooks/domain-driven-design-quickly
+http://blog.fedecarg.com/2009/03/11/domain-driven-design-and-mvc-architectures/

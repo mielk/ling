@@ -60,3 +60,27 @@ CREATE TABLE [dbo].[Languages] (
     [OriginalName] VARCHAR (255) NULL,
     PRIMARY KEY CLUSTERED ([Id] ASC)
 );
+
+
+
+CREATE TABLE [dbo].[QuestionOptions]
+(
+    [Id]         INT IDENTITY (1, 1) NOT NULL,
+	[QuestionId] INT NOT NULL,
+	[LanguageId] INT NOT NULL,
+	[Content]	 NVARCHAR(255) NOT NULL,
+	[Weight]     INT           DEFAULT ((1)) NOT NULL,
+    [IsActive]   BIT           DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT           NOT NULL,
+    [CreateDate] DATETIME      DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT           DEFAULT ((0)) NOT NULL,
+    [Positive]   INT           DEFAULT ((0)) NOT NULL,
+    [Negative]   INT           DEFAULT ((0)) NOT NULL,
+    [IsComplex]  BIT           DEFAULT ((1)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_QuestionId] FOREIGN KEY ([QuestionId]) REFERENCES [dbo].[Questions] ([Id]),
+	CONSTRAINT [FK_QuestionLanguage] FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id]),
+	CONSTRAINT [FK_QuestionOption_Creator] FOREIGN KEY ([CreatorId]) REFERENCES [dbo].[Users] ([UserId]),
+    CONSTRAINT [QuestionOption_Check_Weight] CHECK ([Weight] > (0) AND [Weight] <= (10)),
+    CONSTRAINT [QuestionOption_Unique_Name] UNIQUE NONCLUSTERED ([Content] ASC)
+);
