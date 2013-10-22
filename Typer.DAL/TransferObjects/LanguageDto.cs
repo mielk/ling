@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Typer.DAL.TransferObjects
 {
-    public class UserLanguage
+    public class LanguageDto
     {
         public int Id { get; set; }
-        public int LanguageId { get; set; }
-        public int UserId { get; set; }
+        public string Name { get; set; }
     }
+
 }

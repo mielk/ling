@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Typer.DAL.Infrastructure;
-using Typer.Domain.Entities;
+using Typer.DAL.TransferObjects;
 
 namespace Typer.DAL.Repositories
 {
@@ -13,22 +13,22 @@ namespace Typer.DAL.Repositories
 
 
 
-        public User getUser(int userID)
+        public UserDto getUser(int userID)
         {
             return context.Users.Single(u => u.UserID == userID);
         }
 
-        public User getUser(string username)
+        public UserDto getUser(string username)
         {
             return context.Users.SingleOrDefault(u => u.Username == username);
         }
 
-        public User getUser(string username, string password)
+        public UserDto getUser(string username, string password)
         {
             return context.Users.SingleOrDefault(u => u.Username == username && u.Password == password && u.IsActive == true);
         }
 
-        public User getUserByMail(string mail)
+        public UserDto getUserByMail(string mail)
         {
             return context.Users.SingleOrDefault(u => u.Email == mail);
         }
@@ -38,14 +38,14 @@ namespace Typer.DAL.Repositories
 
         public bool userExists(string username)
         {
-            User user = getUser(username);
-            return (user != null);
+            int count = context.Users.Count(u => u.Username == username);
+            return (count > 0);
         }
 
         public bool userExists(string username, string password)
         {
-            User user = getUser(username, password);
-            return (user != null);
+            int count = context.Users.Count(u => u.Username == username && u.Password == password);
+            return (count > 0);
         }
 
         public bool mailExists(string mail)
@@ -54,7 +54,7 @@ namespace Typer.DAL.Repositories
             return (records > 0 ? true : false);
         }
 
-        public bool addUser(User user)
+        public bool addUser(UserDto user)
         {
             try
             {
@@ -73,7 +73,7 @@ namespace Typer.DAL.Repositories
         {
             try
             {
-                User user = getUser(userId);
+                UserDto user = getUser(userId);
                 user.MailVerified = true;
                 user.VerificationDate = DateTime.Now;
                 context.SaveChanges();
@@ -85,12 +85,14 @@ namespace Typer.DAL.Repositories
             }
         }
 
-        public bool resetVerificationCode(int userId)
+        public bool resetVerificationCode(int userId, string code)
         {
             try
             {
-                User user = getUser(userId);
-                user.generateVerificationData();
+                UserDto user = getUser(userId);
+                user.MailVerified = false;
+                user.VerificationDate = null;
+                user.VerificationCode = code;
                 context.SaveChanges();
                 return true;
             }
@@ -100,10 +102,11 @@ namespace Typer.DAL.Repositories
             }
         }
 
-        public bool resetPassword(User user, string password)
+        public bool resetPassword(int userId, string password)
         {
             try
             {
+                UserDto user = getUser(userId);
                 user.Password = password;
                 context.SaveChanges();
                 return true;

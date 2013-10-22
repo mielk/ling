@@ -9,7 +9,7 @@ using Typer.Web.HtmlHelpers;
 using System.Web.Mvc;
 using Typer.Web.Models;
 using System;
-using Typer.BLL.Services;
+using Typer.Domain.Services;
 
 namespace Typer.Tests.UnitTests.Controllers
 {

@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Typer.Domain.Entities;
+using Typer.DAL.TransferObjects;
 
 namespace Typer.DAL.Repositories
 {
     public interface ILanguageRepository
     {
-        IEnumerable<Language> getLanguages();
-        Language getLanguage(int id);
-        IEnumerable<Language> getUserLanguages(int userId);
+        IEnumerable<LanguageDto> getLanguages();
+        LanguageDto getLanguage(int id);
+        IEnumerable<LanguageDto> getUserLanguages(int userId);
     }
 }

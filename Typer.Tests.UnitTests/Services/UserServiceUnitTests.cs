@@ -1,8 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Typer.BLL.Services;
 using Typer.DAL.Repositories;
 using Typer.Domain.Entities;
+using Typer.Domain.Services;
 using Moq;
 
 namespace Typer.Tests.UnitTests.Domain

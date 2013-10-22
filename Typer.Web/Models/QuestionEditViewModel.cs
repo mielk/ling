@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Typer.Domain.Entities;
-using Typer.BLL.Services;
+using Typer.Domain.Services;
 
 namespace Typer.Web.Models
 {

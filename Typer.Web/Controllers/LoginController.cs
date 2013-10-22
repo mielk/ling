@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.Mvc;
 using System.Web.Security;
-using Typer.BLL.Services;
+using Typer.Domain.Services;
 using Typer.Domain.Entities;
 using Typer.Common.Helpers;
 

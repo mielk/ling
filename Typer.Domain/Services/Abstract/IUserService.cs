@@ -1,0 +1,18 @@
+﻿using Typer.Domain.Entities;
+
+namespace Typer.Domain.Services
+{
+    public interface IUserService
+    {
+        User getUser(UserLoginData loginData);
+        User getUserByName(string username);
+        User getUserByMail(string mail);
+        bool IsAuthenticated(UserLoginData loginData);
+        bool addUser(User user);
+        bool userExists(string username);
+        bool mailExists(string mail);
+        bool verifyMail(int userId);
+        bool resetVerificationCode(int userId);
+        bool resetPassword(User user, string password);
+    }
+}

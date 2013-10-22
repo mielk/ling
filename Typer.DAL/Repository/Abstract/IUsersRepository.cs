@@ -1,20 +1,20 @@
-﻿using Typer.Domain.Entities;
+﻿using Typer.DAL.TransferObjects;
 
 namespace Typer.DAL.Repositories
 {
     public interface IUsersRepository
     {
-        User getUser(int userID);
-        User getUser(string username);
-        User getUser(string username, string password);
-        User getUserByMail(string mail);
+        UserDto getUser(int userID);
+        UserDto getUser(string username);
+        UserDto getUser(string username, string password);
+        UserDto getUserByMail(string mail);
         bool userExists(string username);
         bool userExists(string username, string password);
         bool mailExists(string mail);
-        bool addUser(User user);
+        bool addUser(UserDto user);
         bool verifyMail(int userId);
-        bool resetVerificationCode(int userId);
-        bool resetPassword(User user, string password);
+        bool resetVerificationCode(int userId, string code);
+        bool resetPassword(int userId, string password);
         
     }
 }

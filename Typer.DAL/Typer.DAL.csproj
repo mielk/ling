@@ -54,18 +54,15 @@
     <Compile Include="Repository\Concrete\EFQuestionsRepository.cs" />
     <Compile Include="Repository\Concrete\EFUsersRepository.cs" />
     <Compile Include="Infrastructure\RepositoryFactory.cs" />
-    <Compile Include="TransferObjects\UserLanguage.cs" />
+    <Compile Include="TransferObjects\LanguageDto.cs" />
+    <Compile Include="TransferObjects\QuestionDto.cs" />
+    <Compile Include="TransferObjects\UserDto.cs" />
+    <Compile Include="TransferObjects\UserLanguageDto.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Typer.Domain\Typer.Domain.csproj">
-      <Project>{3eaa9d4e-25a5-4e32-b0c5-2e45ad15bd91}</Project>
-      <Name>Typer.Domain</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

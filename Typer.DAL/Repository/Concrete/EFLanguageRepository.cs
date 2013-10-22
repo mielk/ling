@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.TransferObjects;
-using Typer.Domain.Entities;
 
 namespace Typer.DAL.Repositories
 {
@@ -13,17 +12,17 @@ namespace Typer.DAL.Repositories
     {
 
         private static readonly EFDbContext context = EFDbContext.getInstance();
-        private static IDictionary<int, Language> dict = new Dictionary<int, Language>();
+        private static IDictionary<int, LanguageDto> dict = new Dictionary<int, LanguageDto>();
 
 
-        public IEnumerable<Language> getLanguages()
+        public IEnumerable<LanguageDto> getLanguages()
         {
             return context.Languages;
         }
 
-        public Language getLanguage(int id)
+        public LanguageDto getLanguage(int id)
         {
-            Language language = getLanguageFromDictionary(id);
+            LanguageDto language = getLanguageFromDictionary(id);
             if (language != null)
             {
                 return language;
@@ -43,7 +42,7 @@ namespace Typer.DAL.Repositories
         }
 
 
-        private Language getLanguageFromDictionary(int id)
+        private LanguageDto getLanguageFromDictionary(int id)
         {
             if (dict.ContainsKey(id))
             {
@@ -55,13 +54,13 @@ namespace Typer.DAL.Repositories
         }
 
 
-        public IEnumerable<Language> getUserLanguages(int userId)
+        public IEnumerable<LanguageDto> getUserLanguages(int userId)
         {
 
-            List<Language> languages = new List<Language>();
-            IEnumerable<UserLanguage> languageUserObjects = context.UserLanguages.Where(l => l.UserId == userId);
+            List<LanguageDto> languages = new List<LanguageDto>();
+            IEnumerable<UserLanguageDto> languageUserObjects = context.UserLanguages.Where(l => l.UserId == userId);
 
-            foreach (UserLanguage ul in languageUserObjects)
+            foreach (UserLanguageDto ul in languageUserObjects)
             {
                 languages.Add(getLanguage(ul.LanguageId));
             }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Typer.BLL.Services;
+using Typer.Domain.Services;
 using Typer.DAL.Repositories;
 using Typer.Domain.Entities;
 using Typer.Web.Models;
