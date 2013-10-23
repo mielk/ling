@@ -192,5 +192,12 @@ namespace Typer.DAL.Repositories
         }
 
 
+
+        public IEnumerable<QuestionOptionDto> getOptions(int questionId)
+        {
+            return context.QuestionOptions.Where(o => o.QuestionId == questionId && o.IsActive == true);
+        }
+
+
     }
 }

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using Typer.Domain.Services;
 
 namespace Typer.Domain.Entities
 {
@@ -46,6 +44,19 @@ namespace Typer.Domain.Entities
 
         //[Display(Name = "Categories")]
 
+
+        private IEnumerable<QuestionOption> options;
+        public IEnumerable<QuestionOption> Options
+        {
+            get
+            {
+                if (options == null)
+                    options = QuestionServicesFactory.Instance().getService().getOptions(Id);
+
+                return options;
+
+            }
+        }
 
         public Question()
         {

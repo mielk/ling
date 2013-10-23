@@ -104,7 +104,16 @@ namespace Typer.Domain.Services
 
         public IEnumerable<QuestionOption> getOptions(int questionId)
         {
-            return null;
+            List<QuestionOption> options = new List<QuestionOption>();
+            IEnumerable<QuestionOptionDto> dataObjects = repository.getOptions(questionId);
+
+            foreach (QuestionOptionDto dto in dataObjects)
+            {
+                options.Add(optionFromDto(dto));
+            }
+
+            return options;
+
         }
 
 

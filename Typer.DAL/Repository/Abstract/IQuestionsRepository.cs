@@ -19,6 +19,8 @@ namespace Typer.DAL.Repositories
         bool deactivate(int id);
         bool nameExists(string name);
         bool nameExists(int id, string name);
+
+        IEnumerable<QuestionOptionDto> getOptions(int questionId);
         
     }
 }

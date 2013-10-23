@@ -73,6 +73,7 @@ namespace Typer.Web.Controllers
             setNavigationPoint();
 
             Question question = service.getQuestion(id);
+            IEnumerable<QuestionOption> options = question.Options;
             User user = (User)HttpContext.Session[Typer.Domain.Entities.User.SESSION_KEY];
 
             if (user == null || user.UserID == 0)
