@@ -13,7 +13,11 @@ namespace Typer.Web.Controllers
         public const string USER_KEY = "User";
         private readonly IUserService userService;
         private readonly IMailSender mailSender;
-        private RedirectResult navigationPoint;
+        private RedirectResult navigationPoint
+        {
+            get { return Session["LoginControllerNavigationPoint"] as RedirectResult; }
+            set { Session["LoginControllerNavigationPoint"] = value; }
+        }
 
 
         public LoginController(IUserService userService, IMailSender mailSender)
@@ -22,12 +26,10 @@ namespace Typer.Web.Controllers
             this.mailSender = mailSender;
         }
 
+
         private void setNavigationPoint()
         {
-            if (Request.UrlReferrer != null)
-            {
-                navigationPoint = Redirect(Request.UrlReferrer.ToString());
-            }
+            navigationPoint = Request.UrlReferrer == null ? null : Redirect(Request.UrlReferrer.ToString());
         }
 
 
@@ -151,9 +153,11 @@ namespace Typer.Web.Controllers
         public ActionResult NavigateToHomePage()
         {
 
-            if (navigationPoint != null)
+            RedirectResult url = navigationPoint;
+
+            if (url != null)
             {
-                return navigationPoint;
+                return url;
             }
             else
             {

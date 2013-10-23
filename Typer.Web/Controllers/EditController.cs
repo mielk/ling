@@ -14,8 +14,13 @@ namespace Typer.Web.Controllers
     {
 
         private readonly IQuestionService service;
-        private RedirectResult navigationPoint;
         public int PageSize = 10;
+        private RedirectResult navigationPoint
+        {
+            get { return Session["EditControllerNavigationPoint"] as RedirectResult; }
+            set { Session["EditControllerNavigationPoint"] = value; }
+        }
+
 
 
         public EditController(IQuestionService service)
@@ -26,10 +31,7 @@ namespace Typer.Web.Controllers
 
         private void setNavigationPoint()
         {
-            if (Request.UrlReferrer != null)
-            {
-                navigationPoint = Redirect(Request.UrlReferrer.ToString());
-            }
+            navigationPoint = Request.UrlReferrer == null ? null : Redirect(Request.UrlReferrer.ToString());
         }
 
 
@@ -124,9 +126,11 @@ namespace Typer.Web.Controllers
         private ActionResult NavigateToHomePage()
         {
 
-            if (navigationPoint != null)
+            RedirectResult url = navigationPoint;
+
+            if (url != null)
             {
-                return navigationPoint;
+                return url;
             }
             else
             {

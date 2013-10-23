@@ -13,6 +13,15 @@ namespace Typer.DAL.Infrastructure
         public DbSet<LanguageDto> Languages { get; set; }
         public DbSet<UserLanguageDto> UserLanguages { get; set; }
 
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserDto>().ToTable("Users");
+            modelBuilder.Entity<QuestionDto>().ToTable("Questions");
+            modelBuilder.Entity<LanguageDto>().ToTable("Languages");
+            modelBuilder.Entity<UserLanguageDto>().ToTable("UserLanguages");
+        }
+
+
 
         private EFDbContext()
         {

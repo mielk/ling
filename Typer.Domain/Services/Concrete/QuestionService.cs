@@ -77,7 +77,17 @@ namespace Typer.Domain.Services
 
         public bool nameExists(int id, string name)
         {
-            return repository.nameExists(id, name);
+            QuestionDto question = repository.getQuestion(name);
+
+            if (question != null)
+            {
+                return (question.Id == id ? false : true);
+            }
+            else
+            {
+                return false;
+            }
+
         }
 
 
