@@ -473,6 +473,7 @@ div.pager a.selected {
     background-color: #ccc;
 }
 
+
 .language .name
 {
     float: left;
@@ -487,6 +488,7 @@ div.pager a.selected {
     background-color: transparent;
 }
 
+
 .language div.options
 {
     float: left;
@@ -499,8 +501,6 @@ div.pager a.selected {
     border-top: 1px solid #444;
     background-color: #222;
 }
-
-
 
 
 #weight-panel

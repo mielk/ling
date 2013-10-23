@@ -12,6 +12,7 @@ namespace Typer.DAL.Infrastructure
         public DbSet<QuestionDto> Questions { get; set; }
         public DbSet<LanguageDto> Languages { get; set; }
         public DbSet<UserLanguageDto> UserLanguages { get; set; }
+        public DbSet<QuestionOptionDto> QuestionOptions { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -19,6 +20,7 @@ namespace Typer.DAL.Infrastructure
             modelBuilder.Entity<QuestionDto>().ToTable("Questions");
             modelBuilder.Entity<LanguageDto>().ToTable("Languages");
             modelBuilder.Entity<UserLanguageDto>().ToTable("UserLanguages");
+            modelBuilder.Entity<QuestionOptionDto>().ToTable("QuestionOptions");
         }
 
 

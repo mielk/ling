@@ -102,6 +102,11 @@ namespace Typer.Domain.Services
             return repository.addQuestion(dto);
         }
 
+        public IEnumerable<QuestionOption> getOptions(int questionId)
+        {
+            return null;
+        }
+
 
 
 
@@ -122,7 +127,6 @@ namespace Typer.Domain.Services
             };
         }
 
-
         private QuestionDto questionToDto(Question question)
         {
             return new QuestionDto()
@@ -137,6 +141,45 @@ namespace Typer.Domain.Services
                 Negative = question.Negative,
                 Positive = question.Positive,
                 Weight = question.Weight
+            };
+        }
+
+
+        private QuestionOption optionFromDto(QuestionOptionDto dto)
+        {
+            return new QuestionOption()
+            {
+                Content = dto.Content,
+                CreateDate = dto.CreateDate,
+                CreatorId = dto.CreatorId,
+                Id = dto.Id,
+                IsActive = dto.IsActive,
+                IsApproved = dto.IsApproved,
+                IsComplex = dto.IsComplex,
+                LanguageId = dto.LanguageId,
+                Negative = dto.Negative,
+                Positive = dto.Positive,
+                QuestionId = dto.QuestionId,
+                Weight = dto.Weight
+            };
+        }
+
+        private QuestionOptionDto optionToDto(QuestionOption option)
+        {
+            return new QuestionOptionDto()
+            {
+                Content = option.Content,
+                CreateDate = option.CreateDate,
+                CreatorId = option.CreatorId,
+                Id = option.Id,
+                IsActive = option.IsActive,
+                IsApproved = option.IsApproved,
+                IsComplex = option.IsComplex,
+                LanguageId = option.LanguageId,
+                Negative = option.Negative,
+                Positive = option.Positive,
+                QuestionId = option.QuestionId,
+                Weight = option.Weight
             };
         }
 

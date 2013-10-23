@@ -18,5 +18,6 @@ namespace Typer.Domain.Services
         bool nameExists(int id, string name);
         bool updateQuestion(Question question);
         bool addQuestion(Question question);
+        IEnumerable<QuestionOption> getOptions(int questionId);
     }
 }
