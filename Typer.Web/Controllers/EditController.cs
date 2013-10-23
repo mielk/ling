@@ -73,7 +73,7 @@ namespace Typer.Web.Controllers
             setNavigationPoint();
 
             Question question = service.getQuestion(id);
-            User user = (User)HttpContext.Session[LoginController.USER_KEY];
+            User user = (User)HttpContext.Session[Typer.Domain.Entities.User.SESSION_KEY];
 
             if (user == null || user.UserID == 0)
                 user = new User(){ Username = "test", UserID = 1 };
@@ -90,7 +90,6 @@ namespace Typer.Web.Controllers
             
         }
 
-
         [HttpPost]
         [AllowAnonymous]
         public ActionResult Edit(QuestionEditViewModel questionViewModel)
@@ -98,9 +97,51 @@ namespace Typer.Web.Controllers
 
             //Zapisuje zmiany w pytaniu do bazy.
             Question question = questionViewModel.Question;
-            service.saveQuestion(question);
+            User user = (User)HttpContext.Session[Typer.Domain.Entities.User.SESSION_KEY];
+
+            if (question.Id == 0)
+            {
+                question.IsActive = true;
+                question.CreatorId = user.UserID;
+                question.CreateDate = DateTime.Now;
+                service.addQuestion(question);
+            }
+            else
+            {
+                service.updateQuestion(question);
+            }
 
             return NavigateToHomePage();
+
+        }
+
+
+
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult Add()
+        {
+            setNavigationPoint();
+
+            Question question = new Question();
+            User user = (User)HttpContext.Session[Typer.Domain.Entities.User.SESSION_KEY];
+
+            if (user == null || user.UserID == 0)
+                user = new User() { Username = "test", UserID = 1 };
+
+            QuestionEditViewModel questionViewModel = new QuestionEditViewModel(question, user);
+
+
+            if (questionViewModel != null)
+            {
+                return View("Edit", questionViewModel);
+            }
+            else
+            {
+                return Redirect(Request.Url.ToString());
+            }
 
         }
 

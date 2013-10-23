@@ -20,6 +20,13 @@
 }
 
 
+<div>
+    @Html.ActionLink("Add", "Add", "Edit", new { @class = "add" })
+</div>
+
+
+
+
 <div class="pager">
     @Html.PageLinks(Model.PagingInfo, x => Url.Action("List", new {page = x}))
 </div>

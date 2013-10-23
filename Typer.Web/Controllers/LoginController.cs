@@ -10,7 +10,6 @@ namespace Typer.Web.Controllers
 
     public class LoginController : Controller
     {
-        public const string USER_KEY = "User";
         private readonly IUserService userService;
         private readonly IMailSender mailSender;
         private RedirectResult navigationPoint
@@ -64,11 +63,11 @@ namespace Typer.Web.Controllers
                 }
                 else
                 {
-
+                    
                     if (user.MailVerified)
                     {
                         FormsAuthentication.SetAuthCookie(data.Username, false);
-                        HttpContext.Session[USER_KEY] = user;
+                        HttpContext.Session[Typer.Domain.Entities.User.SESSION_KEY] = user;
                         if (navigationPoint != null)
                         {
                             return navigationPoint;
@@ -93,7 +92,7 @@ namespace Typer.Web.Controllers
         public ActionResult Logout()
         {
             FormsAuthentication.SignOut();
-            HttpContext.Session[USER_KEY] = null;
+            HttpContext.Session[Typer.Domain.Entities.User.SESSION_KEY] = null;
             return RedirectToAction("Index", "Home");
         }
 

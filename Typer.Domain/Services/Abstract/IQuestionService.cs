@@ -16,6 +16,7 @@ namespace Typer.Domain.Services
         bool deactivate(int id);
         bool nameExists(string name);
         bool nameExists(int id, string name);
-        bool saveQuestion(Question question);
+        bool updateQuestion(Question question);
+        bool addQuestion(Question question);
     }
 }

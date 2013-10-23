@@ -9,6 +9,8 @@ namespace Typer.DAL.Repositories
         QuestionDto getQuestion(int id);
         QuestionDto getQuestion(string name);
 
+        bool addQuestion(QuestionDto question);
+
         bool updateName(int id, string name);
         bool updateWeight(int id, int weight);
         bool updateProperties(int id, string name, int weight);

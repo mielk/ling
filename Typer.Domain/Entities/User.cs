@@ -7,6 +7,8 @@ namespace Typer.Domain.Entities
     public class User
     {
 
+        public const string SESSION_KEY = "User";
+
         #region Instance properties.
         //
         

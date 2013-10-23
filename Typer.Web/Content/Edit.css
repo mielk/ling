@@ -442,3 +442,25 @@ div.pager a.selected {
 {
     background-image: url('images/gold_star.png');
 }
+
+
+
+a.add
+{
+    display: block;
+    position: relative;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: auto;
+    height: 32px;
+    padding: 6px 18px;
+    margin: 12px;
+    text-align: center;
+    text-decoration: none;
+    border: 1px solid #666666;
+    background-color: rgb(65, 218, 101);
+    color: white;
+    font-weight: bold;
+}

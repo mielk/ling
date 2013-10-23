@@ -46,6 +46,11 @@ namespace Typer.Domain.Entities
 
         //[Display(Name = "Categories")]
 
+
+        public Question()
+        {
+            Weight = 1;
+        }
         
         
     }

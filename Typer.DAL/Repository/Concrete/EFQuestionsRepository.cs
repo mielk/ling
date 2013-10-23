@@ -33,6 +33,23 @@ namespace Typer.DAL.Repositories
 
 
 
+        public bool addQuestion(QuestionDto question)
+        {
+            try
+            {
+                context.Questions.Add(question);
+                context.SaveChanges();
+                return true;
+            }
+            catch (Exception exception)
+            {
+                return false;
+            }
+        }
+
+
+
+
         #region Update methods.
 
         public bool updateName(int id, string name)

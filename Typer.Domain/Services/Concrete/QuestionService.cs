@@ -91,9 +91,15 @@ namespace Typer.Domain.Services
         }
 
 
-        public bool saveQuestion(Question question)
+        public bool updateQuestion(Question question)
         {
             return repository.updateProperties(question.Id, question.Name, question.Weight);
+        }
+
+        public bool addQuestion(Question question)
+        {
+            QuestionDto dto = questionToDto(question);
+            return repository.addQuestion(dto);
         }
 
 
