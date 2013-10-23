@@ -156,6 +156,7 @@
     <Compile Include="HtmlHelpers\PagingHelpers.cs" />
     <Compile Include="Models\PagingInfo.cs" />
     <Compile Include="Models\QuestionEditViewModel.cs" />
+    <Compile Include="Models\QuestionLanguageViewModel.cs" />
     <Compile Include="Models\QuestionsListViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

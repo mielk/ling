@@ -17,7 +17,7 @@ namespace Typer.Web.Models
 
         public User User { get; set; }
 
-        public IEnumerable<Language> UserLanguages { get; set; }
+        public IEnumerable<QuestionLanguageViewModel> UserLanguages { get; set; }
 
 
 
@@ -30,17 +30,26 @@ namespace Typer.Web.Models
         {
             Question = question;
             User = user;
-            UserLanguages = getUserLanguages();
+            UserLanguages = getLanguages();
         }
 
 
 
 
-        private IEnumerable<Language> getUserLanguages()
+        private IEnumerable<QuestionLanguageViewModel> getLanguages()
         {
             if (User != null)
             {
-                return languageService.getUserLanguages(User.UserID);
+                IEnumerable<Language> languages = languageService.getUserLanguages(User.UserID);
+                List<QuestionLanguageViewModel> questionLanguages = new List<QuestionLanguageViewModel>();
+
+                foreach (Language language in languages)
+                {
+                    questionLanguages.Add(new QuestionLanguageViewModel(language));
+                }
+
+                return questionLanguages;
+
             }
 
             return null;

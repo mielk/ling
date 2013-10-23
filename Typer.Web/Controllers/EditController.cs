@@ -56,6 +56,7 @@ namespace Typer.Web.Controllers
         }
 
 
+
         [AllowAnonymous]
         public ActionResult UpdateWeight(int id, int weight)
         {
