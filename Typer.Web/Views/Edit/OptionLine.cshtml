@@ -1,5 +1,8 @@
 ﻿@model Typer.Domain.Entities.QuestionOption
 
 <div class="option">
-    @Model.Id - @Model.Content - @Model.Weight
+    <div class="button delete">del</div>
+    <div class="button edit">edit</div>
+    <div class="content">@Model.Content</div>
+    <div class="weight">@Model.Weight</div>
 </div>
