@@ -595,9 +595,6 @@ div.pager a.selected {
 {
     width: auto;
     height: 100%;
-    padding: 6px;
-    line-height: 12px;
-    font-size: 12px;
 }
 
 .option .weight
@@ -613,4 +610,31 @@ div.pager a.selected {
     background-color: #444;
     color: #ddd;
     text-align: center;
+}
+
+.option span
+{
+    display: inline-block;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    height: 100%;
+    width: auto;
+}
+
+span.plain
+{
+    padding: 6px 3px;
+    line-height: 12px;
+    font-size: 12px;
+}
+
+span.complex
+{
+    border: 1px solid rgb(161, 144, 0);
+    padding: 5px;
+    line-height: 12px;
+    font-size: 12px;
+    background-color: rgb(255, 240, 182);
+    color: rgb(161, 144, 0);
 }

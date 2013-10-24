@@ -27,5 +27,27 @@ namespace Typer.Web.HtmlHelpers
 
         }
 
+
+        public static MvcHtmlString QuestionDisplayer(this HtmlHelper html, string content){
+            StringBuilder result = new StringBuilder();
+            string[] parts = content.Replace("[", "|$").Replace("]", "|").Split('|');
+
+            foreach (string s in parts)
+            {
+                if (s.Length > 0)
+                {
+                    result. Append("<span class=\"").
+                            Append(s.StartsWith("$") ? "complex" : "plain").
+                            Append("\">").
+                            Append(s.Replace("$", "")).
+                            Append("</span>");
+                }
+            }
+
+            return MvcHtmlString.Create(result.ToString());
+
+        }
+
+
     }
 }
