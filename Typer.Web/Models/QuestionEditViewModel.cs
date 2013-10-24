@@ -23,6 +23,7 @@ namespace Typer.Web.Models
 
         public QuestionEditViewModel()
         {
+
         }
 
 
@@ -45,7 +46,7 @@ namespace Typer.Web.Models
 
                 foreach (Language language in languages)
                 {
-                    questionLanguages.Add(new QuestionLanguageViewModel(language));
+                    questionLanguages.Add(new QuestionLanguageViewModel(Question, language));
                 }
 
                 return questionLanguages;

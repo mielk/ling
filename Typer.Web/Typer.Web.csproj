@@ -290,6 +290,7 @@
     <Content Include="Views\Edit\Question.cshtml" />
     <Content Include="Views\Edit\Edit.cshtml" />
     <Content Include="Views\Edit\EditLanguage.cshtml" />
+    <Content Include="Views\Edit\OptionLine.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

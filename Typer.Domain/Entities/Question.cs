@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Web.Mvc;
 using Typer.Domain.Services;
 
@@ -62,7 +63,13 @@ namespace Typer.Domain.Entities
         {
             Weight = 1;
         }
-        
+
+
+        public IEnumerable<QuestionOption> getOptions(int languageId)
+        {
+            return Options.Where(o => o.LanguageId == languageId);
+        }
+
         
     }
 }

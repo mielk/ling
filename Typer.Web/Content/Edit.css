@@ -57,6 +57,7 @@ input[type=submit].centered
 }
 
 
+
 .hidden
 {
     display: none;
@@ -499,7 +500,7 @@ div.pager a.selected {
     height: 50px;
     margin-bottom: 12px;
     border-top: 1px solid #444;
-    background-color: #222;
+    background-color: #eee;
 }
 
 
@@ -537,4 +538,22 @@ div.pager a.selected {
 #div_weight div.checked
 {
     background-image: url('images/gold_star.png');
+}
+
+
+
+.option
+{
+    display: block;
+    position: relative;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    height: 24px;
+    padding: 6px;
+    line-height: 12px;
+    font-size: 12px;
+    background-color: azure;
 }

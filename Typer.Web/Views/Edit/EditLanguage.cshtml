@@ -1,4 +1,4 @@
-﻿@model Typer.Domain.Entities.Language
+﻿@model Typer.Web.Models.QuestionLanguageViewModel
 
 <div class="language">
 
@@ -9,7 +9,9 @@
     </div>
 
     <div class="options">
-
+        @foreach (var option in Model.Options) {
+            Html.RenderPartial("OptionLine", option);
+        }
     </div>
 
 

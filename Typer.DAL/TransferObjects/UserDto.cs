@@ -21,9 +21,5 @@ namespace Typer.DAL.TransferObjects
         public string VerificationCode { get; set; }
         public DateTime? VerificationDate { get; set; }
 
-        public UserDto()
-        {
-        }
-
     }
 }
