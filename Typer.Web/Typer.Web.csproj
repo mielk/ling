@@ -232,6 +232,7 @@
     <Compile Include="App_Start\NinjectWebCommon.Bindings.cs" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\app\edit.js" />
+    <Content Include="Scripts\app\editOptions.js" />
     <Content Include="Scripts\app\global.js" />
     <Content Include="Scripts\app\register.js" />
     <Content Include="Scripts\app\mailValidation.js" />
