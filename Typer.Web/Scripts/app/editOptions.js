@@ -35,12 +35,22 @@ function Option(_container) {
     
     this.name = _container.id;
 
-    alert(this.name);
-
-
     function control(selector) {
-        return $(this.container).find('.' + selector)[0];
+        return $(_container).find('.' + selector)[0];
     }
+
+
+    $(this.delete).bind({
+        click: function (e) {
+            alert('delete');
+        }
+    });
+
+    $(this.edit).bind({
+        click: function (e) {
+            alert('edit');
+        }
+    });
 
 }
 
