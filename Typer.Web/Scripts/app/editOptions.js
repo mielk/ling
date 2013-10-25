@@ -1,32 +1,55 @@
 ﻿var options = new HashTable(null);
+var editPanel;
 
 $(function () {
+
     $('.option').each(function (i, obj) {
         var option = new Option(obj);
         options.setItem(option.getName(), option);
     });
 
+    editPanel = new EditPanel();
+
 });
 
-var editPanel = function () {
 
-    var inactiveLayer = $('#inactive-layer')[0];
-    var container = $('#edit-container')[0];
-    var name = $('#edit-name')[0];
-    var weight = $('#edit-weight')[0];
+function EditPanel() {
+    var me = this;
+    this.inactiveLayer = $('#inactive-layer')[0];
+    this.container = $('#edit-container')[0];
+    //this.name = $('#edit-name');
+    //this.weight = $('#edit-weight');
+    this.close = $('#edit-close')[0];
 
-    return {
 
-        display: function () {
-
+    $(this.close).bind({
+        'click': function () {
+            me.hide();
         }
+    });
 
-    }
+}
+EditPanel.prototype.display = function (option) {
+        $(this.inactiveLayer).css({
+            'display': 'block'
+        });
+        $(this.container).css({
+            'display': 'block'
+        });
+}
+EditPanel.prototype.hide = function () {
+        $(this.inactiveLayer).css({
+            'display': 'none'
+        });
+        $(this.container).css({
+            'display': 'none'
+        });
+}
 
-}();
 
 
 function Option(_container) {
+    var me = this;
     this.container = _container;
     this.delete = control("delete");
     this.edit = control("edit");
@@ -48,7 +71,7 @@ function Option(_container) {
 
     $(this.edit).bind({
         click: function (e) {
-            alert('edit');
+            editPanel.display(me);
         }
     });
 
@@ -57,4 +80,3 @@ function Option(_container) {
 Option.prototype.getName = function () {
     return this.name;
 }
-
