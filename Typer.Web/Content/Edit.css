@@ -682,7 +682,6 @@ span.complex
     float: left;
     width: 100%;
     height: 100px;
-    padding: 18px;
     background-color: transparent;
 }
 
@@ -690,8 +689,8 @@ span.complex
 {
     display: block !important;
     position: absolute !important;
-    top: -31px !important;
-    right: 0px !important;
+    top: -41px !important;
+    right: -41px !important;
     width: 32px !important;
     height: 32px !important;
     padding: 0px !important;
@@ -699,4 +698,99 @@ span.complex
     background-image: url('images/close.png') !important;
     background-position: center;
     background-color: transparent !important;
+}
+
+
+#edit-container .line
+{
+    display: block;
+    position: relative;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    /*height: 30px;*/
+    margin: 0;
+    padding: 6px;
+    background-color: green;
+    overflow: visible;
+}
+
+#edit-container .label
+{
+    display: block;
+    position: relative;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 80px;
+    height: 100%;
+    padding: 6px 12px;
+    border: 1px solid transparent;
+    color: #ddd;
+    text-align: center;
+    font-weight: bold;
+}
+
+#edit-container span{
+    display: block;
+    overflow: hidden;
+    margin: 0;
+}
+
+
+
+#edit-container .error
+{
+    display: table;
+    vertical-align: middle;
+    float: right;
+    height: 33px;
+    background-color: red;
+    border: 1px solid #777777;
+}
+
+#edit-container .error_content
+{
+    display: table-cell; 
+    vertical-align: middle; 
+    text-align: center;
+    font-size: 13px;
+}
+
+#edit-container .icon
+{
+    display: block;
+    position: relative;
+    float: right;
+    width: 32px;
+    height: 32px;
+    margin-left: 3px;
+    border: 1px solid transparent;
+}
+
+
+#edit-container input[type=text]
+{
+    font-size: 17px;
+    font-weight: bold;
+    box-shadow: 1px 1px 0px 0px rgba(255,255,255,0.25);
+    outline-width: 0px;
+    outline-style: none;
+    outline-color: invert;
+}
+
+
+#edit-container input.default
+{
+    padding: 6px 12px;
+}
+
+#edit-container input.default:focus
+{
+    border-color: rgb(56, 71, 120);
+    color: rgb(56, 71, 120);
+    background-color: rgb(186, 210, 223);
 }

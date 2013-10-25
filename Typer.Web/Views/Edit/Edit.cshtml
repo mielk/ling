@@ -13,10 +13,35 @@
 <div id="edit-container">
     <div class="relative">
         <div id="edit-close"></div>
-        <input id="name" type="text" />
-        <input id="weight" type="text" />
+        <div id="edit-name" class="line">
+            <div id="name-label" class="label">Name</div>
+            <div class="error">
+                <div class="error_content"></div>
+            </div>
+            <span class="icon"></span>
+            <span>
+                <input id="name" class="default" type="text" />
+            </span>
+        </div>
+        <div id="edit-weight" class="line">
+            <div id="weight-label" class="label">Weight</div>
+            <input id="weight" type="text" />
+            <div id="edit-weight-panel">
+                <div class="weight">
+                    @for (int i = 0; i < 10; i++)
+                    {
+                        <div class="weight-icon">@(i + 1)</div>
+                    }
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+
+
+
+
 
 <div class="container">
     <div class="vert-center edit-panel">
