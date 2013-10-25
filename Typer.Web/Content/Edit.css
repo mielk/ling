@@ -578,17 +578,16 @@ div.pager a.selected {
     width: 24px;
     height: 100%;
     margin-right: 6px;
-    border: 1px solid #999;
 }
 
 .option .delete
 {
-    border-color: red;
+    background-image: url('images/delete.png');
 }
 
 .option .edit
 {
-    border-color: blue;
+    background-image: url('images/edit.png');
 }
 
 .option .content

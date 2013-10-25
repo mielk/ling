@@ -163,6 +163,8 @@
   <ItemGroup>
     <Content Include="Content\Edit.css" />
     <Content Include="Content\images\close.png" />
+    <Content Include="Content\images\delete.png" />
+    <Content Include="Content\images\edit.png" />
     <Content Include="Content\images\gold_star.png" />
     <Content Include="Content\images\gray_star.png" />
     <Content Include="Content\images\icon_invalid.png" />

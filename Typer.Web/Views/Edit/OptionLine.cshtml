@@ -1,8 +1,8 @@
 ﻿@model Typer.Domain.Entities.QuestionOption
 
 <div id="option_@Model.Id" class="option">
-    <div class="button delete">del</div>
-    <div class="button edit">edit</div>
+    <div class="button delete" title="Delete this option"></div>
+    <div class="button edit" title="Edit this option"></div>
     <div class="content">
         @Html.QuestionDisplayer(Model.Content)
     </div>
