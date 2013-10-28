@@ -1,11 +1,11 @@
-﻿var options = new HashTable(null);
+﻿var languages = new HashTable(null);
+var options = new HashTable(null);
 var editPanel;
 
 $(function () {
 
-    $('.option').each(function (i, obj) {
-        var option = new Option(obj);
-        options.setItem(option.getName(), option);
+    $('.language').each(function (i, obj) {
+        var language = new Language(this);
     });
 
     editPanel = new EditPanel();
@@ -26,7 +26,7 @@ function EditPanel() {
     this.weightIcons = new WeightIcons(editPanel, this.weightIconsContainer);
     this.cancel = $(this.container).find('#cancel-edit')[0];
     this.confirm = $(this.container).find('#confirm-edit')[0];
-
+    this.currentOption;
 
     //weight-icons
     this.close = $('#edit-close')[0];
@@ -37,6 +37,19 @@ function EditPanel() {
             me.hide();
         }
     });
+
+    $(this.cancel).bind({
+        'click': function () {
+            me.hide();
+        }
+    });
+
+    $(this.confirm).bind({
+        'click': function () {
+            alert('CONFIRM');
+        }
+    });
+
 
     var timer;
     $(this.name).
@@ -100,6 +113,8 @@ function EditPanel() {
     function isValidName(name) {
         if (name.length === 0) {
             return MessageBundle.get(dict.NameCannotBeEmpty);
+        } else if(!isUniqueContent(me.currentOption, name)) {
+            return MessageBundle.get(dict.NameAlreadyExists);
         } else {
             return true;
         }
@@ -109,17 +124,20 @@ function EditPanel() {
         $(this.nameError).css({ 'visibility': 'hidden' });
         $(this.nameErrorIcon).removeClass('iconInvalid').addClass('iconValid');
         $(this.name).removeClass('invalid').addClass('valid');
+        $(this.confirm).removeAttr('disabled');
     }
     this.markNameAsInvalid = function (msg) {
         $(this.nameErrorContent).text(msg);
         $(this.nameError).css({ 'visibility': 'visible' });        
         $(this.nameErrorIcon).removeClass('iconValid').addClass('iconInvalid');
         $(this.name).removeClass('valid').addClass('invalid');
+        $(this.confirm).attr('disabled', 'disabled');
     }
 
 
 }
 EditPanel.prototype.display = function (option) {
+    this.currentOption = option;
     $(this.name).val(option.getContent());
     $(this.weight).val(option.getWeight());
     this.validateName();
@@ -132,13 +150,17 @@ EditPanel.prototype.display = function (option) {
     });
 }
 EditPanel.prototype.hide = function () {
-        $(this.inactiveLayer).css({
-            'display': 'none'
-        });
-        $(this.container).css({
-            'display': 'none'
-        });
+    this.currentOption = null;
+    $(this.inactiveLayer).css({
+        'display': 'none'
+    });
+    $(this.container).css({
+        'display': 'none'
+    });
 }
+
+
+
 
 
 function WeightIcons(parent, container) {
@@ -187,8 +209,38 @@ WeightIcons.prototype.setValue = function (value) {
 
 
 
-function Option(_container) {
+function Language(container) {
     var me = this;
+    this.container = container;
+    this.name = $(this.container).attr('data-value');
+    this.options = new HashTable(null);
+    
+    $(this.container).find('.option').each(function (i, obj) {
+        var option = new Option(obj, me);
+        me.options.setItem(option.getName(), option);
+    });
+
+}
+Language.prototype.getName = function () {
+    return this.name;
+}
+Language.prototype.isUnique = function (content, optionId) {
+    var unique = true;
+    this.options.each(function (key, option) {
+        if (option.getContent() === content) {
+            if (option.getName() !== optionId) {
+                unique = false;
+            }
+        }
+    });
+    return unique;
+}
+
+
+
+function Option(_container, language) {
+    var me = this;
+    this.language = language;
     this.container = _container;
     this.delete = control("delete");
     this.edit = control("edit");
@@ -226,4 +278,13 @@ Option.prototype.getContent = function () {
 Option.prototype.getWeight = function () {
     var value = $(this.weight).attr('data-value');
     return value;
+}
+Option.prototype.getLanguage = function () {
+    return this.language;
+}
+
+
+function isUniqueContent(option, content) {
+    var language = option.getLanguage();
+    return language.isUnique(content.trim(), option.getName());
 }
