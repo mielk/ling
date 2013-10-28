@@ -16,10 +16,10 @@
         
         <div id="edit-name" class="line">
             <div id="name-label" class="label">Name</div>
-            <div class="error">
-                <div class="error_content"></div>
+            <div id="name-error" class="error">
+                <div id="name-error-content" class="error_content"></div>
             </div>
-            <span class="icon"></span>
+            <span id="name-error-icon" class="icon"></span>
             <span>
                 <input id="name" class="default" type="text" />
             </span>
@@ -41,10 +41,11 @@
 
         </div>
 
-        <div id="edit-buttons" class="line">
-
-
-
+        <div class="line">
+            <div id="edit-buttons">
+                <input id="confirm-edit" type="submit" value="Confirm" class="edit-button" />
+                <input id="cancel-edit" type="submit" value="Cancel" class="edit-button" />
+            </div>
         </div>
 
     </div>

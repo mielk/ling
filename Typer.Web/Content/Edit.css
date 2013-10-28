@@ -392,14 +392,14 @@ div.pager a.selected {
     border: 1px solid transparent;
 }
 
-.edit-panel .iconValid
+.iconValid
 {
     background-image: url('images/icon_valid.png');
     background-position: center;
     /*background-color: green;*/
 }
 
-.edit-panel .iconInvalid
+.iconInvalid
 {
     background-image: url('images/icon_invalid.png');
     background-position: center;
@@ -767,6 +767,7 @@ span.complex
     vertical-align: middle; 
     text-align: center;
     font-size: 13px;
+    color: white;
 }
 
 #edit-container .icon
@@ -824,4 +825,22 @@ span.complex
     width: 210px;
     vertical-align: middle;
     text-align: center;
+}
+
+
+#edit-buttons
+{
+    width: 200px;
+    margin: 0 auto;
+}
+
+#edit-buttons .edit-button:first-child {  
+   margin-left: 0;
+}
+
+.edit-button
+{
+    float: left !important;
+    text-align: center;
+    margin-left: 9px;
 }

@@ -18,9 +18,14 @@ function EditPanel() {
     this.inactiveLayer = $('#inactive-layer')[0];
     this.container = $('#edit-container')[0];
     this.name = $(this.container).find('#name')[0];
+    this.nameErrorContent = $(this.container).find('#name-error-content')[0];
+    this.nameError = $(this.container).find('#name-error')[0];
+    this.nameErrorIcon = $(this.container).find('#name-error-icon')[0];
     this.weight = $(this.container).find('#weight')[0];
     this.weightIconsContainer = $(this.container).find('#weight-icons')[0];
     this.weightIcons = new WeightIcons(editPanel, this.weightIconsContainer);
+    this.cancel = $(this.container).find('#cancel-edit')[0];
+    this.confirm = $(this.container).find('#confirm-edit')[0];
 
 
     //weight-icons
@@ -33,7 +38,24 @@ function EditPanel() {
         }
     });
 
+    var timer;
     $(this.name).
+        bind({
+            'keyup': function () {
+                if (timer) {
+                    clearTimeout(timer);
+                }
+                timer = setTimeout(function () {
+                    me.validateName();
+                }, 150);
+            },
+            'change': function () {
+                me.validateName();
+            },
+            'mouseup': function (e) {
+                e.preventDefault();
+            }
+        }).
         on({
             'focus': function (e) {
                 this.select();
@@ -62,10 +84,45 @@ function EditPanel() {
     });
 
 
+    this.validateName = function () {
+        var ctrl = $(this.name);
+        var name = ctrl.val();
+        var isValid = isValidName(name);
+
+        if (isValid === true) {
+            this.markNameAsValid();
+        } else {
+            this.markNameAsInvalid(isValid);
+        }
+
+    }
+
+    function isValidName(name) {
+        if (name.length === 0) {
+            return MessageBundle.get(dict.NameCannotBeEmpty);
+        } else {
+            return true;
+        }
+    }
+
+    this.markNameAsValid = function () {
+        $(this.nameError).css({ 'visibility': 'hidden' });
+        $(this.nameErrorIcon).removeClass('iconInvalid').addClass('iconValid');
+        $(this.name).removeClass('invalid').addClass('valid');
+    }
+    this.markNameAsInvalid = function (msg) {
+        $(this.nameErrorContent).text(msg);
+        $(this.nameError).css({ 'visibility': 'visible' });        
+        $(this.nameErrorIcon).removeClass('iconValid').addClass('iconInvalid');
+        $(this.name).removeClass('valid').addClass('invalid');
+    }
+
+
 }
 EditPanel.prototype.display = function (option) {
     $(this.name).val(option.getContent());
     $(this.weight).val(option.getWeight());
+    this.validateName();
     this.weightIcons.setValue(option.getWeight());
     $(this.inactiveLayer).css({
         'display': 'block'
