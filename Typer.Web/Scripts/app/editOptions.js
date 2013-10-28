@@ -46,7 +46,10 @@ function EditPanel() {
 
     $(this.confirm).bind({
         'click': function () {
-            alert('CONFIRM');
+            if (me.currentOption) {
+                me.currentOption.update(me.getName(), me.getWeight());
+            }
+            me.hide();
         }
     });
 
@@ -133,7 +136,12 @@ function EditPanel() {
         $(this.name).removeClass('valid').addClass('invalid');
         $(this.confirm).attr('disabled', 'disabled');
     }
-
+    this.getName = function () {
+        return $(this.name).val();
+    }
+    this.getWeight = function () {
+        return $(this.weight).val();
+    }
 
 }
 EditPanel.prototype.display = function (option) {
@@ -282,7 +290,42 @@ Option.prototype.getWeight = function () {
 Option.prototype.getLanguage = function () {
     return this.language;
 }
+Option.prototype.update = function (content, weight) {
+    $(this.content).
+        html(
+            contentToHtml(content)
+        ).
+        attr({
+            'data-value' : content
+        });
+    $(this.weight).
+        text(weight).
+        attr({
+            'data-value': weight
+        });
+        
+}
 
+function contentToHtml(content) {
+    //var replaced = text.replaceAll(content, "[", "|$");
+    var replaced = content.replace(/\[/g, '|$').replace(/\]/g, '|');
+    var parts = replaced.split("|");
+
+    var result = '';
+    for (var part = 0; part < parts.length; part++) {
+        var s = parts[part];
+        if (s.length > 0) {
+            result += '<span class="';
+            result += (text.startsWith(s, '$') ? 'complex' : 'plain');
+            result += '">';
+            result += s.replace("$", "");
+            result += '</span>';
+        }
+    }
+
+    return result;
+
+}
 
 function isUniqueContent(option, content) {
     var language = option.getLanguage();

@@ -93,6 +93,11 @@ var text = text || {
 
     isValidMail : function(mail){
         return (mail.match(/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/) ? true : false);
-    }    
+    },
+
+    startsWith: function(base, prefix){
+        var s = base.substr(0, prefix.length);
+        return (s === prefix);
+    }
 
 }
