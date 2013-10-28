@@ -76,7 +76,7 @@ var modelConstructor = function () {
 
 
 var weightModelConstructor = function () {
-
+    var CHECKED_CSS_CLASS = "weight-checked";
     var tbWeight = $("#Weight")[0];
 
     var weight = $(tbWeight).val();
@@ -95,9 +95,9 @@ var weightModelConstructor = function () {
             function (key, value) {
                 var i = this.innerHTML * 1;
                 if (i <= weight) {
-                    $(this).addClass("checked");
+                    $(this).addClass(CHECKED_CSS_CLASS);
                 } else {
-                    $(this).removeClass("checked");
+                    $(this).removeClass(CHECKED_CSS_CLASS);
                 }
             }
         );

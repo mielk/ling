@@ -37,6 +37,9 @@ span
 
 input.default
 {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
     width: 100%;
     color: #222;
     background-color: rgb(245, 245, 245);
@@ -56,6 +59,10 @@ input[type=submit].centered
     float: none;
 }
 
+.centered
+{
+    text-align: center;
+}
 
 
 .hidden
@@ -514,7 +521,8 @@ div.pager a.selected {
     vertical-align: middle;
 }
 
-#weight-panel div.weight-icon
+/*#weight-panel div*/
+.weight-icon
 {
     display: table-cell;
     position: relative;
@@ -531,7 +539,7 @@ div.pager a.selected {
     background-image: url('images/gray_star.png');
 }
 
-#div_weight div.checked
+.weight-checked
 {
     background-image: url('images/gold_star.png');
 }
@@ -667,8 +675,9 @@ span.complex
     top: 150px;
     left: 25%;
     padding: 0;
-    background-color: #555;
-    color: #ddd;
+    /*background-color: #555;*/
+    background-color: white;
+    color: #222;
     border: 4px solid #333;
     z-index: 100;
 }
@@ -727,7 +736,7 @@ span.complex
     height: 100%;
     padding: 6px 12px;
     border: 1px solid transparent;
-    color: #ddd;
+    color: #444;
     text-align: center;
     font-weight: bold;
 }
@@ -795,17 +804,24 @@ span.complex
     background-color: rgb(186, 210, 223);
 }
 
-#edit-container .weight-icons
+#edit-container .weight-icons-container
 {
-    display: block;
+    display: table;
     position: relative;
     float: right;
-    overflow: hidden;
+    width: 440px;
+    height: 32px;
     margin: 0;
     margin-right: 35px;
     margin-left: 9px;
-    width: 400px;
-    height: 32px;
     border: 1px solid transparent;
-    background-color: red;
+    text-align: center;
+}
+
+#edit-container .weight-icons
+{
+    display: table-cell;
+    width: 210px;
+    vertical-align: middle;
+    text-align: center;
 }

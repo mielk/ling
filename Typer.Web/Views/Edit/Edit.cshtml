@@ -27,14 +27,16 @@
 
         <div id="edit-weight" class="line">
             <div id="weight-label" class="label">Weight</div>
-            <div class="weight-icons">
-@*                   @for (int i = 0; i < 10; i++)
-                {
-                    <div class="weight-icon">@(i + 1)</div>
-                }*@
+            <div class="weight-icons-container">
+                <div id="weight-icons" class="weight-icons">
+                    @for (int i = 0; i < 10; i++)
+                    {
+                        <div id="@i" class="weight-icon">@(i + 1)</div>
+                    }
+                </div>
             </div>
             <span>
-                <input id="weight" class="default short" type="text" />
+                <input id="weight" class="default centered" type="text" />
             </span>
 
         </div>
@@ -100,7 +102,7 @@
                     <div class="weight">
                         @for (int i = 0; i < Model.Question.Weight; i++)
                         {
-                            <div class="weight-icon checked">@(i + 1)</div>
+                            <div class="weight-icon weight-checked">@(i + 1)</div>
                         }
 
                         @for (int i = Model.Question.Weight; i < 10; i++)
