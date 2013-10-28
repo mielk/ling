@@ -207,7 +207,7 @@ WeightIcons.prototype.setValue = function (value) {
     this.value = value;
     var cls = this.CHECKED_CSS_CLASS;
     this.icons.each(function (i, obj) {
-        if (i < value) {
+        if (i * 1 < value * 1) {
             $(obj).addClass(cls);
         } else {
             $(obj).removeClass(cls);
@@ -307,7 +307,6 @@ Option.prototype.update = function (content, weight) {
 }
 
 function contentToHtml(content) {
-    //var replaced = text.replaceAll(content, "[", "|$");
     var replaced = content.replace(/\[/g, '|$').replace(/\]/g, '|');
     var parts = replaced.split("|");
 
