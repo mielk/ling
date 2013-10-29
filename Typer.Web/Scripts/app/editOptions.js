@@ -227,10 +227,15 @@ WeightIcons.prototype.setValue = function (value) {
 function Language(container) {
     var me = this;
     this.container = container;
+    this.flag = $(this.container).find('.flag')[0];
+    this.collapseButton = $(this.container).find('.collapse')[0];
     this.name = $(this.container).attr('data-value');
     this.options = new HashTable(null);
     this.optionNum = 0;
     this.addButton = $(this.container).find('.add')[0];
+    this.isCollapsed = false;
+    this.optionsPanel = $(this.container).find('.options')[0];
+    this.buttonsPanel = $(this.container).find('.buttons')[0];
 
     $(this.container).find('.option').each(function (i, obj) {
         var option = new Option(obj, me);
@@ -245,6 +250,16 @@ function Language(container) {
         'click': function () {
             var option = new PreOption(me, ++me.optionNum);
             editPanel.display(option);
+        }
+    });
+
+    $(this.collapseButton).bind({
+        'click': function () {
+            if (me.isCollapsed === true) {
+                me.expand();
+            } else {
+                me.collapse();
+            }
         }
     });
 
@@ -269,10 +284,29 @@ Language.prototype.removeOption = function (option) {
 Language.prototype.createOption = function (_id, content, weight) {
     var container = jQuery('<div/>', {
         id: _id,
+        'class': 'option',
         html: optionToHtml(_id, content, weight)
     }).appendTo($(this.container).find('.options')[0]);
     var option = new Option(container, this);
     this.options.setItem(_id, option);
+}
+Language.prototype.collapse = function () {
+    this.isCollapsed = true;
+    $(this.optionsPanel).css({
+        'display' : 'none'
+    });
+    $(this.buttonsPanel).css({
+        'display': 'none'
+    });
+}
+Language.prototype.expand = function () {
+    this.isCollapsed = false;
+    $(this.optionsPanel).css({
+        'display': 'block'
+    });
+    $(this.buttonsPanel).css({
+        'display': 'block'
+    });
 }
 
 
@@ -345,7 +379,7 @@ Option.prototype.remove = function () {
 function PreOption(language, number) {
     var me = this;
     this.language = language;
-    this.name = 'option_' + number;
+    this.name = number;
 }
 PreOption.prototype.getName = function () {
     return this.name;
@@ -385,14 +419,12 @@ function contentToHtml(content) {
 }
 
 function optionToHtml(id, content, weight) {
-    var html = '<div id="' + id + '" class="option">';
-    html += '<div class="button delete" title="Delete this option"></div>';
+    var html = '<div class="button delete" title="Delete this option"></div>';
     html += '<div class="button edit" title="Edit this option"></div>';
     html += '<div class="content" data-value="' + content + '">';
     html += contentToHtml(content);
     html += '</div>';
     html += '<div class="weight" data-value="' + weight + '">' + weight + '</div>';
-    html += '</div>';
 
     return html;
 
