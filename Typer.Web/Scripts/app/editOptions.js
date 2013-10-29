@@ -243,6 +243,9 @@ Language.prototype.isUnique = function (content, optionId) {
     });
     return unique;
 }
+Language.prototype.removeOption = function (option) {
+    this.options.removeItem(option.getName());
+}
 
 
 
@@ -264,7 +267,7 @@ function Option(_container, language) {
 
     $(this.delete).bind({
         click: function (e) {
-            alert('delete');
+            me.remove();
         }
     });
 
@@ -304,6 +307,10 @@ Option.prototype.update = function (content, weight) {
             'data-value': weight
         });
         
+}
+Option.prototype.remove = function () {
+    this.language.removeOption(this);
+    $(this.container).remove();
 }
 
 function contentToHtml(content) {

@@ -844,3 +844,35 @@ span.complex
     text-align: center;
     margin-left: 9px;
 }
+
+div.buttons
+{
+    display: block;
+    position: relative;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    height: 40px;
+}
+
+div.add
+{
+    display: block;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    height: 32px;
+    width: auto;
+    border: 1px solid #555;
+    font-size: 14px;
+    line-height: 14px;
+    padding: 8px 18px;
+    box-shadow: 1px 1px 0px 0px rgba(255,255,255,0.25);
+    background-color: rgb(121, 173, 131);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
