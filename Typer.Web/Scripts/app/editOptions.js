@@ -14,6 +14,8 @@ $(function () {
 
 
 function EditPanel() {
+    this.MIN_WEIGHT = 1;
+    this.MAX_WEIGHT = 10;
     var me = this;
     this.inactiveLayer = $('#inactive-layer')[0];
     this.container = $('#edit-container')[0];
@@ -81,9 +83,11 @@ function EditPanel() {
     $(this.weight).
         bind({
             'change': function () {
+                var value = Math.min(Math.max(me.MIN_WEIGHT, $(this).val() * 1), me.MAX_WEIGHT);
+                $(this).val(value);
                 $(me.weightIconsContainer).trigger({
                     'type': 'changeValue',
-                    'weight': $(this).val()
+                    'weight': value
                 });
             }
         }).
@@ -156,6 +160,9 @@ EditPanel.prototype.display = function (option) {
     $(this.container).css({
         'display': 'block'
     });
+
+    $(this.name).focus();
+
 }
 EditPanel.prototype.hide = function () {
     this.currentOption = null;
@@ -222,10 +229,23 @@ function Language(container) {
     this.container = container;
     this.name = $(this.container).attr('data-value');
     this.options = new HashTable(null);
-    
+    this.optionNum = 0;
+    this.addButton = $(this.container).find('.add')[0];
+
     $(this.container).find('.option').each(function (i, obj) {
         var option = new Option(obj, me);
-        me.options.setItem(option.getName(), option);
+        var name = option.getName();
+        me.options.setItem(name, option);
+        if (name * 1 > me.optionNum) {
+            me.optionNum = name;
+        }
+    });
+
+    $(this.addButton).bind({
+        'click': function () {
+            var option = new PreOption(me, ++me.optionNum);
+            editPanel.display(option);
+        }
     });
 
 }
@@ -246,6 +266,16 @@ Language.prototype.isUnique = function (content, optionId) {
 Language.prototype.removeOption = function (option) {
     this.options.removeItem(option.getName());
 }
+Language.prototype.createOption = function (_id, content, weight) {
+    var container = jQuery('<div/>', {
+        id: _id,
+        html: optionToHtml(_id, content, weight)
+    }).appendTo($(this.container).find('.options')[0]);
+    var option = new Option(container, this);
+    this.options.setItem(_id, option);
+}
+
+
 
 
 
@@ -264,7 +294,6 @@ function Option(_container, language) {
         return $(_container).find('.' + selector)[0];
     }
 
-
     $(this.delete).bind({
         click: function (e) {
             me.remove();
@@ -278,7 +307,6 @@ function Option(_container, language) {
     });
 
 }
-
 Option.prototype.getName = function () {
     return this.name;
 }
@@ -313,6 +341,29 @@ Option.prototype.remove = function () {
     $(this.container).remove();
 }
 
+
+function PreOption(language, number) {
+    var me = this;
+    this.language = language;
+    this.name = 'option_' + number;
+}
+PreOption.prototype.getName = function () {
+    return this.name;
+}
+PreOption.prototype.getContent = function () {
+    return '';
+}
+PreOption.prototype.getWeight = function () {
+    return 1;
+}
+PreOption.prototype.getLanguage = function () {
+    return this.language;
+}
+PreOption.prototype.update = function (content, weight) {
+    this.language.createOption(this.name, content, weight);
+}
+
+
 function contentToHtml(content) {
     var replaced = content.replace(/\[/g, '|$').replace(/\]/g, '|');
     var parts = replaced.split("|");
@@ -332,6 +383,23 @@ function contentToHtml(content) {
     return result;
 
 }
+
+function optionToHtml(id, content, weight) {
+    var html = '<div id="' + id + '" class="option">';
+    html += '<div class="button delete" title="Delete this option"></div>';
+    html += '<div class="button edit" title="Edit this option"></div>';
+    html += '<div class="content" data-value="' + content + '">';
+    html += contentToHtml(content);
+    html += '</div>';
+    html += '<div class="weight" data-value="' + weight + '">' + weight + '</div>';
+    html += '</div>';
+
+    return html;
+
+}
+
+
+
 
 function isUniqueContent(option, content) {
     var language = option.getLanguage();
