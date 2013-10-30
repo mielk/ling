@@ -8,7 +8,8 @@ namespace Typer.Web.Controllers
 {
     public class TestController : Controller
     {
-        
+
+        [AllowAnonymous]
         public ActionResult Index()
         {
             return View();

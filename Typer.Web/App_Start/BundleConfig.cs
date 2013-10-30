@@ -32,6 +32,9 @@ namespace Typer.Web
                                     "~/Scripts/app/edit.js",
                                     "~/Scripts/app/editOptions.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/test").Include(
+                                    "~/Scripts/app/test.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/resend").Include(
                         "~/Scripts/app/mailValidation.js"));
 
@@ -48,11 +51,15 @@ namespace Typer.Web
                         "~/Content/normalize.css",
                         "~/Content/Edit.css"));
 
+            bundles.Add(new StyleBundle("~/Content/test").Include(
+                        "~/Content/normalize.css",
+                        "~/Content/Test.css"));
+
             bundles.Add(new StyleBundle("~/Content/user").Include(
                                     "~/Content/UserPanel.css"));
 
             bundles.Add(new StyleBundle("~/Content/login").Include(
-                        "~/Content/normalize.css", 
+                        "~/Content/normalize.css",
                         "~/Content/login.css"));
 
             bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(

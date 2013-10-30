@@ -1,0 +1,56 @@
+﻿#test-container
+{
+    
+}
+
+.test-panel
+{
+    display: table;
+    position: relative;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    height: 120px;
+    margin: 9px 0px;
+    padding: 12px;
+    border: 1px solid #888;
+}
+
+.test-panel-content
+{
+    display: table-cell;
+    vertical-align: middle;
+}
+
+
+#test-question
+{
+    background-color: green;
+}
+
+#test-answer
+{
+    display: block;
+    height: auto;
+}
+
+#test-answer-content
+{
+    display: block;
+    vertical-align: middle;
+}
+
+#test-answer-content textarea
+{
+    margin: 0;
+    padding: 0;
+    border: none;
+    width: 100%;
+    height: 100%;
+    line-height: 30px;
+    font-size: 20px;
+    text-indent: 0px;
+
+}

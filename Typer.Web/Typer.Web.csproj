@@ -174,6 +174,7 @@
     <Content Include="Content\images\white_star.png" />
     <Content Include="Content\Login.css" />
     <Content Include="Content\normalize.css" />
+    <Content Include="Content\Test.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -238,6 +239,7 @@
     <Content Include="Scripts\app\global.js" />
     <Content Include="Scripts\app\register.js" />
     <Content Include="Scripts\app\mailValidation.js" />
+    <Content Include="Scripts\app\test.js" />
     <Content Include="Scripts\app\util.js" />
     <Content Include="Scripts\jquery-1.7.1.js" />
     <Content Include="Scripts\jquery-1.7.1.min.js" />

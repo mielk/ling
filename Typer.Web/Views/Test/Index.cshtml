@@ -1,5 +1,25 @@
 ﻿@{
     ViewBag.Title = "Test";
+    @Styles.Render("~/Content/test")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/global")
+    @Scripts.Render("~/bundles/test")
 }
 
-<h2>Test</h2>
+<div id="test-container" class="container">
+
+    <div id="test-question" class="test-panel">
+        <div id="test-question-content" class="test-panel-content">
+            question
+        </div>
+    </div>
+
+    <div id="test-answer" class="test-panel">
+        <div id="test-answer-content" class="test-panel-content">
+            <textarea id="test-answer-text" rows="4" cols="50">
+            </textarea>
+        </div>
+    </div>
+
+</div>
