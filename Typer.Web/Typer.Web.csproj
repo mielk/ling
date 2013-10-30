@@ -158,6 +158,7 @@
     <Compile Include="Models\QuestionEditViewModel.cs" />
     <Compile Include="Models\QuestionLanguageViewModel.cs" />
     <Compile Include="Models\QuestionsListViewModel.cs" />
+    <Compile Include="Models\TestQuestionViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
