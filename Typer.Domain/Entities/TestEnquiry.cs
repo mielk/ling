@@ -14,11 +14,15 @@ namespace Typer.Domain.Entities
         private Language learnLanguage;
 
 
+
         public TestEnquiry(Question question, Language parent, Language learn)
         {
             this.question = question;
             this.parentLanguage = parent;
             this.learnLanguage = learn;
         }
+
+
+
     }
 }
