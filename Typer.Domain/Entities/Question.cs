@@ -46,6 +46,12 @@ namespace Typer.Domain.Entities
         //[Display(Name = "Categories")]
 
 
+        public Question()
+        {
+            Weight = 1;
+        }
+
+
         private IEnumerable<QuestionOption> options;
         public IEnumerable<QuestionOption> Options
         {
@@ -58,18 +64,13 @@ namespace Typer.Domain.Entities
 
             }
         }
-
-        public Question()
-        {
-            Weight = 1;
-        }
-
-
         public IEnumerable<QuestionOption> getOptions(int languageId)
         {
             return Options.Where(o => o.LanguageId == languageId);
         }
 
         
+
+
     }
 }
