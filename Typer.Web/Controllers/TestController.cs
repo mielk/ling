@@ -31,7 +31,7 @@ namespace Typer.Web.Controllers
             Language learn = languageService.getLanguage(2);
             TestQuestionViewModel viewModel = new TestQuestionViewModel() { Question = question, ParentLanguage = parent, LearnLanguage = learn };
 
-            string content = viewModel.getQuestionText();
+            
 
             return View(viewModel);
 
