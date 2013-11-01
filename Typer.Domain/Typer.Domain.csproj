@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\Language.cs" />
+    <Compile Include="Entities\OptionsDivider.cs" />
     <Compile Include="Entities\Question.cs" />
     <Compile Include="Entities\QuestionOption.cs" />
     <Compile Include="Entities\TestEnquiry.cs" />
