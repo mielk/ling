@@ -10,40 +10,30 @@ namespace Typer.Domain.Entities
     {
 
         private string text;
-        private List<string> list;
 
-        public static OptionsDivider instance(string text)
+
+        public OptionsDivider(string text)
         {
-            return new OptionsDivider();
+            this.text = text;
         }
 
 
         public List<string> getVariants()
         {
 
-            list = new List<string>();
-
-            if (!hasVariants(text))
-            {
-                list.Add(text);
-                
-            }
-            else
-            {
-                list = breakToVariants(text);
-            }
-
-            return list;
-
+            Part root = new Part(text);
+            return root.getVariants();
 
             //List<string> list = new List<string>();
-            //list.Add(Content);
-            //int counter;
+            //if (!hasVariants(text))
+            //{
+            //    list.Add(text);
 
-            //do{
-            //    counter = list.Count;
-            //    list = breakVariant(list);
-            //} while (list.Count > counter);
+            //}
+            //else
+            //{
+            //    list = breakToVariants(text);
+            //}
 
             //return list;
 
@@ -51,86 +41,165 @@ namespace Typer.Domain.Entities
 
 
 
-        private List<string> breakVariant(List<string> texts)
+        //private List<string> breakToVariants(string text)
+        //{
+        //    List<string> list = new List<string>();
+        //    Dictionary<int, List<string>> options = new Dictionary<int, List<string>>();
+        //    StringBuilder replaced = new StringBuilder();
+
+        //    if (!hasVariants(text))
+        //        return extractVariants(text);
+
+
+        //    produceVariantsList(text, replaced, options);
+        //    list.Add(replaced.ToString());
+
+        //    for (int i = 1; i <= options.Count; i++)
+        //    {
+        //        list = crossVariants(list, options[i], "{" + i + "}");
+        //    }
+
+
+        //    return list;
+
+
+        //}
+
+
+
+        //private List<string> extractVariants(string text)
+        //{
+        //    List<string> list = text.Split('/').ToList();
+        //    if (list.Count == 1)
+        //        list.Add("");
+
+        //    return list;
+
+        //}
+
+
+
+
+
+
+
+
+
+
+        //List<string> processed = new List<string>();
+        //foreach (string s in raw)
+        //{
+        //    processed.AddRange(breakToVariants(s));
+        //}
+
+
+
+        //private List<string> crossVariants(List<string> texts, List<string> options, string tag)
+        //{
+        //    List<string> list = new List<string>();
+        //    foreach (string text in texts)
+        //    {
+        //        foreach (string option in options)
+        //        {
+        //            var str = text.Replace(tag, option);
+        //            list.Add(str);
+        //        }
+        //    }
+
+        //    return list;
+
+        //}
+
+
+
+
+        //private bool hasVariants(string text)
+        //{
+        //    int bracket = text.IndexOf('(');
+        //    return (bracket > 0);
+        //}
+
+
+
+
+    }
+
+
+
+    class Part
+    {
+        public string Name { get; set; }
+        public Part Parent { get; set; }
+        public string Content { get; set; }
+        public List<Part> Children { get; set; }
+        private StringBuilder replaced = new StringBuilder();
+        private List<string> variants = new List<string>();
+
+        public Part(string content, Part parent, int index)
         {
-            List<string> list = new List<string>();
-            //int optionStart = findFirstOption(text);
-            //if (optionStart < 0)
-            //{
-            //    list.Add(text);
-            //}
-            //else
-            //{
-            //    int optionEnd = findOptionClosing(text, optionStart);
-            //}
+            this.Parent = parent;
+            this.Content = content;
+            this.Name = "{" + index + "}";
+            this.Children = new List<Part>();
+        }
 
-            return list;
+        public Part(string content)
+        {
+            this.Parent = null;
+            this.Content = content;
+            this.Children = new List<Part>();
+            this.Name = "{0}";
+        }
 
+        public bool isRoot()
+        {
+            return (Parent == null);
+        }
+
+        public List<string> getVariants()
+        {
+            extractParts();
+            createVariants();
+            return merge();
         }
 
 
 
-        private int findFirstOption(string text)
+        private void extractParts()
         {
-            return text.IndexOf('(');
-        }
-
-        private int findOptionClosing(string text, int start)
-        {
-            int level = 0;
-            char[] chars = text.Substring(start).ToCharArray();
-
-            foreach (char c in text.ToCharArray())
-            {
-                if (c == 40)
-                {
-                    level++;
-                }
-                else if (c == 41)
-                {
-                    level--;
-
-                }
-            }
-
-            return 0;
-
-        }
-
-
-        private List<string> breakToVariants(string text)
-        {
-            List<string> list = new List<string>();
-            Dictionary<int, List<string>> options = new Dictionary<int, List<string>>();
-            //List<string> options = new List<string>();
-            StringBuilder replaced = new StringBuilder();
-            StringBuilder part = new StringBuilder();
+            char[] chars = Content.ToCharArray();
+            StringBuilder variant = new StringBuilder();
             int level = 0;
             int counter = 0;
 
-
-            if (!hasVariants(text))
-            {
-                list.Add(text);
-                list.Add("");
-                return list;
-            }
-
-
-            foreach (char c in text.ToCharArray())
+            foreach (char c in chars)
             {
                 if (c == 40)
                 {
                     level++;
                     if (level == 1)
+                    {
                         replaced.Append('{').Append(++counter).Append('}');
+                    }
+                    else
+                    {
+                        variant.Append(c);
+                    }
                 }
                 else if (c == 41)
                 {
                     level--;
                     if (level == 0)
-                        options.Add(counter, breakToVariants(part.ToString()));
-                    part.Clear();
+                    {
+                        Part part = new Part(variant.ToString(), this, counter);
+                        this.Children.Add(part);
+                        variant.Clear();
+                    }
+                    else
+                    {
+                        variant.Append(c);
+                    }
+
                 }
                 else
                 {
@@ -140,27 +209,35 @@ namespace Typer.Domain.Entities
                     }
                     else if (level > 0)
                     {
-                        part.Append(c);
+                        variant.Append(c);
                     }
 
                 }
+
             }
-
-            list.Add(replaced.ToString());
-
-            for (int i = 1; i <= options.Count; i++)
-            {
-                list = crossVariants(list, options[i], "{" + i + "}");
-            }
-
-
-            return list;
-
 
         }
 
+        private void createVariants()
+        {
+            variants = replaced.ToString().Split('/').ToList();
+            if (!isRoot() && variants.Count == 1)
+            {
+                variants.Add("");
+            }
+        }
 
+        private List<string> merge()
+        {
+            List<string> list = this.variants;
 
+            foreach (Part part in Children)
+            {
+                list = crossVariants(list, part.getVariants(), part.Name);
+            }
+
+            return list;
+        }
 
 
 
@@ -172,7 +249,10 @@ namespace Typer.Domain.Entities
                 foreach (string option in options)
                 {
                     var str = text.Replace(tag, option);
-                    list.Add(str);
+                    if (!list.Contains(str))
+                    {
+                        list.Add(str);
+                    }
                 }
             }
 
@@ -181,16 +261,7 @@ namespace Typer.Domain.Entities
         }
 
 
-
-
-        private bool hasVariants(string text)
-        {
-            int bracket = text.IndexOf('(');
-            return (bracket > 0);
-        }
-
-
-
-
     }
+
+
 }
