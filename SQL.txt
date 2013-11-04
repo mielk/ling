@@ -76,7 +76,7 @@ CREATE TABLE [dbo].[QuestionOptions] (
     [Negative]   INT            DEFAULT ((0)) NOT NULL,
     [IsComplex]  BIT            DEFAULT ((1)) NOT NULL,
     PRIMARY KEY CLUSTERED ([Id] ASC),
-    CONSTRAINT [QuestionOption_Unique_Name] UNIQUE NONCLUSTERED ([Content] ASC),
+    CONSTRAINT [QuestionOption_Unique_Name] UNIQUE NONCLUSTERED ([QuestionId], [Content], [LanguageId]),
     CONSTRAINT [FK_QuestionId] FOREIGN KEY ([QuestionId]) REFERENCES [dbo].[Questions] ([Id]),
     CONSTRAINT [FK_QuestionLanguage] FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id]),
     CONSTRAINT [FK_QuestionOption_Creator] FOREIGN KEY ([CreatorId]) REFERENCES [dbo].[Users] ([UserId]),
@@ -86,10 +86,205 @@ CREATE TABLE [dbo].[QuestionOptions] (
 
 
 
-CREATE TABLE [dbo].[Categories] (
+CREATE TABLE [dbo].[QuestionCategories] (
     [Id]       INT            IDENTITY (1, 1) NOT NULL,
     [Name]     NVARCHAR (255) NOT NULL,
     [ParentId] INT            NULL,
+    [IsActive]   BIT           DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT           NOT NULL,
+    [CreateDate] DATETIME      DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT           DEFAULT ((0)) NOT NULL,
+    [Positive]   INT           DEFAULT ((0)) NOT NULL,
+    [Negative]   INT           DEFAULT ((0)) NOT NULL,
     PRIMARY KEY CLUSTERED ([Id] ASC),
-    FOREIGN KEY ([ParentId]) REFERENCES [dbo].[Categories] ([Id])
+    FOREIGN KEY ([ParentId]) REFERENCES [dbo].[QuestionCategories] ([Id])
 );
+
+
+CREATE TABLE [dbo].[WordCategories] (
+    [Id]       INT            IDENTITY (1, 1) NOT NULL,
+    [Name]     NVARCHAR (255) NOT NULL,
+    [ParentId] INT            NULL,
+    [IsActive]   BIT           DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT           NOT NULL,
+    [CreateDate] DATETIME      DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT           DEFAULT ((0)) NOT NULL,
+    [Positive]   INT           DEFAULT ((0)) NOT NULL,
+    [Negative]   INT           DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([ParentId]) REFERENCES [dbo].[WordCategories] ([Id])
+);
+
+
+
+CREATE TABLE [dbo].[MatchQuestionCategory]
+(
+	[Id]       INT            IDENTITY (1, 1) NOT NULL,
+	[QuestionId] INT NOT NULL,
+	[CategoryId] INT NOT NULL,
+    [IsActive]   BIT           DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT           NOT NULL,
+    [CreateDate] DATETIME      DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT           DEFAULT ((0)) NOT NULL,
+    [Positive]   INT           DEFAULT ((0)) NOT NULL,
+    [Negative]   INT           DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([QuestionId]) REFERENCES [dbo].[Questions] ([Id]),
+	FOREIGN KEY ([CategoryId]) REFERENCES [dbo].[QuestionCategories] ([Id])
+)
+
+
+
+CREATE TABLE [dbo].[MatchWordCategory]
+(
+	[Id]       INT            IDENTITY (1, 1) NOT NULL,
+	[MetawordId] INT NOT NULL,
+	[CategoryId] INT NOT NULL,
+    	[IsActive]   BIT           DEFAULT ((1)) NOT NULL,
+    	[CreatorId]  INT           NOT NULL,
+    	[CreateDate] DATETIME      DEFAULT (getdate()) NOT NULL,
+    	[IsApproved] BIT           DEFAULT ((0)) NOT NULL,
+    	[Positive]   INT           DEFAULT ((0)) NOT NULL,
+    	[Negative]   INT           DEFAULT ((0)) NOT NULL,
+    	PRIMARY KEY CLUSTERED ([Id] ASC),
+    	FOREIGN KEY ([MetawordId]) REFERENCES [dbo].[Metawords] ([Id]),
+	FOREIGN KEY ([CategoryId]) REFERENCES [dbo].[WordCategories] ([Id])
+)
+
+
+
+
+========================================
+
+CREATE TABLE [dbo].[WordTypes]
+(
+	[Id] INT NOT NULL PRIMARY KEY,
+	[Name] NVARCHAR(255) NOT NULL
+)
+
+
+CREATE TABLE [dbo].[Metawords]
+(
+    [Id] INT IDENTITY (1, 1) NOT NULL,
+	[Name] NVARCHAR(255) NOT NULL UNIQUE,
+	[Type] INT NOT NULL,
+    [IsActive]   BIT           DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT           NOT NULL,
+    [CreateDate] DATETIME      DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT           DEFAULT ((0)) NOT NULL,
+    [Positive]   INT           DEFAULT ((0)) NOT NULL,
+    [Negative]   INT           DEFAULT ((0)) NOT NULL,
+	PRIMARY KEY CLUSTERED ([Id] ASC),
+	CONSTRAINT [FK_WordType] FOREIGN KEY ([Type]) REFERENCES [dbo].[WordTypes] ([Id])
+)
+
+
+
+CREATE TABLE [dbo].[Words]
+(
+	[Id] INT IDENTITY (1, 1) NOT NULL,
+	[MetawordId] INT NOT NULL,
+	[LanguageId] INT NOT NULL,
+	[Name] NVARCHAR(255) NOT NULL,
+    [IsActive]   BIT           DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT           NOT NULL,
+    [CreateDate] DATETIME      DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT           DEFAULT ((0)) NOT NULL,
+    [Positive]   INT           DEFAULT ((0)) NOT NULL,
+    [Negative]   INT           DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([MetawordId]) REFERENCES [dbo].[Metawords] ([Id]),
+	FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id]),
+	CONSTRAINT [Word_Unique_Content] UNIQUE NONCLUSTERED ([MetawordId], [Name], [LanguageId])
+)
+
+
+
+CREATE TABLE [dbo].[Grammar]
+(
+    [Id] INT IDENTITY (1, 1) NOT NULL,
+    [WordId] INT NOT NULL,
+    [Content] NVARCHAR(255) NOT NULL,
+    [Definition] NVARCHAR(255) NOT NULL,
+    [IsActive]   BIT           DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT           NOT NULL,
+    [CreateDate] DATETIME      DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT           DEFAULT ((0)) NOT NULL,
+    [Positive]   INT           DEFAULT ((0)) NOT NULL,
+    [Negative]   INT           DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([WordId]) REFERENCES [dbo].[Words] ([Id]),
+    CONSTRAINT [Unique_Grammar_Form] UNIQUE NONCLUSTERED ([WordId], [Definition])
+)
+
+
+
+
+
+CREATE TABLE [dbo].[VariantSets]
+(
+    [Id] INT IDENTITY (1, 1) NOT NULL,
+    [QuestionOptionId] INT NOT NULL,
+    [VariantTag] NVARCHAR(255) NOT NULL,
+    [IsActive]   BIT           DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT           NOT NULL,
+    [CreateDate] DATETIME      DEFAULT (getdate()) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([QuestionOptionId]) REFERENCES [dbo].[QuestionOptions] ([Id]),
+    CONSTRAINT [Unique_Variant_Tag] UNIQUE NONCLUSTERED ([QuestionOptionId], [VariantTag])
+)
+
+
+
+
+CREATE TABLE [dbo].[Variants]
+(
+    [Id] INT IDENTITY (1, 1) NOT NULL,
+    [VariantSetId] INT NOT NULL,
+    [Key]	 NVARCHAR(255) NOT NULL,
+    [Content]	 NVARCHAR(255) NOT NULL,
+    [IsActive]   BIT           DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT           NOT NULL,
+    [CreateDate] DATETIME      DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT           DEFAULT ((0)) NOT NULL,
+    [Positive]   INT           DEFAULT ((0)) NOT NULL,
+    [Negative]   INT           DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([VariantSetId]) REFERENCES [dbo].[VariantSets] ([Id]),
+    CONSTRAINT [Unique_Variant_Content] UNIQUE NONCLUSTERED ([VariantSetId], [Key])
+)
+
+
+
+
+CREATE TABLE [dbo].[VariantConnections]
+(
+    [Id] INT IDENTITY (1, 1) NOT NULL,
+    [VariantSetId] INT NOT NULL,
+    [ConnectedSetId] INT NOT NULL,
+    [IsActive]   BIT           DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT           NOT NULL,
+    [CreateDate] DATETIME      DEFAULT (getdate()) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([VariantSetId]) REFERENCES [dbo].[VariantSets] ([Id]),
+    FOREIGN KEY ([ConnectedSetId]) REFERENCES [dbo].[VariantSets] ([Id]),
+    CONSTRAINT [Unique_Variant_Connection] UNIQUE NONCLUSTERED ([VariantSetId], [ConnectedSetId]),
+    CONSTRAINT [Different_Variants] CHECK ([VariantSetId]<>[ConnectedSetId])
+)
+
+
+
+CREATE TABLE [dbo].[VariantLimits]
+(
+    [Id] INT IDENTITY (1, 1) NOT NULL,
+    [VariantId] INT NOT NULL,
+    [ConnectedVariantId] INT NOT NULL,
+    [IsActive]   BIT           DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT           NOT NULL,
+    [CreateDate] DATETIME      DEFAULT (getdate()) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([VariantId]) REFERENCES [dbo].[Variants] ([Id]),
+    FOREIGN KEY ([ConnectedVariantId]) REFERENCES [dbo].[Variants] ([Id]),
+    CONSTRAINT [Unique_Variant_Limit] UNIQUE NONCLUSTERED ([VariantId], [ConnectedVariantId]),
+    CONSTRAINT [Different_Limits] CHECK ([VariantId]<>[ConnectedVariantId])
+)
