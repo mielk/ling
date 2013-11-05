@@ -24,6 +24,12 @@ namespace Typer.Web.Controllers
 
 
         [AllowAnonymous]
+        public ActionResult Index2()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
         public ActionResult Index()
         {
             Question question = questionService.getQuestion(1);
@@ -31,7 +37,7 @@ namespace Typer.Web.Controllers
             Language learn = languageService.getLanguage(2);
             TestQuestionViewModel viewModel = new TestQuestionViewModel() { Question = question, ParentLanguage = parent, LearnLanguage = learn };
 
-            
+
 
             return View(viewModel);
 

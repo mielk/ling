@@ -1,0 +1,67 @@
+﻿#tree_container
+{
+    display: block;
+    position: relative;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 600px;
+    height: 600px;
+    padding: 6px;
+    border: 1px solid black;
+    background-color: #ddd;
+}
+
+#tree_container div
+{
+    display: block;
+    position: relative;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+div.node-container
+{
+    width: 100%;
+}
+
+div.line
+{
+    width: 100%;
+    height: 20px;
+    border: 1px solid #aaa;
+}
+
+div.children-container
+{
+    width: 100%;
+    padding-left: 22px; 
+    height: auto;
+    overflow: visible;
+}
+
+.line .icon
+{
+    width: 16px;
+    height: 16px;
+    margin: 2px 6px 2px 3px;
+    border: 1px solid black;
+    padding: 1px;
+    line-height: 10px;
+    text-align: center;
+}
+
+div.dots
+{
+    position: absolute;
+    width: 25px;
+    height: 100%;
+    margin-left: -25px;
+    left: 0px;
+    top: 0px;
+    background-color: rgba(255, 0, 0, 0.5);
+}body {
+}

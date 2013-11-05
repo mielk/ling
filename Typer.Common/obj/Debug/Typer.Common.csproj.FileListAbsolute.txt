@@ -33,3 +33,8 @@ C:\Users\Tomek\Documents\Visual Studio 2012\Projects\ling2\Typer.Common\bin\Debu
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\ling2\Typer.Common\obj\Debug\Typer.Common.csprojResolveAssemblyReference.cache
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\ling2\Typer.Common\obj\Debug\Typer.Common.dll
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\ling2\Typer.Common\obj\Debug\Typer.Common.pdb
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\typer2\Typer.Common\bin\Debug\Typer.Common.dll
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\typer2\Typer.Common\bin\Debug\Typer.Common.pdb
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\typer2\Typer.Common\obj\Debug\Typer.Common.csprojResolveAssemblyReference.cache
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\typer2\Typer.Common\obj\Debug\Typer.Common.dll
+C:\Users\txmieln\Documents\Visual Studio 2012\Projects\typer2\Typer.Common\obj\Debug\Typer.Common.pdb
