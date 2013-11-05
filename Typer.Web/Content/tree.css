@@ -31,14 +31,15 @@ div.node-container
 div.line
 {
     width: 100%;
+    padding: 4px 0px 0px 22px;
     height: 20px;
-    border: 1px solid #aaa;
+    overflow: visible;
 }
 
 div.children-container
 {
     width: 100%;
-    padding-left: 22px; 
+    padding-left: 22px;
     height: auto;
     overflow: visible;
 }
@@ -47,7 +48,7 @@ div.children-container
 {
     width: 16px;
     height: 16px;
-    margin: 2px 6px 2px 3px;
+    margin: 0px 6px 0px 3px;
     border: 1px solid black;
     padding: 1px;
     line-height: 10px;
@@ -56,12 +57,35 @@ div.children-container
 
 div.dots
 {
-    position: absolute;
+    position: absolute !important;
     width: 25px;
     height: 100%;
-    margin-left: -25px;
-    left: 0px;
-    top: 0px;
+    left: -22px;
+    top: -2px;
     background-color: rgba(255, 0, 0, 0.5);
-}body {
+}
+
+
+.children-container .node-container .line {
+    background-image: url('images/node.png') !important;
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+}
+
+.children-container .node-container .children-container {
+    background-image: url('images/vertical_line.png') !important;
+    background-repeat: repeat-y;
+}
+
+.children-container .node-container:last-child .line {
+    background-image: url('images/last_node.png') !important;
+    background-repeat: no-repeat;
+}
+
+.children-container .node-container:last-child .children-container {
+    background-image: none !important;
+}
+
+.children-container .children-container:first-child {  
+   
 }

@@ -90,10 +90,10 @@ function TreeNode(key, caption, parent, expanded) {
         html: me.expanded ? '-' : '+'
     }).appendTo(this.line);
 
-    this.dots = jQuery('<div/>', {
-        id: key + '_dots',
-        'class': 'dots'
-    }).appendTo(this.line);
+    //this.dots = jQuery('<div/>', {
+    //    id: key + '_dots',
+    //    'class': 'dots'
+    //}).appendTo(this.line);
 
     this.container = jQuery('<div/>', {
         id: key,
