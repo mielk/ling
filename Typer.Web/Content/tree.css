@@ -34,6 +34,7 @@ div.line
     padding: 4px 0px 0px 22px;
     height: 20px;
     overflow: visible;
+    line-height: 16px;
 }
 
 div.children-container
@@ -53,16 +54,17 @@ div.children-container
     padding: 1px;
     line-height: 10px;
     text-align: center;
+    cursor: pointer;
 }
 
-div.dots
+.line .caption
 {
-    position: absolute !important;
-    width: 25px;
-    height: 100%;
-    left: -22px;
-    top: -2px;
-    background-color: rgba(255, 0, 0, 0.5);
+    width: auto;
+    height: 16px;
+    margin: 1px 6px 1px 3px;
+    padding: 1px;
+    line-height: 10px;
+    text-align: left;
 }
 
 

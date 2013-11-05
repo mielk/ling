@@ -58,7 +58,7 @@ function TreeView(container, selectable) {
         return this.container;
     }
 
-    this.root = new TreeNode('root', 'root', me);
+    this.root = new TreeNode('root', 'root', me, true);
     this.root.loadData(data);
 
 }
@@ -70,7 +70,6 @@ function TreeNode(key, caption, parent, expanded) {
     this.key = key;
     this.caption = caption;
     this.parent = parent;
-    this.expanded = expanded;
     this.nodes = {};
 
     this.mainContainer = jQuery('<div/>', {
@@ -80,20 +79,25 @@ function TreeNode(key, caption, parent, expanded) {
 
     this.line = jQuery('<div/>', {
         id: key,
-        'class': 'line',
-        html: caption
+        'class': 'line'
     }).appendTo(this.mainContainer);
 
     this.expandButton = jQuery('<div/>', {
-        id: key + '_expand-collapse-button',
-        'class': 'icon ' + (me.expanded ? 'collapse' : 'expand'),
-        html: me.expanded ? '-' : '+'
-    }).appendTo(this.line);
+            id: key + '_expand-collapse-button',
+            'class': 'icon '
+        }).
+        bind({
+            'click': function () {
+                me.changeStatus();
+            }
+        }).
+        appendTo(this.line);
 
-    //this.dots = jQuery('<div/>', {
-    //    id: key + '_dots',
-    //    'class': 'dots'
-    //}).appendTo(this.line);
+    this.caption = jQuery('<div/>', {
+        id: key + '_caption',
+        'class': 'caption',
+        html: caption
+    }).appendTo(this.line);
 
     this.container = jQuery('<div/>', {
         id: key,
@@ -103,6 +107,37 @@ function TreeNode(key, caption, parent, expanded) {
     this.getContainer = function () {
         return this.container;
     };
+
+
+
+    this.changeStatus = function () {
+        if (this.expanded) {
+            this.collapse();
+        } else {
+            this.expand();
+        }
+    }
+
+    this.expand = function () {
+        me.expanded = true;
+        $(this.expandButton).html('-');
+        display(this.container, true);
+    }
+
+    this.collapse = function () {
+        me.expanded = false;
+        $(this.expandButton).html('+');
+        display(this.container, false);
+    }
+
+
+    if (expanded) {
+        this.expand();
+    } else {
+        this.collapse();
+    }
+
+
 }
 
 TreeNode.prototype.loadData = function (data) {
@@ -133,6 +168,11 @@ function hide(div) {
 function show(div) {
     $(div).css({
         'visibility': 'visible'
+    });
+}
+function display(div, value) {
+    $(div).css({
+        'display' : (value ? 'block' : 'none')
     });
 }
 
