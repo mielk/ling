@@ -95,13 +95,44 @@
 $(function () {
     var container = $('#tree_container')[0];
     var tree = new TreeView(container, true, data, true);
+
+    //Switching off selecting text.
+    $(document).
+        bind({
+            'mousedown': function (e) {
+                var $this = $(this);
+                e.preventDefault();
+
+                // Make every element on page unselectable
+                //$('*').addClass('unselectable');
+                $(document.body).addClass('unselectable');
+
+                // Some setup here, like remembering the original location, etc
+                $(window).on('mousemove', function (e) {
+                    // Do the thing!
+                    $this.on('mouseup', function (e) {
+                        $(document.body).removeClass('unselectable');
+                        //$('*').removeClass('unselectable');
+                        // Other clean-up tasks here
+                    });
+                });
+            }
+        });
+
 });
+
+
+
 
 function TreeView(container, selectable) {
     var me = this;
     this.container = container;
     this.selectable = selectable;
     this.nodes = {};
+    this.events = jQuery('<div/>', {
+        'class': 'events-container'
+    }).appendTo(this.container);
+
 
     this.getContainer = function () {
         return this.container;
@@ -224,6 +255,8 @@ function TreeNode(key, name, parent, expanded) {
     }).
     bind({
         'mousedown': function (e) {
+            e.preventDefault();
+
             me.mouseClicked = true;
             if (me.isSelected) {
                 alert('change name');
@@ -246,15 +279,16 @@ function TreeNode(key, name, parent, expanded) {
 
     $(document).bind({
         'mousemove': function (e) {
+            e.preventDefault();
             if (me.mouseClicked) {
                 me.mover.move(e);
             }
         },
         'mouseup': function (e) {
+            e.preventDefault();
             me.mouseClicked = false;
         }
     });
-
 
 
     //this.nameTextBox = jQuery('<input>', {
@@ -303,11 +337,12 @@ function TreeNode(key, name, parent, expanded) {
         appendTo(me.mainContainer);
 
 
-        function activate() {
+        function activate(left, top) {
             active = true;
             show(div);
-            $(div).css($(me.caption).offset());
-            //moveDiv($(me.caption).offset());
+            x = left;
+            y = top;
+            moveDiv($(me.caption).offset());
         }
 
         function _move(e) {
@@ -336,7 +371,7 @@ function TreeNode(key, name, parent, expanded) {
         return {
             move: function (e) {
                 if (!active) {
-                    activate();
+                    activate(e.pageX, e.pageY);
                 }
                 _move(e);
             },
