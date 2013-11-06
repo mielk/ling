@@ -75,7 +75,7 @@ div.children-container
 }
 
 .children-container .node-container .children-container {
-    background-image: url('images/vertical_line.png') !important;
+    background-image: url('images/line.png') !important;
     background-repeat: repeat-y;
 }
 
