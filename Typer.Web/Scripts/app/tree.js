@@ -142,8 +142,6 @@ function TreeNode(key, name, parent, expanded) {
 
 
 
-
-
     this.expander = (function (value) {
         //var _ = this;
         var expandable = false;
@@ -219,7 +217,6 @@ function TreeNode(key, name, parent, expanded) {
 
 
 
-
     this.caption = jQuery('<div/>', {
         id: key + '_caption',
         'class': 'caption',
@@ -250,9 +247,11 @@ function TreeNode(key, name, parent, expanded) {
     $(document).bind({
         'mousemove': function (e) {
             if (me.mouseClicked) {
-                me.mouseClicked = false;
-                me.mover.activate();
+                me.mover.move(e);
             }
+        },
+        'mouseup': function (e) {
+            me.mouseClicked = false;
         }
     });
 
@@ -286,9 +285,12 @@ function TreeNode(key, name, parent, expanded) {
 
 
     this.mover = (function () {
-        var _ = this;
         var ready = false;
         var active = false;
+        var x = 0;
+        var y = 0;
+        var left = 0;
+        var top = 0;
 
         var div = jQuery('<div/>', {
             id: me.key,
@@ -300,11 +302,43 @@ function TreeNode(key, name, parent, expanded) {
         }).
         appendTo(me.mainContainer);
 
+
+        function activate() {
+            active = true;
+            show(div);
+            $(div).css($(me.caption).offset());
+            //moveDiv($(me.caption).offset());
+        }
+
+        function _move(e) {
+            var _x = e.pageX;
+            var _y = e.pageY;
+
+            moveDiv({
+                left: left + (_x - x),
+                top: top + (_y - y)
+            });
+
+            x = _x;
+            y = _y;
+
+            $('#debug').html('X: ' + e.pageX + ' | Y: ' + e.pageY);
+
+        }
+
+
+        function moveDiv(position) {
+            left = position.left;
+            top = position.top;
+            $(div).css(position);
+        }
+
         return {
-            activate: function () {
-                active = true;
-                show(div);
-                $(div).css($(me.caption).offset());
+            move: function (e) {
+                if (!active) {
+                    activate();
+                }
+                _move(e);
             },
             isActive: function () {
                 return active;
@@ -312,6 +346,8 @@ function TreeNode(key, name, parent, expanded) {
         }
 
     })();
+
+
 
 }
 
