@@ -13,15 +13,60 @@
                         caption: 'b',
                         expanded: false,
                         items: [
-                            { key: 21, caption: 'ba', expanded: true, items: [] },
-                            { key: 22, caption: 'bb', expanded: true, items: [] }
+                            {
+                                key: 21, caption: 'ba', expanded: true, items: [
+                                    { key: 211, caption: 'baa', expanded: true, items: [] },
+                                    {
+                                        key: 212, caption: 'bab', expanded: false, items: [
+                                                                            { key: 2221, caption: 'baaa', expanded: true, items: [] },
+                                                                            {
+                                                                                key: 2222, caption: 'baab', expanded: true, items: [
+                                                                                    {
+                                                                                        key: 22221, caption: 'baaba', expanded: true, items: [
+
+                                                                                        ]
+                                                                                    }
+                                                                                ]
+                                                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                key: 22, caption: 'bb', expanded: true, items: [
+                                    { key: 221, caption: 'bba', expanded: true, items: [] },
+                                    {
+                                        key: 222, caption: 'bbb', expanded: false, items: [
+                                                                            { key: 2221, caption: 'baba', expanded: true, items: [] },
+                                                                            {
+                                                                                key: 2222, caption: 'babb', expanded: true, items: [
+                                                                                    {
+                                                                                        key: 22221, caption: 'babba', expanded: true, items: [
+
+                                                                                        ]
+                                                                                    }
+                                                                                ]
+                                                                            }
+                                        ]
+                                    },
+                                    { key: 223, caption: 'bbc', expanded: true, items: [] }
+                                ]
+                            },
+                            { key: 23, caption: 'bc', expanded: true, items: [] },
                         ]
                     },
                     {
                         key: 3,
                         caption: 'c',
                         expanded: true,
-                        items: []
+                        items: [
+                                    { key: 311, caption: 'caa', expanded: true, items: [] },
+                                    {
+                                        key: 312, caption: 'cab', expanded: false, items: [
+                                                                            { key: 3121, caption: 'cabd', expanded: true, items: [] }
+                                        ]
+                                    },
+                        ]
                     },
                     {
                         key: 4,
@@ -30,7 +75,11 @@
                         items: [
                             {
                                 key: 41, caption: 'da', expanded: true, items: [
-                                    { key: 411, caption: 'daa', expanded: true, items: [] },
+                                    {
+                                        key: 411, caption: 'daa', expanded: true, items: [
+                                            { key: 4121, caption: 'dabd', expanded: true, items: [] }
+                                        ]
+                                    },
                                     {
                                         key: 412, caption: 'dab', expanded: false, items: [
                                                                             { key: 4121, caption: 'dabd', expanded: true, items: [] }
@@ -65,88 +114,213 @@ function TreeView(container, selectable) {
 
 
 
-function TreeNode(key, caption, parent, expanded) {
+function TreeNode(key, name, parent, expanded) {
     var me = this;
     this.key = key;
-    this.caption = caption;
+    this.name = name;
     this.parent = parent;
     this.nodes = {};
+    this.mouseClicked = false;
+    this.isSelected = false;
+
 
     this.mainContainer = jQuery('<div/>', {
         id: key + '_container',
         'class': 'node-container'
     }).appendTo($(this.parent.getContainer()));
 
+
     this.line = jQuery('<div/>', {
         id: key,
         'class': 'line'
     }).appendTo(this.mainContainer);
-
-    this.expandButton = jQuery('<div/>', {
-            id: key + '_expand-collapse-button',
-            'class': 'icon '
-        }).
-        bind({
-            'click': function () {
-                me.changeStatus();
-            }
-        }).
-        appendTo(this.line);
-
-    this.caption = jQuery('<div/>', {
-        id: key + '_caption',
-        'class': 'caption',
-        html: caption
-    }).appendTo(this.line);
 
     this.container = jQuery('<div/>', {
         id: key,
         'class': 'children-container'
     }).appendTo(this.mainContainer);
 
+
+
+
+
+    this.expander = (function (value) {
+        //var _ = this;
+        var expandable = false;
+        var expanded = value;
+        var button = jQuery('<div/>', {
+                id: me.key + '_expand-collapse-button',
+                'class': 'icon '
+            }).
+            bind({
+                'click': function (e) {
+                    if (expandable) {
+                        e.preventDefault();
+                        _revertStatus();
+                    }
+                }
+            }).
+            appendTo(me.line);
+
+        function expand () {
+            expanded = true;
+            $(button).html('-');
+            display(me.container, true);
+        }
+
+        function collapse() {
+            expanded = false;
+            $(button).html('+');
+            display(me.container, false);
+        }
+
+        function _revertStatus() {
+            if (expanded === true) {
+                collapse();
+            } else if (expanded === false) {
+                expand();
+            }
+        }
+
+
+        function _setStatus(value) {
+            if (value === true) {
+                expand();
+            } else if (value === false) {
+                collapse();
+            }
+        }
+
+
+        //Sets initial status.
+        (function () {
+            _setStatus(expanded);
+        })();
+
+
+        return {
+            setExpandableStatus: function (value) {
+                show(this.expandButton);
+                expandable = value;
+                if (!expandable) {
+                    $(button).html('.');
+                }
+            },
+            revertStatus : function () {
+                _revertStatus();
+            },
+            setStatus: function (value) {
+                _setStatus(value);
+            }
+
+        }
+
+    })(expanded);
+
+
+
+
+    this.caption = jQuery('<div/>', {
+        id: key + '_caption',
+        'class': 'caption',
+        html: name
+    }).
+    bind({
+        'mousedown': function (e) {
+            me.mouseClicked = true;
+            if (me.isSelected) {
+                alert('change name');
+                me.unselect();
+                me.mouseClicked = false;
+                e.preventDefault;
+            }
+        },
+        'mouseup': function (e) {
+            if (me.mouseClicked) {
+                me.select();
+            }
+            me.mouseClicked = false;
+        }
+    }).
+    appendTo(this.line);
+
+
+
+
+    $(document).bind({
+        'mousemove': function (e) {
+            if (me.mouseClicked) {
+                me.mouseClicked = false;
+                me.mover.activate();
+            }
+        }
+    });
+
+
+
+    //this.nameTextBox = jQuery('<input>', {
+    //    id: key,
+    //    html: caption
+    //}).
+    //appendTo(this.line);
+
+
+    this.select = function () {
+        this.isSelected = true;
+        $(this.caption).addClass('selected');
+    };
+
+    this.unselect = function () {
+        this.isSelected = false;
+        $(this.caption).removeClass('selected');
+    };
+
     this.getContainer = function () {
         return this.container;
     };
 
+    this.position = function (div) {
+        return $(div).offset();
+    }
 
 
-    this.changeStatus = function () {
-        if (this.expanded) {
-            this.collapse();
-        } else {
-            this.expand();
+
+    this.mover = (function () {
+        var _ = this;
+        var ready = false;
+        var active = false;
+
+        var div = jQuery('<div/>', {
+            id: me.key,
+            'class': 'move',
+            html: me.name
+        }).
+        css({
+            'visibility': 'hidden'
+        }).
+        appendTo(me.mainContainer);
+
+        return {
+            activate: function () {
+                active = true;
+                show(div);
+                $(div).css($(me.caption).offset());
+            },
+            isActive: function () {
+                return active;
+            }
         }
-    }
 
-    this.expand = function () {
-        me.expanded = true;
-        $(this.expandButton).html('-');
-        display(this.container, true);
-    }
-
-    this.collapse = function () {
-        me.expanded = false;
-        $(this.expandButton).html('+');
-        display(this.container, false);
-    }
-
-
-    if (expanded) {
-        this.expand();
-    } else {
-        this.collapse();
-    }
-
+    })();
 
 }
 
 TreeNode.prototype.loadData = function (data) {
 
     if (data.length === 0) {
-        hide(this.expandButton);
+        this.expander.setExpandableStatus(false);
     } else {
-        show(this.expandButton);
-
+        this.expander.setExpandableStatus(true);
         for (var key in data) {
             if (data.hasOwnProperty(key)) {
                 var item = data[key];
