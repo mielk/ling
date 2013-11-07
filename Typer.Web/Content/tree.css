@@ -82,12 +82,14 @@ div.children-container
     position: fixed !important;
     width: auto;
     margin: 0;
+    margin-left: 25px;
     padding: 1px 3px 1px 3px;
     border: 1px solid rgba(21, 21, 21, 0.6);
     line-height: 12px;
     text-align: left;
     color: rgba(0, 0, 0, 0.6);
     background-color: rgba(150, 150, 150, 0.6);
+
     cursor: move;
     z-index: 1;
 }
