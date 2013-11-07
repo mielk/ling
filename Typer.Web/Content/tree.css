@@ -139,3 +139,22 @@ div.children-container
 {
     display: none;
 }
+
+.edit-name
+{
+    display: block !important;
+    position: fixed !important;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    z-index: 1;
+    width: auto;
+    height: 20px;
+    margin-top: -2px;
+    padding: 0px 6px;
+    border: 1px solid rgba(21, 21, 21, 0.3);
+    line-height: 18px;
+    text-align: left;
+    color: rgba(0, 0, 0,0.6);
+    cursor: text;
+}

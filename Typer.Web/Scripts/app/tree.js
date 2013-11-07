@@ -15,7 +15,7 @@
                         items: [
                             {
                                 key: 21, caption: 'ba', expanded: true, items: [
-                                    { key: 211, caption: 'baa', expanded: true, items: [] },
+                                    { key: 211, caption: 'bjtaa', expanded: true, items: [] },
                                     {
                                         key: 212, caption: 'bab', expanded: false, items: [
                                                                             { key: 2221, caption: 'baaa', expanded: true, items: [] },
@@ -305,14 +305,14 @@ function TreeNode(tree, key, name, parent, expanded) {
 
             me.mouseClicked = true;
             if (me.isSelected) {
-                alert('change name');
+                e.preventDefault;
+                me.renamer.activate();
                 me.unselect();
                 me.mouseClicked = false;
-                e.preventDefault;
             }
         },
         'mouseup': function (e) {
-            if (me.mouseClicked) {
+            if (!me.mover.isActive() && me.mouseClicked) {
                 me.select();
             }
             me.mouseClicked = false;
@@ -350,13 +350,6 @@ function TreeNode(tree, key, name, parent, expanded) {
     });
 
 
-    //this.nameTextBox = jQuery('<input>', {
-    //    id: key,
-    //    html: caption
-    //}).
-    //appendTo(this.line);
-
-
     this.select = function () {
         this.isSelected = true;
         $(this.caption).addClass('selected');
@@ -378,25 +371,32 @@ function TreeNode(tree, key, name, parent, expanded) {
 
 
     this.mover = (function () {
-        var ready = false;
         var active = false;
         var x = 0;
         var y = 0;
         var left = 0;
         var top = 0;
 
-        var div = jQuery('<div/>', {
-            id: me.key,
-            'class': 'move',
-            html: me.name
-        }).
-        css({
-            'visibility': 'hidden'
-        }).
-        appendTo(me.mainContainer);
+        var div = null;
+
+        function createDiv() {
+            var control = jQuery('<div/>', {
+                id: me.key,
+                'class': 'move',
+                html: me.name
+            }).
+            css({
+                'visibility': 'hidden'
+            }).
+            appendTo(me.mainContainer);
+            return control;
+        }
 
 
         function activate(left, top) {
+            if (div === null) {
+                div = createDiv();
+            }
             active = true;
             show(div);
             x = left;
@@ -459,8 +459,87 @@ function TreeNode(tree, key, name, parent, expanded) {
 
     })();
 
-
     this.renamer = (function () {
+        var active = false;
+        var textbox = null;
+
+        function createTextbox() {
+            var control = jQuery('<input/>', {
+                id: me.key + '_name_textbox',
+                'class': 'edit-name'
+            }).
+            css({
+                'visibility': 'hidden'
+            }).
+            bind({
+                'keydown': function (e) {
+                    if (e.which === 13) {
+                        var value = $(this).val();
+                        var validation = validateName(value);
+                        if (validation === true) {
+                            applyNewName(value);
+                        }
+                    } else if (e.which === 27) {
+                        _escape();
+                    }
+                }
+            }).
+            appendTo(me.mainContainer);
+            return control;
+        }
+
+
+        function validateName(name) {
+            return true;
+        }
+
+        function applyNewName(name) {
+            me.name = name;
+            $(me.caption).html(name);
+            _escape();
+            me.tree.trigger({
+                'type': 'rename',
+                'node': me,
+                'name': name
+            });
+        }
+
+        function destroy() {
+            $(textbox).remove();
+            textbox = null;
+        }
+
+
+        function _activate() {
+            if (textbox === null) {
+                textbox = createTextbox();
+            }
+            active = true;
+            show(textbox);
+            $(textbox).css($(me.caption).offset()).val(me.name).focus().select();
+        }
+
+        function _escape() {
+            active = false;
+            destroy();
+        }
+
+        return {
+            activate: function (e) {
+                if (!active) {
+                    _activate();
+                    me.tree.trigger({
+                        type: 'edit_name'
+                    });
+                }
+            },
+            isActive: function () {
+                return active;
+            },
+            escape: function () {
+                _escape();
+            }
+        }
 
     })();
 
@@ -491,9 +570,13 @@ TreeNode.prototype.getKey = function () {
     return this.key;
 }
 TreeNode.prototype.transfer = function (destination) {
-    if (!this.isRoot() && this !== destination) {
-        this.parent.removeNode(this);
-        destination.addNode(this);
+    if (this === destination) {
+        this.isSelected = false;
+    } else {
+        if (!this.isRoot()) {
+            this.parent.removeNode(this);
+            destination.addNode(this);
+        }
     }
 }
 TreeNode.prototype.removeNode = function (node) {
