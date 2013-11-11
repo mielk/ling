@@ -27,7 +27,7 @@ namespace Typer.Tests.UnitTests.Controllers
                 new Question { Name = "test4", Weight = 4 },
                 new Question { Name = "test5", Weight = 5 }
             }.AsQueryable());
-            EditController controller = new EditController(mock.Object);
+            QuestionsController controller = new QuestionsController(mock.Object);
             controller.PageSize = 3;
 
             QuestionsListViewModel result = (QuestionsListViewModel)controller.List(2).Model;
@@ -85,7 +85,7 @@ namespace Typer.Tests.UnitTests.Controllers
             }.AsQueryable());
 
             // Arrange
-            EditController controller = new EditController(mock.Object);
+            QuestionsController controller = new QuestionsController(mock.Object);
             controller.PageSize = 3;
             
             // Act

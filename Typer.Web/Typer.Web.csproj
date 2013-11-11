@@ -146,10 +146,11 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Binders\UserModelBinder.cs" />
-    <Compile Include="Controllers\EditController.cs" />
+    <Compile Include="Controllers\QuestionsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\TestController.cs" />
+    <Compile Include="Controllers\WordsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -178,6 +179,7 @@
     <Content Include="Content\images\white_star.png" />
     <Content Include="Content\Login.css" />
     <Content Include="Content\normalize.css" />
+    <Content Include="Content\Words.css" />
     <Content Include="Content\Test.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
@@ -297,12 +299,13 @@
     <Content Include="Views\Login\ResetPassword.cshtml" />
     <Content Include="Views\Login\Summary.cshtml" />
     <Content Include="Views\Test\Index.cshtml" />
-    <Content Include="Views\Edit\List.cshtml" />
-    <Content Include="Views\Edit\Question.cshtml" />
-    <Content Include="Views\Edit\Edit.cshtml" />
-    <Content Include="Views\Edit\EditLanguage.cshtml" />
-    <Content Include="Views\Edit\OptionLine.cshtml" />
+    <Content Include="Views\Questions\List.cshtml" />
+    <Content Include="Views\Questions\Question.cshtml" />
+    <Content Include="Views\Questions\Edit.cshtml" />
+    <Content Include="Views\Questions\EditLanguage.cshtml" />
+    <Content Include="Views\Questions\OptionLine.cshtml" />
     <Content Include="Views\Test\Index2.cshtml" />
+    <Content Include="Views\Words\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

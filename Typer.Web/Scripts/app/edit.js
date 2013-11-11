@@ -267,7 +267,7 @@ function checkName(name) {
 
 function nameAlreadyExists(name) {
     $.ajax({
-        url: "/Edit/CheckName",
+        url: "/Questions/CheckName",
         type: "post",
         data: JSON.stringify({
             name: name,

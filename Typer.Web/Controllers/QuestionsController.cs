@@ -10,7 +10,7 @@ using Typer.Web.Models;
 
 namespace Typer.Web.Controllers
 {
-    public class EditController : Controller
+    public class QuestionsController : Controller
     {
 
         private readonly IQuestionService service;
@@ -23,7 +23,7 @@ namespace Typer.Web.Controllers
 
 
 
-        public EditController(IQuestionService service)
+        public QuestionsController(IQuestionService service)
         {
             this.service = service;
         }
