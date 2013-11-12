@@ -176,8 +176,6 @@ EditPanel.prototype.hide = function () {
 
 
 
-
-
 function WeightIcons(parent, container) {
     var me = this;
     this.CHECKED_CSS_CLASS = "weight-checked";
@@ -311,8 +309,6 @@ Language.prototype.expand = function () {
 
 
 
-
-
 function Option(_container, language) {
     var me = this;
     this.language = language;
@@ -374,6 +370,7 @@ Option.prototype.remove = function () {
     this.language.removeOption(this);
     $(this.container).remove();
 }
+
 
 
 function PreOption(language, number) {

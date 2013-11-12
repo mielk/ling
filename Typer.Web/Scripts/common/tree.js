@@ -92,9 +92,14 @@
 ];
 
 
+
+
+
 $(function () {
     var container = $('#tree_container')[0];
     var tree = new TreeView(container, true, data, true);
+
+
 
     //Switching off selecting text.
     $(document).
@@ -185,7 +190,6 @@ function NodesTransferManager(tree, listener) {
     });
 
 }
-
 
 
 function TreeNode(tree, key, name, parent, expanded) {
@@ -543,6 +547,30 @@ function TreeNode(tree, key, name, parent, expanded) {
 
     })();
 
+
+    this.sortNodes = function () {
+        if (Object.keys(this.nodes).length > 1) {
+
+            var nodes = [];
+            for (var key in this.nodes) {
+                if (this.nodes.hasOwnProperty(key)) {
+                    nodes.push(this.nodes[key]);
+                }
+            }
+            nodes.sort(function (obj1, obj2) {
+                return (obj1.name < obj2.name ? -1 : 1);
+            });
+
+            for (var i = nodes.length - 1; i > 0; i--) {
+                $(nodes[i].mainContainer).before($(nodes[i-1].mainContainer));
+                //$(this.nodes[i].mainContainer).before($(this.nodes[i - 1].mainContainer));
+            }
+
+        } else {
+            alert('not sort');
+        }
+    };
+
 }
 
 TreeNode.prototype.loadData = function (data) {
@@ -554,7 +582,7 @@ TreeNode.prototype.loadData = function (data) {
         for (var key in data) {
             if (data.hasOwnProperty(key)) {
                 var item = data[key];
-                var node = new TreeNode(this.tree, key, item.caption, this, item.expanded);
+                var node = new TreeNode(this.tree, item.key, item.caption, this, item.expanded);
                 node.loadData(item.items);
                 this.nodes[key] = node;
             }
@@ -585,8 +613,8 @@ TreeNode.prototype.removeNode = function (node) {
 TreeNode.prototype.addNode = function (node) {
     this.nodes[node.getKey()] = node;
     node.moveTo(this);
+    this.sortNodes();
     this.resetStatus();
-
 }
 TreeNode.prototype.moveTo = function (newParent) {
     this.mainContainer.appendTo($(newParent.getContainer()));
