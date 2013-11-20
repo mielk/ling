@@ -245,7 +245,7 @@ function TreeView(container, mode, data) {
             alert('Node ' + e.node.name + ' deleted');
         },
         newNode: function (e) {
-            alert('New node created: ' + e.node.name + ' | ' + e.node.key);
+            e.node.activate();
         },
         confirm: function (e) {
             alert('Selected: ' + e.item.name);
@@ -373,7 +373,6 @@ function TreeView(container, mode, data) {
                 expander.expand();
             }
             me.activeNode.addNewNode();
-
         }
 
         function _expand() {
