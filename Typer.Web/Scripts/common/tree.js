@@ -92,13 +92,16 @@
 ];
 
 
-
+var mode = {
+    NONE: 0,
+    SINGLE: 1,
+    MULTI: 2
+};
 
 
 $(function () {
     var container = $('#tree_container')[0];
-    var tree = new TreeView(container, true, data, true);
-
+    var tree = new TreeView(container, true, data, true, mode.SINGLE);
 
 
     //Switching off selecting text.
@@ -129,8 +132,9 @@ $(function () {
 
 
 
-function TreeView(container, selectable) {
+function TreeView(container, selectable, mode) {
     var me = this;
+    this.mode = mode;
     this.container = container;
     this.selectable = selectable;
     this.events = jQuery('<div/>', {
@@ -140,6 +144,8 @@ function TreeView(container, selectable) {
     this.getContainer = function () {
         return this.container;
     }
+
+    this.selection = {};
 
     this.root = new TreeNode(me, 'root', 'root', me, true);
     this.root.loadData(data);
@@ -237,6 +243,16 @@ function TreeView(container, selectable) {
             if (me.activeNode === e.node) {
                 me.activeNode = null;
             }
+        },
+        'delete': function (e) {
+            alert('Node ' + e.node.name + ' deleted');
+        },
+        newNode: function (e) {
+            alert('New node created: ' + e.node.name + ' | ' + e.node.key);
+        },
+        confirm: function (e) {
+            alert('Selected: ' + e.item.name);
+            me.close();
         }
     });
 
@@ -245,26 +261,97 @@ function TreeView(container, selectable) {
 
         $(document).bind({
             'keydown': function (e) {
+
+                if (me.activeNode != null && me.activeNode.renamer.isActive()) {
+                    return;
+                }
+
+                //Escape applies even for the case if none node is selected.
+                if (e.which === 27) {
+                    alert('Escape');
+                }
+
                 if (me.activeNode) {
                     switch (e.which) {
-                        case 37:
+                        case 37: //Arrow left
                             _collapse();
                             e.stopPropagation();
                             break;
-                        case 38:
+                        case 38: //Arrow up
                             e.stopPropagation();
                             e.preventDefault();
                             _moveUp();
                             break;
-                        case 39:
+                        case 39: //Arrow right
                             _expand();
                             e.stopPropagation();
                             break;
-                        case 40:
+                        case 40: //Arrow down
                             e.stopPropagation();
                             e.preventDefault();
                             _moveDown();
                             break;
+                        case 36: //Home
+                            e.stopPropagation();
+                            e.preventDefault();
+                            _moveToParent();
+                            break;
+                        case 35: //End
+                            e.stopPropagation();
+                            e.preventDefault();
+                            break;
+                        case 33: //PageUp
+                            e.stopPropagation();
+                            e.preventDefault();
+                            _moveToRoot();
+                            break;
+                        case 34: //PageDown
+                            e.stopPropagation();
+                            e.preventDefault();
+                            _moveToLastItem();
+                            break;
+                        case 113: //F2
+                            e.stopPropagation();
+                            e.preventDefault();
+                            me.activeNode.renamer.activate();
+                            break;
+                        case 46: //Delete
+                            e.stopPropagation();
+                            e.preventDefault();
+                            me.activeNode.delete();
+                            _moveToParent();
+                            break;
+                        case 45: //Insert
+                            e.stopPropagation();
+                            e.preventDefault();
+                            _addNewNode();
+                            break;
+                        case 13: //Enter
+                            e.stopPropagation();
+                            e.preventDefault();
+                            switch (me.mode) {
+                                case mode.SINGLE:
+                                    _selectActive();
+                                    //Select current option and close TreeView.
+                                    break;
+                                case mode.MULTI:
+                                    //Select current option.
+                                    break;
+                            }
+                            //Confirmation.
+                        case 32: //Space
+                            e.stopPropagation();
+                            e.preventDefault();
+                            switch (me.mode) {
+                                case mode.SINGLE:
+                                    _selectActive();
+                                    //Select current option and close TreeView.
+                                    break;
+                                case mode.MULTI:
+                                    //Select current option.
+                                    break;
+                            }
+                            //Selecting.
                     }
                 }
 
@@ -272,6 +359,22 @@ function TreeView(container, selectable) {
 
         });
 
+
+        function _selectActive() {
+            me.trigger({
+                'type': 'confirm',
+                'item' : me.activeNode
+            });
+        }
+
+        function _addNewNode() {
+            var expander = me.activeNode.expander;
+            if (!expander.isExpanded()) {
+                expander.expand();
+            }
+            me.activeNode.addNewNode();
+
+        }
 
         function _expand() {
             if (me.activeNode.expander) {
@@ -283,6 +386,24 @@ function TreeView(container, selectable) {
             if (me.activeNode.expander) {
                 me.activeNode.expander.collapse();
             }
+        }
+
+        function _moveToParent() {
+            if (!me.activeNode.isRoot()) {
+                changeSelection(me.activeNode.parent);
+            }
+        }
+
+        function _moveToRoot() {
+            changeSelection(me.root);
+        }
+
+        function _moveToLastItem() {
+            var node = me.root;
+            while (node.expander.isExpanded()) {
+                node = node.getLastChild();
+            }
+            changeSelection(node);
         }
 
         function _moveUp() {
@@ -339,7 +460,11 @@ function TreeView(container, selectable) {
 TreeView.prototype.trigger = function (e) {
     this.events.trigger(e);
 }
-
+TreeView.prototype.close = function () {
+    $(this.container).css({
+        'display' : 'none'
+    });
+}
 
 
 function TreeNode(tree, key, name, parent, expanded) {
@@ -409,7 +534,7 @@ function TreeNode(tree, key, name, parent, expanded) {
             if (!expandable) {
                 return;
             }
-
+            
             expanded = false;
             $(button).html('+');
             display(me.container, false);
@@ -437,22 +562,26 @@ function TreeNode(tree, key, name, parent, expanded) {
 
         }
 
+        function _setExpandableStatus(value) {
+            show(this.expandButton);
+            expandable = value;
+            if (!expandable) {
+                $(button).html('.');
+            } else {
+                _setStatus(expanded);
+            }
+        }
+
 
         //Sets initial status.
         (function () {
-            _setStatus(expanded);
+            _setExpandableStatus(expandable);
         })();
 
 
         return {
             setExpandableStatus: function (value) {
-                show(this.expandButton);
-                expandable = value;
-                if (!expandable) {
-                    $(button).html('.');
-                } else {
-                    _setStatus(expanded);
-                }
+                _setExpandableStatus(value);
             },
             revertStatus : function () {
                 _revertStatus();
@@ -736,14 +865,18 @@ function TreeNode(tree, key, name, parent, expanded) {
             }).
             bind({
                 'keydown': function (e) {
-                    if (e.which === 13) {
-                        var value = $(this).val();
-                        var validation = validateName(value);
-                        if (validation === true) {
-                            applyNewName(value);
-                        }
-                    } else if (e.which === 27) {
-                        _escape();
+                    switch (e.which) {
+                        case 13:
+                            var value = $(this).val();
+                            var validation = validateName(value);
+                            if (validation === true) {
+                                applyNewName(value);
+                            }
+                            break;
+                        case 27:
+                            e.stopPropagation();
+                            _escape();
+                            break;
                     }
                 }
             }).
@@ -756,14 +889,33 @@ function TreeNode(tree, key, name, parent, expanded) {
         }
 
         function applyNewName(name) {
-            me.name = name;
-            $(me.caption).html(name);
-            _escape();
-            me.tree.trigger({
-                'type': 'rename',
-                'node': me,
-                'name': name
-            });
+
+            if (name.length) {
+                if (me.key.length === 0) {
+                    me.key = name;
+                    me.changeName(name);
+                    me.parent.addNode(me);
+                    me.parent.expander.expand();
+                    _escape();
+                    me.tree.trigger({
+                        'type': 'newNode',
+                        'node': me
+                    });
+                } else {
+                    me.changeName(name);
+                    _escape();
+                    me.tree.trigger({
+                        'type': 'rename',
+                        'node': me,
+                        'name': name
+                    });
+                }
+            } else {
+                if (me.key.length === 0) {
+                    me.cancel();
+                }
+            }
+
         }
 
         function destroy() {
@@ -783,6 +935,9 @@ function TreeNode(tree, key, name, parent, expanded) {
         function _escape() {
             active = false;
             destroy();
+            if (me.key.length === 0) {
+                me.cancel();
+            }
         }
 
         return {
@@ -899,8 +1054,8 @@ TreeNode.prototype.removeNode = function (node) {
 }
 TreeNode.prototype.addNode = function (node) {
     //alert('moving node ' + node.name + ' to ' + this.name);
-    this.nodes[node.getKey()] = node;
     node.moveTo(this);
+    this.nodes[node.getKey()] = node;
     this.sorter.sort();
     this.resetStatus();
     this.dropArea.unselect();
@@ -908,8 +1063,7 @@ TreeNode.prototype.addNode = function (node) {
 }
 TreeNode.prototype.moveTo = function (newParent) {
     if (this.parent) {
-        delete this.parent[this.key];
-        this.parent.sorter.sort();
+        this.parent.removeNode(this.key);
     }
     this.parent = newParent;
     this.mainContainer.appendTo($(newParent.getContainer()));
@@ -968,8 +1122,37 @@ TreeNode.prototype.previousNode = function () {
         return this.parent.getChildNode(this.index - 1);
     }
 }
+TreeNode.prototype.delete = function () {
+    if (!this.isRoot()) {
+        this.parent.removeNode(this.key);
+        $(this.mainContainer).css({
+            'display' : 'none'
+        });
 
+        this.tree.trigger({
+            'type': 'delete',
+            'node': this
+        });
 
+    }
+}
+TreeNode.prototype.removeNode = function (key) {
+    delete this.nodes[key];
+    this.sorter.sort();
+}
+TreeNode.prototype.addNewNode = function () {
+    var node = new TreeNode(this.tree, '', '', this, false);
+    node.renamer.activate();
+}
+TreeNode.prototype.cancel = function () {
+    $(this.mainContainer).css({
+        'display': 'none'
+    });
+}
+TreeNode.prototype.changeName = function (name) {
+    this.name = name;
+    $(this.caption).html(name);
+}
 
 function hide(div) {
     $(div).css({
