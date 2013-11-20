@@ -232,15 +232,113 @@ function TreeView(container, selectable) {
                 me.activeNode.inactivate();
             }
             me.activeNode = e.node;
+        },
+        inactivate: function (e) {
+            if (me.activeNode === e.node) {
+                me.activeNode = null;
+            }
         }
     });
+
+
+    this.navigator = (function () {
+
+        $(document).bind({
+            'keydown': function (e) {
+                if (me.activeNode) {
+                    switch (e.which) {
+                        case 37:
+                            _collapse();
+                            e.stopPropagation();
+                            break;
+                        case 38:
+                            e.stopPropagation();
+                            e.preventDefault();
+                            _moveUp();
+                            break;
+                        case 39:
+                            _expand();
+                            e.stopPropagation();
+                            break;
+                        case 40:
+                            e.stopPropagation();
+                            e.preventDefault();
+                            _moveDown();
+                            break;
+                    }
+                }
+
+            }
+
+        });
+
+
+        function _expand() {
+            if (me.activeNode.expander) {
+                me.activeNode.expander.expand();
+            }
+        }
+
+        function _collapse() {
+            if (me.activeNode.expander) {
+                me.activeNode.expander.collapse();
+            }
+        }
+
+        function _moveUp() {
+            var previousNode = me.activeNode.previousNode();
+            if (previousNode) {
+
+                var node = previousNode;
+                while (node.expander.isExpanded()) {
+                    node = node.getLastChild();
+                }
+                changeSelection(node);
+            } else {
+                if (!me.activeNode.isRoot()) {
+                    changeSelection(me.activeNode.parent);
+                }
+            }
+        }
+
+        function _moveDown() {
+            if (me.activeNode.expander && me.activeNode.expander.isExpanded()) {
+                var childNode = me.activeNode.getChildNode(0);
+                if (childNode) {
+                    changeSelection(childNode);
+                }
+            } else {
+                if (!me.activeNode.isRoot()) {
+                    var nextNode = me.activeNode.nextNode();
+
+                    var parent = me.activeNode.parent;
+                    while (nextNode === null && parent.isNode) {
+                        nextNode = parent.nextNode();
+                        parent = parent.parent;
+                    }
+
+                    if (nextNode) {
+                        changeSelection(nextNode);
+                    }
+
+                }
+            }
+        }
+
+        function changeSelection(node) {
+            me.activeNode.inactivate();
+            node.activate();
+        }
+
+    })();
+
+    this.root.activate();
 
 }
 
 TreeView.prototype.trigger = function (e) {
     this.events.trigger(e);
 }
-
 
 
 
@@ -256,7 +354,6 @@ function TreeNode(tree, key, name, parent, expanded) {
     this.mouseClicked = false;
     this.isActive = false;
     this.isNode = true;
-    this.justEntered = false;   //Pozwala zapobiegać wielokrotnemu wywoływaniu.
 
     this.mainContainer = jQuery('<div/>', {
         id: key + '_container',
@@ -375,96 +472,6 @@ function TreeNode(tree, key, name, parent, expanded) {
         }
 
     })(expanded);
-
-
-    this.navigator = (function () {
-
-        $(document).bind({
-            'keydown': function (e) {
-                if (me.isActive && !me.justEntered) {
-                    switch(e.which){
-                        case 37:
-                            _collapse(); 
-                            e.stopPropagation();
-                            break;
-                        case 38:
-                            e.stopPropagation();
-                            e.preventDefault();
-                            _moveUp();
-                            break;
-                        case 39:
-                            _expand();
-                            e.stopPropagation();
-                            break;
-                        case 40:
-                            e.stopPropagation();
-                            e.preventDefault();
-                            _moveDown();
-                            break;
-                    }
-                }
-
-                me.justEntered = false;
-
-            }
-
-        });
-
-
-        function _expand() {
-            if (me.expander) {
-                me.expander.expand();
-            }
-        }
-
-        function _collapse() {
-            if (me.expander) {
-                me.expander.collapse();
-            }
-        }
-
-        function _moveUp() {
-            var previousNode = me.previousNode();
-            if (previousNode) {
-                changeSelection(previousNode, false);
-            } else {
-                if (!me.isRoot()) {
-                    changeSelection(me.parent, false);
-                }
-            }
-        }
-
-        function _moveDown() {
-            if (me.expander && me.expander.isExpanded()) {
-                var childNode = me.getChildNode(0);
-                if (childNode) {
-                    changeSelection(childNode, true);
-                }
-            } else {
-                if (!me.isRoot()) {
-                    var nextNode = me.nextNode();
-
-                    if (nextNode === null) {
-                        nextNode = me.parent.nextNode();
-
-                    }
-
-                    if (nextNode) {
-                        changeSelection(nextNode, true);
-                    }
-
-                }
-            }
-        }
-        //Źle działa dla bjtaa.
-
-        function changeSelection(node, stop) {
-            me.inactivate();
-            node.activate();
-            node.justEntered = stop;
-        }
-
-    })();
 
 
     this.caption = jQuery('<div/>', {
@@ -900,8 +907,10 @@ TreeNode.prototype.addNode = function (node) {
     this.dropArea.recalculate();
 }
 TreeNode.prototype.moveTo = function (newParent) {
-    if (this.parent)
+    if (this.parent) {
         delete this.parent[this.key];
+        this.parent.sorter.sort();
+    }
     this.parent = newParent;
     this.mainContainer.appendTo($(newParent.getContainer()));
 }
@@ -922,6 +931,13 @@ TreeNode.prototype.getChildNode = function (i) {
     }
     return null;
 }
+TreeNode.prototype.getLastChild = function () {
+    if (this.nodesArray.length < 1) {
+        return null;
+    } else {
+        return this.nodesArray[this.nodesArray.length - 1];
+    }
+}
 TreeNode.prototype.activate = function () {
     this.isActive = true;
     $(this.caption).addClass('selected');
@@ -933,6 +949,10 @@ TreeNode.prototype.activate = function () {
 TreeNode.prototype.inactivate = function () {
     this.isActive = false;
     $(this.caption).removeClass('selected');
+    this.tree.trigger({
+        'type': 'inactivate',
+        'node': this
+    });
 }
 TreeNode.prototype.nextNode = function () {
     if (this.isRoot() === true) {
