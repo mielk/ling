@@ -4,8 +4,8 @@
                         caption: 'a',
                         expanded: true,
                         items: [
-                            { key: 11, caption: 'aa', expanded: true, items: [] },
-                            { key: 12, caption: 'ab', expanded: true, items: [] }
+                            { key: 11, caption: 'aa', expanded: true, selected: true, items: [] },
+                            { key: 12, caption: 'ab', expanded: true, selected: false, items: [] }
                         ]
                     },
                     {
@@ -92,7 +92,7 @@
 ];
 
 
-var mode = {
+var MODE = {
     NONE: 0,
     SINGLE: 1,
     MULTI: 2
@@ -101,7 +101,7 @@ var mode = {
 
 $(function () {
     var container = $('#tree_container')[0];
-    var tree = new TreeView(container, true, data, true, mode.SINGLE);
+    var tree = new TreeView(container, MODE.MULTI, data);
 
 
     //Switching off selecting text.
@@ -132,11 +132,10 @@ $(function () {
 
 
 
-function TreeView(container, selectable, mode) {
+function TreeView(container, mode, data) {
     var me = this;
-    this.mode = mode;
     this.container = container;
-    this.selectable = selectable;
+    this.mode = mode;
     this.events = jQuery('<div/>', {
         'class': 'events-container'
     }).appendTo(this.container);
@@ -144,8 +143,6 @@ function TreeView(container, selectable, mode) {
     this.getContainer = function () {
         return this.container;
     }
-
-    this.selection = {};
 
     this.root = new TreeNode(me, 'root', 'root', me, true);
     this.root.loadData(data);
@@ -330,34 +327,37 @@ function TreeView(container, selectable, mode) {
                             e.stopPropagation();
                             e.preventDefault();
                             switch (me.mode) {
-                                case mode.SINGLE:
-                                    _selectActive();
-                                    //Select current option and close TreeView.
-                                    break;
-                                case mode.MULTI:
-                                    //Select current option.
-                                    break;
+                                case MODE.SINGLE: _selectActive(); break;
+                                case MODE.MULTI: _confirm(); break;
                             }
+                            break;
                             //Confirmation.
                         case 32: //Space
                             e.stopPropagation();
                             e.preventDefault();
                             switch (me.mode) {
-                                case mode.SINGLE:
-                                    _selectActive();
-                                    //Select current option and close TreeView.
-                                    break;
-                                case mode.MULTI:
-                                    //Select current option.
-                                    break;
+                                case MODE.SINGLE: _selectActive(); break;
+                                case MODE.MULTI: me.activeNode.select(); break;
                             }
-                            //Selecting.
+                            break;
                     }
                 }
 
             }
 
         });
+
+        function _confirm() {
+            me.trigger({
+                'type': 'confirm',
+                'items': _getSelectedArray()
+            });
+        }
+
+        
+        function _getSelectedArray() {
+
+        }
 
 
         function _selectActive() {
@@ -467,7 +467,7 @@ TreeView.prototype.close = function () {
 }
 
 
-function TreeNode(tree, key, name, parent, expanded) {
+function TreeNode(tree, key, name, parent, expanded, selected) {
     var me = this;
     this.tree = tree;
     this.key = key;
@@ -602,6 +602,107 @@ function TreeNode(tree, key, name, parent, expanded) {
 
     })(expanded);
 
+    this.selector = (function () {
+        var selected = false;
+        var hasSelectedChildren = false;
+
+        var box = jQuery('<input/>', {
+            type: 'checkbox',
+            id: me.key + '_select-checkbox',
+            'class': 'select-checkbox'
+        }).css({
+            'display': (me.tree.mode === MODE.MULTI ? true : false)
+        }).bind({
+            'click': function () {
+                me.select();
+            }
+        }).appendTo(me.line);
+
+
+        function _applyForChildren() {
+            for (var key in me.nodes) {
+                var index = 0;
+                if (me.nodes.hasOwnProperty(key)) {
+                    var node = me.nodes[key];
+                    node.selector.setValue(selected, false);
+                }
+            }
+        }
+
+        function _refresh() {
+
+            if (Object.keys(me.nodes).length > 0) {
+                selected = true;
+                hasSelectedChildren = false;
+
+                for (var key in me.nodes) {
+                    var index = 0;
+                    if (me.nodes.hasOwnProperty(key)) {
+                        var node = me.nodes[key];
+                        if (!node.selector.isSelected()){
+                            selected = false;
+                            if (node.selector.hasSelectedChildren()) {
+                                hasSelectedChildren = true;
+                            }
+                        } else {
+                            hasSelectedChildren = true;
+                        }
+                    }
+                }
+            }
+            _render();
+
+            if (!me.isRoot()) {
+                me.parent.selector.refresh();
+            }
+
+        }
+
+        function _render() {
+
+            var name = me.name;
+            var checked = (selected ? true : false);
+            var bold = (selected || hasSelectedChildren ? 'bold' : 'normal');
+
+            $(box).prop({
+                //'checked': (selected ? true : false)
+                'checked': checked
+            });
+
+            $(me.caption).css({
+                'font-weight': bold
+                //'font-weight': (selected || hasSelectedChildren ? 'bold' : 'normal')
+            });
+        }
+
+        return {
+            click: function () {
+                selected = !selected;
+                _applyForChildren();
+                _refresh();
+            },
+            setValue: function (value, refresh) {
+                var name = me.name;
+                selected = value;
+                _applyForChildren();
+                if (refresh === false) {
+                    _render();
+                } else {
+                    _refresh();
+                }
+            },
+            refresh: function () {
+                _refresh();
+            },
+            isSelected: function(){
+                return selected;
+            },
+            hasSelectedChildren: function () {
+                return hasSelectedChildren;
+            }
+        }
+    })();
+
 
     this.caption = jQuery('<div/>', {
         id: key + '_caption',
@@ -613,10 +714,15 @@ function TreeNode(tree, key, name, parent, expanded) {
             e.preventDefault();
             me.mouseClicked = true;
             if (me.isActive) {
-                e.preventDefault;
-                me.renamer.activate();
-                me.inactivate();
-                e.stopPropagation();
+
+                if (me.tree.mode === MODE.SINGLE) {
+                    me.select();
+                } else {
+                    e.preventDefault;
+                    me.renamer.activate();
+                    me.inactivate();
+                    e.stopPropagation();
+                }
             }
         },
         'mouseup': function (e) {
@@ -1024,8 +1130,9 @@ TreeNode.prototype.loadData = function (data) {
             if (data.hasOwnProperty(key)) {
                 var item = data[key];
                 var node = new TreeNode(this.tree, item.key, item.caption, this, item.expanded);
-                node.loadData(item.items);
                 this.nodes[item.key] = node;
+                node.selector.setValue(item.selected);
+                node.loadData(item.items);
             }
         }
 
@@ -1152,6 +1259,16 @@ TreeNode.prototype.cancel = function () {
 TreeNode.prototype.changeName = function (name) {
     this.name = name;
     $(this.caption).html(name);
+}
+TreeNode.prototype.select = function () {
+    if (this.tree.mode === MODE.SINGLE) {
+        this.tree.trigger({
+            'type': 'confirm',
+            'item': this
+        });
+    } else if (this.tree.mode === MODE.MULTI) {
+        this.selector.click();
+    }
 }
 
 function hide(div) {

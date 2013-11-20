@@ -162,3 +162,15 @@ div.children-container
     color: rgba(0, 0, 0,0.6);
     cursor: text;
 }
+
+.select-checkbox
+{
+    float: left;
+    width: 14px;
+    height: 14px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
