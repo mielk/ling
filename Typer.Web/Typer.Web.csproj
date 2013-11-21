@@ -179,6 +179,7 @@
     <Content Include="Content\images\white_star.png" />
     <Content Include="Content\Login.css" />
     <Content Include="Content\normalize.css" />
+    <Content Include="Content\themes\dropdown.css" />
     <Content Include="Content\Words.css" />
     <Content Include="Content\Test.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
@@ -241,6 +242,8 @@
     <Content Include="Content\Site.css" />
     <Compile Include="App_Start\NinjectWebCommon.Bindings.cs" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
+    <Content Include="Scripts\common\dropdown.js" />
+    <Content Include="Scripts\common\dropdown2.js" />
     <Content Include="Scripts\question\edit.js" />
     <Content Include="Scripts\question\editOptions.js" />
     <Content Include="Scripts\app\global.js" />

@@ -138,9 +138,8 @@ $(function () {
 
 
 
-function TreeView(properties){ //container, mode, data) {
+function TreeView(properties){
     var me = this;
-    //this.container = properties.container ? properties.container : null;
 
     if (properties.blockOtherElements) {
         this.background = jQuery('<div/>', {

@@ -41,6 +41,9 @@ namespace Typer.Web
             bundles.Add(new ScriptBundle("~/bundles/tree").Include(
                         "~/Scripts/common/tree.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/dropdown").Include(
+                                    "~/Scripts/common/dropdown.js"));
+
             // Use the development version of Modernizr to develop with and learn from. Then, when you're
             // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
@@ -53,6 +56,10 @@ namespace Typer.Web
             bundles.Add(new StyleBundle("~/Content/tree").Include(
                         "~/Content/normalize.css",
                         "~/Content/tree.css"));
+
+            bundles.Add(new StyleBundle("~/Content/dropdown").Include(
+                                    "~/Content/normalize.css",
+                                    "~/Content/dropdown.css"));
 
             bundles.Add(new StyleBundle("~/Content/edit").Include(
                         "~/Content/normalize.css",
