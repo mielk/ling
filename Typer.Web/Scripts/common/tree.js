@@ -1231,6 +1231,8 @@ TreeNode.prototype.previousNode = function () {
 TreeNode.prototype.delete = function () {
     if (!this.isRoot()) {
         this.parent.removeNode(this.key);
+        this.parent.resetStatus();
+
         $(this.mainContainer).css({
             'display' : 'none'
         });
@@ -1285,9 +1287,3 @@ function display(div, value) {
         'display' : (value ? 'block' : 'none')
     });
 }
-
-//for (var key in p) {
-//    if (p.hasOwnProperty(key)) {
-//        alert(key + " -> " + p[key]);
-//    }
-//}
