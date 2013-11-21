@@ -404,7 +404,7 @@ function contentToHtml(content) {
         var s = parts[part];
         if (s.length > 0) {
             result += '<span class="';
-            result += (text.startsWith(s, '$') ? 'complex' : 'plain');
+            result += (my.text.startsWith(s, '$') ? 'complex' : 'plain');
             result += '">';
             result += s.replace("$", "");
             result += '</span>';

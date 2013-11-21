@@ -163,6 +163,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\dropdown.css" />
     <Content Include="Content\Edit.css" />
     <Content Include="Content\images\close.png" />
     <Content Include="Content\images\delete.png" />
@@ -244,6 +245,7 @@
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\common\dropdown.js" />
     <Content Include="Scripts\common\dropdown2.js" />
+    <Content Include="Scripts\jquery.sizes.js" />
     <Content Include="Scripts\question\edit.js" />
     <Content Include="Scripts\question\editOptions.js" />
     <Content Include="Scripts\app\global.js" />

@@ -137,7 +137,7 @@ function checkMail(mail, isPasswordReset) {
 
     if (!mail) {
         return MessageBundle.get(dict.MailCannotBeEmpty);
-    } else if (!text.isValidMail(mail)) {
+    } else if (!my.text.isValidMail(mail)) {
         return MessageBundle.get(dict.IllegalMailFormat);
     } else {
         mailAlreadyExists(mail);

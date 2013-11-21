@@ -1,0 +1,70 @@
+﻿.mlq_dd_container{
+    position: relative;
+    display: block;
+    float: left;
+    width: 200px;
+    height: auto;
+    border: 0px;
+}
+
+.mlq_dd_textbox{
+    position: relative;
+    display: block;
+    float: left;
+    border: 1px #6d7c99 solid;
+    border-right: none;
+    width: 157px;
+    padding: 2px 6px;
+    color: #6d7c99;
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 100%;
+}
+
+.mlq_dd_arrow{
+    position: relative;
+    display: block;
+    float: right;
+    border: 1px #6d7c99 solid;
+    border-left: none;
+    background-color: white;
+    width: 29px;
+    padding: 2px 0px;
+}
+
+.mlq_dd_option{
+    position: relative;
+    display: block;
+    float: left;
+    border: 1px #6d7c99 solid;
+    border-top: none;
+    border-bottom: none;
+    width: 186px;
+    padding: 2px 6px;
+    color: #6d7c99;
+    font-size: 13px;
+    font-weight: bold;
+    visibility: inherit;
+}
+
+.mlq_dd_selected{
+    background-color: #c7d8f0;
+}
+
+.mlq_dd_options_container{
+    position: relative;
+    display: block;
+    float: left;
+    width: 200px;
+    height: auto;
+    background-color: #fbf9f9;
+    border: none;
+    border-bottom: 1px #6d7c99 solid;
+    overflow: hidden;
+}
+
+span.mlq_dd_matched_text{
+    background-color: #d6eacf;
+    border: 1px solid #7a8776;
+    border-radius: 3px;
+}

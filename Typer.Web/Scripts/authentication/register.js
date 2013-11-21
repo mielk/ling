@@ -238,9 +238,9 @@ function checkUsername(username) {
         return MessageBundle.get(dict.UsernameMustBeLongerThan, [MIN_LENGTH]);
     } else if (username.length > MAX_LENGTH) {
         return MessageBundle.get(dict.UsernameCannotBeLongerThan, [MAX_LENGTH]);
-    } else if (!text.isLetter(username.charAt(0))) {
+    } else if (!my.text.isLetter(username.charAt(0))) {
         return MessageBundle.get(dict.UsernameMustStartWithLetter);
-    } else if (!text.containLettersNumbersUnderscore(username)) {
+    } else if (!my.text.containLettersNumbersUnderscore(username)) {
         return MessageBundle.get(dict.UsernameContainsIllegalChar);
     } else {
         userAlreadyExists(username);
@@ -314,7 +314,7 @@ var mailExists = false;
 function checkMail(mail) {
     if (!mail) {
         return MessageBundle.get(dict.MailCannotBeEmpty);
-    } else if (!text.isValidMail(mail)) {
+    } else if (!my.text.isValidMail(mail)) {
         return MessageBundle.get(dict.IllegalMailFormat);
     } else {
         mailAlreadyExists(mail);
