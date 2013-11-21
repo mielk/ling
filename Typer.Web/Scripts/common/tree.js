@@ -101,7 +101,13 @@ var MODE = {
 
 $(function () {
     var container = $('#tree_container')[0];
-    var tree = new TreeView(container, MODE.MULTI, data);
+    var properties = {
+        'container': container,
+        'mode': MODE.MULTI,
+        'data': data,
+        'blockOtherElements': true
+    };
+    var tree = new TreeView(properties);
 
 
     //Switching off selecting text.
@@ -132,10 +138,35 @@ $(function () {
 
 
 
-function TreeView(container, mode, data) {
+function TreeView(properties){ //container, mode, data) {
     var me = this;
-    this.container = container;
-    this.mode = mode;
+    //this.container = properties.container ? properties.container : null;
+
+    if (properties.blockOtherElements) {
+        this.background = jQuery('<div/>', {
+            id: 'tree-background',
+            'class': 'tree-background'
+        }).appendTo($(document.body));
+    }
+
+
+    this.container = jQuery('<div/>', {
+        id: 'tree-container',
+        'class': 'tree-container'
+    }).
+    appendTo(this.background ? $(this.background) : $(document.body));
+
+    //Place container inside the screen.
+    if (properties.x !== undefined) {
+        this.container.css('left', properties.x);
+    }
+    if (properties.y !== undefined) {
+        this.container.css('top', properties.y);
+    }
+
+
+
+    this.mode = properties.mode ? properties.mode : MODE.SINGLE;
     this.events = jQuery('<div/>', {
         'class': 'events-container'
     }).appendTo(this.container);
@@ -145,7 +176,7 @@ function TreeView(container, mode, data) {
     }
 
     this.root = new TreeNode(me, 'root', 'root', me, true);
-    this.root.loadData(data);
+    this.root.loadData(properties.data);
 
 
     this.dragDropManager = (function () {
@@ -455,7 +486,6 @@ function TreeView(container, mode, data) {
     this.root.activate();
 
 }
-
 TreeView.prototype.trigger = function (e) {
     this.events.trigger(e);
 }
@@ -464,6 +494,7 @@ TreeView.prototype.close = function () {
         'display' : 'none'
     });
 }
+
 
 
 function TreeNode(tree, key, name, parent, expanded, selected) {
@@ -1118,7 +1149,6 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
     })();
 
 }
-
 TreeNode.prototype.loadData = function (data) {
 
     if (data.length === 0) {
