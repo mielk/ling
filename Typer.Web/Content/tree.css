@@ -221,3 +221,17 @@ div.children-container
     border-bottom: 1px solid #555;
     overflow: visible;
 }
+
+.tree-selection-panel
+{
+    -moz-box-sizing: border-box !important;
+    -webkit-box-sizing: border-box !important;
+    box-sizing: border-box !important;
+    width: 100%;
+    margin-top: 6px;
+    height: auto;
+    padding: 0;
+    padding-top: 12px;
+    border-top: 1px solid #555;
+    overflow: hidden;
+}

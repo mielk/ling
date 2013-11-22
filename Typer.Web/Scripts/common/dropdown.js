@@ -102,6 +102,9 @@ function DropDown(properties) {
                 clearFilter();
             }
 
+        },
+        'deactivate': function (e) {
+            _remove();
         }
     });
 
@@ -684,39 +687,30 @@ function DropDown(properties) {
             _events = $('<div>', { id: 'main_events_listener', 'class': 'eventsListener' }).css('display', 'none').appendTo(_container);
 
             _optionsArea = optionsArea();
-            //adjustControls();
-            //!!!optionsArea();
         }
     }
 
 
-//    function adjustControls() {
-//        //Container.
-////        container().css({ 'width': $width });
+    $(document).bind({
+        'keydown': function (e) {
+            if (e.which === 27) {   //Escape
+                $(_textbox).val('');
+                $(_events).trigger({
+                    'type' : 'deactivate'
+                });
+            }
+        }
+    });
 
-//        //Text box and expand arrow.
-//        //var t = textbox();
-//        //var txtWidth = t.width();
-//        ////var txtExtraWidth = my.ui.extraWidth(t);
-//        //t.css({
-//        //    'height': $optionHeight,
-//        //    'width': t.width() //- my.ui.extraWidth(t)
-//        //});
-
-//        //var a = arrow();
-//        //a.css({
-//        //    'height': $optionHeight,
-//        //    'width': a.width() //- my.ui.extraWidth(a)
-//        //});
-
-//        //Unhide container.
-//        container().css({ 'visibility': 'visible' });
-
-//    }
 
     function clearFilter() {
         $text = '';
         optionsArea().forceFilter();
+    }
+
+
+    function _remove() {
+        container().remove();
     }
 
 
@@ -759,8 +753,11 @@ function DropDown(properties) {
         //----------------------------------
         listener: function () {
             return events();
-        }
+        },
         //----------------------------------
+        activate: function () {
+            textbox().focus();
+        }
     }
     /* ==================================== */
 

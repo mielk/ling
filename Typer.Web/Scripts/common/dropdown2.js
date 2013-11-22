@@ -645,7 +645,6 @@ return _optionsArea;
         }
     }
 
-
     function adjustControls() {
         //Container.
         container().css({ 'width': $width });

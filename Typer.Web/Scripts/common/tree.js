@@ -18,11 +18,11 @@
                                     { key: 211, caption: 'bjtaa', expanded: true, items: [] },
                                     {
                                         key: 212, caption: 'bab', expanded: false, items: [
-                                                                            { key: 2221, caption: 'baaa', expanded: true, items: [] },
+                                                                            { key: 2221, caption: 'baaa', expanded: false, items: [] },
                                                                             {
-                                                                                key: 2222, caption: 'baab', expanded: true, items: [
+                                                                                key: 2222, caption: 'baab', expanded: false, items: [
                                                                                     {
-                                                                                        key: 22221, caption: 'baaba', expanded: true, items: [
+                                                                                        key: 22221, caption: 'baaba', expanded: false, items: [
 
                                                                                         ]
                                                                                     }
@@ -37,11 +37,11 @@
                                     { key: 221, caption: 'bba', expanded: true, items: [] },
                                     {
                                         key: 222, caption: 'bbb', expanded: false, items: [
-                                                                            { key: 2221, caption: 'baba', expanded: true, items: [] },
+                                                                            { key: 2221, caption: 'baba', expanded: false, items: [] },
                                                                             {
-                                                                                key: 2222, caption: 'babb', expanded: true, items: [
+                                                                                key: 2222, caption: 'babb', expanded: false, items: [
                                                                                     {
-                                                                                        key: 22221, caption: 'babba', expanded: true, items: [
+                                                                                        key: 22221, caption: 'babba', expanded: false, items: [
 
                                                                                         ]
                                                                                     }
@@ -49,10 +49,10 @@
                                                                             }
                                         ]
                                     },
-                                    { key: 223, caption: 'bbc', expanded: true, items: [] }
+                                    { key: 223, caption: 'bbc', expanded: false, items: [] }
                                 ]
                             },
-                            { key: 23, caption: 'bc', expanded: true, items: [] },
+                            { key: 23, caption: 'bc', expanded: false, items: [] },
                         ]
                     },
                     {
@@ -60,10 +60,10 @@
                         caption: 'c',
                         expanded: true,
                         items: [
-                                    { key: 311, caption: 'caa', expanded: true, items: [] },
+                                    { key: 311, caption: 'caa', expanded: false, items: [] },
                                     {
                                         key: 312, caption: 'cab', expanded: false, items: [
-                                                                            { key: 3121, caption: 'cabd', expanded: true, items: [] }
+                                                                            { key: 3121, caption: 'cabd', expanded: false, items: [] }
                                         ]
                                     },
                         ]
@@ -74,15 +74,15 @@
                         expanded: true,
                         items: [
                             {
-                                key: 41, caption: 'da', expanded: true, items: [
+                                key: 41, caption: 'da', expanded: false, items: [
                                     {
-                                        key: 411, caption: 'daa', expanded: true, items: [
-                                            { key: 4121, caption: 'dabd', expanded: true, items: [] }
+                                        key: 411, caption: 'daa', expanded: false, items: [
+                                            { key: 4121, caption: 'dabd', expanded: false, items: [] }
                                         ]
                                     },
                                     {
                                         key: 412, caption: 'dab', expanded: false, items: [
-                                                                            { key: 4121, caption: 'dabd', expanded: true, items: [] }
+                                                                            { key: 4121, caption: 'dabd', expanded: false, items: [] }
                                         ]
                                     },
                                 ]
@@ -105,7 +105,8 @@ $(function () {
         'container': container,
         'mode': MODE.MULTI,
         'data': data,
-        'blockOtherElements': true
+        'blockOtherElements': true,
+        'showSelection': true
     };
     var tree = new TreeView(properties);
 
@@ -160,7 +161,7 @@ function TreeView(properties){
     appendTo($(this.background));
 
 
-    this.searchPanel = jQuery('<div/>', {
+    this._searchPanel = jQuery('<div/>', {
             id: 'tree-search-panel',
             'class': 'tree-search-panel'
         }).
@@ -169,6 +170,7 @@ function TreeView(properties){
         }).
         appendTo($(this.container));
     this.searchMode = false;
+
 
 
     //Place container inside the screen.
@@ -192,6 +194,39 @@ function TreeView(properties){
 
     this.root = new TreeNode(me, 'root', 'root', me, true);
     this.root.loadData(properties.data);
+
+
+    //Selection panel.
+    this.showSelection = properties.showSelection;
+    if (this.showSelection) {
+        this.selection = (function () {
+            var _container = jQuery('<div/>', {
+                    id: 'tree-selection',
+                    'class': 'tree-selection-panel'
+                }).
+                css({
+                    'display': 'none'
+                }).appendTo($(me.container));
+
+            var selected = [];
+
+
+            function _refresh() {
+                $(_container).empty();
+                selected = me.root.getSelectedArray();
+                alert(selected.length);
+            }
+
+
+            return {
+                refresh: function () {
+                    _refresh();
+                }
+            }
+
+        })();
+    }
+
 
     this.dragDropManager = (function () {
         var drag = null;
@@ -312,6 +347,8 @@ function TreeView(properties){
                         case 70:
                         case 102:
                             //search panel.
+                            e.preventDefault();
+                            e.stopPropagation();
                             me.showSearchPanel();
                             break;
                     }
@@ -523,9 +560,16 @@ TreeView.prototype.close = function () {
     });
 }
 TreeView.prototype.showSearchPanel = function () {
-    this.searchPanel = new SearchPanel(this);
+    this.searchPanel = (this.searchPanel || new SearchPanel(this));
     this.searchMode = true;
     this.searchPanel.show();
+}
+TreeView.prototype.hideSearchPanel = function () {
+    if (this.searchPanel) {
+        this.searchPanel.hide();
+    }
+    this.searchPanel = null;
+    this.searchMode = false;
 }
 
 function TreeNode(tree, key, name, parent, expanded, selected) {
@@ -585,6 +629,11 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
             expanded = true;
             $(button).html('-');
             display(me.container, true);
+
+            if (!me.isRoot()) {
+                me.parent.expander.expand();
+            }
+
             me.tree.trigger({
                 type: 'expand',
                 node: me
@@ -1282,6 +1331,11 @@ TreeNode.prototype.getLastChild = function () {
 TreeNode.prototype.activate = function () {
     this.isActive = true;
     $(this.caption).addClass('selected');
+
+    if (this.parent.isNode && !this.parent.expander.isExpanded()) {
+        this.parent.expander.expand();
+    }
+
     this.tree.trigger({
         'type': 'activate',
         'node': this
@@ -1350,6 +1404,9 @@ TreeNode.prototype.select = function () {
         });
     } else if (this.tree.mode === MODE.MULTI) {
         this.selector.click();
+        if (this.tree.selection) {
+            this.tree.selection.refresh();
+        }
     }
 }
 TreeNode.prototype.getNodesForSearching = function () {
@@ -1384,17 +1441,42 @@ TreeNode.prototype.getSearchObject = function () {
         displayed: this.name
     }
 }
+TreeNode.prototype.getSelectedArray = function () {
+    var a = [];
+    var counter = 0;
 
+    if (this.selector.isSelected()) {
+        a[counter++] = this;
+    } else if (this.selector.hasSelectedChildren()) {
+        for (var key in this.nodes) {
+            if (this.nodes.hasOwnProperty(key)) {
+                var node = this.nodes[key];
+                var arr = node.getSelectedArray();
+
+                for (var i = 0; i < arr.length; i++) {
+                    a[counter++] = arr[i];
+                }
+            }
+        }
+    }
+
+    return a;
+
+}
 
 
 function SearchPanel(tree) {
     var me = this;
     this.tree = tree;
+    this.dropdown = null;
 
-    this.container = this.tree.searchPanel;
+    $(this.tree._searchPanel).empty();
+    this.container = this.tree._searchPanel;
 
 }
 SearchPanel.prototype.show = function () {
+    var me = this;
+
     $(this.container).css({
         'display': 'block',
         'z-index': 2
@@ -1408,8 +1490,29 @@ SearchPanel.prototype.show = function () {
         background: false,
         displayed: 'displayed'
     };
-    var dropdown = new DropDown(properties);
+    
+    if (this.dropdown === null) {
+        this.dropdown = new DropDown(properties);
+    }
 
+    this.dropdown.listener().bind({
+        'deactivate': function () {
+            me.tree.hideSearchPanel();
+        },
+        'selected' : function(e){
+            me.tree.hideSearchPanel();
+            var node = e.object.object;
+            node.activate();
+        }
+    });
+
+    this.dropdown.activate();
+
+}
+SearchPanel.prototype.hide = function(){
+    $(this.container).css({
+        'display': 'none'
+    });
 }
 
 
