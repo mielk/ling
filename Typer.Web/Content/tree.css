@@ -1,4 +1,11 @@
-﻿.tree-background
+﻿*
+{
+    -moz-box-sizing: border-box !important;
+    -webkit-box-sizing: border-box !important;
+    box-sizing: border-box !important;
+}
+
+.tree-background
 {
     position: fixed;
     display: block;
@@ -18,10 +25,10 @@
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
-    width: 600px;
+    width: 50%;
     height: auto;
     top: 200px;
-    left: 400px;
+    left: 25%;
     padding: 12px;
     border: 3px solid #555;
     background-color: #eee;
@@ -210,9 +217,6 @@ div.children-container
 
 .tree-search-panel
 {
-    -moz-box-sizing: border-box !important;
-    -webkit-box-sizing: border-box !important;
-    box-sizing: border-box !important;
     width: 100%;
     margin-bottom: 6px;
     height: 43px !important;
@@ -224,9 +228,6 @@ div.children-container
 
 .tree-selection-panel
 {
-    -moz-box-sizing: border-box !important;
-    -webkit-box-sizing: border-box !important;
-    box-sizing: border-box !important;
     width: 100%;
     margin-top: 6px;
     height: auto;
@@ -234,4 +235,18 @@ div.children-container
     padding-top: 12px;
     border-top: 1px solid #555;
     overflow: hidden;
+}
+
+.tree-selection-header
+{
+    width: 100%;
+    padding: 3px 0px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.tree-selection-line
+{
+
 }
