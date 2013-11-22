@@ -9,7 +9,7 @@ $(function () {
     var properties = {
         parent: $('#tree-container')[0],
         'data': data,
-        'blockOtherElements': true
+        'background': false
     };
     var dropdown = new DropDown(properties);
 
@@ -255,8 +255,8 @@ function DropDown(properties) {
 
                 function optionsContainer() {
                     if (!$container) {
-                        $container = $('<div>', { id: 'mlq_optionsContainer_' + new Date().getTime(), 'class': 'mlq_dd_options_container' }).
-                            appendTo(container()).css({ 'visibility': 'hidden' });
+                        $container = $('<div>', { id: 'mlq_optionsContainer_' + new Date().getTime(), 'class': 'dropdown-options-container' }).
+                            appendTo(container()).css({ 'display': 'none' });
 
                         for (var i = 0; i < $visibleOptions; i++) {
                             $optionLabels[i] = optionLabel(i);
@@ -281,9 +281,9 @@ function DropDown(properties) {
 
                 function optionLabel(index) {
                     //--- UI components ---
-                    var SELECTED_CSS_CLASS = 'mlq_dd_selected';
-                    var $container = $('<div>', { id: ('mlq_option_' + new Date().getTime()), 'class': 'mlq_dd_option' }).
-                                                                            css({ 'visibility': 'visible', 'padding-top': '2px' });
+                    var SELECTED_CSS_CLASS = 'dropdown-selected';
+                    var $container = $('<div>', { id: ('mlq_option_' + new Date().getTime()), 'class': 'dropdown-option' }).
+                                                                            css({ 'display': 'block', 'padding-top': '2px' });
                     var $index = index;
                     var $object;
                     //---------------------
@@ -296,14 +296,7 @@ function DropDown(properties) {
                         insert: function (div) {
                             $o = optionContainer();
                             $o.appendTo(div);
-                            var width = $o.width();
-                            var extraWidth = my.ui.extraWidth($o);
                             $o.
-                                css({
-                                    'height': $optionHeight,
-                                    'line-height': $optionHeight + 'px',
-                                    'width': width - extraWidth
-                                }).
                                 bind({
                                     mousedown: function (e) {
                                         if ($object != $selectedOption) {
@@ -337,13 +330,19 @@ function DropDown(properties) {
                         },
                         getHeight: function () {
                             var $o = optionContainer();
-                            return $o.height() + my.ui.extraHeight($o);
+                            return $o.height() //+ my.ui.extraHeight($o);
                         },
                         setContent: function (content) {
                             optionContainer().html(content);
                         },
                         setObject: function (object) {
                             $object = object;
+                        },
+                        show: function(){
+                            optionContainer().css('display', 'block');
+                        },
+                        hide: function(){
+                            optionContainer().css('display', 'none');
                         },
                         getIndex: function () {
                             return $index;
@@ -505,23 +504,28 @@ function DropDown(properties) {
                     if (visibility) {
 
                         //Temporarily hide container to avoid screen flickering.
-                        $container.css({ 'visibility': 'hidden' });
+                        $container.css({ 'display': 'none' });
 
                         $startIndex = ($displayed.length <= $visibleOptions ? 0 : $start);
                         $endIndex = ($displayed.length <= $visibleOptions ? $displayed.length - 1 : $start + $visibleOptions - 1);
                         $height = 0;
 
-                        for (var i = $startIndex; i <= $endIndex; i++) {
-                            //for (var i = 0; i < $displayed.length; i++) {
+                        for (var i = $startIndex; i < $visibleOptions; i++) {
                             //Create references to option and label.
                             var option = $displayed[i];
                             var label = $optionLabels[i];
                             //Calculate the height of container.
-                            $height += label.getHeight();
-                            //Assign object and its text to the label.
-                            var text = option.getContent();
-                            label.setContent(text);
-                            label.setObject(option);
+                            //$height += label.getHeight();
+
+                            if (i <= $endIndex) {
+                                //Assign object and its text to the label.
+                                var text = option.getContent();
+                                label.setContent(text);
+                                label.setObject(option);
+                                label.show();
+                            } else {
+                                label.hide();
+                            }
                         }
 
                     }
@@ -534,8 +538,8 @@ function DropDown(properties) {
 
                     //Restore container visibility or hide it (depending on the value of 'visibility' parameter).
                     $container.css({
-                        'height': (visibility ? $height + 'px' : '0px'),
-                        'visibility': 'visible',
+                        //'height': (visibility ? $height + 'px' : '0px'),
+                        'display': (visibility ? 'block' : 'none'),
                         'border-bottom': (visibility && $displayed.length > 0 ? '1px #6d7c99 solid' : 'none')
                     });
 
@@ -618,7 +622,7 @@ function DropDown(properties) {
 
                 if ($position >= 0) {
                     var baseEnd = $position + base.length;
-                    $html = $caption.substr(0, $position) + '<span class="mlq_dd_matched_text">' +
+                    $html = $caption.substr(0, $position) + '<span class="dropdown-matched-text">' +
                             $caption.substr($position, base.length) + '</span>' +
                             $caption.substr(baseEnd, $caption.length - baseEnd);
                     return true;
@@ -655,9 +659,27 @@ function DropDown(properties) {
 
     function createUI() {
         if (!_container) {
-            _container = $('<div>', { id: $id, 'class': 'mlq_dd_container' }).appendTo($parent).css({ 'visibility': 'hidden' });
-            _textbox = $('<input>', { id: $id + '_textbox', 'class': 'mlq_dd_textbox' }).appendTo(_container);
-            _arrow = $('<div>', { id: $id + '_textbox', 'class': 'mlq_dd_arrow' }).appendTo(_container);
+            _container = $('<div>', { id: $id, 'class': 'dropdown-container' }).appendTo($parent).css({ 'visibility': 'hidden' });
+            _arrow = $('<div>', { id: $id + '_textbox', 'class': 'dropdown-arrow' }).appendTo(_container);
+
+            var _txtSpan = jQuery('<span/>', {
+                    'class': 'textbox'
+                }).
+                bind({
+                    'click': function () {
+                        if (_textbox) {
+                            $(_textbox).focus();
+                        }
+                    }
+                }).
+                appendTo(_container);
+
+            _textbox = jQuery('<input/>', {
+                id: $id + '_textbox',
+                type: 'textbox',
+                'class': 'dropdown-textbox'
+            }).appendTo(_txtSpan);
+
             _events = $('<div>', { id: 'main_events_listener', 'class': 'eventsListener' }).css('display', 'none').appendTo(_container);
 
             _optionsArea = optionsArea();
@@ -672,19 +694,19 @@ function DropDown(properties) {
         container().css({ 'width': $width });
 
         //Text box and expand arrow.
-        var t = textbox();
-        var txtWidth = t.width();
-        var txtExtraWidth = my.ui.extraWidth(t);
-        t.css({
-            'height': $optionHeight,
-            'width': t.width() - my.ui.extraWidth(t)
-        });
+        //var t = textbox();
+        //var txtWidth = t.width();
+        ////var txtExtraWidth = my.ui.extraWidth(t);
+        //t.css({
+        //    'height': $optionHeight,
+        //    'width': t.width() //- my.ui.extraWidth(t)
+        //});
 
-        var a = arrow();
-        a.css({
-            'height': $optionHeight,
-            'width': a.width() - my.ui.extraWidth(a)
-        });
+        //var a = arrow();
+        //a.css({
+        //    'height': $optionHeight,
+        //    'width': a.width() //- my.ui.extraWidth(a)
+        //});
 
         //Unhide container.
         container().css({ 'visibility': 'visible' });
@@ -697,6 +719,9 @@ function DropDown(properties) {
     }
 
 
+    (function () {
+        $(_textbox).focus();
+    })();
 
 
     /* ==================================== */

@@ -235,7 +235,7 @@ function DropDown(parent, e) {
 
                 function optionsContainer() {
                     if (!$container) {
-                        $container = $('<div>', { id: 'mlq_optionsContainer_' + new Date().getTime(), 'class': 'mlq_dd_options_container' }).
+                        $container = $('<div>', { id: 'mlq_optionsContainer_' + new Date().getTime(), 'class': 'dropdown-options-container' }).
                             appendTo(container()).css({ 'visibility': 'hidden' });
 
                         for (var i = 0; i < $visibleOptions; i++) {
@@ -260,8 +260,8 @@ function DropDown(parent, e) {
 
                 function optionLabel(index) {
                     //--- UI components ---
-                    var SELECTED_CSS_CLASS = 'mlq_dd_selected';
-                    var $container = $('<div>', { id: ('mlq_option_' + new Date().getTime()), 'class': 'mlq_dd_option' }).
+                    var SELECTED_CSS_CLASS = 'dropdown-selected';
+                    var $container = $('<div>', { id: ('mlq_option_' + new Date().getTime()), 'class': 'dropdown-option' }).
                                                                             css({ 'visibility': 'visible', 'padding-top': '2px' });
                     var $index = index;
                     var $object;
@@ -597,7 +597,7 @@ return _optionsArea;
 
                 if ($position >= 0) {
                     var baseEnd = $position + base.length;
-                    $html = $caption.substr(0, $position) + '<span class="mlq_dd_matched_text">' +
+                    $html = $caption.substr(0, $position) + '<span class="dropdown-matched-text">' +
                             $caption.substr($position, base.length) + '</span>' +
                             $caption.substr(baseEnd, $caption.length - baseEnd);
                     return true;
@@ -634,9 +634,9 @@ return _optionsArea;
 
     function createUI() {
         if (!_container) {
-            _container = $('<div>', { id: $id, 'class': 'mlq_dd_container' }).appendTo($parent).css({ 'visibility' : 'hidden' });
-            _textbox = $('<input>', { id: $id + '_textbox', 'class': 'mlq_dd_textbox' }).appendTo(_container);
-            _arrow = $('<div>', { id: $id + '_textbox', 'class': 'mlq_dd_arrow' }).appendTo(_container);
+            _container = $('<div>', { id: $id, 'class': 'dropdown-container' }).appendTo($parent).css({ 'visibility' : 'hidden' });
+            _textbox = $('<input>', { id: $id + '_textbox', 'class': 'dropdown-textbox' }).appendTo(_container);
+            _arrow = $('<div>', { id: $id + '_textbox', 'class': 'dropdown-arrow' }).appendTo(_container);
             _events = $('<div>', { id: 'main_events_listener', 'class': 'eventsListener' }).css('display', 'none').appendTo(_container);
 
             _optionsArea = optionsArea();
