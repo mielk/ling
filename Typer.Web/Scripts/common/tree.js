@@ -203,15 +203,13 @@ function TreeView(properties){
             var _container = jQuery('<div/>', {
                     id: 'tree-selection-panel',
                     'class': 'tree-selection-panel'
-                }).
-                css({
-                    'display': 'none'
                 }).appendTo($(me.container));
 
-            //var _header = jQuery('<div/>', {
-            //    id: 'tree-selection-header',
-            //    'class': 'tree-selection-header'
-            //}).appendTo($(me.container));
+            var _header = jQuery('<div/>', {
+                id: 'tree-selection-header',
+                'class': 'tree-selection-header',
+                html: 'Selected'
+            }).appendTo($(_container));
 
             var selected = [];
 
