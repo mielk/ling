@@ -149,11 +149,27 @@ function TreeView(properties){
     }
 
 
+    if (this.background === undefined) {
+        this.background = $(document.body);
+    }
+
     this.container = jQuery('<div/>', {
         id: 'tree-container',
         'class': 'tree-container'
     }).
-    appendTo(this.background ? $(this.background) : $(document.body));
+    appendTo($(this.background));
+
+
+    this.searchPanel = jQuery('<div/>', {
+            id: 'tree-search-panel',
+            'class': 'tree-search-panel'
+        }).
+        css({
+            'display' : 'none'
+        }).
+        appendTo($(this.container));
+    this.searchMode = false;
+
 
     //Place container inside the screen.
     if (properties.x !== undefined) {
@@ -176,7 +192,6 @@ function TreeView(properties){
 
     this.root = new TreeNode(me, 'root', 'root', me, true);
     this.root.loadData(properties.data);
-
 
     this.dragDropManager = (function () {
         var drag = null;
@@ -289,7 +304,21 @@ function TreeView(properties){
         $(document).bind({
             'keydown': function (e) {
 
-                if (me.activeNode != null && me.activeNode.renamer.isActive()) {
+                
+                //Special shortcuts.
+                if (e.ctrlKey) {
+                    //Search panel (Ctrl + F/f)
+                    switch (e.which) {
+                        case 70:
+                        case 102:
+                            //search panel.
+                            me.showSearchPanel();
+                            break;
+                    }
+                }
+
+
+                if (me.searchMode || (me.activeNode != null && me.activeNode.renamer.isActive())) {
                     return;
                 }
 
@@ -493,8 +522,11 @@ TreeView.prototype.close = function () {
         'display' : 'none'
     });
 }
-
-
+TreeView.prototype.showSearchPanel = function () {
+    this.searchPanel = new SearchPanel(this);
+    this.searchMode = true;
+    this.searchPanel.show();
+}
 
 function TreeNode(tree, key, name, parent, expanded, selected) {
     var me = this;
@@ -731,7 +763,6 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
             }
         }
     })();
-
 
     this.caption = jQuery('<div/>', {
         id: key + '_caption',
@@ -1147,6 +1178,27 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
 
     })();
 
+    this.path = function (thisInclude) {
+        var node;
+        var path = '';
+
+        if (thisInclude) {
+            node = this;
+        } else {
+            node = this.parent
+        }
+
+        if (node.isRoot()) {
+            return '';
+        }
+
+        while (!node.isRoot()) {
+            path = node.name + (path ? '  >  ' + path : '');
+            node = node.parent;
+        }
+        return path;
+    }
+
 }
 TreeNode.prototype.loadData = function (data) {
 
@@ -1300,6 +1352,66 @@ TreeNode.prototype.select = function () {
         this.selector.click();
     }
 }
+TreeNode.prototype.getNodesForSearching = function () {
+    var a = [];
+    var counter = 0;
+
+    if (!this.isRoot()) {
+        //Add itself (except for root).
+        a[counter++] = this.getSearchObject();
+    }
+
+    //Add nodes.
+    for (var key in this.nodes) {
+        if (this.nodes.hasOwnProperty(key)) {
+            var node = this.nodes[key];
+            var arr = node.getNodesForSearching();
+
+            for (var i = 0; i < arr.length; i++) {
+                a[counter++] = arr[i];
+            }
+        }
+    }
+
+    return a;
+
+}
+TreeNode.prototype.getSearchObject = function () {
+    return {
+        object: this,
+        name: this.name,
+        prepend: this.path() + (this.parent.isRoot() ? '' : '  >  '),
+        displayed: this.name
+    }
+}
+
+
+
+function SearchPanel(tree) {
+    var me = this;
+    this.tree = tree;
+
+    this.container = this.tree.searchPanel;
+
+}
+SearchPanel.prototype.show = function () {
+    $(this.container).css({
+        'display': 'block',
+        'z-index': 2
+    });
+
+    var searchData = this.tree.root.getNodesForSearching();
+
+    var properties = {
+        parent: $(this.container),
+        'data': searchData,
+        background: false,
+        displayed: 'displayed'
+    };
+    var dropdown = new DropDown(properties);
+
+}
+
 
 function hide(div) {
     $(div).css({

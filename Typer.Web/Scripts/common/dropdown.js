@@ -1,4 +1,4 @@
-﻿var data =  [
+﻿var searchData =  [
                 { name: 'Europe', countries: ['Polska', 'Albania', 'Luksemburg'] },
                 { name: 'South America', countries: ['Brazil', 'Venezuela', 'Argentina'] }
             ]
@@ -6,13 +6,6 @@
 
 
 $(function () {
-    var properties = {
-        parent: $('#tree-container')[0],
-        'data': data,
-        'background': false
-    };
-    var dropdown = new DropDown(properties);
-
 
     //Switching off selecting text.
     $(document).
@@ -47,13 +40,14 @@ function DropDown(properties) {
     var $id = properties.id || ('mlq_dropdown_' + new Date().getTime());
     var $caption = properties.caption || 'Select option ...';
     var $options = properties.data || [];
-    var $width = properties.width || 200;
+    //var $width = properties.width || 200;
     var $optionHeight = properties.optionHeight || 24;
     var $visibleOptions = properties.visibleOptions || 10;
     var $txtWidth = 0.8;
     var $mustMatch = (properties.mustMatch === undefined ? true : properties.mustMatch);
     var $caseSensitive = properties.caseSensitive || false;
-    var $displayedField = properties.displayedField || 'name';
+    var $searchedField = properties.searched || 'name';
+    var $displayedField = properties.displayed || 'name';
     //---------------------------------
     var _container;
     var _textbox;
@@ -274,7 +268,12 @@ function DropDown(properties) {
                     $optionObject = [];
                     for (var i = 0; i < $options.length; i++) {
                         var _opt = $options[i];
-                        $optionObjects[i] = option({ 'index': i, 'value': _opt, 'caption': (_opt[$displayedField] || _opt.name || _opt.text || _opt.key || _opt.displayed || _opt.label || _opt.value) });
+                        $optionObjects[i] = option({
+                            'index': i,
+                            'value': _opt,
+                            'prepend': _opt.prepend,
+                            'caption': (_opt[$displayedField] || _opt.name || _opt.text || _opt.key || _opt.displayed || _opt.label || _opt.value || _opt[$searchedField])
+                        });
                     }
                 }
 
@@ -596,6 +595,7 @@ function DropDown(properties) {
         var $index = e.index || 0;
         var $value = e.value || null;
         var $caption = e.caption || $value;
+        var $prepend = (e.prepend === undefined ? '' : e.prepend);
         var $image;
         //--- Filtering ---
         var $base;
@@ -633,7 +633,8 @@ function DropDown(properties) {
             },
             //----------------------------------
             getContent: function () {
-                return $html || $caption;
+                var s = $html || $caption; 
+                return ($prepend ? $prepend + s : s);
             },
             //----------------------------------
             getCaption: function () {
@@ -659,7 +660,7 @@ function DropDown(properties) {
 
     function createUI() {
         if (!_container) {
-            _container = $('<div>', { id: $id, 'class': 'dropdown-container' }).appendTo($parent).css({ 'visibility': 'hidden' });
+            _container = $('<div>', { id: $id, 'class': 'dropdown-container' }).appendTo($parent).css({ 'visibility': 'visible' });
             _arrow = $('<div>', { id: $id + '_textbox', 'class': 'dropdown-arrow' }).appendTo(_container);
 
             var _txtSpan = jQuery('<span/>', {
@@ -683,35 +684,35 @@ function DropDown(properties) {
             _events = $('<div>', { id: 'main_events_listener', 'class': 'eventsListener' }).css('display', 'none').appendTo(_container);
 
             _optionsArea = optionsArea();
-            adjustControls();
+            //adjustControls();
             //!!!optionsArea();
         }
     }
 
 
-    function adjustControls() {
-        //Container.
-        container().css({ 'width': $width });
+//    function adjustControls() {
+//        //Container.
+////        container().css({ 'width': $width });
 
-        //Text box and expand arrow.
-        //var t = textbox();
-        //var txtWidth = t.width();
-        ////var txtExtraWidth = my.ui.extraWidth(t);
-        //t.css({
-        //    'height': $optionHeight,
-        //    'width': t.width() //- my.ui.extraWidth(t)
-        //});
+//        //Text box and expand arrow.
+//        //var t = textbox();
+//        //var txtWidth = t.width();
+//        ////var txtExtraWidth = my.ui.extraWidth(t);
+//        //t.css({
+//        //    'height': $optionHeight,
+//        //    'width': t.width() //- my.ui.extraWidth(t)
+//        //});
 
-        //var a = arrow();
-        //a.css({
-        //    'height': $optionHeight,
-        //    'width': a.width() //- my.ui.extraWidth(a)
-        //});
+//        //var a = arrow();
+//        //a.css({
+//        //    'height': $optionHeight,
+//        //    'width': a.width() //- my.ui.extraWidth(a)
+//        //});
 
-        //Unhide container.
-        container().css({ 'visibility': 'visible' });
+//        //Unhide container.
+//        container().css({ 'visibility': 'visible' });
 
-    }
+//    }
 
     function clearFilter() {
         $text = '';
@@ -729,7 +730,7 @@ function DropDown(properties) {
         //----------------------------------
         appendTo: function (parent) {
             container().appendTo(parent);
-            adjustControls();
+            //adjustControls();
         },
         //----------------------------------
         addListener: function (fn) {
