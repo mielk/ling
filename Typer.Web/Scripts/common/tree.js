@@ -1,4 +1,156 @@
 ﻿var data = [
+    {
+        key: 'Europa',
+        caption: 'Europa',
+        expanded: true,
+        items: [
+            {
+                key: 'Polska', caption: 'Polska', expanded: true, items: [
+                    { key: 'Warszawa', caption: 'Warszawa' },
+                    { key: 'Gdańsk', caption: 'Gdańsk' },
+                    { key: 'Kraków', caption: 'Kraków' },
+                    { key: 'Poznań', caption: 'Poznań' }
+                ]
+            },
+            {
+                key: 'Francja', caption: 'Francja', expanded: true, items: [
+                    { key: 'Paryż', caption: 'Paryż' },
+                    { key: 'Marsylia', caption: 'Marsylia' },
+                    { key: 'Lyon', caption: 'Lyon' },
+                    { key: 'Nice', caption: 'Nice' }
+                ]
+            },
+            {
+                key: 'Włochy', caption: 'Włochy', expanded: true, items: [
+                    { key: 'Turyn', caption: 'Turyn' },
+                    { key: 'Neapol', caption: 'Neapol' },
+                    { key: 'Rzym', caption: 'Rzym' },
+                    { key: 'Mediolan', caption: 'Mediolan' }
+                ]
+            },
+            {
+                key: 'Wielka Brytania', caption: 'Wielka Brytania', expanded: true, items: [
+                    { key: 'Londyn', caption: 'Londyn' },
+                    { key: 'Manchester', caption: 'Manchester' },
+                    { key: 'Liverpool', caption: 'Liverpool' },
+                    { key: 'Edynburg', caption: 'Edynburg' }
+                ]
+            }
+        ]
+    },
+    {
+        key: 'Ameryka Północna',
+        caption: 'Ameryka Północna',
+        expanded: false,
+        items: [
+            {
+                key: 'USA', caption: 'USA', expanded: true, items: [
+                    { key: 'New York', caption: 'New York' },
+                    { key: 'Los Angeles', caption: 'Los Angeles' },
+                    { key: 'Chicago', caption: 'Chicago' },
+                    { key: 'Boston', caption: 'Boston' }
+                ]
+            },
+            {
+                key: 'Kanada', caption: 'Kanada', expanded: true, items: [
+                    { key: 'Toronto', caption: 'Toronto' },
+                    { key: 'Calgary', caption: 'Calgary' },
+                    { key: 'Montreal', caption: 'Montreal' },
+                    { key: 'Vancouver', caption: 'Vancouver' }
+                ]
+            }
+        ]
+    },
+    {
+        key: 'Ameryka Południowa',
+        caption: 'Ameryka Południowa',
+        expanded: false,
+        items: [
+            {
+                key: 'Brazylia', caption: 'Brazylia', expanded: true, items: [
+                    { key: 'Rio de Janeiro', caption: 'Rio de Janeiro' },
+                    { key: 'Sao Paulo', caption: 'Sao Paulo' },
+                    { key: 'Belo Horizonte', caption: 'Belo Horizonte' },
+                    { key: 'Porto Alegre', caption: 'Porto Alegre' }
+                ]
+            },
+            {
+                key: 'Argentyna', caption: 'Argentyna', expanded: true, items: [
+                    { key: 'Bueanos Aires', caption: 'Bueanos Aires' },
+                    { key: 'Rosario', caption: 'Rosario' }
+                ]
+            }
+        ]
+    },
+    {
+        key: 'Afryka',
+        caption: 'Afryka',
+        expanded: false,
+        items: [
+            {
+                key: 'Maroko', caption: 'Maroko', expanded: true, items: [
+                    { key: 'Casablanca', caption: 'Casablanca' },
+                    { key: 'Rabat', caption: 'Rabat' },
+                    { key: 'Agadir', caption: 'Agadir' },
+                    { key: 'Marrakesz', caption: 'Marrakesz' }
+                ]
+            },
+            {
+                key: 'RPA', caption: 'RPA', expanded: true, items: [
+                    { key: 'Kapsztad', caption: 'Kapsztad' },
+                    { key: 'Johannesburg', caption: 'Johannesburg' },
+                    { key: 'Pretoris', caption: 'Pretoria' }
+                ]
+            }
+
+        ]
+    },
+    {
+        key: 'Azja',
+        caption: 'Azja',
+        expanded: false,
+        items: [
+            {
+                key: 'Japonia', caption: 'Japonia', expanded: true, items: [
+                    { key: 'Tokio', caption: 'Tokio' },
+                    { key: 'Osaka', caption: 'Osaka' },
+                    { key: 'Nagoya', caption: 'Nagoya' }
+                ]
+            },
+            {
+                key: 'Chiny', caption: 'Chiny', expanded: true, items: [
+                    { key: 'Pekin', caption: 'Pekin' },
+                    { key: 'Szanghaj', caption: 'Szanghaj' },
+                    { key: 'Kanton', caption: 'Kanton' }
+                ]
+            }
+        ]
+    },
+    {
+        key: 'Australia i Oceania',
+        caption: 'Australia i Oceania',
+        expanded: false,
+        items: [
+            {
+                key: 'Australia', caption: 'Australia', expanded: true, items: [
+                    { key: 'Sydney', caption: 'Sydney' },
+                    { key: 'Melbourne', caption: 'Melbourne' },
+                    { key: 'Brisbane', caption: 'Brisbane' },
+                    { key: 'Perth', caption: 'Perth' }
+                ]
+            },
+            {
+                key: 'Nowa Zelandia', caption: 'Nowa Zelandia', expanded: true, items: [
+                    { key: 'Wellington', caption: 'Wellington' },
+                    { key: 'Auckland', caption: 'Auckland' }
+                ]
+            }
+
+        ]
+    }
+];
+
+var data2 = [
                     {
                         key: 1,
                         caption: 'a',
@@ -201,8 +353,8 @@ function TreeView(properties){
     if (this.showSelection) {
         this.selection = (function () {
             var _container = jQuery('<div/>', {
-                    id: 'tree-selection-panel',
-                    'class': 'tree-selection-panel'
+                    id: 'tree-selection-container',
+                    'class': 'tree-selection-container'
                 }).appendTo($(me.container));
 
             var _header = jQuery('<div/>', {
@@ -211,11 +363,16 @@ function TreeView(properties){
                 html: 'Selected'
             }).appendTo($(_container));
 
+            var _nodes = jQuery('<div/>', {
+                id: 'tree-selection-nodes',
+                'class': 'tree-selection-nodes',
+                html: 'Selected'
+            }).appendTo($(_container));
+
             var selected = [];
 
-
             function _refresh() {
-                $(_container).empty();
+                $(_nodes).empty();
                 selected = me.root.getSelectedArray();
                 alert(selected.length);
             }
@@ -1254,7 +1411,7 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
 }
 TreeNode.prototype.loadData = function (data) {
 
-    if (data.length === 0) {
+    if (data && data.length === 0) {
         this.expander.setExpandableStatus(false);
     } else {
         this.expander.setExpandableStatus(true);
