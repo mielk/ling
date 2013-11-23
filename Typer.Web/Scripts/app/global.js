@@ -4,9 +4,8 @@
 };
 
 
-var my = my || {
-    language: Language.ENG
-};
+var my = my || {};
+my.language = Language.ENG;
 
 
 var dict = dict || {
