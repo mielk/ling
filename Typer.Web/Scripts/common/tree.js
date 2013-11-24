@@ -365,8 +365,7 @@ function TreeView(properties){
 
             var _nodes = jQuery('<div/>', {
                 id: 'tree-selection-nodes',
-                'class': 'tree-selection-nodes',
-                html: 'Selected'
+                'class': 'tree-selection-nodes'
             }).appendTo($(_container));
 
             var selected = [];
@@ -374,7 +373,31 @@ function TreeView(properties){
             function _refresh() {
                 $(_nodes).empty();
                 selected = me.root.getSelectedArray();
-                alert(selected.length);
+
+                for (var i = 0; i < selected.length; i++) {
+                    var node = _nodes[i];
+                    var line = nodeLine(node, i);
+                }
+
+            }
+
+            var nodeLine = function (node, index) {
+                var $node = node;
+                var $index = index;
+                var $container = jQuery('<div/>', {
+                        'class': 'tree-selection-line',
+                        'html': node.name
+                }).appendTo(_container);
+
+                var $remover = jQuery('<div/>', {
+                    'class': 'tree-selection-line-remover'
+                }).appendTo($container);
+
+                var $caption = jQuery('<div/>', {
+                    'class': 'tree-selection-line-caption',
+                    'html': node.name
+                }).appendTo($container);
+
             }
 
 
@@ -845,7 +868,8 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
 
         //Sets initial status.
         (function () {
-            _setExpandableStatus(expandable);
+            //_setExpandableStatus(expandable);
+            _setExpandableStatus(false);
         })();
 
 
@@ -1411,9 +1435,7 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
 }
 TreeNode.prototype.loadData = function (data) {
 
-    if (data && data.length === 0) {
-        this.expander.setExpandableStatus(false);
-    } else {
+    if (data && data.length) {
         this.expander.setExpandableStatus(true);
         for (var key in data) {
             if (data.hasOwnProperty(key)) {
@@ -1426,6 +1448,10 @@ TreeNode.prototype.loadData = function (data) {
         }
 
         this.sorter.sort();
+
+    } else {
+
+        this.expander.setExpandableStatus(false);
 
     }
 }
