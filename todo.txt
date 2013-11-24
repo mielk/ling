@@ -1,0 +1,4 @@
+[TreeView]
+- zamykanie okna
+- wyœwietlanie listy wybranych
+- mo¿liwoœæ odznaczenia wybranego bezpoœrednio z listy wybranych

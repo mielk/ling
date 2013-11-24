@@ -1,5 +1,6 @@
 ﻿body {
     height: auto;
+    overflow-y: auto;
 }
 
 *
@@ -19,6 +20,7 @@
     height: 100%;
     background-color: rgba(100, 100, 100, 0.85);
     z-index: 1;
+    overflow-y: auto;
 }
 
 
