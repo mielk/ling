@@ -260,7 +260,7 @@ $(function () {
         'blockOtherElements': true,
         'showSelection': true
     };
-    var tree = new TreeView(properties);
+    //var tree = new TreeView(properties);
 
 
     //Switching off selecting text.
@@ -623,7 +623,9 @@ function TreeView(properties){
 
                 //Escape applies even for the case if none node is selected.
                 if (e.which === 27) {
-                    alert('Escape');
+                    me.events.trigger({
+                        'type' : 'cancel'
+                    });
                 }
 
                 if (me.activeNode) {
