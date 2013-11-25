@@ -13,7 +13,7 @@
                 ]
             },
             {
-                key: 'Francja', caption: 'Francja', expanded: true, items: [
+                key: 'Francja', caption: 'Francja', expanded: false, items: [
                     { key: 'Paryż', caption: 'Paryż' },
                     { key: 'Marsylia', caption: 'Marsylia' },
                     { key: 'Lyon', caption: 'Lyon' },
@@ -21,7 +21,7 @@
                 ]
             },
             {
-                key: 'Włochy', caption: 'Włochy', expanded: true, items: [
+                key: 'Włochy', caption: 'Włochy', expanded: false, items: [
                     { key: 'Turyn', caption: 'Turyn' },
                     { key: 'Neapol', caption: 'Neapol' },
                     { key: 'Rzym', caption: 'Rzym' },
@@ -29,7 +29,7 @@
                 ]
             },
             {
-                key: 'Wielka Brytania', caption: 'Wielka Brytania', expanded: true, items: [
+                key: 'Wielka Brytania', caption: 'Wielka Brytania', expanded: false, items: [
                     { key: 'Londyn', caption: 'Londyn' },
                     { key: 'Manchester', caption: 'Manchester' },
                     { key: 'Liverpool', caption: 'Liverpool' },
@@ -44,7 +44,7 @@
         expanded: false,
         items: [
             {
-                key: 'USA', caption: 'USA', expanded: true, items: [
+                key: 'USA', caption: 'USA', expanded: false, items: [
                     { key: 'New York', caption: 'New York' },
                     { key: 'Los Angeles', caption: 'Los Angeles' },
                     { key: 'Chicago', caption: 'Chicago' },
@@ -52,7 +52,7 @@
                 ]
             },
             {
-                key: 'Kanada', caption: 'Kanada', expanded: true, items: [
+                key: 'Kanada', caption: 'Kanada', expanded: false, items: [
                     { key: 'Toronto', caption: 'Toronto' },
                     { key: 'Calgary', caption: 'Calgary' },
                     { key: 'Montreal', caption: 'Montreal' },
@@ -67,7 +67,7 @@
         expanded: false,
         items: [
             {
-                key: 'Brazylia', caption: 'Brazylia', expanded: true, items: [
+                key: 'Brazylia', caption: 'Brazylia', expanded: false, items: [
                     { key: 'Rio de Janeiro', caption: 'Rio de Janeiro' },
                     { key: 'Sao Paulo', caption: 'Sao Paulo' },
                     { key: 'Belo Horizonte', caption: 'Belo Horizonte' },
@@ -75,7 +75,7 @@
                 ]
             },
             {
-                key: 'Argentyna', caption: 'Argentyna', expanded: true, items: [
+                key: 'Argentyna', caption: 'Argentyna', expanded: false, items: [
                     { key: 'Bueanos Aires', caption: 'Bueanos Aires' },
                     { key: 'Rosario', caption: 'Rosario' }
                 ]
@@ -88,7 +88,7 @@
         expanded: false,
         items: [
             {
-                key: 'Maroko', caption: 'Maroko', expanded: true, items: [
+                key: 'Maroko', caption: 'Maroko', expanded: false, items: [
                     { key: 'Casablanca', caption: 'Casablanca' },
                     { key: 'Rabat', caption: 'Rabat' },
                     { key: 'Agadir', caption: 'Agadir' },
@@ -96,7 +96,7 @@
                 ]
             },
             {
-                key: 'RPA', caption: 'RPA', expanded: true, items: [
+                key: 'RPA', caption: 'RPA', expanded: false, items: [
                     { key: 'Kapsztad', caption: 'Kapsztad' },
                     { key: 'Johannesburg', caption: 'Johannesburg' },
                     { key: 'Pretoris', caption: 'Pretoria' }
@@ -111,14 +111,14 @@
         expanded: false,
         items: [
             {
-                key: 'Japonia', caption: 'Japonia', expanded: true, items: [
+                key: 'Japonia', caption: 'Japonia', expanded: false, items: [
                     { key: 'Tokio', caption: 'Tokio' },
                     { key: 'Osaka', caption: 'Osaka' },
                     { key: 'Nagoya', caption: 'Nagoya' }
                 ]
             },
             {
-                key: 'Chiny', caption: 'Chiny', expanded: true, items: [
+                key: 'Chiny', caption: 'Chiny', expanded: false, items: [
                     { key: 'Pekin', caption: 'Pekin' },
                     { key: 'Szanghaj', caption: 'Szanghaj' },
                     { key: 'Kanton', caption: 'Kanton' }
@@ -132,7 +132,7 @@
         expanded: false,
         items: [
             {
-                key: 'Australia', caption: 'Australia', expanded: true, items: [
+                key: 'Australia', caption: 'Australia', expanded: false, items: [
                     { key: 'Sydney', caption: 'Sydney' },
                     { key: 'Melbourne', caption: 'Melbourne' },
                     { key: 'Brisbane', caption: 'Brisbane' },
@@ -140,7 +140,7 @@
                 ]
             },
             {
-                key: 'Nowa Zelandia', caption: 'Nowa Zelandia', expanded: true, items: [
+                key: 'Nowa Zelandia', caption: 'Nowa Zelandia', expanded: false, items: [
                     { key: 'Wellington', caption: 'Wellington' },
                     { key: 'Auckland', caption: 'Auckland' }
                 ]
@@ -381,7 +381,7 @@ function TreeView(properties){
                 selected = me.root.getSelectedArray();
 
                 for (var i = 0; i < selected.length; i++) {
-                    var node = _nodes[i];
+                    var node = selected[i];
                     var line = nodeLine(node, i);
                 }
 
@@ -391,12 +391,16 @@ function TreeView(properties){
                 var $node = node;
                 var $index = index;
                 var $container = jQuery('<div/>', {
-                        'class': 'tree-selection-line',
-                        'html': node.name
-                }).appendTo(_container);
+                        'class': 'tree-selection-line'
+                }).appendTo(_nodes);
 
                 var $remover = jQuery('<div/>', {
                     'class': 'tree-selection-line-remover'
+                }).
+                bind({
+                    'click': function () {
+                        $node.unselect();
+                    }
                 }).appendTo($container);
 
                 var $caption = jQuery('<div/>', {
@@ -641,7 +645,7 @@ function TreeView(properties){
 
         
         function _getSelectedArray() {
-
+            return me.root.getSelectedArray();
         }
 
 
@@ -999,6 +1003,11 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
             },
             hasSelectedChildren: function () {
                 return hasSelectedChildren;
+            },
+            unselect: function () {
+                selected = false;
+                _applyForChildren();
+                _refresh();
             }
         }
     })();
@@ -1602,6 +1611,14 @@ TreeNode.prototype.select = function () {
         }
     }
 }
+
+TreeNode.prototype.unselect = function () {
+    if (this.tree.mode === MODE.MULTI) {
+        this.selector.unselect();
+        this.tree.selection.refresh();
+    }
+}
+
 TreeNode.prototype.getNodesForSearching = function () {
     var a = [];
     var counter = 0;
