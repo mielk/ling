@@ -306,11 +306,17 @@ function TreeView(properties){
         this.background = $(document.body);
     }
 
+    var frame = jQuery('<div/>', {
+        id: 'tree-container-frame',
+        'class': 'tree-container-frame'
+    }).
+    appendTo($(this.background));
+
     this.container = jQuery('<div/>', {
         id: 'tree-container',
         'class': 'tree-container'
     }).
-    appendTo($(this.background));
+    appendTo($(frame));
 
 
     this._searchPanel = jQuery('<div/>', {
@@ -1516,11 +1522,12 @@ TreeNode.prototype.getLastChild = function () {
 }
 TreeNode.prototype.activate = function () {
     this.isActive = true;
-    $(this.caption).addClass('selected');
 
-    if (this.parent.isNode && !this.parent.expander.isExpanded()) {
+    if (this.parent.isNode){ // && !this.parent.expander.isExpanded()) {
         this.parent.expander.expand();
     }
+
+    $(this.caption).addClass('selected');
 
     this.tree.trigger({
         'type': 'activate',
