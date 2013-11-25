@@ -500,7 +500,7 @@ function TreeView(properties){
             me.root.dropArea.recalculate();
         },
         activate: function (e) {
-            if (me.activeNode) {
+            if (me.activeNode && me.activeNode != e.node) {
                 me.activeNode.inactivate();
             }
             me.activeNode = e.node;
