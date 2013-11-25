@@ -67,13 +67,34 @@
     background-color: green !important;
 }
 
-.tree-container-buttons-panel
+.tree-buttons-panel
 {
-
+    width: 100%;
+    margin-top: 24px;
 }
 
-.tree-container-button
+.tree-buttons-container
 {
+    float: none !important;
+    width: 180px;
+    height: auto;
+    margin: 0 auto;
+}
+
+input.tree-button
+{
+    display: block;
+    float: left;
+    width: 46%;
+    height: 30px;
+    padding: 6px;
+    text-align: center;
+    line-height: 16px;
+    font-weight: bold;
+    border: 1px solid #777;
+    margin: 0px 2%;
+    background-color: #ddd;
+    color: #444;
 }
 
 .tree-container div
@@ -239,24 +260,6 @@ div.children-container
 }
 
 
-/*.tree-search-panel
-{
-    position: absolute !important;
-    display: none;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box !important;
-    width: 80%;
-    height: 46px !important;
-    padding: 6px;
-    top: 10%;
-    left: 10%;
-    background-color: white;
-    border: 2px solid #555;
-    overflow: visible;
-    z-index: 1;
-}*/
-
 .tree-search-panel
 {
     width: 100%;
@@ -275,7 +278,8 @@ div.children-container
     height: auto;
     padding: 0;
     padding-top: 3px;
-    border: 1px solid #777;
+    border-top: 1px solid #777;
+    border-bottom: 1px solid #777;
     overflow: hidden;
 }
 

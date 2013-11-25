@@ -294,67 +294,62 @@ $(function () {
 function TreeView(properties){
     var me = this;
 
-    if (properties.blockOtherElements) {
-        this.background = jQuery('<div/>', {
-            id: 'tree-background',
-            'class': 'tree-background'
-        }).appendTo($(document.body));
-    }
-
-
-    if (this.background === undefined) {
-        this.background = $(document.body);
-    }
-
-    var frame = jQuery('<div/>', {
-        id: 'tree-container-frame',
-        'class': 'tree-container-frame'
-    }).
-    appendTo($(this.background));
-
-    this.container = jQuery('<div/>', {
-        id: 'tree-container',
-        'class': 'tree-container'
-    }).
-    appendTo($(frame));
-
-    var btnCancel = jQuery('<div/>', {
-        id: 'tree-container-exit',
-        'class': 'tree-container-exit'
-    }).
-    bind({
-        'click': function () {
-            alert('Cancel');
+    this.ui = (function () {
+        if (properties.blockOtherElements) {
+            me.background = jQuery('<div/>', {
+                id: 'tree-background',
+                'class': 'tree-background'
+            }).appendTo($(document.body));
         }
-    }).
-    appendTo($(this.container));
+
+        var background = (me.background || $(document.body));
+
+        var frame = jQuery('<div/>', {
+            id: 'tree-container-frame',
+            'class': 'tree-container-frame'
+        }).
+        appendTo($(background));
+
+        me.container = jQuery('<div/>', {
+            id: 'tree-container',
+            'class': 'tree-container'
+        }).
+        appendTo($(frame));
+
+        var btnQuit = jQuery('<div/>', {
+            id: 'tree-container-exit',
+            'class': 'tree-container-exit'
+        }).
+        bind({
+            'click': function () {
+                me.events.trigger({
+                    'type': 'cancel'
+                });
+            }
+        }).
+        appendTo($(me.container));
 
 
-    this._searchPanel = jQuery('<div/>', {
+        me._searchPanel = jQuery('<div/>', {
             id: 'tree-search-panel',
             'class': 'tree-search-panel'
         }).
-        css({
-            'display' : 'none'
-        }).
-        appendTo($(this.container));
-    this.searchMode = false;
+            css({
+                'display': 'none'
+            }).
+            appendTo($(me.container));
+        me.searchMode = false;
 
 
-    this.buttonsPanel = jQuery('<div/>', {
-        id: 'tree-container-buttons-panel',
-        'class': 'tree-container-buttons-panel'
-    }).appendTo($(this.container));
+        //Place container inside the screen.
+        if (properties.x !== undefined) {
+            me.container.css('left', properties.x);
+        }
+        if (properties.y !== undefined) {
+            me.container.css('top', properties.y);
+        }
 
-
-    //Place container inside the screen.
-    if (properties.x !== undefined) {
-        this.container.css('left', properties.x);
-    }
-    if (properties.y !== undefined) {
-        this.container.css('top', properties.y);
-    }
-
+    })();
 
 
     this.mode = properties.mode ? properties.mode : MODE.SINGLE;
@@ -435,6 +430,61 @@ function TreeView(properties){
 
         })();
     }
+
+
+    this.buttons = (function () {
+        me.buttonsPanel = jQuery('<div/>', {
+            id: 'tree-buttons-panel',
+            'class': 'tree-buttons-panel'
+        }).appendTo($(me.container));
+
+        var buttonsContainer = jQuery('<div/>', {
+            id: 'tree-buttons-container',
+            'class': 'tree-buttons-container'
+        }).appendTo($(me.buttonsPanel));
+
+        var btnOk = jQuery('<input/>', {
+            id: 'tree-button-ok',
+            'class': 'tree-button',
+            'type': 'submit',
+            'value': 'OK'
+        }).
+        bind({
+            'click': function () {
+                var items = me.root.getSelectedArray();
+                if (items && items.length) {
+                    me.events.trigger({
+                        'type': 'confirm',
+                        'items': items
+                    });
+                } else {
+                    me.events.trigger({
+                        'type': 'cancel'
+                    });
+                }
+
+
+            }
+        }).appendTo($(buttonsContainer));
+
+        var btnCancel = jQuery('<input/>', {
+            id: 'tree-button-cancel',
+            'class': 'tree-button',
+            'type': 'submit',
+            'value': 'Cancel'
+        }).
+        bind({
+            'click': function () {
+                me.events.trigger({
+                    'type': 'cancel'
+                });
+            }
+        }).appendTo($(buttonsContainer));
+    })();
+
+
+
+
 
 
     this.dragDropManager = (function () {
@@ -537,7 +587,10 @@ function TreeView(properties){
             e.node.activate();
         },
         confirm: function (e) {
-            alert('Selected: ' + e.item.name);
+            alert('Selected: ' + e.items.length);
+            me.close();
+        },
+        cancel: function (e) {
             me.close();
         }
     });
@@ -764,6 +817,13 @@ TreeView.prototype.trigger = function (e) {
     this.events.trigger(e);
 }
 TreeView.prototype.close = function () {
+
+    if (this.background) {
+        $(this.background).css({
+            'display': 'none'
+        });
+    }
+
     $(this.container).css({
         'display' : 'none'
     });
