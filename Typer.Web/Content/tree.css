@@ -56,6 +56,26 @@
     background-color: #eee;
 }
 
+.tree-container-exit
+{
+    position: absolute !important;
+    display: block !important;
+    right: 0px !important;
+    top: 0px !important;
+    width: 24px !important;
+    height: 24px !important;
+    background-color: green !important;
+}
+
+.tree-container-buttons-panel
+{
+
+}
+
+.tree-container-button
+{
+}
+
 .tree-container div
 {
     display: block;
@@ -254,15 +274,15 @@ div.children-container
     margin-top: 12px;
     height: auto;
     padding: 0;
-    padding-top: 6px;
-    border-top: 1px solid #555;
+    padding-top: 3px;
+    border: 1px solid #777;
     overflow: hidden;
 }
 
 .tree-selection-header
 {
     width: 100%;
-    padding: 3px 0px;
+    padding: 0px 3px;
     text-align: left;
     font-size: 13px;
     font-weight: bold;
@@ -271,7 +291,8 @@ div.children-container
 .tree-selection-nodes {
     width: 100%;
     height: auto;
-    padding: 3px 0px;
+    margin-top: 3px;
+    padding: 3px;
 }
 
 .tree-selection-line

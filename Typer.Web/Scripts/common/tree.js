@@ -318,6 +318,17 @@ function TreeView(properties){
     }).
     appendTo($(frame));
 
+    var btnCancel = jQuery('<div/>', {
+        id: 'tree-container-exit',
+        'class': 'tree-container-exit'
+    }).
+    bind({
+        'click': function () {
+            alert('Cancel');
+        }
+    }).
+    appendTo($(this.container));
+
 
     this._searchPanel = jQuery('<div/>', {
             id: 'tree-search-panel',
@@ -329,6 +340,11 @@ function TreeView(properties){
         appendTo($(this.container));
     this.searchMode = false;
 
+
+    this.buttonsPanel = jQuery('<div/>', {
+        id: 'tree-container-buttons-panel',
+        'class': 'tree-container-buttons-panel'
+    }).appendTo($(this.container));
 
 
     //Place container inside the screen.
