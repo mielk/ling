@@ -876,3 +876,27 @@ div.add
     font-weight: bold;
     cursor: pointer;
 }
+
+.edit-question
+{
+    display: block !important;
+    position: relative;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 25px !important;
+    height: 25px !important;
+    margin-left: 12px;
+    margin-right: 12px;
+    padding: 3px;
+    background-image: url('images/edit.png');
+    border: 1px solid transparent;
+    color: transparent;
+    cursor: pointer;
+}
+
+.edit-question:hover
+{
+    background-color: rgb(253, 235, 191);
+    border: 1px solid rgb(189, 133, 0);
+}
