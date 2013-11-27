@@ -18,9 +18,9 @@
 
     <div class="categories">Categories</div>
 
-    <div class="edit-question">@Model.Id</div>
+    @*<div class="edit-question">@Model.Id</div>*@
 
-    @*@Html.ActionLink("Edit", "Edit", "Questions", new { id = Model.Id }, null)*@
+    @Html.ActionLink("Edit", "Edit", "Questions", new { id = Model.Id }, null)
 
     @if (Model.IsActive)
     {
@@ -31,3 +31,187 @@
 
 
 </div>
+
+
+
+<div id="edit-container">
+    <div class="relative">
+        <div id="edit-close"></div>
+        
+        <div id="edit-name" class="line">
+            <div id="name-label" class="label">Name</div>
+            <div id="name-error" class="error">
+                <div id="name-error-content" class="error_content"></div>
+            </div>
+            <span id="name-error-icon" class="icon"></span>
+            <span>
+                <input id="name" class="default" type="text" />
+            </span>
+        </div>
+
+        <div id="edit-weight" class="line">
+            <div id="weight-label" class="label">Weight</div>
+            <div class="weight-icons-container">
+                <div id="weight-icons" class="weight-icons">
+                        <div id="0" class="weight-icon">1</div>
+                        <div id="1" class="weight-icon">2</div>
+                        <div id="2" class="weight-icon">3</div>
+                        <div id="3" class="weight-icon">4</div>
+                        <div id="4" class="weight-icon">5</div>
+                        <div id="5" class="weight-icon">6</div>
+                        <div id="6" class="weight-icon">7</div>
+                        <div id="7" class="weight-icon">8</div>
+                        <div id="8" class="weight-icon">9</div>
+                        <div id="9" class="weight-icon">10</div>
+                </div>
+            </div>
+            <span>
+                <input id="weight" class="default centered" type="text" />
+            </span>
+
+        </div>
+
+        <div class="line">
+            <div id="edit-buttons">
+                <input id="confirm-edit" type="submit" value="Confirm" class="edit-button" />
+                <input id="cancel-edit" type="submit" value="Cancel" class="edit-button" />
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+<div class="container">
+    <div class="vert-center edit-panel">
+        
+    <form action="/Questions/Edit/1" method="post">        
+        <fieldset>
+            
+            <div id="div_id" class="hidden">
+                <span>
+                    <input data-val="true" data-val-number="The field Id must be a number." data-val-required="The Id field is required." id="Id" name="Question.Id" type="text" value="1" />
+                </span>
+            </div>
+
+            <div id="div_name" class="field-line">
+                <label class="label" for="Question_Name">Name</label>
+                <div class="error">
+                    <div class="error_content"></div>
+                </div>
+                <span class="icon"></span>
+                <span>
+                    <input class="field default" id="Name" name="Question.Name" placeholder="Name" type="text" value="test1" />
+                </span>
+            </div>
+
+            <div id="div_weight" class="field-line">
+
+                <div class="hidden">
+                    <input data-val="true" data-val-number="The field Weight must be a number." data-val-required="The Weight field is required." id="Weight" name="Question.Weight" type="text" value="9" />
+                </div>
+
+                <label class="label" for="Question_Weight" id="questionWeight">Weight</label>
+
+
+                <div id="weight-panel">
+                    <div class="weight">
+                            <div class="weight-icon weight-checked">1</div>
+                            <div class="weight-icon weight-checked">2</div>
+                            <div class="weight-icon weight-checked">3</div>
+                            <div class="weight-icon weight-checked">4</div>
+                            <div class="weight-icon weight-checked">5</div>
+                            <div class="weight-icon weight-checked">6</div>
+                            <div class="weight-icon weight-checked">7</div>
+                            <div class="weight-icon weight-checked">8</div>
+                            <div class="weight-icon weight-checked">9</div>
+
+                            <div class="weight-icon">10</div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            
+
+
+            <div id="languages_panel">
+
+<div class="language" data-value="polski">
+
+    <div class="info">
+        <div class="collapse"></div>
+        <div class="flag"></div>
+        <div class="name"></div>
+    </div>
+
+    <div class="options">
+<div id="1" class="option">
+    <div class="button delete" title="Delete this option"></div>
+    <div class="button edit" title="Edit this option"></div>
+    <div class="content" data-value="a(b/c)">
+        <span class="plain">a(b/c)</span>
+    </div>
+    <div class="weight" data-value="9">9</div>
+</div><div id="2" class="option">
+    <div class="button delete" title="Delete this option"></div>
+    <div class="button edit" title="Edit this option"></div>
+    <div class="content" data-value="b(d/e) [option]">
+        <span class="plain">b(d/e) </span><span class="complex">option</span>
+    </div>
+    <div class="weight" data-value="8">8</div>
+</div>    </div>
+
+    <div class="buttons">
+        <div id="add_polski" class="button add">Add</div>
+    </div>
+
+
+
+</div><div class="language" data-value="angielski">
+
+    <div class="info">
+        <div class="collapse"></div>
+        <div class="flag"></div>
+        <div class="name"></div>
+    </div>
+
+    <div class="options">
+<div id="3" class="option">
+    <div class="button delete" title="Delete this option"></div>
+    <div class="button edit" title="Edit this option"></div>
+    <div class="content" data-value="x">
+        <span class="plain">x</span>
+    </div>
+    <div class="weight" data-value="10">10</div>
+</div>    </div>
+
+    <div class="buttons">
+        <div id="add_angielski" class="button add">Add</div>
+    </div>
+
+
+
+</div>
+            </div>
+
+            <div class="footer">
+                <input id="btnSave" type="submit" value="Save" />
+            </div>
+
+
+        </fieldset>
+    </form>        
+    </div>
+</div>
+        <script src="/Scripts/jquery-1.7.1.js"></script>
+
+        
+
+    </body>
+</html>
