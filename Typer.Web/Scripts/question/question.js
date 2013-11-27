@@ -52,6 +52,7 @@ function Question(data, properties) {
     var me = this;
     this.id = data.Id;
     this.name = data.Name;
+    this.weight = data.Weight;
     this.properties = properties || {};
 
 
@@ -136,7 +137,7 @@ function Question(data, properties) {
                 me.ui.close();
             },
             confirm: function (e) {
-                alert('confirm');
+                alert('confirm; weight: ' + me.weight);
             }
 
         });
@@ -209,7 +210,10 @@ function Question(data, properties) {
 
                 var $timer;
                 $value;
-                if (properties.editable) {
+
+                if (properties.value) {
+                    $(properties.value).appendTo($($container));
+                } else if (properties.editable) {
                     $value = jQuery('<input/>', {
                         'class': 'field default',
                         'type': 'text'
@@ -261,6 +265,7 @@ function Question(data, properties) {
                 if (properties.inputCss) {
                     $($value).css(properties.inputCss);
                 }
+
             })();
 
             function _formatAsValid(){
@@ -377,6 +382,63 @@ function Question(data, properties) {
             validation: nameChecker.check,
             editable: true
         });
+
+        var weightLine = dataLine({
+            property: 'weight',
+            label: 'Weight',
+            validation: null,
+            editable: false,
+            value: weightPanel(10, me.weight)
+        });
+
+
+
+        function weightPanel(maxWeight, weight) {
+            var CHECKED_CSS_CLASS = "weight-checked";
+            var _weight = weight;
+            var _maxWeight = maxWeight;
+
+            var _panel = jQuery('<div/>', {
+                id: 'weight-panel',
+                'class': 'weight-panel'
+            });
+
+            var _container = jQuery('<div/>', {
+                id: 'weight-container',
+                'class': 'weight-container'
+            }).appendTo($(_panel));
+
+            for (var i = 0; i < maxWeight; i++) {
+                var _icon = jQuery('<div/>', {
+                    id: 'weight-container',
+                    'class': 'weight-icon' + (i < _weight ? ' weight-checked' : ''),
+                    html: (i + 1)
+                }).
+                bind({
+                    'click': function () {
+                        me.weight = this.innerHTML * 1;
+                        _renderIcons();
+                    }
+                }).appendTo($(_container));
+            }
+
+            function _renderIcons() {
+                $(".weight-panel").find(".weight-icon").each(
+                    function (key, value) {
+                        var i = this.innerHTML * 1;
+                        if (i <= me.weight) {
+                            $(this).addClass(CHECKED_CSS_CLASS);
+                        } else {
+                            $(this).removeClass(CHECKED_CSS_CLASS);
+                        }
+                    }
+                );
+            }
+
+            return _panel;
+
+        }
+
 
 
     })();
