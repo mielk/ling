@@ -53,6 +53,10 @@ function Question(data, properties) {
     this.id = data.Id;
     this.name = data.Name;
     this.weight = data.Weight;
+    this.categories = data.Categories;
+    this.categoriesString = function () {
+        return 'categories';
+    }
     this.properties = properties || {};
 
 
@@ -205,6 +209,11 @@ function Question(data, properties) {
                     $errorIcon = jQuery('<span/>', {
                         'class': 'icon'
                     }).appendTo($($container));
+                }
+
+
+                if (properties.right) {
+                    $(properties.right).appendTo($container);
                 }
 
 
@@ -391,6 +400,14 @@ function Question(data, properties) {
             value: weightPanel(10, me.weight)
         });
 
+        var categoriesLine = dataLine({
+            property: 'categories',
+            label: 'Categories',
+            validation: null,
+            editable: false,
+            value: categoriesPanel(),
+            right: categoriesEditButton()
+        });
 
 
         function weightPanel(maxWeight, weight) {
@@ -439,7 +456,37 @@ function Question(data, properties) {
 
         }
 
+        function categoriesPanel(){
+            $value = jQuery('<input/>', {
+                'class': 'field default',
+                'type': 'text'
+            })
+            .val(me.categoriesString());
 
+            me.events.bind({
+                'changeCategory' : function(){
+                    _refresh();
+                }
+            });
+
+            $span = jQuery('<span/>');
+            $value.appendTo($span);
+
+            function _refresh(){
+                $value.val(me.categoriesString());
+            }
+
+            return $span;
+
+        }
+
+        function categoriesEditButton(){
+            var $button = jQuery('<div/>', {
+                'class': 'expand-button',
+                html: '...'
+            })
+            return $button;
+        }
 
     })();
 
@@ -516,9 +563,6 @@ function Question(data, properties) {
         }
 
     })();
-
-
-
 
 }
 

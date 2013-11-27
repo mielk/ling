@@ -303,3 +303,18 @@ input.question-button
 {
     background-image: url('images/gold_star.png');
 }
+
+.question-container .expand-button
+{
+    display: block;
+    float: right;
+    height: 34px;
+    width: 50px;
+    padding: 9px;
+    line-height: 16px;
+    text-align: center;
+    background-color: #ccc;
+    border: 1px solid #666;
+    margin-left: 12px;
+    cursor: pointer;
+}
