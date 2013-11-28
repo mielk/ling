@@ -330,7 +330,7 @@ input.question-button
 }
 
 
-.question-languages-container
+.question-languages-panel
 {
     display: block;
     float: left;
@@ -340,4 +340,81 @@ input.question-button
     padding: 0;
     background-color: green;
     border: 1px solid #666;
+}
+
+.language
+{
+    display: block;
+    position: relative;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    background-color: #eee;
+    height: auto;
+    width: 100%;
+    padding: 12px;
+    padding-bottom: 0;
+    border: 1px solid #ccc;
+    margin-bottom: 12px;
+}
+
+.language div.info
+{
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    height: auto;
+    width: 100%;
+    padding-bottom: 12px;
+    background-color: transparent;
+}
+
+.language .collapse
+{
+    float: left;
+    width: 32px;
+    height: 32px;
+    margin-right: 9px;
+    border: 1px solid #444;
+    background-color: #eee;
+}
+
+.language .flag
+{
+    float: left;
+    width: 51px;
+    height: 32px;
+    margin-right: 15px;
+    border: 1px solid #444;
+    background-color: #ccc;
+}
+
+.language .name
+{
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: auto;
+    height: 34px;
+    padding: 10px 15px;
+    line-height: 14px;
+    font-size: 14px;
+    background-color: transparent;
+}
+
+.language div.options
+{
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    height: auto;
+    margin-bottom: 12px;
+    border-top: 1px solid #444;
+    border-bottom: 1px solid #444;
+    background-color: #eee;
 }

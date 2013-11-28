@@ -1401,19 +1401,6 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
                             e.stopPropagation();
                             _escape();
                             break;
-                        case 36: //Home
-                            e.stopPropagation();
-                            e.preventDefault();
-                            my.ui.moveCaret(window, -2);
-                            break;
-                        case 35: //End
-                            e.stopPropagation();
-                            e.preventDefault();
-                            var value = $(this).val();
-                            $(this).selectionStart = value.length - 1;
-                            $(this).selectionEnd = value.length - 1;
-                            break;
-
                     }
                 }
             }).

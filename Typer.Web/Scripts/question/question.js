@@ -25,6 +25,12 @@
 }];
 
 
+var mockedLanguages = [
+    { name: 'polski', id: 1 },
+    { name: 'angielski', id: 2 }
+]
+
+
 
 var categoriesTree = categoriesTree || new TreeView({
         'mode': MODE.MULTI,
@@ -99,6 +105,7 @@ function Question(data, properties) {
         }
         return s;
     }
+    this.languages = mockedLanguages;
     this.properties = properties || {};
 
 
@@ -576,9 +583,84 @@ function Question(data, properties) {
     this.options = (function () {
 
         var _container = jQuery('<div/>', {
-            id: 'question-languages-container',
-            'class': 'question-languages-container'
+            id: 'question-languages-panel',
+            'class': 'question-languages-panel'
         }).appendTo($(me.ui.container()));
+
+
+        var languagePanel = function (language) {
+            var isCollapsed = false;
+
+            var $container = jQuery('<div/>', {
+                id: 'language_' + language.name,
+                'class': 'language',
+                'data-value': language.id
+            }).appendTo($(_container));
+
+            var $info = jQuery('<div/>', {
+                'class': 'info'
+            }).appendTo($($container));
+
+
+            var $collapse = jQuery('<div/>', {
+                'class': 'collapse'
+            })
+            .bind({
+                'click': function () {
+                    if (me.isCollapsed === true) {
+                        me.expand();
+                    } else {
+                        me.collapse();
+                    }
+                }
+            })
+            .appendTo($($info));
+
+            var $options = null;
+
+            var $buttons = null;
+
+
+            function _collapse(){
+                isCollapsed = true;
+                $($options).css({
+                    'display' : 'none'
+                });
+                $($buttons).css({
+                    'display': 'none'
+                });
+            }
+
+            function _expand() {
+                isCollapsed = false;
+                $($options).css({
+                    'display': 'block'
+                });
+                $($buttons).css({
+                    'display': 'block'
+                });
+            }
+
+
+            return{
+                collapse: function(){
+                    _collapse();
+                },
+                expand: function(){
+                    _expand();
+                }
+            }
+
+            //<div class="info">
+            //    <div class="collapse"></div>
+            //    <div class="flag"></div>
+            //    <div class="name"></div>
+            //</div>
+
+
+        };
+
+
 
     })();
 
