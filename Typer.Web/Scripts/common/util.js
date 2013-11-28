@@ -117,6 +117,28 @@ my.ui = function () {
             } else {
                 return 0;
             }
+        },
+
+        moveCaret : function (win, charCount) {
+            var sel, range;
+            if (win.getSelection) {
+                sel = win.getSelection();
+                if (sel.rangeCount > 0) {
+                    var textNode = sel.focusNode;
+                    var newOffset = sel.focusOffset + charCount;
+                    sel.collapse(textNode, Math.min(textNode.length, newOffset));
+                }
+            } else if ( (sel = win.document.selection) ) {
+                if (sel.type != "Control") {
+                    range = sel.createRange();
+                    range.move("character", charCount);
+                    range.select();
+                }
+            }
+        },
+
+        placeCaret: function (win, position) {
+
         }
 
     }

@@ -603,6 +603,9 @@ function TreeView(properties){
         $(document).bind({
             'keydown': function (e) {
 
+                if (!me.visible) {
+                    return;
+                }
                 
                 //Special shortcuts.
                 if (e.ctrlKey) {
@@ -852,6 +855,9 @@ TreeView.prototype.hideSearchPanel = function () {
     this.searchMode = false;
 }
 TreeView.prototype.show = function () {
+
+    this.visible = true;
+
     if (this.background) {
         $(this.background).css({
             'display': 'block'
@@ -1384,17 +1390,30 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
             bind({
                 'keydown': function (e) {
                     switch (e.which) {
-                        case 13:
+                        case 13: //Enter
                             var value = $(this).val();
                             var validation = validateName(value);
                             if (validation === true) {
                                 applyNewName(value);
                             }
                             break;
-                        case 27:
+                        case 27: //Escape
                             e.stopPropagation();
                             _escape();
                             break;
+                        case 36: //Home
+                            e.stopPropagation();
+                            e.preventDefault();
+                            my.ui.moveCaret(window, -2);
+                            break;
+                        case 35: //End
+                            e.stopPropagation();
+                            e.preventDefault();
+                            var value = $(this).val();
+                            $(this).selectionStart = value.length - 1;
+                            $(this).selectionEnd = value.length - 1;
+                            break;
+
                     }
                 }
             }).
@@ -1691,12 +1710,14 @@ TreeNode.prototype.removeNode = function (key) {
 }
 TreeNode.prototype.addNewNode = function () {
     var node = new TreeNode(this.tree, '', '', this, false);
+    node.activate();
     node.renamer.activate();
 }
 TreeNode.prototype.cancel = function () {
-    $(this.mainContainer).css({
-        'display': 'none'
-    });
+    $(this.mainContainer).remove();
+    //$(this.mainContainer).css({
+    //    'display': 'none'
+    //});
 }
 TreeNode.prototype.changeName = function (name) {
     this.name = name;

@@ -257,6 +257,7 @@ div.children-container
     box-sizing: border-box;
     margin-top: 1px;
     margin-bottom: 1px;
+    border: none !important;
 }
 
 
