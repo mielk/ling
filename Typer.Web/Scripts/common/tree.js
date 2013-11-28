@@ -293,8 +293,10 @@ $(function () {
 
 function TreeView(properties){
     var me = this;
+    this.visible = (properties.hidden === true ? false : true);
 
     this.ui = (function () {
+
         if (properties.blockOtherElements) {
             me.background = jQuery('<div/>', {
                 id: 'tree-background',
@@ -588,10 +590,10 @@ function TreeView(properties){
         },
         confirm: function (e) {
             alert('Selected: ' + e.items.length);
-            me.close();
+            me.hide();
         },
         cancel: function (e) {
-            me.close();
+            me.hide();
         }
     });
 
@@ -814,11 +816,18 @@ function TreeView(properties){
 
     this.root.activate();
 
+    if (!this.visible) {
+        this.hide();
+    }
+
 }
 TreeView.prototype.trigger = function (e) {
     this.events.trigger(e);
 }
-TreeView.prototype.close = function () {
+TreeView.prototype.bind = function (e) {
+    this.events.bind(e);
+}
+TreeView.prototype.hide = function () {
 
     if (this.background) {
         $(this.background).css({
@@ -841,6 +850,23 @@ TreeView.prototype.hideSearchPanel = function () {
     }
     this.searchPanel = null;
     this.searchMode = false;
+}
+TreeView.prototype.show = function () {
+    if (this.background) {
+        $(this.background).css({
+            'display': 'block'
+        });
+    }
+
+    $(this.container).css({
+        'display': 'block'
+    });
+}
+TreeView.prototype.reset = function () {
+    if (this.node) {
+        this.node.unselect();
+        this.node.collapse();
+    }
 }
 
 function TreeNode(tree, key, name, parent, expanded, selected) {

@@ -1,4 +1,41 @@
-﻿$(function () {
+﻿var categories = [{
+    key: 'A', caption: 'A', expanded: false, items: [
+        { key: 'AA', caption: 'AA', expanded: false, items: [] },
+        {
+            key: 'AB', caption: 'AB', expanded: true, items: [
+                { key: 'ABC', caption: 'ABC', expanded: true, items: [] },
+                { key: 'ABD', caption: 'ABD', expanded: true, items: [] }
+            ]
+        },
+        { key: 'AC', caption: 'AC', expanded: false, items: [] }
+    ]
+},
+{
+    key: 'B', caption: 'B', expanded: false, items: [
+        { key: 'BA', caption: 'BA', expanded: false, items: [] },
+        { key: 'BB', caption: 'BB', expanded: true, items: [] },
+        {
+            key: 'BC', caption: 'BC', expanded: false, items: [
+                  { key: 'BBC', caption: 'BBC', expanded: true, items: [] },
+                  { key: 'BBD', caption: 'BBD', expanded: true, items: [] }
+            ]
+        },
+        { key: 'BD', caption: 'BD', expanded: true, items: [] }
+    ]
+}];
+
+
+
+var categoriesTree = categoriesTree || new TreeView({
+        'mode': MODE.MULTI,
+        'data': categories,
+        'blockOtherElements': true,
+        'showSelection': true,
+        'hidden' : true
+    });
+
+
+$(function () {
     $('.edit-question').bind({
         'click': function () {
             var id = Number(this.innerHTML);
@@ -53,9 +90,14 @@ function Question(data, properties) {
     this.id = data.Id;
     this.name = data.Name;
     this.weight = data.Weight;
-    this.categories = data.Categories;
+    this.categories = [];
     this.categoriesString = function () {
-        return 'categories';
+        var s = '';
+        for (var i = 0; i < me.categories.length; i++) {
+            var category = me.categories[i];
+            s = s + (s ? '; ' : '') + category.name;
+        }
+        return s;
     }
     this.properties = properties || {};
 
@@ -142,6 +184,9 @@ function Question(data, properties) {
             },
             confirm: function (e) {
                 alert('confirm; weight: ' + me.weight);
+            },
+            changeCategory: function (e) {
+                me.categories = e.items;
             }
 
         });
@@ -484,7 +529,21 @@ function Question(data, properties) {
             var $button = jQuery('<div/>', {
                 'class': 'expand-button',
                 html: '...'
-            })
+            }).
+            bind({
+                'click': function () {
+                    categoriesTree.reset();
+                    categoriesTree.bind({
+                        'confirm': function (e) {
+                            me.events.trigger({
+                                'type': 'changeCategory',
+                                'items': e.items
+                            });
+                        }
+                    });
+                    categoriesTree.show();
+                }
+            });
             return $button;
         }
 
