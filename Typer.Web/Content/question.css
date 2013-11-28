@@ -90,9 +90,9 @@ div
     float: left;
     width: 100%;
     height: auto;
-    margin-bottom: 12px;
     padding: 0;
     border-bottom: 1px solid #CCC;
+    padding-bottom: 12px;
 }
 
 .field-line
@@ -105,6 +105,11 @@ div
     margin: 0;
     margin-bottom: 6px;
     overflow: visible;
+}
+
+.question-meta-container .field-line:last-child
+{
+    margin-bottom: 0;
 }
 
 label
@@ -236,12 +241,17 @@ span
 
 .question-buttons-panel
 {
+    display: block;
+    float: left;
     width: 100%;
-    margin-top: 24px;
+    height: auto;
+    padding-top: 12px;
+    border-top: 1px solid #ccc;
 }
 
 .question-buttons-container
 {
+    display: block;
     float: none !important;
     width: 180px;
     height: auto;
@@ -317,4 +327,17 @@ input.question-button
     border: 1px solid #666;
     margin-left: 12px;
     cursor: pointer;
+}
+
+
+.question-languages-container
+{
+    display: block;
+    float: left;
+    height: 100px;
+    width: 100%;
+    margin: 12px 0px;
+    padding: 0;
+    background-color: green;
+    border: 1px solid #666;
 }

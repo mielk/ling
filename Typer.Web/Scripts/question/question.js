@@ -573,6 +573,18 @@ function Question(data, properties) {
 
     })();
 
+    this.options = (function () {
+
+        var _container = jQuery('<div/>', {
+            id: 'question-languages-container',
+            'class': 'question-languages-container'
+        }).appendTo($(me.ui.container()));
+
+    })();
+
+
+
+
     this.buttons = (function () {
         var _panel = jQuery('<div/>', {
             id: 'question-buttons-panel',
