@@ -239,9 +239,10 @@ div.children-container
     width: auto;
     height: 20px;
     margin-top: -2px;
-    padding: 0px 6px;
+    margin-left: 3px;
+    padding: 1px 6px;
     border: 1px solid rgba(21, 21, 21, 0.3);
-    line-height: 18px;
+    line-height: 16px;
     text-align: left;
     color: rgba(0, 0, 0,0.6);
     cursor: text;

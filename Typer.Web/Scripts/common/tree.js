@@ -1473,6 +1473,7 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
             active = false;
             destroy();
             if (me.key.length === 0) {
+                me.parent.activate();
                 me.cancel();
             }
         }
@@ -1710,14 +1711,14 @@ TreeNode.prototype.removeNode = function (key) {
 }
 TreeNode.prototype.addNewNode = function () {
     var node = new TreeNode(this.tree, '', '', this, false);
-    node.activate();
+    this.tree.trigger({
+        'type': 'activate',
+        'node': node
+    });
     node.renamer.activate();
 }
 TreeNode.prototype.cancel = function () {
     $(this.mainContainer).remove();
-    //$(this.mainContainer).css({
-    //    'display': 'none'
-    //});
 }
 TreeNode.prototype.changeName = function (name) {
     this.name = name;
@@ -1736,14 +1737,12 @@ TreeNode.prototype.select = function () {
         }
     }
 }
-
 TreeNode.prototype.unselect = function () {
     if (this.tree.mode === MODE.MULTI) {
         this.selector.unselect();
         this.tree.selection.refresh();
     }
 }
-
 TreeNode.prototype.getNodesForSearching = function () {
     var a = [];
     var counter = 0;
