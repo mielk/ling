@@ -201,9 +201,10 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult GetQuestion(int id)
         {
-
-            QuestionViewModel question = new QuestionViewModel(){ Id = 1, Name = "abc", Weight = 8, CreatorId = 1, CreatorName = "xyz", CreateDate = new DateTime(2013, 10, 25)};
-            return Json(question, JsonRequestBehavior.AllowGet);
+            User user = (User) HttpContext.Session[Typer.Domain.Entities.User.SESSION_KEY];
+            Question question = service.getQuestion(id);
+            QuestionViewModel questionViewModel = new QuestionViewModel(question, 1);//user.UserID);
+            return Json(questionViewModel, JsonRequestBehavior.AllowGet);
 
         }
 

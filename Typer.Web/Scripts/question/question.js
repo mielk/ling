@@ -25,13 +25,6 @@
 }];
 
 
-var mockedLanguages = [
-    { name: 'polski', id: 1 },
-    { name: 'angielski', id: 2 }
-]
-
-
-
 var categoriesTree = categoriesTree || new TreeView({
         'mode': MODE.MULTI,
         'data': categories,
@@ -93,9 +86,9 @@ function getQuestion(questionId) {
 
 function Question(data, properties) {
     var me = this;
-    this.id = data.Id;
-    this.name = data.Name;
-    this.weight = data.Weight;
+    this.id = data.Question.Id;
+    this.name = data.Question.Name;
+    this.weight = data.Question.Weight;
     this.categories = [];
     this.categoriesString = function () {
         var s = '';
@@ -105,7 +98,7 @@ function Question(data, properties) {
         }
         return s;
     }
-    this.languages = mockedLanguages;
+    this.languages = createLanguageCollection(data.UserLanguages);
     this.properties = properties || {};
 
 
@@ -587,85 +580,13 @@ function Question(data, properties) {
             'class': 'question-languages-panel'
         }).appendTo($(me.ui.container()));
 
-
-        var languagePanel = function (language) {
-            var isCollapsed = false;
-
-            var $container = jQuery('<div/>', {
-                id: 'language_' + language.name,
-                'class': 'language',
-                'data-value': language.id
-            }).appendTo($(_container));
-
-            var $info = jQuery('<div/>', {
-                'class': 'info'
-            }).appendTo($($container));
-
-
-            var $collapse = jQuery('<div/>', {
-                'class': 'collapse'
-            })
-            .bind({
-                'click': function () {
-                    if (me.isCollapsed === true) {
-                        me.expand();
-                    } else {
-                        me.collapse();
-                    }
-                }
-            })
-            .appendTo($($info));
-
-            var $options = null;
-
-            var $buttons = null;
-
-
-            function _collapse(){
-                isCollapsed = true;
-                $($options).css({
-                    'display' : 'none'
-                });
-                $($buttons).css({
-                    'display': 'none'
-                });
-            }
-
-            function _expand() {
-                isCollapsed = false;
-                $($options).css({
-                    'display': 'block'
-                });
-                $($buttons).css({
-                    'display': 'block'
-                });
-            }
-
-
-            return{
-                collapse: function(){
-                    _collapse();
-                },
-                expand: function(){
-                    _expand();
-                }
-            }
-
-            //<div class="info">
-            //    <div class="collapse"></div>
-            //    <div class="flag"></div>
-            //    <div class="name"></div>
-            //</div>
-
-
-        };
-
-
+        
+        for (var i = 0; i < me.languages.length; i++) {
+            var language = me.languages[i];
+            language.gui.appendTo(_container);
+        }
 
     })();
-
-
-
 
     this.buttons = (function () {
         var _panel = jQuery('<div/>', {
@@ -717,7 +638,338 @@ function Question(data, properties) {
 
     })();
 
+    //==============================================
+
+    function createLanguageCollection(languages) {
+        var arr = [];
+        for (var i = 0; i < languages.length; i++){
+            var languageJson = languages[i];
+            arr[i] = new Language({
+                id:   languageJson.Language.Id,
+                name: languageJson.Language.Name,
+                flag: languageJson.Language.Flag,
+                options: languageJson.Options
+            });
+        }
+
+        return arr;
+
+    }
+
 }
+
+
+
+
+function Language(properties) {
+    var me = this;
+    this.id = properties.id;
+    this.name = properties.name;
+    this.flag = properties.image;
+    
+    this.gui = (function () {
+        var isCollapsed = false;
+        var $container;
+        var $options;
+        var $buttons;
+
+        (function createGUI() {
+            $container = jQuery('<div/>', {
+                id: 'language_' + me.name,
+                'class': 'language'
+            });
+
+            var $info = jQuery('<div/>', {
+                'class': 'info'
+            }).appendTo($($container));
+
+
+            var $collapse = jQuery('<div/>', {
+                'class': 'collapse'
+            })
+            .bind({
+                'click': function () {
+                    if (isCollapsed === true) {
+                        _expand();
+                    } else {
+                        _collapse();
+                    }
+                }
+            })
+            .appendTo($($info));
+
+            var $flag = jQuery('<div/>', {
+                'class': 'flag',
+            }).css({
+                'background-image': me.flag
+            }).appendTo($($info));
+
+            var $name = jQuery('<div/>', {
+                'class': 'name',
+                'html': me.name
+            }).appendTo($($info));
+
+
+            //Options.
+            $options = jQuery('<div/>', {
+                'class': 'options'
+            }).appendTo($($container));
+
+
+
+
+            //Buttons.
+            $buttons = jQuery('<div/>', {
+                'class': 'buttons'
+            }).appendTo($($container));
+
+            var $add = jQuery('<div/>', {
+                'class': 'button add',
+                html: 'Add'
+            }).
+            bind({
+                'click': function () {
+                    alert('Tworzenie nowej opcji');
+                    //Tworzenie nowej opcji
+                    //var option = new PreOption(me, ++me.optionNum);
+                    //Edit panel.
+                }
+            }).appendTo($($buttons));
+
+        })();
+
+        function _collapse() {
+            isCollapsed = true;
+            $($options).css({
+                'display': 'none'
+            });
+            $($buttons).css({
+                'display': 'none'
+            });
+        }
+
+        function _expand() {
+            isCollapsed = false;
+            $($options).css({
+                'display': 'block'
+            });
+            $($buttons).css({
+                'display': 'block'
+            });
+        }
+
+        return {
+            collapse: function () {
+                _collapse();
+            },
+            expand: function () {
+                _expand();
+            },
+            appendTo: function (parent) {
+                $container.appendTo($(parent));
+            },
+            container: function(){
+                return $container;
+            },
+            addOption: function (optionContainer) {
+                $(optionContainer).appendTo($($options));
+            }
+        }
+
+    })();
+
+    this.options = createOptionsSet(properties.options);
+    this.optionsNum = 0;
+
+
+    //=========================================
+    function createOptionsSet(options) {
+        var _ = new HashTable(null);
+        for (var i = 0; i < options.length; i++) {
+            var optionJson = options[i];
+            var option = new Option({
+                id: optionJson.Id,
+                content: optionJson.Content,
+                questionId: optionJson.QuestionId,
+                weight: optionJson.Weight,
+                language: me
+            });
+            _.setItem(option.id, option);
+        }
+
+        return _;
+
+    }
+
+}
+Language.prototype.removeOption = function (option) {
+    this.options.removeItem(option.id);
+}
+Language.prototype.createOption = function (_id, content, weight) {
+    //var container = jQuery('<div/>', {
+    //    id: _id,
+    //    'class': 'option',
+    //    html: optionToHtml(_id, content, weight)
+    //}).appendTo($(this.container).find('.options')[0]);
+    //var option = new Option(container, this);
+    //this.options.setItem(_id, option);
+}
+Language.prototype.isUnique = function (content, optionId) {
+    var unique = true;
+    this.options.each(function (key, option) {
+        if (option.getContent() === content) {
+            if (option.getName() !== optionId) {
+                unique = false;
+            }
+        }
+    });
+    return unique;
+}
+
+
+//function Language(properties) {
+
+//    $(this.container).find('.option').each(function (i, obj) {
+//        var option = new Option(obj, me);
+//        var name = option.getName();
+//        me.options.setItem(name, option);
+//        if (name * 1 > me.optionNum) {
+//            me.optionNum = name;
+//        }
+//    });
+
+
+//}
+
+
+
+
+function Option(properties) {
+    var me = this;
+    this.id = properties.id;
+    this.language = properties.language;
+    this.content = properties.content;
+    this.weight = properties.weight;
+
+
+
+    this.gui = (function () {
+        var _container = jQuery('<div/>', {
+            'class': 'option'
+        });
+
+        var _content;
+        var _weight;
+
+        (function createGUI() {
+            var _delete = jQuery('<div/>', {
+                'class': 'button delete',
+                'title': 'Delete this option'
+            }).bind({
+                click: function (e) {
+                    me.remove();
+                }
+            }).appendTo($(_container));
+
+            var _edit = jQuery('<div/>', {
+                'class': 'button edit',
+                'title': 'Edit this option'
+            }).bind({
+                click: function (e) {
+                    alert('Edit this option');
+                    //editPanel.display(me);
+                }
+            }).appendTo($(_container));
+
+            _content = jQuery('<div/>', {
+                'class': 'content',
+                'data-value': me.content,
+                'html': contentToHtml()
+            }).appendTo($(_container));
+
+            _weight = jQuery('<div/>', {
+                'class': 'weight',
+                'html': me.weight
+            }).appendTo($(_container));
+
+        })();
+
+        (function ini() {
+            me.language.gui.addOption(_container);
+        })();
+
+        return {
+            remove: function () {
+                _container.remove();
+            },
+            appendTo: function (parent) {
+                _container.appendTo($(parent));
+            },
+            container: function () {
+                return _container;
+            }
+        }
+
+    })();
+
+    function contentToHtml() {
+        var replaced = me.content.replace(/\[/g, '|$').replace(/\]/g, '|');
+        var parts = replaced.split("|");
+
+        var result = '';
+        for (var part = 0; part < parts.length; part++) {
+            var s = parts[part];
+            if (s.length > 0) {
+                result += '<span class="';
+                result += (my.text.startsWith(s, '$') ? 'complex' : 'plain');
+                result += '">';
+                result += s.replace("$", "");
+                result += '</span>';
+            }
+        }
+
+        return result;
+
+    }
+
+    function toHtml() {
+        var html = '<div class="button delete" title="Delete this option"></div>';
+        html += '<div class="button edit" title="Edit this option"></div>';
+        html += '<div class="content" data-value="' + me.content + '">';
+        html += contentToHtml(me.content);
+        html += '</div>';
+        html += '<div class="weight" data-value="' + me.weight + '">' + me.weight + '</div>';
+
+        return html;
+
+    }
+
+    function isUniqueContent(content) {
+        return me.language.isUnique(content.trim(), me.name);
+    }
+
+}
+Option.prototype.update = function (content, weight) {
+    //$(this.content).
+    //    html(
+    //        contentToHtml(content)
+    //    ).
+    //    attr({
+    //        'data-value': content
+    //    });
+    //$(this.weight).
+    //    text(weight).
+    //    attr({
+    //        'data-value': weight
+    //    });
+
+}
+Option.prototype.remove = function () {
+    this.language.removeOption(this);
+    this.gui.remove();
+}
+
+
 
 
 

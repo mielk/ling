@@ -334,12 +334,12 @@ input.question-button
 {
     display: block;
     float: left;
-    height: 100px;
+    height: auto;
     width: 100%;
     margin: 12px 0px;
     padding: 0;
-    background-color: green;
-    border: 1px solid #666;
+    background-color: transparent;
+    border: none;
 }
 
 .language
@@ -350,7 +350,7 @@ input.question-button
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
-    background-color: #eee;
+    background-color: #fff;
     height: auto;
     width: 100%;
     padding: 12px;
@@ -417,4 +417,137 @@ input.question-button
     border-top: 1px solid #444;
     border-bottom: 1px solid #444;
     background-color: #eee;
+}
+
+.language .buttons
+{
+    display: block;
+    position: relative;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    height: 40px;
+}
+
+.language .add
+{
+    display: block;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    height: 32px;
+    width: auto;
+    border: 1px solid #555;
+    font-size: 14px;
+    line-height: 14px;
+    padding: 8px 18px;
+    box-shadow: 1px 1px 0px 0px rgba(255,255,255,0.25);
+    background-color: rgb(121, 173, 131);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+
+
+.options .option:last-child {  
+   border-bottom: none;  
+}
+
+.option
+{
+    display: block;
+    position: relative;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    height: 31px;
+    padding: 3px;
+    border-bottom: 1px solid #999;
+}
+
+.option:hover
+{
+    background-color: rgb(208, 255, 182);
+}
+
+.option div
+{
+    display: block;
+    position: relative;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.option .button
+{
+    width: 24px;
+    height: 100%;
+    margin-right: 6px;
+}
+
+.option .delete
+{
+    background-image: url('images/delete.png');
+}
+
+.option .edit
+{
+    background-image: url('images/edit.png');
+}
+
+.option .content
+{
+    width: auto;
+    height: 100%;
+}
+
+.option .weight
+{
+    float: right;
+    width: 32px;
+    height: 100%;
+    border: 1px solid #999;
+    padding: 6px;
+    line-height: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    background-color: #444;
+    color: #ddd;
+    text-align: center;
+}
+
+.option span
+{
+    display: inline-block;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    height: 100%;
+    width: auto;
+}
+
+span.plain
+{
+    padding: 6px 3px;
+    line-height: 12px;
+    font-size: 12px;
+}
+
+span.complex
+{
+    border: 1px solid rgb(161, 144, 0);
+    padding: 5px;
+    line-height: 12px;
+    font-size: 12px;
+    background-color: rgb(255, 240, 182);
+    color: rgb(110, 98, 0);
 }

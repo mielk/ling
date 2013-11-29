@@ -429,8 +429,3 @@ function optionToHtml(id, content, weight) {
 
 
 
-
-function isUniqueContent(option, content) {
-    var language = option.getLanguage();
-    return language.isUnique(content.trim(), option.getName());
-}

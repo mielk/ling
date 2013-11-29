@@ -8,8 +8,8 @@ namespace Typer.Web.Models
 {
     public class QuestionLanguageViewModel
     {
-        public Question Question { get; set; }
-        public Language Language { get; set; }
+        private Question Question;
+        public Language Language;
         private IEnumerable<QuestionOption> options;
         public IEnumerable<QuestionOption> Options
         {
@@ -29,8 +29,8 @@ namespace Typer.Web.Models
 
         public QuestionLanguageViewModel(Question question, Language language)
         {
-            this.Question = question;
-            this.Language = language;
+            Question = question;
+            Language = language;
         }
 
     }
