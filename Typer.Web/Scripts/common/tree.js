@@ -252,17 +252,6 @@ var MODE = {
 
 
 $(function () {
-    var container = $('#tree_container')[0];
-    var properties = {
-        'container': container,
-        'mode': MODE.MULTI,
-        'data': data,
-        'blockOtherElements': true,
-        'showSelection': true
-    };
-    //var tree = new TreeView(properties);
-
-
     //Switching off selecting text.
     $(document).
         bind({
@@ -301,7 +290,11 @@ function TreeView(properties){
             me.background = jQuery('<div/>', {
                 id: 'tree-background',
                 'class': 'tree-background'
-            }).appendTo($(document.body));
+            }).
+            css({
+                'z-index' : my.ui.addTopLayer()
+            }).
+            appendTo($(document.body));
         }
 
         var background = (me.background || $(document.body));
@@ -860,7 +853,8 @@ TreeView.prototype.show = function () {
 
     if (this.background) {
         $(this.background).css({
-            'display': 'block'
+            'display': 'block',
+            'z-index' : my.ui.addTopLayer()
         });
     }
 

@@ -110,7 +110,8 @@ function Question(data, properties) {
                 'class': 'question-background'
             }).
             css({
-                'display' : 'none'
+                'display': 'none',
+                'z-index' : my.ui.addTopLayer()
             }).appendTo($(document.body));
         }
 
@@ -729,7 +730,22 @@ function Language(properties) {
             }).
             bind({
                 'click': function () {
-                    alert('Tworzenie nowej opcji');
+                    var option = new Option({
+                        'language' : me
+                    });
+                    var editPanel = new EditPanel({
+                        'option' : option
+                    });
+                    editPanel.bind({
+                        'confirm': function (e) {
+                            var option = e.option;
+                            option.id = e.name;
+                            option.update(e.name, e.weight);
+                            option.draw();
+                            me.options.setItem(option.id, option);
+                        }
+                    });
+                    editPanel.display();
                     //Tworzenie nowej opcji
                     //var option = new PreOption(me, ++me.optionNum);
                     //Edit panel.
@@ -773,13 +789,20 @@ function Language(properties) {
             },
             addOption: function (optionContainer) {
                 $(optionContainer).appendTo($($options));
+            },
+            removeOption: function () {
+
+            },
+            refreshOptionsPanel: function () {
+                $($options).css({
+                    'display' : (me.options.size() === 0 ? 'none' : 'block')
+                });
             }
         }
 
     })();
 
     this.options = createOptionsSet(properties.options);
-    this.optionsNum = 0;
 
 
     //=========================================
@@ -795,6 +818,7 @@ function Language(properties) {
                 language: me
             });
             _.setItem(option.id, option);
+            option.draw();
         }
 
         return _;
@@ -804,6 +828,7 @@ function Language(properties) {
 }
 Language.prototype.removeOption = function (option) {
     this.options.removeItem(option.id);
+    this.gui.refreshOptionsPanel();
 }
 Language.prototype.createOption = function (_id, content, weight) {
     //var container = jQuery('<div/>', {
@@ -817,8 +842,8 @@ Language.prototype.createOption = function (_id, content, weight) {
 Language.prototype.isUnique = function (content, optionId) {
     var unique = true;
     this.options.each(function (key, option) {
-        if (option.getContent() === content) {
-            if (option.getName() !== optionId) {
+        if (option.content === content) {
+            if (option.name !== optionId) {
                 unique = false;
             }
         }
@@ -848,8 +873,8 @@ function Option(properties) {
     var me = this;
     this.id = properties.id;
     this.language = properties.language;
-    this.content = properties.content;
-    this.weight = properties.weight;
+    this.content = properties.content || '';
+    this.weight = properties.weight || 1;
 
 
 
@@ -876,8 +901,15 @@ function Option(properties) {
                 'title': 'Edit this option'
             }).bind({
                 click: function (e) {
-                    alert('Edit this option');
-                    //editPanel.display(me);
+                    var editPanel = new EditPanel({
+                        'option': me
+                    });
+                    editPanel.bind({
+                        'confirm': function (e) {
+                            me.update(e.name, e.weight);
+                        }
+                    });
+                    editPanel.display();
                 }
             }).appendTo($(_container));
 
@@ -894,10 +926,6 @@ function Option(properties) {
 
         })();
 
-        (function ini() {
-            me.language.gui.addOption(_container);
-        })();
-
         return {
             remove: function () {
                 _container.remove();
@@ -907,6 +935,13 @@ function Option(properties) {
             },
             container: function () {
                 return _container;
+            },
+            draw: function () {
+                me.language.gui.addOption(_container);
+            },
+            update: function () {
+                $(_content).html(contentToHtml(me.content));
+                $(_weight).html(me.weight);
             }
         }
 
@@ -944,31 +979,23 @@ function Option(properties) {
 
     }
 
-    function isUniqueContent(content) {
-        return me.language.isUnique(content.trim(), me.name);
-    }
+}
 
+Option.prototype.isUniqueContent = function (content) {
+    return this.language.isUnique(content.trim(), this.name);
 }
 Option.prototype.update = function (content, weight) {
-    //$(this.content).
-    //    html(
-    //        contentToHtml(content)
-    //    ).
-    //    attr({
-    //        'data-value': content
-    //    });
-    //$(this.weight).
-    //    text(weight).
-    //    attr({
-    //        'data-value': weight
-    //    });
-
+    this.content = content;
+    this.weight = weight;
+    this.gui.update();
 }
 Option.prototype.remove = function () {
     this.language.removeOption(this);
     this.gui.remove();
 }
-
+Option.prototype.draw = function () {
+    this.gui.draw();
+}
 
 
 
@@ -1033,4 +1060,366 @@ var nameChecker = (function () {
 
 Question.prototype.displayEditForm = function () {
     this.ui.display();
+}
+
+
+
+
+
+
+function EditPanel(properties) {
+    this.MIN_WEIGHT = 1;
+    this.MAX_WEIGHT = 10;
+    var me = this;
+    this.option = properties.option;
+
+    this.gui = (function () {
+        var $background = jQuery('<div/>', {
+                id: 'edit-option-background',
+                'class': 'question-background'
+            }).
+            css({
+                'display': 'none',
+                'z-index': my.ui.addTopLayer()
+            }).appendTo($(document.body));
+
+        var $events = jQuery('<div/>', {
+            'class': 'events-container'
+        }).bind({
+            'confirm': function () {
+                me.destroy();
+            }
+        }).appendTo($background);
+
+        var $container = jQuery('<div/>', {
+                'class': 'edit-container'
+            }).
+            css({
+                'z-index': my.ui.addTopLayer()
+            }).appendTo($($background));
+
+        var $frame = jQuery('<div/>', {
+            'class': 'relative'
+        }).appendTo($($container));
+
+
+        var $close = jQuery('<div/>', {
+            'class': 'edit-close'
+        })
+        .bind({
+            'click': function () {
+                me.destroy();
+            }
+        })
+        .appendTo($($frame));
+
+
+        var name = (function () {
+            var timer;
+
+            var _container = jQuery('<div/>', {
+                'class': 'line'
+            }).appendTo($($frame));
+
+            var $label = jQuery('<div/>', {
+                'class': 'label',
+                html: 'Name'
+            }).appendTo($(_container));
+
+            var $error = jQuery('<div/>', {
+                'class': 'error'
+            }).appendTo($(_container));
+
+            var $errorContent = jQuery('<div/>', {
+                'class': 'error-content'
+            }).appendTo($($error));
+
+            var $statusIcon = jQuery('<span/>', {
+                'class': 'icon'
+            }).appendTo($(_container));
+
+            var $textbox = jQuery('<input/>', {
+                'type': 'text',
+                'class': 'default'
+            }).bind({
+                'keyup': function () {
+                    if (timer) {
+                        clearTimeout(timer);
+                    }
+                    timer = setTimeout(function () {
+                        me.validateName();
+                    }, 150);
+                },
+                'change': function () {
+                    me.validateName();
+                },
+                'mouseup': function (e) {
+                    e.preventDefault();
+                }
+            }).
+            on({
+                'focus': function (e) {
+                    this.select();
+                }
+            })
+            .val(me.option.content)
+            .focus()
+            .appendTo(jQuery('<span/>').
+                bind({
+                    'click': function () {
+                        $textbox.focus();
+                    }
+                }).appendTo($(_container)));
+
+
+            function _valid(){
+                $($error).css({ 'visibility': 'hidden' });
+                $($statusIcon).removeClass('iconInvalid').addClass('iconValid');
+                $($textbox).removeClass('invalid').addClass('valid');
+                buttons.enable();
+                
+            }
+
+            function _invalid(msg) {
+                $($errorContent).text(msg);
+                $($error).css({ 'visibility': 'visible' });
+                $($statusIcon).removeClass('iconValid').addClass('iconInvalid');
+                $($textbox).removeClass('valid').addClass('invalid');
+                buttons.disable();
+            }
+
+            return {
+                value: function () {
+                    return $($textbox).val();
+                },
+                valid: function () {
+                    _valid();
+                },
+                invalid: function (msg) {
+                    _invalid(msg);
+                },
+                focus: function () {
+                    $($textbox).focus();
+                }
+            }
+
+        })();
+
+        var weight = (function () {
+            var CHECKED_CSS_CLASS = "weight-checked";
+            var _value = me.option.weight;
+
+            var _container = jQuery('<div/>', {
+                'class': 'line'
+            }).appendTo($($frame));
+
+            var $label = jQuery('<div/>', {
+                'class': 'label',
+                html: 'Weight'
+            }).appendTo($(_container));
+
+            var iconsContainer = jQuery('<div/>', {
+                'class': 'weight-icons-container'
+            }).bind({
+                'clickIcon': function (e) {
+                    $($textbox).val(e.weight);
+                }
+            }).appendTo($(_container));
+
+            var icons = jQuery('<div/>', {
+                'class': 'weight-icons'
+            }).bind({
+                'changeValue': function (e) {
+                    if (e.weight !== me.value) {
+                        _setValue(e.weight);
+                    }
+                },
+                'clickIcon': function (e) {
+                    _setValue(e.weight);
+                }
+            }).appendTo($(iconsContainer));
+
+            for (var i = me.MIN_WEIGHT - 1; i < me.MAX_WEIGHT; i++){
+                var icon = jQuery('<div/>', {
+                    'id': i,
+                    'class': 'weight-icon',
+                    html: i + 1
+                }).bind({
+                    'click': function (e) {
+                        $(icons).trigger({
+                            'type': 'clickIcon',
+                            'weight': (this.id * 1 + 1)
+                        });
+                    }
+                }).appendTo($(icons));
+            }
+
+
+            function _setValue(value) {
+                _value = value;
+                var cls = CHECKED_CSS_CLASS;
+                $('.weight-icon').each(function () {
+                    var $value = $(this).html() * 1;
+                    if ($value <= value * 1) {
+                        $(this).addClass(cls);
+                    } else {
+                        $(this).removeClass(cls);
+                    }
+                });
+            }
+
+            var $textbox = jQuery('<input/>', {
+                'type': 'text',
+                'class': 'default centered'
+            }).bind({
+                'change': function () {
+                    var value = Math.min(Math.max(me.MIN_WEIGHT, $(this).val() * 1), me.MAX_WEIGHT);
+                    $(this).val(value);
+                    $(icons).trigger({
+                        'type': 'changeValue',
+                        'weight': value
+                    });
+                }
+            }).on({
+                'focus': function (e) {
+                    this.select();
+                }
+            })
+            .val(me.option.weight)
+            .appendTo(jQuery('<span/>').
+                bind({
+                    'click': function () {
+                        $($textbox).focus();
+                    }
+                }).appendTo($(_container)));
+
+            _setValue(me.option.weight);
+
+
+            return {
+                value: function () {
+                    return $($textbox).val();
+                }
+            }
+
+        })();
+
+        var buttons = (function (){
+            var _container = jQuery('<div/>', {
+                'class': 'line'
+            }).appendTo($($frame));
+
+            var _frame = jQuery('<div/>', {
+                'class': 'edit-buttons'
+            }).appendTo($(_container));
+
+            var _ok = jQuery('<input/>', {
+                'type': 'submit',
+                'value': 'Confirm',
+                'class': 'question-button'
+            }).bind({
+                'click': function () {
+                    $events.trigger({
+                        'type' : 'confirm',
+                        'name': name.value(),
+                        'weight': weight.value(),
+                        'option': me.option
+                    });
+                }
+            }).appendTo($(_frame));
+
+            var _cancel = jQuery('<input/>', {
+                'type': 'submit',
+                'value': 'Cancel',
+                'class': 'question-button'
+            }).bind({
+                'click': function () {
+                    me.destroy();
+                }
+            }).appendTo($(_frame));
+
+            function _enable() {
+                $(_ok).removeAttr('disabled');
+            }
+
+            function _disable() {
+                $(_ok).attr('disabled', 'disabled');
+            }
+
+            return {
+                enable: function () {
+                    _enable();
+                },
+                disable: function () {
+                    _disable();
+                }
+            }
+
+        })();
+
+        return {
+            destroy: function () {
+                $($background).remove();
+            },
+            display: function () {
+                $($background).css({
+                    'display' : 'block'
+                });
+                name.focus();
+            },
+            name: function () {
+                return name;
+            },
+            weight: function () {
+                return weight;
+            },
+            trigger: function (e) {
+                $events.trigger(e);
+            },
+            bind: function(a){
+                $events.bind(a);
+            }
+        }
+
+    })();
+
+    this.validateName = function () {
+        var name = me.gui.name().value();
+        var isValid = isValidName(name);
+
+        if (isValid === true) {
+            me.gui.name().valid();
+        } else {
+            me.gui.name().invalid(isValid);
+        }
+
+    }
+
+    function isValidName(name) {
+        if (name.length === 0) {
+            return MessageBundle.get(dict.NameCannotBeEmpty);
+        } else if (!me.option.isUniqueContent(name)) {
+            return MessageBundle.get(dict.NameAlreadyExists);
+        } else {
+            return true;
+        }
+    }
+
+    this.getName = function () {
+        return me.gui.name().value();
+    }
+    this.getWeight = function () {
+        return me.gui.weight().value();
+    }
+
+}
+EditPanel.prototype.display = function () {
+    this.validateName();
+    this.gui.display();
+}
+EditPanel.prototype.destroy = function () {
+    this.gui.destroy();
+}
+EditPanel.prototype.bind = function(e){
+    this.gui.bind(e);
 }

@@ -87,6 +87,8 @@ function HashTable(obj) {
 
 my.ui = function () {
 
+    var topLayer = 0;
+
     return {
 
         extraWidth: function (element) {
@@ -139,6 +141,14 @@ my.ui = function () {
 
         placeCaret: function (win, position) {
 
+        },
+
+        addTopLayer: function () {
+            return ++topLayer;
+        },
+
+        releaseTopLayer: function () {
+            topLayer--;
         }
 
     }

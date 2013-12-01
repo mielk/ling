@@ -176,51 +176,6 @@ EditPanel.prototype.hide = function () {
 
 
 
-function WeightIcons(parent, container) {
-    var me = this;
-    this.CHECKED_CSS_CLASS = "weight-checked";
-    this.parent = parent;
-    this.container = container;
-    this.icons = new HashTable(null);
-    this.value = 0;
-
-    $(this.container).find('.weight-icon').each(function (i, obj) {
-        $(obj).bind({
-            'click': function (e) {
-                $(me.container).trigger({
-                    'type': 'clickIcon',
-                    'weight': (this.id * 1 + 1)
-                });
-            }
-        });
-        me.icons.setItem(obj.id, obj);
-    });
-
-    $(this.container).bind({
-        'changeValue': function (e) {
-            if (e.weight !== me.value) {
-                me.setValue(e.weight);
-            }
-        },
-        'clickIcon': function (e) {
-            me.setValue(e.weight);
-        }
-    });
-
-}
-WeightIcons.prototype.setValue = function (value) {
-    this.value = value;
-    var cls = this.CHECKED_CSS_CLASS;
-    this.icons.each(function (i, obj) {
-        if (i * 1 < value * 1) {
-            $(obj).addClass(cls);
-        } else {
-            $(obj).removeClass(cls);
-        }
-    });
-}
-
-
 
 function Language(container) {
     var me = this;
