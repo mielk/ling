@@ -25,13 +25,13 @@
 }];
 
 
-var categoriesTree = categoriesTree || new TreeView({
-        'mode': MODE.MULTI,
-        'data': categories,
-        'blockOtherElements': true,
-        'showSelection': true,
-        'hidden' : true
-    });
+var treeProperties = {
+    'mode': MODE.MULTI,
+    'data': categories,
+    'blockOtherElements': true,
+    'showSelection': true,
+    'hidden' : true
+};
 
 
 $(function () {
@@ -321,6 +321,9 @@ function Question(data, properties) {
                         'type': 'text'
                     })
                     .bind({
+                        'keydown': function (e) {
+                            e.stopPropagation();
+                        },
                         'keyup': function () {
                             if ($timer) {
                                 clearTimeout($timer);
@@ -627,11 +630,11 @@ function Question(data, properties) {
 
         function categoriesEditButton(){
             var $button = jQuery('<input/>', {
+                'id': 'select-categories',
                 'class': 'expand-button',
                 'type': 'submit',
                 'value': '...'
-            }).
-            bind({
+            }).on({
                 'click': function () {
                     selectCategories()
                 }
@@ -640,17 +643,18 @@ function Question(data, properties) {
         }
 
         function selectCategories() {
-            categoriesTree.reset();
-            categoriesTree.hide();
-            categoriesTree.bind({
+            var tree = new TreeView(treeProperties);
+            tree.reset();
+            tree.bind({
                 'confirm': function (e) {
                     me.events.trigger({
                         'type': 'changeCategory',
                         'items': e.items
                     });
+                    tree.destroy();
                 }
             });
-            categoriesTree.show();
+            tree.show();
         }
 
         return {

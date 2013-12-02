@@ -344,6 +344,16 @@ function TreeView(properties){
             me.container.css('top', properties.y);
         }
 
+        return {
+            destroy: function () {
+                if (me.background) {
+                    $(me.background).remove();
+                } else {
+                    $(frame).remove();
+                }
+            }
+        }
+
     })();
 
 
@@ -869,6 +879,9 @@ TreeView.prototype.reset = function () {
         this.node.unselect();
         this.node.collapse();
     }
+}
+TreeView.prototype.destroy = function () {
+    this.ui.destroy();
 }
 
 function TreeNode(tree, key, name, parent, expanded, selected) {

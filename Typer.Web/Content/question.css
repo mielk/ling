@@ -289,6 +289,10 @@ input.question-button
     color: #444 !important;
 }
 
+input.question-button:focus
+{
+    background-color: rgb(255, 242, 181) !important;
+}
 
 
 .weight-panel
@@ -342,8 +346,15 @@ input.question-button
     border: 1px solid #666;
     margin-left: 12px;
     margin-top: 0px !important;
+    color: #444 !important;
     cursor: pointer;
 }
+
+.question-container .expand-button:focus
+{
+    background-color: rgb(255, 242, 181) !important;
+}
+
 
 
 .question-languages-panel
