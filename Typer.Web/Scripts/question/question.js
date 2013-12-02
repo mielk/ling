@@ -215,6 +215,7 @@ function Question(data, properties) {
                 $(_frame).css({
                     'display': 'block'
                 });
+                me.meta.focusName();
             }
         }
 
@@ -463,6 +464,9 @@ function Question(data, properties) {
                 },
                 getValue: function () {
                     return _getValue();
+                },
+                focus: function () {
+                    $($value).focus();
                 }
 
             }
@@ -502,58 +506,107 @@ function Question(data, properties) {
         });
 
 
-        function weightPanel(maxWeight, weight) {
-            var CHECKED_CSS_CLASS = "weight-checked";
-            var _weight = weight;
-            var _maxWeight = maxWeight;
 
-            var _panel = jQuery('<div/>', {
+        function weightPanel(maxWeight, weight) {
+            var MIN_WEIGHT = 1;
+            var MAX_WEIGHT = maxWeight;
+            var CHECKED_CSS_CLASS = "weight-checked";
+            var _value = weight;
+
+
+            var _container = jQuery('<div/>', {
                 id: 'weight-panel',
                 'class': 'weight-panel'
             });
 
-            var _container = jQuery('<div/>', {
-                id: 'weight-container',
-                'class': 'weight-container'
-            }).appendTo($(_panel));
 
-            for (var i = 0; i < maxWeight; i++) {
-                var _icon = jQuery('<div/>', {
-                    id: 'weight-container',
-                    'class': 'weight-icon' + (i < _weight ? ' weight-checked' : ''),
-                    html: (i + 1)
-                }).
+            var iconsContainer = jQuery('<div/>', {
+                'class': 'weight-icons-container'
+            }).bind({
+                'clickIcon': function (e) {
+                    $($textbox).val(e.weight);
+                }
+            }).appendTo($(_container));
+
+            var icons = jQuery('<div/>', {
+                'class': 'weight-icons'
+            }).bind({
+                'changeValue': function (e) {
+                    if (e.weight !== me.value) {
+                        _setValue(e.weight);
+                    }
+                },
+                'clickIcon': function (e) {
+                    _setValue(e.weight);
+                }
+            }).appendTo($(iconsContainer));
+
+            for (var i = MIN_WEIGHT - 1; i < MAX_WEIGHT; i++) {
+                var icon = jQuery('<div/>', {
+                    'id': i,
+                    'class': 'weight-icon',
+                    html: i + 1
+                }).bind({
+                    'click': function (e) {
+                        $(icons).trigger({
+                            'type': 'clickIcon',
+                            'weight': (this.id * 1 + 1)
+                        });
+                    }
+                }).appendTo($(icons));
+            }
+
+
+            function _setValue(value) {
+                _value = value;
+                var cls = CHECKED_CSS_CLASS;
+                $(icons).find('.weight-icon').each(function () {
+                    var $value = $(this).html() * 1;
+                    if ($value <= value * 1) {
+                        $(this).addClass(cls);
+                    } else {
+                        $(this).removeClass(cls);
+                    }
+                });
+                me.weight = _value;
+            }
+
+            var $textbox = jQuery('<input/>', {
+                'type': 'text',
+                'class': 'default question-weight-textbox'
+            }).bind({
+                'change': function () {
+                    var value = Math.min(Math.max(MIN_WEIGHT, $(this).val() * 1), MAX_WEIGHT);
+                    $(this).val(value);
+                    $(icons).trigger({
+                        'type': 'changeValue',
+                        'weight': value
+                    });
+                }
+            }).on({
+                'focus': function (e) {
+                    this.select();
+                }
+            })
+            .val(_value)
+            .appendTo(jQuery('<span/>').
                 bind({
                     'click': function () {
-                        me.weight = this.innerHTML * 1;
-                        _renderIcons();
+                        $($textbox).focus();
                     }
-                }).appendTo($(_container));
-            }
+                }).appendTo($(_container)));
 
-            function _renderIcons() {
-                $(".weight-panel").find(".weight-icon").each(
-                    function (key, value) {
-                        var i = this.innerHTML * 1;
-                        if (i <= me.weight) {
-                            $(this).addClass(CHECKED_CSS_CLASS);
-                        } else {
-                            $(this).removeClass(CHECKED_CSS_CLASS);
-                        }
-                    }
-                );
-            }
+            _setValue(_value);
 
-            return _panel;
+            return _container;
 
         }
 
         function categoriesPanel(){
-            $value = jQuery('<input/>', {
-                'class': 'field default',
-                'type': 'text'
-            })
-            .val(me.categoriesString());
+            $value = jQuery('<div/>', {
+                'class': 'categories',
+                'html': me.categoriesString()
+            });
 
             me.events.bind({
                 'changeCategory' : function(){
@@ -573,25 +626,37 @@ function Question(data, properties) {
         }
 
         function categoriesEditButton(){
-            var $button = jQuery('<div/>', {
+            var $button = jQuery('<input/>', {
                 'class': 'expand-button',
-                html: '...'
+                'type': 'submit',
+                'value': '...'
             }).
             bind({
                 'click': function () {
-                    categoriesTree.reset();
-                    categoriesTree.bind({
-                        'confirm': function (e) {
-                            me.events.trigger({
-                                'type': 'changeCategory',
-                                'items': e.items
-                            });
-                        }
-                    });
-                    categoriesTree.show();
+                    selectCategories()
                 }
             });
             return $button;
+        }
+
+        function selectCategories() {
+            categoriesTree.reset();
+            categoriesTree.hide();
+            categoriesTree.bind({
+                'confirm': function (e) {
+                    me.events.trigger({
+                        'type': 'changeCategory',
+                        'items': e.items
+                    });
+                }
+            });
+            categoriesTree.show();
+        }
+
+        return {
+            focusName: function () {
+                nameLine.focus();
+            }
         }
 
     })();
@@ -787,8 +852,8 @@ function Language(properties) {
                             var option = e.option;
                             option.id = e.name;
                             option.update(e.name, e.weight);
-                            option.draw();
                             me.options.setItem(option.id, option);
+                            option.draw();
                         }
                     });
                     editPanel.display();
@@ -1034,7 +1099,7 @@ var nameChecker = (function () {
         var name = params.value;
         var id = params.id;
 
-        if (!name) {
+        if (!name.trim()) {
             return MessageBundle.get(dict.NameCannotBeEmpty);
         } else if (name.length > MAX_LENGTH) {
             return MessageBundle.get(dict.NameCannotBeLongerThan, [MAX_LENGTH]);
@@ -1421,7 +1486,7 @@ function EditPanel(properties) {
     }
 
     function isValidName(name) {
-        if (name.length === 0) {
+        if (name.trim().length === 0) {
             return MessageBundle.get(dict.NameCannotBeEmpty);
         } else if (!me.option.isUniqueContent(name)) {
             return MessageBundle.get(dict.NameAlreadyExists);

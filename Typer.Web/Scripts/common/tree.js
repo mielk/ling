@@ -825,6 +825,8 @@ TreeView.prototype.bind = function (e) {
 }
 TreeView.prototype.hide = function () {
 
+    this.visible = false;
+
     if (this.background) {
         $(this.background).css({
             'display': 'none'
