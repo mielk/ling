@@ -29,9 +29,9 @@ namespace Typer.Web
             bundles.Add(new ScriptBundle("~/bundles/registration").Include(
                         "~/Scripts/authentication/register.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/edit").Include(
-                                    "~/Scripts/question/edit.js",
-                                    "~/Scripts/question/editOptions.js"));
+            //bundles.Add(new ScriptBundle("~/bundles/edit").Include(
+            //                        "~/Scripts/question/edit.js",
+            //                        "~/Scripts/question/editOptions.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/test").Include(
                                     "~/Scripts/test/test.js"));
@@ -48,6 +48,9 @@ namespace Typer.Web
             bundles.Add(new ScriptBundle("~/bundles/question").Include(
                                     "~/Scripts/question/question.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/words").Include(
+                                    "~/Scripts/question/word.js"));
+
             // Use the development version of Modernizr to develop with and learn from. Then, when you're
             // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
@@ -61,17 +64,18 @@ namespace Typer.Web
                         "~/Content/normalize.css",
                         "~/Content/tree.css"));
 
+            bundles.Add(new StyleBundle("~/Content/word").Include(
+                        "~/Content/normalize.css",
+                        "~/Content/words.css"));
+
             bundles.Add(new StyleBundle("~/Content/dropdown").Include(
                                     "~/Content/normalize.css",
                                     "~/Content/dropdown.css"));
 
             bundles.Add(new StyleBundle("~/Content/question").Include(
                                     "~/Content/normalize.css",
+                                    "~/Content/edit.css",
                                     "~/Content/question.css"));
-
-            bundles.Add(new StyleBundle("~/Content/edit").Include(
-                        "~/Content/normalize.css",
-                        "~/Content/edit.css"));
 
             bundles.Add(new StyleBundle("~/Content/test").Include(
                         "~/Content/normalize.css",

@@ -35,6 +35,7 @@ var categoriesTree = categoriesTree || new TreeView({
 
 
 $(function () {
+
     $('.edit-question').bind({
         'click': function () {
             var id = Number(this.innerHTML);
@@ -43,6 +44,23 @@ $(function () {
             }
         }
     });
+
+    $('#add-question').bind({
+        'click': function () {
+
+            var question = new Question({
+                Question: {},
+                Categories: [],
+                UserLanguages: getLanguages()
+            }, {
+                blockOtherElements: true
+            });
+
+            question.ui.display();
+
+        }
+    });
+
 
     //var questionJSON = getQuestion(1);
     //var question = new Question(questionJSON, {
@@ -60,7 +78,6 @@ function editQuestion(id) {
                     });
     question.displayEditForm();
 }
-
 
 function getQuestion(questionId) {
     var question;
@@ -83,12 +100,41 @@ function getQuestion(questionId) {
 
 }
 
+function getLanguages() {
+    var _languages;
+
+    $.ajax({
+        url: "/Questions/GetLanguages",
+        type: "GET",
+        datatype: "json",
+        async: false,
+        success: function (result) {
+            _languages = result;
+        },
+        error: function (msg) {
+            alert(msg.status + " | " + msg.statusText);
+        }
+    });
+
+    var languages = [];
+    for (var i = 0; i < _languages.length; i++){
+        var language = _languages[i];
+        languages[i] = {
+            Language: language,
+            Options: []
+        }
+    }
+
+    return languages;
+
+}
+
 
 function Question(data, properties) {
     var me = this;
-    this.id = data.Question.Id;
-    this.name = data.Question.Name;
-    this.weight = data.Question.Weight;
+    this.id = data.Question.Id || 0;
+    this.name = data.Question.Name || '';
+    this.weight = data.Question.Weight || 1;
     this.categories = [];
     this.categoriesString = function () {
         var s = '';

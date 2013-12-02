@@ -1,0 +1,32 @@
+﻿@model Typer.Domain.Entities.Metaword
+
+<div class="word @(Model.IsActive ? "active" : "inactive")">
+    <div class="id">@Model.Id</div>
+    <div class="name">@Model.Name</div>
+    <div class="weight">
+        @for (int i = 0; i < Model.Weight; i++)
+        {
+            @Html.ActionLink(" ", "UpdateWeight", "Words", new { id = Model.Id, weight = i + 1 }, new { @class = "weight checked" });
+        }
+
+        @for (int i = Model.Weight; i < 10; i++)
+        {
+            @Html.ActionLink(" ", "UpdateWeight", "Words", new { id = Model.Id, weight = i + 1 }, new { @class = "weight" });
+        }
+    </div>
+    <div class="type">@Model.Type.ToString()</div>
+
+
+    <div class="categories">Categories</div>
+
+    <div class="edit-word">@Model.Id</div>
+
+    @if (Model.IsActive)
+    {
+        @Html.ActionLink("Deactivate", "Deactivate", "Words", new { id = Model.Id }, null);
+    } else {
+        @Html.ActionLink("Activate", "Activate", "Words", new { id = Model.Id }, null);
+    }
+
+
+</div>

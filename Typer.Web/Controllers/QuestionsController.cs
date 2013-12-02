@@ -13,6 +13,7 @@ namespace Typer.Web.Controllers
     public class QuestionsController : Controller
     {
 
+        private ILanguageService languageService = LanguageServicesFactory.Instance().getService();
         private readonly IQuestionService service;
         public int PageSize = 10;
         private RedirectResult navigationPoint
@@ -65,87 +66,6 @@ namespace Typer.Web.Controllers
         }
 
 
-
-        [HttpGet]
-        [AllowAnonymous]
-        public ActionResult Edit(int id)
-        {
-
-            setNavigationPoint();
-
-            Question question = service.getQuestion(id);
-            IEnumerable<QuestionOption> options = question.Options;
-            User user = (User)HttpContext.Session[Typer.Domain.Entities.User.SESSION_KEY];
-
-            if (user == null || user.UserID == 0)
-                user = new User(){ Username = "test", UserID = 1 };
-
-            QuestionEditViewModel questionViewModel = new QuestionEditViewModel(question, user);
-
-
-            if (questionViewModel != null && questionViewModel.isValid())
-            {
-                return View(questionViewModel);
-            } else {
-                return Redirect(Request.Url.ToString());
-            }
-            
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        public ActionResult Edit(QuestionEditViewModel questionViewModel)
-        {
-
-            //Zapisuje zmiany w pytaniu do bazy.
-            Question question = questionViewModel.Question;
-            User user = (User)HttpContext.Session[Typer.Domain.Entities.User.SESSION_KEY];
-
-            if (question.Id == 0)
-            {
-                question.IsActive = true;
-                question.CreatorId = user.UserID;
-                question.CreateDate = DateTime.Now;
-                service.addQuestion(question);
-            }
-            else
-            {
-                service.updateQuestion(question);
-            }
-
-            return NavigateToHomePage();
-
-        }
-
-
-
-
-
-        [HttpGet]
-        [AllowAnonymous]
-        public ActionResult Add()
-        {
-            setNavigationPoint();
-
-            Question question = new Question();
-            User user = (User)HttpContext.Session[Typer.Domain.Entities.User.SESSION_KEY];
-
-            if (user == null || user.UserID == 0)
-                user = new User() { Username = "test", UserID = 1 };
-
-            QuestionEditViewModel questionViewModel = new QuestionEditViewModel(question, user);
-
-
-            if (questionViewModel != null)
-            {
-                return View("Edit", questionViewModel);
-            }
-            else
-            {
-                return Redirect(Request.Url.ToString());
-            }
-
-        }
 
 
         [AllowAnonymous]
@@ -209,17 +129,16 @@ namespace Typer.Web.Controllers
         }
 
 
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult GetLanguages()
+        {
+            User user = (User) HttpContext.Session[Typer.Domain.Entities.User.SESSION_KEY];
+            IEnumerable<Language> languages = languageService.getUserLanguages(1);//user.UserID);
+            return Json(languages, JsonRequestBehavior.AllowGet);
 
-        //[HttpPost]
-        //[AllowAnonymous]
-        //public ActionResult GetQuestion(int id)
-        //{
-
-        //    QuestionViewModel question = new QuestionViewModel() { Id = 1, Name = "abc", Weight = 8, CreatorId = 1, CreatorName = "xyz", CreateDate = new DateTime(2013, 10, 25) };
-        //    return Json(question, JsonRequestBehavior.AllowGet);
-
-        //}
-
+        }
+        
 
     }
 }

@@ -146,6 +146,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Binders\UserModelBinder.cs" />
+    <Compile Include="Controllers\CategoriesController.cs" />
     <Compile Include="Controllers\QuestionsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
@@ -155,10 +156,12 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="HtmlHelpers\PagingHelpers.cs" />
+    <Compile Include="Models\MetawordLanguageViewModel.cs" />
+    <Compile Include="Models\MetawordViewModel.cs" />
+    <Compile Include="Models\QuestionLanguageViewModel.cs" />
+    <Compile Include="Models\MetawordsListViewModel.cs" />
     <Compile Include="Models\QuestionViewModel.cs" />
     <Compile Include="Models\PagingInfo.cs" />
-    <Compile Include="Models\QuestionEditViewModel.cs" />
-    <Compile Include="Models\QuestionLanguageViewModel.cs" />
     <Compile Include="Models\QuestionsListViewModel.cs" />
     <Compile Include="Models\TestQuestionViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -247,7 +250,6 @@
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\common\dropdown.js" />
     <Content Include="Scripts\jquery.sizes.js" />
-    <Content Include="Scripts\question\edit.js" />
     <Content Include="Scripts\app\global.js" />
     <Content Include="Scripts\authentication\register.js" />
     <Content Include="Scripts\authentication\mailValidation.js" />
@@ -308,7 +310,9 @@
     <Content Include="Views\Questions\List.cshtml" />
     <Content Include="Views\Questions\Question.cshtml" />
     <Content Include="Views\Test\Index2.cshtml" />
-    <Content Include="Views\Words\Index.cshtml" />
+    <Content Include="Views\Categories\Index.cshtml" />
+    <Content Include="Views\Words\List.cshtml" />
+    <Content Include="Views\Words\Metaword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

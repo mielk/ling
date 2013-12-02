@@ -112,7 +112,7 @@ div.node-container
     width: 100%;
 }
 
-div.line
+div.tree-line
 {
     width: 100%;
     padding: 4px 0px 0px 22px;
@@ -129,7 +129,7 @@ div.children-container
     overflow: visible;
 }
 
-.line .icon
+.tree-line .icon
 {
     width: 16px;
     height: 16px;
@@ -141,7 +141,7 @@ div.children-container
     cursor: pointer;
 }
 
-.line .caption
+.tree-line .caption
 {
     width: auto;
     height: 16px;
@@ -153,13 +153,13 @@ div.children-container
     cursor: pointer;
 }
 
-.line .caption:hover
+.tree-line .caption:hover
 {
     border: 1px dotted #444 ;
     background-color: rgba(0, 255, 0, 0.4);
 }
 
-.line .drop-area
+.tree-line .drop-area
 {
     border: 1px dotted #444;
     background-color: rgba(0, 255, 0, 0.4);
@@ -190,7 +190,7 @@ div.children-container
 }
 
 
-.children-container .node-container .line {
+.children-container .node-container .tree-line {
     background-image: url('images/node.png') !important;
     background-repeat: no-repeat;
     background-position: 0px 0px;
@@ -205,7 +205,7 @@ div.children-container
     background-image: none !important;
 }
 
-.children-container .node-container:last-child > .line {
+.children-container .node-container:last-child > .tree-line {
     background-image: url('images/last_node.png') !important;
     background-repeat: no-repeat;
 }

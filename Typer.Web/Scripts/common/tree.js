@@ -890,7 +890,7 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
 
     this.line = jQuery('<div/>', {
         id: key,
-        'class': 'line'
+        'class': 'tree-line'
     }).appendTo(this.mainContainer);
 
     this.container = jQuery('<div/>', {

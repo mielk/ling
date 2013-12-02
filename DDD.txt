@@ -1,2 +1,42 @@
 http://www.infoq.com/minibooks/domain-driven-design-quickly
 http://blog.fedecarg.com/2009/03/11/domain-driven-design-and-mvc-architectures/
+
+
+
+CREATE TABLE [dbo].[Metawords] (
+    [Id]         INT            IDENTITY (1, 1) NOT NULL,
+    [Name]       NVARCHAR (255) NOT NULL,
+    [Type]       INT            NOT NULL,
+    [Weight]     INT            DEFAULT ((1)) NOT NULL,
+    [IsActive]   BIT            DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT            NOT NULL,
+    [CreateDate] DATETIME       DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT            DEFAULT ((0)) NOT NULL,
+    [Positive]   INT            DEFAULT ((0)) NOT NULL,
+    [Negative]   INT            DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    UNIQUE NONCLUSTERED ([Name] ASC),
+    CONSTRAINT [FK_WordType] FOREIGN KEY ([Type]) REFERENCES [dbo].[WordTypes] ([Id]),
+    CONSTRAINT [Check_Metaword_Weight] CHECK ([Weight]>(0) AND [Weight]<=(10))
+);
+
+
+CREATE TABLE [dbo].[Words] (
+    [Id]         INT            IDENTITY (1, 1) NOT NULL,
+    [MetawordId] INT            NOT NULL,
+    [LanguageId] INT            NOT NULL,
+    [Name]       NVARCHAR (255) NOT NULL,
+	[Weight]     INT           DEFAULT ((1)) NOT NULL,
+    [IsActive]   BIT            DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT            NOT NULL,
+    [CreateDate] DATETIME       DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT            DEFAULT ((0)) NOT NULL,
+    [Positive]   INT            DEFAULT ((0)) NOT NULL,
+    [Negative]   INT            DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [Word_Unique_Content] UNIQUE NONCLUSTERED ([MetawordId] ASC, [Name] ASC, [LanguageId] ASC),
+	CONSTRAINT [Check_Word_Weight] CHECK ([Weight]>(0) AND [Weight]<=(10)),
+    FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id]),
+    FOREIGN KEY ([MetawordId]) REFERENCES [dbo].[Metawords] ([Id])
+);
+

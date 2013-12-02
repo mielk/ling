@@ -1,36 +1,40 @@
-﻿@model Typer.Web.Models.QuestionsListViewModel
+﻿@model Typer.Web.Models.MetawordsListViewModel
 
 @{
     ViewBag.Title = "List";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    @Styles.Render("~/Content/word")
     @Styles.Render("~/Content/tree")
     @Styles.Render("~/Content/dropdown")
-    @Styles.Render("~/Content/question")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/global")
+    @Scripts.Render("~/bundles/word")
     @Scripts.Render("~/bundles/tree")
     @Scripts.Render("~/bundles/dropdown")
-    @Scripts.Render("~/bundles/question")
 }
 
+@*<div id="filter-panel">
 
-<div class="question header">
+</div>*@
+
+<div class="word header">
     <div class="id">Id</div>
     <div class="name">Name</div>
     <div class="weight">Weight</div>
+    <div class="type">Type</div>
     <div class="categories">Categories</div>
 </div>
 
 
-@foreach (var q in Model.Questions) {
-    Html.RenderPartial("Question", q);
+@foreach (var m in Model.Metawords) {
+    Html.RenderPartial("Metaword", m);
 }
 
 
 <div id="add-button-container">
-    <a id="add-question" class="add">Add</a> 
+    @Html.ActionLink("Add", "Add", "Metawords", new { @class = "add" })
 </div>
 
 
