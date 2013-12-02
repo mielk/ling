@@ -3,6 +3,16 @@
     -moz-box-sizing: border-box !important;
     -webkit-box-sizing: border-box !important;
     box-sizing: border-box !important;
+    outline-width: 0px !important;
+    outline-style: none !important;
+    outline-color: invert !important;
+}
+
+*:focus
+{
+    outline-width: 1px !important;
+    outline-style: dotted !important;
+    outline-color: invert !important;
 }
 
 
@@ -704,9 +714,6 @@ span.complex
     font-size: 17px;
     font-weight: bold;
     box-shadow: 1px 1px 0px 0px rgba(255,255,255,0.25);
-    outline-width: 0px;
-    outline-style: none;
-    outline-color: invert;
 }
 
 
