@@ -18,9 +18,7 @@
 
     <div class="categories">Categories</div>
 
-    @*<div class="edit-question">@Model.Id</div>*@
-
-    @Html.ActionLink("Edit", "Edit", "Questions", new { id = Model.Id }, null)
+    <div class="edit-question">@Model.Id</div>
 
     @if (Model.IsActive)
     {
@@ -31,88 +29,3 @@
 
 
 </div>
-
-
-
-
-
-
-<div class="container">
-    <div class="vert-center edit-panel">
-        
-    <form action="/Questions/Edit/1" method="post">        
-        <fieldset>
-   
-
-<div id="languages_panel">
-
-        <div class="language" data-value="polski">
-
-
-
-            <div class="options">
-                <div id="1" class="option">
-                    <div class="button delete" title="Delete this option"></div>
-                    <div class="button edit" title="Edit this option"></div>
-                    <div class="content" data-value="a(b/c)">
-                        <span class="plain">a(b/c)</span>
-                    </div>
-                    <div class="weight" data-value="9">9</div>
-                </div>
-                
-                <div id="2" class="option">
-                    <div class="button delete" title="Delete this option"></div>
-                    <div class="button edit" title="Edit this option"></div>
-                    <div class="content" data-value="b(d/e) [option]">
-                        <span class="plain">b(d/e) </span><span class="complex">option</span>
-                    </div>
-                    <div class="weight" data-value="8">8</div>
-                </div>    
-
-            </div>
-
-
-
-
-</div>
-                
-                
-                <div class="language" data-value="angielski">
-
-    <div class="info">
-        <div class="collapse"></div>
-        <div class="flag"></div>
-        <div class="name"></div>
-    </div>
-
-    <div class="options">
-<div id="3" class="option">
-    <div class="button delete" title="Delete this option"></div>
-    <div class="button edit" title="Edit this option"></div>
-    <div class="content" data-value="x">
-        <span class="plain">x</span>
-    </div>
-    <div class="weight" data-value="10">10</div>
-</div>    </div>
-
-    <div class="buttons">
-        <div id="add_angielski" class="button add">Add</div>
-    </div>
-
-
-
-</div>
-            </div>
-
-
-
-        </fieldset>
-    </form>        
-    </div>
-</div>
-        <script src="/Scripts/jquery-1.7.1.js"></script>
-
-        
-
-    </body>
-</html>

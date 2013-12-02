@@ -247,9 +247,7 @@
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\common\dropdown.js" />
     <Content Include="Scripts\jquery.sizes.js" />
-    <Content Include="Scripts\question\Copy of editOptions.js" />
     <Content Include="Scripts\question\edit.js" />
-    <Content Include="Scripts\question\editOptions.js" />
     <Content Include="Scripts\app\global.js" />
     <Content Include="Scripts\authentication\register.js" />
     <Content Include="Scripts\authentication\mailValidation.js" />
@@ -309,9 +307,6 @@
     <Content Include="Views\Test\Index.cshtml" />
     <Content Include="Views\Questions\List.cshtml" />
     <Content Include="Views\Questions\Question.cshtml" />
-    <Content Include="Views\Questions\Edit.cshtml" />
-    <Content Include="Views\Questions\EditLanguage.cshtml" />
-    <Content Include="Views\Questions\OptionLine.cshtml" />
     <Content Include="Views\Test\Index2.cshtml" />
     <Content Include="Views\Words\Index.cshtml" />
   </ItemGroup>

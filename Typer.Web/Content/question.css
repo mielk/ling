@@ -551,7 +551,8 @@ span.plain
 span.complex
 {
     border: 1px solid rgb(161, 144, 0);
-    padding: 5px;
+    padding: 5px 3px;
+    margin: 0px 2px;
     line-height: 12px;
     font-size: 12px;
     background-color: rgb(255, 240, 182);

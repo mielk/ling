@@ -44,11 +44,11 @@ $(function () {
         }
     });
 
-    var questionJSON = getQuestion(1);
-    var question = new Question(questionJSON, {
-                            blockOtherElements: true
-                        });
-    question.displayEditForm();
+    //var questionJSON = getQuestion(1);
+    //var question = new Question(questionJSON, {
+    //                        blockOtherElements: true
+    //                    });
+    //question.displayEditForm();
 
 });
 
@@ -766,11 +766,15 @@ function Language(properties) {
 
         function _expand() {
             isCollapsed = false;
-            $($options).css({
-                'display': 'block'
-            });
+            _refreshOptionsPanel();
             $($buttons).css({
                 'display': 'block'
+            });
+        }
+
+        function _refreshOptionsPanel() {
+            $($options).css({
+                'display': (me.options.size() === 0 ? 'none' : 'block')
             });
         }
 
@@ -794,16 +798,14 @@ function Language(properties) {
 
             },
             refreshOptionsPanel: function () {
-                $($options).css({
-                    'display' : (me.options.size() === 0 ? 'none' : 'block')
-                });
+                _refreshOptionsPanel();
             }
         }
 
     })();
 
     this.options = createOptionsSet(properties.options);
-
+    this.gui.refreshOptionsPanel();
 
     //=========================================
     function createOptionsSet(options) {
@@ -830,15 +832,6 @@ Language.prototype.removeOption = function (option) {
     this.options.removeItem(option.id);
     this.gui.refreshOptionsPanel();
 }
-Language.prototype.createOption = function (_id, content, weight) {
-    //var container = jQuery('<div/>', {
-    //    id: _id,
-    //    'class': 'option',
-    //    html: optionToHtml(_id, content, weight)
-    //}).appendTo($(this.container).find('.options')[0]);
-    //var option = new Option(container, this);
-    //this.options.setItem(_id, option);
-}
 Language.prototype.isUnique = function (content, optionId) {
     var unique = true;
     this.options.each(function (key, option) {
@@ -851,20 +844,6 @@ Language.prototype.isUnique = function (content, optionId) {
     return unique;
 }
 
-
-//function Language(properties) {
-
-//    $(this.container).find('.option').each(function (i, obj) {
-//        var option = new Option(obj, me);
-//        var name = option.getName();
-//        me.options.setItem(name, option);
-//        if (name * 1 > me.optionNum) {
-//            me.optionNum = name;
-//        }
-//    });
-
-
-//}
 
 
 
