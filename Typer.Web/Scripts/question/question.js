@@ -250,6 +250,30 @@ function Question(data, properties) {
 
     })();
 
+    this.validator = (function () {
+        var _invalid = new HashTable(null);
+
+        me.events.bind({
+            'validation': function (e) {
+                if (e.status) {
+                    _invalid.removeItem(e.id);
+                } else {
+                    _invalid.setItem(e.id, e.id);
+                }
+                _checkState();
+            }
+        });
+
+        function _checkState() {
+            if (_invalid.size()) {
+                me.buttons.disable();
+            } else {
+                me.buttons.enable();
+            }
+        }
+
+    })();
+
     this.meta = (function () {
 
         var _container = jQuery('<div/>', {
@@ -438,13 +462,6 @@ function Question(data, properties) {
             function _getValue() {
                 return $($value).val();
             }
-
-
-            (function () {
-                if ($validation) {
-                    _validate();
-                }
-            })();
 
 
             return {
@@ -661,34 +678,17 @@ function Question(data, properties) {
             });
             tree.show();
         }
+        
+        function _validate() {
+            nameLine.validate();
+        }
 
         return {
             focusName: function () {
                 nameLine.focus();
-            }
-        }
-
-    })();
-
-    this.validator = (function () {
-        var _invalid = new HashTable(null);
-
-        me.events.bind({
-            'validation': function (e) {
-                if (e.status) {
-                    _invalid.removeItem(e.id);
-                } else {
-                    _invalid.setItem(e.id, e.id);
-                }
-                _checkState();
-            }
-        });
-
-        function _checkState() {
-            if (_invalid.size()) {
-                me.buttons.disable();
-            } else {
-                me.buttons.enable();
+            },
+            validate: function () {
+                _validate();
             }
         }
 
@@ -760,6 +760,12 @@ function Question(data, properties) {
     })();
 
     //==============================================
+
+
+    (function () {
+        me.meta.validate();
+    })();
+
 
     function createLanguageCollection(languages) {
         var arr = [];
