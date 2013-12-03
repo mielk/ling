@@ -40,3 +40,34 @@ CREATE TABLE [dbo].[Words] (
     FOREIGN KEY ([MetawordId]) REFERENCES [dbo].[Metawords] ([Id])
 );
 
+
+CREATE TABLE [dbo].[MatchWordCategory] (
+    [Id]         INT      IDENTITY (1, 1) NOT NULL,
+    [MetawordId] INT      NOT NULL,
+    [CategoryId] INT      NOT NULL,
+    [IsActive]   BIT      DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT      NOT NULL,
+    [CreateDate] DATETIME DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT      DEFAULT ((0)) NOT NULL,
+    [Positive]   INT      DEFAULT ((0)) NOT NULL,
+    [Negative]   INT      DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([MetawordId]) REFERENCES [dbo].[Metawords] ([Id]),
+	FOREIGN KEY ([CategoryId]) REFERENCES [dbo].[Categories] ([Id])
+);
+
+
+CREATE TABLE [dbo].[MatchQuestionCategory] (
+    [Id]         INT      IDENTITY (1, 1) NOT NULL,
+    [QuestionId] INT      NOT NULL,
+    [CategoryId] INT      NOT NULL,
+    [IsActive]   BIT      DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT      NOT NULL,
+    [CreateDate] DATETIME DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT      DEFAULT ((0)) NOT NULL,
+    [Positive]   INT      DEFAULT ((0)) NOT NULL,
+    [Negative]   INT      DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([QuestionId]) REFERENCES [dbo].[Questions] ([Id]),
+	FOREIGN KEY ([CategoryId]) REFERENCES [dbo].[Categories] ([Id]),
+);
