@@ -248,6 +248,7 @@
     <Content Include="Content\site.css" />
     <Compile Include="App_Start\NinjectWebCommon.Bindings.cs" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
+    <Content Include="Scripts\categories\categories.js" />
     <Content Include="Scripts\common\dropdown.js" />
     <Content Include="Scripts\jquery.sizes.js" />
     <Content Include="Scripts\app\global.js" />

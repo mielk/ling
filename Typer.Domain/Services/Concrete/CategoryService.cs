@@ -65,13 +65,12 @@ namespace Typer.Domain.Services
 
                     foreach (Category category in categories)
                     {
-                        if (category.ParentId != null)
+                        if (category.ParentId > 0)
                         {
-                            int parentId = (int)category.ParentId;
                             Category parent;
-                            if (categoriesMap.TryGetValue(parentId, out parent))
+                            if (categoriesMap.TryGetValue(category.ParentId, out parent))
                             {
-                                category.Parent = parent;
+                                category.setParent(parent);
                                 parent.addChild(category);
                             }
                         }
@@ -132,13 +131,7 @@ namespace Typer.Domain.Services
 
         private static Category categoryFromDto(CategoryDto dto)
         {
-            return new Category()
-            {
-                Id = dto.Id,
-                IsActive = dto.IsActive,
-                Name = dto.Name,
-                ParentId = dto.ParentId
-            };
+            return new Category(dto.Id, dto.Name, dto.ParentId){ IsActive = dto.IsActive };
         }
 
         private static CategoryDto categoryToDto(Category category)

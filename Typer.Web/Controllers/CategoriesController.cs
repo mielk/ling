@@ -13,9 +13,16 @@ namespace Typer.Web.Controllers
 
         private readonly ICategoryService service;
 
+
+        public CategoriesController(ICategoryService service)
+        {
+            this.service = service;
+        }
+
         //
         // GET: /Categories/
 
+        [AllowAnonymous]
         public ActionResult Index()
         {
             return View();
