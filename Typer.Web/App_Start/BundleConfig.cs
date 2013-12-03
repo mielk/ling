@@ -19,6 +19,10 @@ namespace Typer.Web
                         "~/Scripts/jquery.validate*"));
 
             bundles.Add(new ScriptBundle("~/bundles/global").Include(
+                        "~/Scripts/noty/jquery.noty.js",
+                        "~/Scripts/noty/promise.js",
+                        "~/Scripts/noty/themes/default.js",
+                        "~/Scripts/noty/layouts/bottomRight.js",
                         "~/Scripts/jquery.sizes.js",
                         "~/Scripts/common/util.js",
                         "~/Scripts/app/global.js"));
