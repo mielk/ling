@@ -10,8 +10,21 @@ namespace Typer.Domain.Entities
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int ParentId { get; set; }
-        public Category? Parent { get; set; }
+        public int? ParentId { get; set; }
+        public Category Parent { get; set; }
         public IEnumerable<Category> children { get; set; }
+        public bool IsActive { get; set; }
+
+
+        public Category()
+        {
+            children = new List<Category>();
+        }
+
+        public void addChild(Category child)
+        {
+            ((List<Category>)children).Add(child);
+        }
+
     }
 }

@@ -15,6 +15,7 @@ namespace Typer.DAL.Infrastructure
         public DbSet<QuestionOptionDto> QuestionOptions { get; set; }
         public DbSet<MetawordDto> Metawords { get; set; }
         public DbSet<WordDto> Words { get; set; }
+        public DbSet<CategoryDto> Categories { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -25,6 +26,7 @@ namespace Typer.DAL.Infrastructure
             modelBuilder.Entity<QuestionOptionDto>().ToTable("QuestionOptions");
             modelBuilder.Entity<MetawordDto>().ToTable("Metawords");
             modelBuilder.Entity<WordDto>().ToTable("Words");
+            modelBuilder.Entity<CategoryDto>().ToTable("Categories");
         }
 
 

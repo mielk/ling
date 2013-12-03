@@ -9,6 +9,7 @@ namespace Typer.DAL.Infrastructure
         private static readonly IQuestionsRepository questionsRepository;
         private static readonly ILanguageRepository languageRepository;
         private static readonly IWordsRepository wordsRepository;
+        private static readonly ICategoryRepository categoryRepository;
 
         static RepositoryFactory()
         {
@@ -16,6 +17,7 @@ namespace Typer.DAL.Infrastructure
             questionsRepository = new EFQuestionsRepository();
             languageRepository = new EFLanguageRepository();
             wordsRepository = new EFWordsRepository();
+            categoryRepository = new EFCategoriesRepository();
         }
 
 
@@ -37,6 +39,11 @@ namespace Typer.DAL.Infrastructure
         public static IWordsRepository getWordsRepository()
         {
             return wordsRepository;
+        }
+
+        public static ICategoryRepository getCategoryRepository()
+        {
+            return categoryRepository;
         }
 
     }
