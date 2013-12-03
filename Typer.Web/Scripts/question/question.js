@@ -322,7 +322,12 @@ function Question(data, properties) {
                     })
                     .bind({
                         'keydown': function (e) {
-                            e.stopPropagation();
+                            if (e.which === 13) {
+                                /* Jeżeli to nie jest ustawione, w IE 9 focus przeskakuje od razu
+                                 * na przycisk [Select categories] i wywołuje jego kliknięcie. */
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }
                         },
                         'keyup': function () {
                             if ($timer) {
@@ -635,7 +640,7 @@ function Question(data, properties) {
                 'type': 'submit',
                 'value': '...'
             }).on({
-                'click': function () {
+                'click': function (e) {
                     selectCategories()
                 }
             });
@@ -839,9 +844,10 @@ function Language(properties) {
                 'class': 'buttons'
             }).appendTo($($container));
 
-            var $add = jQuery('<div/>', {
+            var $add = jQuery('<input/>', {
                 'class': 'button add',
-                html: 'Add'
+                'type': 'submit',
+                'value': 'Add'
             }).
             bind({
                 'click': function () {
