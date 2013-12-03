@@ -7,13 +7,15 @@
         @Styles.Render("~/Content/css")
         @Styles.Render("~/Content/user")
         @Scripts.Render("~/bundles/modernizr")
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/notify")
     </head>
     <body>
 
         @{Html.RenderAction("Summary", "Login");}
 
         @RenderBody()
-        @Scripts.Render("~/bundles/jquery")
+        
         @RenderSection("scripts", required: false)
 
     </body>
