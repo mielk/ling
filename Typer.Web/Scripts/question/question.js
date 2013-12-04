@@ -151,7 +151,7 @@ function Question(data, properties) {
     this.ui = (function () {
         var _background;
         if (me.properties.blockOtherElements) {
-            _background = jQuery('<div/>', {
+            _background = properties.container || jQuery('<div/>', {
                 id: 'question-background',
                 'class': 'question-background'
             }).

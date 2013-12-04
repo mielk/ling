@@ -1,5 +1,5 @@
 ﻿my.categories = my.categories || {
-    root : getRoot()
+    root: getRoot()
 }
 
 function getRoot(){
@@ -18,10 +18,60 @@ function getRoot(){
         }
     });
 
-    return root;
+    return categoryToTreeItem(root);
 
 }
 
+
+function categoryToTreeItem(category) {
+
+    var children = [];
+    for (var i = 0; i < category.children.length; i++) {
+        children[i] = categoryToTreeItem(category.children[i]);
+    }
+
+    return {
+        key: category.Id,
+        caption: category.Name,
+        expanded: true,
+        items: children
+    }
+
+}
+
+
+
 $(function () {
-    $.notify('text');
+
+    var treeProperties = {
+        'mode': MODE.SINGLE,
+        'data': my.categories.root.items,
+        'blockOtherElements': false,
+        'showSelection': false,
+        'hidden': false,
+        'container': $('#categories-tree')[0]
+    };
+
+    my.categories.tree = new TreeView(treeProperties);
+
+    my.categories.tree.bind({
+        newNode: function (e) {
+            $.notify('New node created | Name: ' + e.node.caption + ' | Parent: ' + e.parentId);
+        },
+        'delete': function (e) {
+            $.notify('Node ' + e.node.caption + ' has been removed');
+        },
+        rename: function (e) {
+            $.notify('Node ' + e.prevName + ' changed name to ' + e.node.name);
+        },
+        transfer: function (e) {
+            $.notify('Node ' + e.node.name + ' has been moved to ' + e.to.name);
+        }
+    });
+
+    //newNode: [node], [parentId]
+    //delete: [node]
+    //rename: [node], [name]
+    //tranfer: [node], [to]
+    
 });

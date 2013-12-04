@@ -1,6 +1,9 @@
 ﻿@{
     ViewBag.Title = "Index";
     //@Scripts.Render("~/bundles/jquery")
+    @Styles.Render("~/Content/categories")
+    @Styles.Render("~/Content/tree")
+    @Styles.Render("~/Content/dropdown")
     @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/global")
@@ -9,4 +12,8 @@
     @Scripts.Render("~/bundles/categories")
 }
 
-<h2>Categories</h2>
+<div id="categories-tree" class="col scroll-y"></div>
+<div id="category-details" class="col">
+    <div id="category-options" class="options row"></div>
+    <div id="category-items" class="items row scroll-y"></div>
+</div>

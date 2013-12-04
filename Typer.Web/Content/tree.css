@@ -84,7 +84,7 @@
 input.tree-button
 {
     display: block;
-    float: left;
+    float: left !important;
     width: 46%;
     height: 30px;
     padding: 6px;

@@ -62,6 +62,9 @@ namespace Typer.Web
                         "~/Content/normalize.css",
                         "~/Content/site.css"));
 
+            bundles.Add(new StyleBundle("~/Content/categories").Include(
+                                    "~/Content/categories.css"));
+
             bundles.Add(new StyleBundle("~/Content/tree").Include(
                         "~/Content/normalize.css",
                         "~/Content/tree.css"));

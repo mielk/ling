@@ -1,0 +1,42 @@
+﻿#categories-tree
+{
+    -moz-box-sizing: border-box !important;
+    -webkit-box-sizing: border-box !important;
+    box-sizing: border-box !important;
+    float: left;
+    width: 50%;
+    padding: 6px;
+    top: 40px !important;
+    border-right: 1px solid rgb(210,210,210);
+}
+
+#category-details
+{
+    -moz-box-sizing: border-box !important;
+    -webkit-box-sizing: border-box !important;
+    box-sizing: border-box !important;
+    float: left;
+    top: 40px !important;
+    left: 50% !important;
+    width: 50%;
+}
+
+#category-details .options
+{
+    -moz-box-sizing: border-box !important;
+    -webkit-box-sizing: border-box !important;
+    box-sizing: border-box !important;
+    height: 40px;
+    padding: 6px;
+    border-bottom: 1px solid rgb(210,210,210);
+}
+
+#category-details .items
+{
+    -moz-box-sizing: border-box !important;
+    -webkit-box-sizing: border-box !important;
+    box-sizing: border-box !important;
+    top: 40px !important;
+    bottom: 0px !important;
+    padding: 6px;
+}
