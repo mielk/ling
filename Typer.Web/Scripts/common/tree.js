@@ -1447,6 +1447,8 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
                 'keydown': function (e) {
                     switch (e.which) {
                         case 13: //Enter
+                            e.preventDefault();
+                            e.stopPropagation();
                             var value = $(this).val();
                             var validation = validateName(value);
                             if (validation === true) {
@@ -1454,6 +1456,7 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
                             }
                             break;
                         case 27: //Escape
+                            e.preventDefault();
                             e.stopPropagation();
                             _escape();
                             break;
@@ -1483,15 +1486,17 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
                         'parentId': me.parent.id
                     });
                 } else {
-                    var prevName = me.name;
-                    me.changeName(name);
-                    _escape();
-                    me.tree.trigger({
-                        'type': 'rename',
-                        'node': me,
-                        'name': name,
-                        'prevName': prevName
-                    });
+                    if (me.name !== name) {
+                        var prevName = me.name;
+                        me.changeName(name);
+                        _escape();
+                        me.tree.trigger({
+                            'type': 'rename',
+                            'node': me,
+                            'name': name,
+                            'prevName': prevName
+                        });
+                    }
                 }
             } else {
                 if (me.key.length === 0) {
