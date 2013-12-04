@@ -1267,6 +1267,11 @@ function EditPanel(properties) {
                         me.validateName();
                     }, 150);
                 },
+                'keydown': function(e){
+                    if (e.which === 27) { //Escape.
+                        me.destroy();
+                    }
+                },
                 'change': function () {
                     me.validateName();
                 },

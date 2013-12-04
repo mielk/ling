@@ -39,6 +39,8 @@ function TreeView(properties){
     var me = this;
     this.visible = (properties.hidden === true ? false : true);
     this.isEmbedded = (properties.container !== undefined);
+    this.mode = properties.mode ? properties.mode : MODE.SINGLE;
+
 
     this.ui = (function () {
         if (properties.blockOtherElements) {
@@ -112,10 +114,10 @@ function TreeView(properties){
             id: 'tree-search-panel',
             'class': 'tree-search-panel'
         }).
-            css({
-                'display': 'none'
-            }).
-            appendTo($(me.container));
+        css({
+            'display': 'none'
+        }).
+        appendTo($(me.container));
         me.searchMode = false;
 
 
@@ -194,10 +196,6 @@ function TreeView(properties){
         }
 
     })();
-
-
-
-    this.mode = properties.mode ? properties.mode : MODE.SINGLE;
 
     this.getContainer = function () {
         return this.container;
