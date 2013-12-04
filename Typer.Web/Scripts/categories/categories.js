@@ -56,22 +56,58 @@ $(function () {
 
     my.categories.tree.bind({
         newNode: function (e) {
-            $.notify('New node created | Name: ' + e.node.caption + ' | Parent: ' + e.parentId);
+            _notify('New node created | Name: ' + e.node.caption + ' | Parent: ' + e.parentId, true);
         },
         'delete': function (e) {
-            $.notify('Node ' + e.node.caption + ' has been removed');
+            _notify('Node ' + e.node.caption + ' has been removed', true);
         },
         rename: function (e) {
-            $.notify('Node ' + e.prevName + ' changed name to ' + e.node.name);
+            dbOperation({
+                functionName: 'UpdateName',
+                data: {
+                    'id': e.node.key,
+                    'name': e.node.name,
+                },
+                success: 'Category ' + e.prevName + ' changed its name to ' + e.node.name,
+                error: 'Error when trying to change category name from ' + e.prevName + ' to ' + e.node.name
+            });
         },
         transfer: function (e) {
-            $.notify('Node ' + e.node.name + ' has been moved to ' + e.to.name);
+            dbOperation({
+                functionName: 'UpdateName',
+                data: {
+                    'id': e.node.key,
+                    'name': e.node.name,
+                },
+                success: 'Category ' + e.node.name + ' has been moved to changed its name to ' + e.node.name,
+                error: 'Error when trying to change category name from ' + e.prevName + ' to ' + e.node.name
+            });
+            _notify('Node ' + e.node.name + ' has been moved to ' + e.to.name, true);
+        }
+    });
+    
+});
+
+function _notify(msg, success){
+    my.notify.options.className = (success ? 'success' : 'error');
+    $.notify(msg, my.notify.options);
+}
+
+
+
+function dbOperation(properties) {
+    $.ajax({
+        url: "/Categories/" + properties.functionName,
+        type: "POST",
+        data: properties.data,
+        datatype: "json",
+        async: false,
+        success: function (result) {
+            _notify(result ? properties.success : properties.error, result);
+        },
+        error: function (msg) {
+            _notify(properties.error, false);
         }
     });
 
-    //newNode: [node], [parentId]
-    //delete: [node]
-    //rename: [node], [name]
-    //tranfer: [node], [to]
-    
-});
+}

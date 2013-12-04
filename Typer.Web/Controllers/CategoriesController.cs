@@ -38,6 +38,15 @@ namespace Typer.Web.Controllers
             return Json(root, JsonRequestBehavior.AllowGet);
 
         }
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult UpdateName(int id, string name)
+        {
+            var result = service.updateName(id, name);
+            return Json(result);
+        }
                 
 
 

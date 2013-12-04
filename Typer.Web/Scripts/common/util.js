@@ -84,6 +84,25 @@ function HashTable(obj) {
 }
 
 
+my.notify = my.notify || {
+    options : {
+        clickToHide: true,
+        autoHide: true,
+        autoHideDelay: 2000,
+        arrowShow: false,
+        // default positions
+        elementPosition: 'bottom right',
+        globalPosition: 'bottom right',
+        style: 'bootstrap',
+        className: 'success',
+        showAnimation: 'slideDown',
+        showDuration: 400,
+        hideAnimation: 'slideUp',
+        hideDuration: 200,
+        gap: 2
+    }
+}
+
 
 my.ui = function () {
 
@@ -234,13 +253,6 @@ my.text = function () {
     }
 
 }();
-
-
-
-
-
-
-
 
 
 

@@ -113,9 +113,17 @@ namespace Typer.Domain.Services
         {
             return repository.updateName(category.Id, name);
         }
+        public bool updateName(int id, string name)
+        {
+            return repository.updateName(id, name);
+        }
         public bool updateParent(Category category, int parentId)
         {
             return repository.updateParent(category.Id, parentId);
+        }
+        public bool updateParent(int id, int parentId)
+        {
+            return repository.updateParent(id, parentId);
         }
         public Category getRoot()
         {

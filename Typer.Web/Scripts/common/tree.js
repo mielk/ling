@@ -1489,7 +1489,6 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
                     if (me.name !== name) {
                         var prevName = me.name;
                         me.changeName(name);
-                        _escape();
                         me.tree.trigger({
                             'type': 'rename',
                             'node': me,
@@ -1497,6 +1496,7 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
                             'prevName': prevName
                         });
                     }
+                    _escape();
                 }
             } else {
                 if (me.key.length === 0) {
