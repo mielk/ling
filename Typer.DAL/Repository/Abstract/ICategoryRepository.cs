@@ -8,7 +8,7 @@ namespace Typer.DAL.Repositories
         IEnumerable<CategoryDto> getCategories();
         CategoryDto getCategory(int id);
 
-        bool addCategory(CategoryDto category);
+        int addCategory(CategoryDto category);
 
         bool updateName(int id, string name);
         bool updateParent(int id, int parentId);

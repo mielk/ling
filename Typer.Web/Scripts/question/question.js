@@ -25,14 +25,6 @@
 }];
 
 
-var treeProperties = {
-    'mode': MODE.MULTI,
-    'data': categories,
-    'blockOtherElements': true,
-    'showSelection': true,
-    'hidden' : true
-};
-
 
 $(function () {
 
@@ -665,7 +657,14 @@ function Question(data, properties) {
         }
 
         function selectCategories() {
-            var tree = new TreeView(treeProperties);
+            var tree = new TreeView({
+                'mode': MODE.MULTI,
+                'data': my.categories.getRoot().items,
+                'blockOtherElements': true,
+                'showSelection': true,
+                'hidden': true
+            });
+
             tree.reset();
             tree.bind({
                 'confirm': function (e) {
@@ -674,6 +673,18 @@ function Question(data, properties) {
                         'items': e.items
                     });
                     tree.destroy();
+                },
+                newNode: function (e) {
+                    my.categories.addNew(e.node);
+                },
+                'delete': function (e) {
+                    my.categories.remove(e.node);
+                },
+                rename: function (e) {
+                    my.categories.updateName(e.node, e.prevName);
+                },
+                transfer: function (e) {
+                    my.categories.updateParent(e.node, e.to);
                 }
             });
             tree.show();

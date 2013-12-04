@@ -125,6 +125,16 @@ namespace Typer.Domain.Services
         {
             return repository.updateParent(id, parentId);
         }
+        public int addCategory(string name, int parentId, int userId)
+        {
+            CategoryDto dto = new CategoryDto
+            {
+                Name = name,
+                ParentId = parentId,
+                IsActive = true
+            };
+            return repository.addCategory(dto);
+        }
         public Category getRoot()
         {
 

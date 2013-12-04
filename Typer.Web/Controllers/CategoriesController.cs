@@ -47,7 +47,32 @@ namespace Typer.Web.Controllers
             var result = service.updateName(id, name);
             return Json(result);
         }
-                
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult UpdateParentId(int id, int parentId)
+        {
+            var result = service.updateParent(id, parentId);
+            return Json(result);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult RemoveCategory(int id)
+        {
+            var result = service.deactivate(id);
+            return Json(result);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult AddCategory(string name, int parentId)
+        {
+            var user = (User) HttpContext.Session[Typer.Domain.Entities.User.SESSION_KEY];
+            var result = service.addCategory(name, parentId, user.UserID);
+            return Json(result);
+        }
 
 
     }

@@ -1,249 +1,4 @@
-﻿var data = [
-    {
-        key: 'Europa',
-        caption: 'Europa',
-        expanded: true,
-        items: [
-            {
-                key: 'Polska', caption: 'Polska', expanded: true, items: [
-                    { key: 'Warszawa', caption: 'Warszawa' },
-                    { key: 'Gdańsk', caption: 'Gdańsk' },
-                    { key: 'Kraków', caption: 'Kraków' },
-                    { key: 'Poznań', caption: 'Poznań' }
-                ]
-            },
-            {
-                key: 'Francja', caption: 'Francja', expanded: false, items: [
-                    { key: 'Paryż', caption: 'Paryż' },
-                    { key: 'Marsylia', caption: 'Marsylia' },
-                    { key: 'Lyon', caption: 'Lyon' },
-                    { key: 'Nice', caption: 'Nice' }
-                ]
-            },
-            {
-                key: 'Włochy', caption: 'Włochy', expanded: false, items: [
-                    { key: 'Turyn', caption: 'Turyn' },
-                    { key: 'Neapol', caption: 'Neapol' },
-                    { key: 'Rzym', caption: 'Rzym' },
-                    { key: 'Mediolan', caption: 'Mediolan' }
-                ]
-            },
-            {
-                key: 'Wielka Brytania', caption: 'Wielka Brytania', expanded: false, items: [
-                    { key: 'Londyn', caption: 'Londyn' },
-                    { key: 'Manchester', caption: 'Manchester' },
-                    { key: 'Liverpool', caption: 'Liverpool' },
-                    { key: 'Edynburg', caption: 'Edynburg' }
-                ]
-            }
-        ]
-    },
-    {
-        key: 'Ameryka Północna',
-        caption: 'Ameryka Północna',
-        expanded: false,
-        items: [
-            {
-                key: 'USA', caption: 'USA', expanded: false, items: [
-                    { key: 'New York', caption: 'New York' },
-                    { key: 'Los Angeles', caption: 'Los Angeles' },
-                    { key: 'Chicago', caption: 'Chicago' },
-                    { key: 'Boston', caption: 'Boston' }
-                ]
-            },
-            {
-                key: 'Kanada', caption: 'Kanada', expanded: false, items: [
-                    { key: 'Toronto', caption: 'Toronto' },
-                    { key: 'Calgary', caption: 'Calgary' },
-                    { key: 'Montreal', caption: 'Montreal' },
-                    { key: 'Vancouver', caption: 'Vancouver' }
-                ]
-            }
-        ]
-    },
-    {
-        key: 'Ameryka Południowa',
-        caption: 'Ameryka Południowa',
-        expanded: false,
-        items: [
-            {
-                key: 'Brazylia', caption: 'Brazylia', expanded: false, items: [
-                    { key: 'Rio de Janeiro', caption: 'Rio de Janeiro' },
-                    { key: 'Sao Paulo', caption: 'Sao Paulo' },
-                    { key: 'Belo Horizonte', caption: 'Belo Horizonte' },
-                    { key: 'Porto Alegre', caption: 'Porto Alegre' }
-                ]
-            },
-            {
-                key: 'Argentyna', caption: 'Argentyna', expanded: false, items: [
-                    { key: 'Bueanos Aires', caption: 'Bueanos Aires' },
-                    { key: 'Rosario', caption: 'Rosario' }
-                ]
-            }
-        ]
-    },
-    {
-        key: 'Afryka',
-        caption: 'Afryka',
-        expanded: false,
-        items: [
-            {
-                key: 'Maroko', caption: 'Maroko', expanded: false, items: [
-                    { key: 'Casablanca', caption: 'Casablanca' },
-                    { key: 'Rabat', caption: 'Rabat' },
-                    { key: 'Agadir', caption: 'Agadir' },
-                    { key: 'Marrakesz', caption: 'Marrakesz' }
-                ]
-            },
-            {
-                key: 'RPA', caption: 'RPA', expanded: false, items: [
-                    { key: 'Kapsztad', caption: 'Kapsztad' },
-                    { key: 'Johannesburg', caption: 'Johannesburg' },
-                    { key: 'Pretoris', caption: 'Pretoria' }
-                ]
-            }
-
-        ]
-    },
-    {
-        key: 'Azja',
-        caption: 'Azja',
-        expanded: false,
-        items: [
-            {
-                key: 'Japonia', caption: 'Japonia', expanded: false, items: [
-                    { key: 'Tokio', caption: 'Tokio' },
-                    { key: 'Osaka', caption: 'Osaka' },
-                    { key: 'Nagoya', caption: 'Nagoya' }
-                ]
-            },
-            {
-                key: 'Chiny', caption: 'Chiny', expanded: false, items: [
-                    { key: 'Pekin', caption: 'Pekin' },
-                    { key: 'Szanghaj', caption: 'Szanghaj' },
-                    { key: 'Kanton', caption: 'Kanton' }
-                ]
-            }
-        ]
-    },
-    {
-        key: 'Australia i Oceania',
-        caption: 'Australia i Oceania',
-        expanded: false,
-        items: [
-            {
-                key: 'Australia', caption: 'Australia', expanded: false, items: [
-                    { key: 'Sydney', caption: 'Sydney' },
-                    { key: 'Melbourne', caption: 'Melbourne' },
-                    { key: 'Brisbane', caption: 'Brisbane' },
-                    { key: 'Perth', caption: 'Perth' }
-                ]
-            },
-            {
-                key: 'Nowa Zelandia', caption: 'Nowa Zelandia', expanded: false, items: [
-                    { key: 'Wellington', caption: 'Wellington' },
-                    { key: 'Auckland', caption: 'Auckland' }
-                ]
-            }
-
-        ]
-    }
-];
-
-var data2 = [
-                    {
-                        key: 1,
-                        caption: 'a',
-                        expanded: true,
-                        items: [
-                            { key: 11, caption: 'aa', expanded: true, selected: true, items: [] },
-                            { key: 12, caption: 'ab', expanded: true, selected: false, items: [] }
-                        ]
-                    },
-                    {
-                        key: 2,
-                        caption: 'b',
-                        expanded: false,
-                        items: [
-                            {
-                                key: 21, caption: 'ba', expanded: true, items: [
-                                    { key: 211, caption: 'bjtaa', expanded: true, items: [] },
-                                    {
-                                        key: 212, caption: 'bab', expanded: false, items: [
-                                                                            { key: 2221, caption: 'baaa', expanded: false, items: [] },
-                                                                            {
-                                                                                key: 2222, caption: 'baab', expanded: false, items: [
-                                                                                    {
-                                                                                        key: 22221, caption: 'baaba', expanded: false, items: [
-
-                                                                                        ]
-                                                                                    }
-                                                                                ]
-                                                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            {
-                                key: 22, caption: 'bb', expanded: true, items: [
-                                    { key: 221, caption: 'bba', expanded: true, items: [] },
-                                    {
-                                        key: 222, caption: 'bbb', expanded: false, items: [
-                                                                            { key: 2221, caption: 'baba', expanded: false, items: [] },
-                                                                            {
-                                                                                key: 2222, caption: 'babb', expanded: false, items: [
-                                                                                    {
-                                                                                        key: 22221, caption: 'babba', expanded: false, items: [
-
-                                                                                        ]
-                                                                                    }
-                                                                                ]
-                                                                            }
-                                        ]
-                                    },
-                                    { key: 223, caption: 'bbc', expanded: false, items: [] }
-                                ]
-                            },
-                            { key: 23, caption: 'bc', expanded: false, items: [] },
-                        ]
-                    },
-                    {
-                        key: 3,
-                        caption: 'c',
-                        expanded: true,
-                        items: [
-                                    { key: 311, caption: 'caa', expanded: false, items: [] },
-                                    {
-                                        key: 312, caption: 'cab', expanded: false, items: [
-                                                                            { key: 3121, caption: 'cabd', expanded: false, items: [] }
-                                        ]
-                                    },
-                        ]
-                    },
-                    {
-                        key: 4,
-                        caption: 'd',
-                        expanded: true,
-                        items: [
-                            {
-                                key: 41, caption: 'da', expanded: false, items: [
-                                    {
-                                        key: 411, caption: 'daa', expanded: false, items: [
-                                            { key: 4121, caption: 'dabd', expanded: false, items: [] }
-                                        ]
-                                    },
-                                    {
-                                        key: 412, caption: 'dab', expanded: false, items: [
-                                                                            { key: 4121, caption: 'dabd', expanded: false, items: [] }
-                                        ]
-                                    },
-                                ]
-                            }
-                        ]
-                    }
-];
-
-
+﻿
 var MODE = {
     NONE: 0,
     SINGLE: 1,
@@ -409,7 +164,6 @@ function TreeView(properties){
                 }
             },
             'delete': function (e) {
-                alert('Node ' + e.node.name + ' deleted');
             },
             newNode: function (e) {
                 e.node.activate();
@@ -449,7 +203,14 @@ function TreeView(properties){
         return this.container;
     }
 
-    this.root = new TreeNode(me, 'root', 'root', me, true);
+    this.root = new TreeNode({
+            tree: me,
+            key: 'root',
+            name: 'root',
+            parent: me,
+            expanded: true,
+            selected: false
+        });
     this.root.loadData(properties.data);
 
 
@@ -579,6 +340,7 @@ function TreeView(properties){
 
         $(document).bind({
             'mousemove': function (e) {
+
                 e.preventDefault();
                 if (e && drag) {
 
@@ -603,27 +365,28 @@ function TreeView(properties){
             dropin: function (e) {
                 if (e.node !== drag) {
                     drop = e.node;
-                    $('#drop').html('Drop: ' + drop.getName());
                 }
             },
             dropout: function (e) {
                 if (drop === e.node) {
                     drop = null;
-                    $('#drop').html('Drop: ' + 'null');
                 }
             },
             dragin: function (e) {
                 drag = e.node;
-                $('#drag').html('Drag: ' + drag.getName());
             },
             dragout: function (e) {
-                $('#drag').html('Drag: ' + 'null');
                 if (drag && drop) {
                     me.trigger({
                         type: 'transfer',
                         node: drag,
                         to: drop
                     });
+                    drag = null;
+                }
+            },
+            inactivate: function(e){
+                if (drag === e.node) {
                     drag = null;
                 }
             },
@@ -931,12 +694,13 @@ TreeView.prototype.destroy = function () {
     this.ui.destroy();
 }
 
-function TreeNode(tree, key, name, parent, expanded, selected) {
+function TreeNode(properties){ //tree, key, name, parent, expanded, selected) {
     var me = this;
-    this.tree = tree;
-    this.key = key;
-    this.name = name;
-    this.parent = parent;
+    this.tree = properties.tree;
+    this.key = properties.key || '';
+    this.name = properties.name || '';
+    this.parent = properties.parent;
+    this.object = properties.object;
     this.nodes = {};
     this.nodesArray = [];
     this.index = 0;
@@ -945,18 +709,16 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
     this.isNode = true;
 
     this.mainContainer = jQuery('<div/>', {
-        id: key + '_container',
+        id: me.key + '_container',
         'class': 'node-container'
     }).appendTo($(this.parent.getContainer()));
 
 
     this.line = jQuery('<div/>', {
-        id: key,
         'class': 'tree-line'
     }).appendTo(this.mainContainer);
 
     this.container = jQuery('<div/>', {
-        id: key,
         'class': 'children-container'
     }).appendTo(this.mainContainer);
 
@@ -1070,10 +832,10 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
             }
         }
 
-    })(expanded);
+    })(properties.expanded);
 
     this.selector = (function () {
-        var selected = false;
+        var selected = properties.selected;
         var hasSelectedChildren = false;
 
         var box = jQuery('<input/>', {
@@ -1179,9 +941,8 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
     })();
 
     this.caption = jQuery('<div/>', {
-        id: key + '_caption',
         'class': 'caption',
-        html: name
+        html: me.name
     }).
     bind({
         'mousedown': function (e) {
@@ -1195,6 +956,10 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
                     e.preventDefault;
                     me.renamer.activate();
                     me.inactivate();
+                    me.tree.trigger({
+                        'type': 'dragout',
+                        'node': me
+                    });
                     e.stopPropagation();
                 }
             }
@@ -1353,7 +1118,6 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
 
         function createDiv() {
             var control = jQuery('<div/>', {
-                id: me.key,
                 'class': 'move',
                 html: me.name
             }).
@@ -1437,7 +1201,6 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
 
         function createTextbox() {
             var control = jQuery('<input/>', {
-                id: me.key + '_name_textbox',
                 'class': 'edit-name'
             }).
             css({
@@ -1624,13 +1387,20 @@ function TreeNode(tree, key, name, parent, expanded, selected) {
 
 }
 TreeNode.prototype.loadData = function (data) {
-
+    var me = this;
     if (data && data.length) {
         this.expander.setExpandableStatus(true);
         for (var key in data) {
             if (data.hasOwnProperty(key)) {
                 var item = data[key];
-                var node = new TreeNode(this.tree, item.key, item.caption, this, item.expanded);
+                var node = new TreeNode({
+                    tree: me.tree,
+                    key: item.key,
+                    name: item.caption,
+                    parent: me,
+                    expanded: item.expanded,
+                    object: item.object
+                });
                 this.nodes[item.key] = node;
                 node.selector.setValue(item.selected);
                 node.loadData(item.items);
@@ -1660,9 +1430,6 @@ TreeNode.prototype.transfer = function (destination) {
             destination.addNode(this);
         }
     }
-}
-TreeNode.prototype.removeNode = function (node) {
-    delete this.nodes[node.getKey()];
 }
 TreeNode.prototype.addNode = function (node) {
     //alert('moving node ' + node.name + ' to ' + this.name);
@@ -1761,7 +1528,12 @@ TreeNode.prototype.removeNode = function (key) {
     this.sorter.sort();
 }
 TreeNode.prototype.addNewNode = function () {
-    var node = new TreeNode(this.tree, '', '', this, false);
+    var me = this;
+    var node = new TreeNode({
+            tree: me.tree,
+            parent: me,
+            expanded: false
+        });
     this.tree.trigger({
         'type': 'activate',
         'node': node
@@ -1770,6 +1542,7 @@ TreeNode.prototype.addNewNode = function () {
 }
 TreeNode.prototype.cancel = function () {
     $(this.mainContainer).remove();
+    this.parent.removeNode(this.key);
 }
 TreeNode.prototype.changeName = function (name) {
     this.name = name;

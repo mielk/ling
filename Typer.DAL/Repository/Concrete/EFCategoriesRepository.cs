@@ -28,17 +28,17 @@ namespace Typer.DAL.Repositories
 
 
 
-        public bool addCategory(CategoryDto category)
+        public int addCategory(CategoryDto category)
         {
             try
             {
                 context.Categories.Add(category);
                 context.SaveChanges();
-                return true;
+                return category.Id;
             }
             catch (Exception exception)
             {
-                return false;
+                return -1;
             }
         }
 

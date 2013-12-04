@@ -18,6 +18,7 @@ namespace Typer.Domain.Services
         bool updateName(int id, string name);
         bool updateParent(Category category, int parentId);
         bool updateParent(int id, int parentId);
+        int addCategory(string name, int parentId, int userId);
         Category getRoot();
     }
 }
