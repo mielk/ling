@@ -40,6 +40,9 @@ function TreeView(properties){
     this.visible = (properties.hidden === true ? false : true);
     this.isEmbedded = (properties.container !== undefined);
     this.mode = properties.mode ? properties.mode : MODE.SINGLE;
+    this.options = {
+        expandWhenAddingNewNode : true
+    }
 
 
     this.ui = (function () {
@@ -201,14 +204,8 @@ function TreeView(properties){
         return this.container;
     }
 
-    this.root = new TreeNode({
-            tree: me,
-            key: 'root',
-            name: 'root',
-            parent: me,
-            expanded: true,
-            selected: false
-        });
+    this.root = new TreeNode(me, null, properties.root);
+
     this.root.loadData(properties.data);
 
 
@@ -692,56 +689,272 @@ TreeView.prototype.destroy = function () {
     this.ui.destroy();
 }
 
-function TreeNode(properties){ //tree, key, name, parent, expanded, selected) {
+
+
+
+
+
+
+
+
+function TreeNode(tree, parent, object){
     var me = this;
-    this.tree = properties.tree;
-    this.key = properties.key || '';
-    this.name = properties.name || '';
-    this.parent = properties.parent;
-    this.object = properties.object;
-    this.nodes = {};
-    this.nodesArray = [];
-    this.index = 0;
+
+    this.tree = tree;
+
+    //Node properties.
+    this.key = (typeof(object.key) === "function" ? object.key() : object.key) || '';
+    this.name = (typeof (object.name) === "function" ? object.name() : object.name) || '';
+    this.object = object;
+    this.parent = parent;
+
+
     this.mouseClicked = false;
     this.isActive = false;
     this.isNode = true;
 
-    this.mainContainer = jQuery('<div/>', {
-        id: me.key + '_container',
-        'class': 'node-container'
-    }).appendTo($(this.parent.getContainer()));
+
+    var $events = (function () {
+        var _listener = {};
+        //var _container = jQuery('<div/>', {
+        //    'class': 'events-container'
+        //});
+
+        $(_listener).bind({
+            'addNode': function (e) {
+                if (me.object.events) {
+                    me.object.events().trigger({
+                        'type': 'add',
+                        'value': e.node.object
+                    });
+                }
+            },
+            'removeNode': function (e) {
+                if (me.object.events) {
+                    me.object.events().trigger({
+                        'type': 'remove',
+                        'value': e.node.object
+                    });
+                }
+            }
+            //rename: [node], [name]
+            //tranfer: [node], [to]
+        });
+
+        return {
+            trigger: function (e) {
+                $(_listener).trigger(e);
+            },
+            bind: function (a) {
+                $(_listener).bind(a);
+            }
+        }
+
+    })();
+    this.trigger = function (e) {
+        $events.trigger(e);
+    }
+    this.bind = function (e) {
+        $events.bind(e);
+    }
+
+    var $ui = (function () {
+        var _container = jQuery('<div/>', {
+            'class': 'node-container'
+        });
+
+        var _line = jQuery('<div/>', {
+            'class': 'tree-line'
+        }).appendTo(_container);
+
+        var _children = jQuery('<div/>', {
+            'class': 'children-container'
+        }).appendTo(_container);
 
 
-    this.line = jQuery('<div/>', {
-        'class': 'tree-line'
-    }).appendTo(this.mainContainer);
+        //Events listeners.
+        var _listener = (function () {
+            $events.bind({
+                expand: function (e) {
+                    show(_children);
+                },
+                collapse: function (e) {
+                    hide(_children);
+                },
+                addNode: function(e){
+                    _addChild(e.container);
+                }
+            });
+        })();
 
-    this.container = jQuery('<div/>', {
-        'class': 'children-container'
-    }).appendTo(this.mainContainer);
+
+        function _addChild(object){
+            $(object).appendTo(_children);
+        }
 
 
+        return {
+            container: _container,
+            line: _line,
+            children: _children
+        }
 
-    this.expander = (function (value) {
-        //var _ = this;
-        var expandable = false;
-        var expanded = value;
-        var button = jQuery('<div/>', {
-                id: me.key + '_expand-collapse-button',
-                'class': 'icon '
-            }).
-            bind({
-                'click': function (e) {
-                    if (expandable) {
-                        e.preventDefault();
-                        _revertStatus();
+    }());
+
+    var $nodes = (function () {
+        var _items = {};
+        var _sorted = [];
+
+        (function ini() {
+            var $items = (typeof (me.object.items) === "function" ? me.object.items() : me.object.items);
+            for (var i = 0; i < $items.length; i++) {
+                var node = new TreeNode(me.tree, me, $items[i]);
+                _items[node.key] = node;
+                _sorted[i] = node;
+            }
+            _sort();
+        })();
+
+        function _sort() {
+            _sorted.sort(function(a, b){
+                return a.key - b.key;
+            });
+        }
+
+        var _events = (function () {
+            $events.bind({
+                'addNode': function (e) {
+                    _addNode(e.node);
+                },
+                'removeNode': function (e) {
+                    if (e.node) {
+                        _removeNode(e.node)
+                    } else if (e.key) {
+                        _removeNodeByKey(e.key);
+                    }
+                    _refreshArray();
+                }
+            });
+        })();
+
+        function _addNode(node){
+            _items[node.key] = node;
+            _refreshArray();
+        }
+
+        function _removeNode(node){
+            for (var key in _items) {
+                if (_items.hasOwnProperty(key)) {
+                    var _node = _items[key];
+                    if (_node === node) {
+                        delete _items[key];
                     }
                 }
-            }).
-            appendTo(me.line);
+            }
+            _refreshArray();
+        }
+
+        function _removeNodeByKey(key){
+            delete _items[key];
+        }
+
+        function _refreshArray(){
+            _sorted = my.array.objectToArray(_items);
+            _sorted.sort();
+        }
+
+
+        return {
+            size: function () {
+                return _sorted.length;
+            }
+        }
+
+    })();
+    
+    var $expander = (function (value) {
+        var _expandable = false;
+        var _expanded = value ? true : false;
+        var _button = jQuery('<div/>', {
+            'class': 'icon '
+        }).bind({
+            'click': function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (_expandable) {
+                    _revertStatus();
+                }
+            }
+        }).appendTo(me.ui.line);
+
+
+
+        var _events = (function () {
+            $events.bind({
+                'addNode': function () {
+                    _expandable = true;
+                    if (me.tree.options.expandWhenAddingNewNode) {
+                        _expanded = true;
+                    }
+                    _render();
+                },
+                'removeNode': function () {
+                    _expandable = ($nodes.size() > 0);
+                    _render();
+                },
+                'expand': function () {
+                    _expanded = true;
+                    _render();
+
+                    if (me.parent) {
+                        me.parent.trigger({
+                            'type': 'expand'
+                        });
+                    }
+
+                },
+                'collapse': function () {
+                    _expanded = false;
+                    _render();
+                }
+            });
+        })();
+
+        
+        function _revertStatus() {
+            if (_expanded) {
+                _collapse();
+            } else {
+                _expand();
+            }
+        }
 
         function _expand() {
-            if (!expandable) {
+            if (_expandable && !_expanded) {
+                me.events.trigger({
+                    'type': 'expand'
+                });
+            }
+        }
+
+        function _collapse() {
+            if (_expandable && _expanded) {
+                me.events.trigger({
+                    'type': 'collapse'
+                });
+            }
+        }
+
+        function _render() {
+            if (_expandable) {
+                $(button).html(_expanded ? '-' : '+');
+            } else {
+                $(button).html('.');
+            }
+        }
+
+        function _expand() {
+            if (_expandable) {
                 return;
             }
 
@@ -759,94 +972,56 @@ function TreeNode(properties){ //tree, key, name, parent, expanded, selected) {
             });
         }
 
-        function _collapse() {
-            if (!expandable) {
-                return;
-            }
-            
-            expanded = false;
-            $(button).html('+');
-            display(me.container, false);
-            me.tree.trigger({
-                type: 'collapse',
-                node: me
-            });
-        }
-
-        function _revertStatus() {
-            if (expanded === true) {
-                _collapse();
-            } else if (expanded === false) {
-                _expand();
+        return {
+            isExpandable: function(){
+                return _expandable;
+            },
+            isExpanded: function(){
+                return (_expandable ? _expanded : false);
             }
         }
 
+    })(object.expanded);
 
-        function _setStatus(value) {
-            if (value === true) {
-                _expand();
-            } else if (value === false) {
-                _collapse();
-            }
+    var $selector = (function (value) {
+        var _selected = value;
+        var _hasSelectedChildren = false;
 
-        }
+        var _ui = (function () {
+            var _box = jQuery('<input/>', {
+                type: 'checkbox',
+                'class': 'select-checkbox',
+                'value': _selected
+            }).css({
+                'display': (me.tree.mode === MODE.MULTI ? 'block' : 'none')
+            }).bind({
+                'click': function () {
+                    $events.trigger({
+                        'type' : 'select'
+                    });
+                }
+            }).appendTo($ui.line);
 
-        function _setExpandableStatus(value) {
-            show(this.expandButton);
-            expandable = value;
-            if (!expandable) {
-                $(button).html('.');
-            } else {
-                _setStatus(expanded);
-            }
-        }
-
-
-        //Sets initial status.
-        (function () {
-            //_setExpandableStatus(expandable);
-            _setExpandableStatus(false);
         })();
 
+    })(object.selected);
 
-        return {
-            setExpandableStatus: function (value) {
-                _setExpandableStatus(value);
-            },
-            revertStatus : function () {
-                _revertStatus();
-            },
-            setStatus: function (value) {
-                _setStatus(value);
-            },
-            expand: function(){
-                _expand();
-            },
-            collapse: function(){
-                _collapse();
-            },
-            isExpanded: function () {
-                return (expandable === false || expanded === false ? false : true);
-            }
-        }
-
-    })(properties.expanded);
 
     this.selector = (function () {
         var selected = properties.selected;
         var hasSelectedChildren = false;
 
-        var box = jQuery('<input/>', {
-            type: 'checkbox',
-            id: me.key + '_select-checkbox',
-            'class': 'select-checkbox'
-        }).css({
-            'display': (me.tree.mode === MODE.MULTI ? true : false)
-        }).bind({
-            'click': function () {
-                me.select();
-            }
-        }).appendTo(me.line);
+        //var box = jQuery('<input/>', {
+        //    type: 'checkbox',
+        //    id: me.key + '_select-checkbox',
+        //    'class': 'select-checkbox'
+        //}).css({
+        //    'display': (me.tree.mode === MODE.MULTI ? true : false)
+        //}).bind({
+        //    'click': function () {
+        //        me.select();
+        //    }
+        //}).appendTo(me.line);
 
 
         function _applyForChildren() {
@@ -937,6 +1112,9 @@ function TreeNode(properties){ //tree, key, name, parent, expanded, selected) {
             }
         }
     })();
+
+
+
 
     this.caption = jQuery('<div/>', {
         'class': 'caption',
@@ -1413,6 +1591,8 @@ TreeNode.prototype.loadData = function (data) {
 
     }
 }
+
+
 TreeNode.prototype.getName = function () {
     return this.name;
 }

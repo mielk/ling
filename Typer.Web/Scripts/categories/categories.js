@@ -2,7 +2,7 @@
 
     var treeProperties = {
         'mode': MODE.SINGLE,
-        'data': my.categories.getRoot().items,
+        'root': my.categories.getRoot(),
         'blockOtherElements': false,
         'showSelection': false,
         'hidden': false,
