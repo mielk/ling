@@ -1,5 +1,38 @@
 ﻿$(function () {
 
+    var test = (function () {
+        var _listener = {};
+        return {
+            bind: function (e) {
+                $(_listener).bind(e);
+            },
+            trigger: function (e) {
+                $(_listener).trigger(e);
+            }
+        }
+    })();
+
+    (function () {
+        
+        test.bind({
+            'a b': function () {
+                alert('a b');
+            },
+            'a': function () {
+                alert('a');
+            },
+            'b': function () {
+                alert('b');
+            }
+        });
+
+        test.trigger({
+            'type': 'a'
+        });
+
+    })();
+
+
     var treeProperties = {
         'mode': MODE.SINGLE,
         'root': my.categories.getRoot(),

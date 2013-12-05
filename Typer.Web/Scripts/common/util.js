@@ -264,11 +264,10 @@ my.array = (function () {
     return {
         objectToArray: function (object) {
             var array = [];
-            var i = 0;
             for (var key in object) {
                 if (object.hasOwnProperty(key)) {
                     var item = object[key];
-                    array[i++] = item;
+                    array.push(item);
                 }
             }
             return array;
