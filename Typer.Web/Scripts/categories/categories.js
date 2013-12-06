@@ -1,46 +1,46 @@
 ﻿my = my || {};
 
-(function () {
-    var test = (function () {
-        var _listener = jQuery('<div/>').appendTo($(document.body));
-        return {
-            bind: function (e) {
-                $(_listener).bind(e);
-            },
-            trigger: function (e) {
-                $(_listener).trigger(e);
-            },
-        }
-    })();
+//(function () {
+//    var test = (function () {
+//        var _listener = jQuery('<div/>').appendTo($(document.body));
+//        return {
+//            bind: function (e) {
+//                $(_listener).bind(e);
+//            },
+//            trigger: function (e) {
+//                $(_listener).trigger(e);
+//            },
+//        }
+//    })();
 
 
-    var a = (function () {
-        test.bind({
-            'click': function (e) {
-                alert('a');
-                e.active = false;
-            }
-        });
-    })();
+//    var a = (function () {
+//        test.bind({
+//            'click': function (e) {
+//                alert('a');
+//                e.active = false;
+//            }
+//        });
+//    })();
 
 
-    var b = (function () {
-        test.bind({
-            'click': function (e) {
-                if (e.active !== false) {
-                    alert('b');
-                }
-            }
-        });
-    })();
+//    var b = (function () {
+//        test.bind({
+//            'click': function (e) {
+//                if (e.active !== false) {
+//                    alert('b');
+//                }
+//            }
+//        });
+//    })();
 
-    test.trigger({
-        'type': 'click'
-    });
+//    test.trigger({
+//        'type': 'click'
+//    });
 
-    alert('end');
+//    alert('end');
 
-})();
+//})();
 
 my.categories = (function () {
     var root;

@@ -215,6 +215,9 @@ function TreeView(properties){
             },
             append: function (element) {
                 $(element).appendTo(_container);
+            },
+            container: function(){
+                return _container;
             }
         }
 
@@ -263,10 +266,63 @@ function TreeView(properties){
         //    this.searchMode = false;
         //}
 
+
+
+        //function SearchPanel(tree) {
+        //    var me = this;
+        //    this.tree = tree;
+        //    this.dropdown = null;
+
+        //    $(this.tree._searchPanel).empty();
+        //    this.container = this.tree._searchPanel;
+
+        //}
+        //SearchPanel.prototype.show = function () {
+        //    var me = this;
+
+        //    $(this.container).css({
+        //        'display': 'block',
+        //        'z-index': 2
+        //    });
+
+        //    var searchData = this.tree.root.getNodesForSearching();
+
+        //    var properties = {
+        //        parent: $(this.container),
+        //        'data': searchData,
+        //        background: false,
+        //        displayed: 'displayed'
+        //    };
+
+        //    if (this.dropdown === null) {
+        //        this.dropdown = new DropDown(properties);
+        //    }
+
+        //    this.dropdown.listener().bind({
+        //        'deactivate': function () {
+        //            me.tree.hideSearchPanel();
+        //        },
+        //        'selected': function (e) {
+        //            me.tree.hideSearchPanel();
+        //            var node = e.object.object;
+        //            node.activate();
+        //        }
+        //    });
+
+        //    this.dropdown.activate();
+
+        //}
+        //SearchPanel.prototype.hide = function () {
+        //    $(this.container).css({
+        //        'display': 'none'
+        //    });
+        //}
+
+
+
     })();
 
-
-    this.root = new TreeNode(me, null, properties.root);
+    var $root = new TreeNode(me, null, properties.root);
     //this.root.loadData(properties.data);
 
 
@@ -684,10 +740,12 @@ function TreeView(properties){
     })();
 
     //this.root.activate();
+    (function ini() {
+        $root.render($ui.container());
+        if (!$visible) $ui.hide();
+    })();
 
-    if (!$visible) {
-        me.hide();
-    }
+    
 
 }
 
@@ -778,8 +836,8 @@ function TreeNode(tree, parent, object){
             trigger: function (e) {
                 $(_listener).trigger(e);
             },
-            bind: function (a) {
-                $(_listener).bind(a);
+            bind: function (e) {
+                $(_listener).bind(e);
             }
         }
 
@@ -896,6 +954,9 @@ function TreeNode(tree, parent, object){
             children: _children,
             isHovered: function (x, y) {
                 return _isHovered(x, y);
+            },
+            append: function (container) {
+                $(_container).appendTo(container);
             }
         }
 
@@ -903,21 +964,16 @@ function TreeNode(tree, parent, object){
     this.container = function () {
         return $ui.container;
     }
-
+    this.render = function (container) {
+        $ui.append(container);
+        $nodes.each(function (node) {
+            node.render($ui.children);
+        });
+    }
 
     var $nodes = (function () {
         var _items = {};
         var _sorted = [];
-
-        //(function ini() {
-        //    var $items = (typeof (me.object.items) === "function" ? me.object.items() : me.object.items);
-        //    for (var i = 0; i < $items.length; i++) {
-        //        var node = new TreeNode(me.tree, me, $items[i]);
-        //        _items[node.key] = node;
-        //        _sorted[i] = node;
-        //    }
-        //    _sort();
-        //})();
 
         function _sort() {
             _sorted.sort(function(a, b){
@@ -973,6 +1029,15 @@ function TreeNode(tree, parent, object){
             _sorted.sort();
         }
 
+        function _load() {
+            var $items = (typeof (me.object.items) === "function" ? me.object.items() : me.object.items);
+            for (var i = 0; i < $items.length; i++) {
+                var node = new TreeNode(me.tree, me, $items[i]);
+                _items[node.key] = node;
+                _sorted[i] = node;
+            }
+            _sort();
+        }
 
         return {
             size: function () {
@@ -997,6 +1062,9 @@ function TreeNode(tree, parent, object){
                     }
                 }
                 return counter;
+            },
+            load: function () {
+                _load();
             }
         }
 
@@ -1648,16 +1716,15 @@ function TreeNode(tree, parent, object){
             }
 
             return {
-                hide: function (e) {
-                    if (e.active === false) return;
+                hide: function () {
                     hide(_control);
                 },
-                render: function (e) {
+                render: function () {
                     if (!_control) createControl();
                     show(_control);
                 },
                 move: function (position) {
-                    if (!control) return;
+                    if (!_control) return;
                     _position.left = position.left;
                     _position.top = position.top;
                     $(_control).css(position);
@@ -1682,8 +1749,8 @@ function TreeNode(tree, parent, object){
         function _move(x, y) {
 
             _ui.move({
-                left: left + (x - _position.x),
-                top: top + (y - _position.y)
+                left: _position.left + (x - _position.x),
+                top: _position.top + (y - _position.y)
             });
 
             _position.x = x;
@@ -1720,6 +1787,12 @@ function TreeNode(tree, parent, object){
     //    }
     //    return path;
     //}
+
+
+    //Initializing functions.
+    (function ini() {
+        $nodes.load();
+    })();
 
 
 }
@@ -1965,56 +2038,6 @@ TreeNode.prototype.getSelectedArray = function () {
 
 }
 
-
-function SearchPanel(tree) {
-    var me = this;
-    this.tree = tree;
-    this.dropdown = null;
-
-    $(this.tree._searchPanel).empty();
-    this.container = this.tree._searchPanel;
-
-}
-SearchPanel.prototype.show = function () {
-    var me = this;
-
-    $(this.container).css({
-        'display': 'block',
-        'z-index': 2
-    });
-
-    var searchData = this.tree.root.getNodesForSearching();
-
-    var properties = {
-        parent: $(this.container),
-        'data': searchData,
-        background: false,
-        displayed: 'displayed'
-    };
-    
-    if (this.dropdown === null) {
-        this.dropdown = new DropDown(properties);
-    }
-
-    this.dropdown.listener().bind({
-        'deactivate': function () {
-            me.tree.hideSearchPanel();
-        },
-        'selected' : function(e){
-            me.tree.hideSearchPanel();
-            var node = e.object.object;
-            node.activate();
-        }
-    });
-
-    this.dropdown.activate();
-
-}
-SearchPanel.prototype.hide = function(){
-    $(this.container).css({
-        'display': 'none'
-    });
-}
 
 
 function hide(div) {
