@@ -37,13 +37,18 @@ $(function () {
 
 function TreeView(properties){
     var me = this;
-    this.visible = (properties.hidden === true ? false : true);
-    this.isEmbedded = (properties.container !== undefined);
+
+    //Public properties.
     this.mode = properties.mode ? properties.mode : MODE.SINGLE;
     this.options = {
         expandWhenAddingNewNode: true,
         doubleClickDelay: 500,
     }
+
+    //Private properties.
+    var $visible = (properties.hidden === true ? false : true);
+    var $isEmbedded = (properties.container !== undefined);
+    var $activeNode = null;
 
 
     var $events = (function () {
@@ -81,13 +86,13 @@ function TreeView(properties){
             confirm: function (e) {
                 if (e.active === false) return;
                 alert('confirm');
-                if (!me.isEmbedded) {
+                if (!$isEmbedded) {
                     me.hide();
                 }
             },
             cancel: function (e) {
                 if (e.active === false) return;
-                if (!me.isEmbedded) {
+                if (!$isEmbedded) {
                     me.hide();
                 }
             }
@@ -127,7 +132,7 @@ function TreeView(properties){
             appendTo($(document.body));
         }
 
-        if (me.isEmbedded) {
+        if ($isEmbedded) {
             _background = jQuery('<div/>').
             css({
                 'width': '100%',
@@ -147,7 +152,7 @@ function TreeView(properties){
 
         
         //Change styling if tree is embedded.
-        if (me.isEmbedded) {
+        if ($isEmbedded) {
             $(_frame).css({
                 'position': 'relative',
                 'float': 'left',
@@ -172,7 +177,7 @@ function TreeView(properties){
         }
 
 
-        if (!me.isEmbedded) {
+        if (!$isEmbedded) {
             var btnQuit = jQuery('<div/>', {
                 'class': 'tree-container-exit'
             }).
@@ -187,19 +192,6 @@ function TreeView(properties){
         }
 
 
-        //me._searchPanel = jQuery('<div/>', {
-        //    id: 'tree-search-panel',
-        //    'class': 'tree-search-panel'
-        //}).
-        //css({
-        //    'display': 'none'
-        //}).
-        //appendTo($(_container));
-        //me.searchMode = false;
-
-
-
-
         return {
             destroy: function () {
                 if (_background !== document.body) {
@@ -207,527 +199,536 @@ function TreeView(properties){
                 } else {
                     $(_frame).remove();
                 }
+            },
+            hide: function(){
+                $visible = false;
+                hide(_background);
+                hide(_container);
+            },
+            show: function(){
+                $visible = true;
+                show(_background);
+                show(_container);
+                $(_background).css({
+                    'z-index': my.ui.addTopLayer()
+                });
+            },
+            append: function (element) {
+                $(element).appendTo(_container);
             }
         }
 
     })();
-
-
-
-
-
-    this.getContainer = function () {
-        return this.container;
+    this.hide = function () {
+        $ui.hide();
     }
+    this.show = function () {
+        $ui.show();
+    }
+    this.destroy = function () {
+        $ui.destroy();
+    }
+
+    //TreeView.prototype.reset = function () {
+    //    if (this.node) {
+    //        this.node.unselect();
+    //        this.node.collapse();
+    //    }
+    //}
+
+    var $searchPanel = (function () {
+        var _active = false;
+        var _ui = (function () {
+            var _container = jQuery('<div/>', {
+                'class': 'tree-search-panel'
+            }).css({
+                'display': 'none'
+            });
+            
+            $ui.append(_container);
+
+        })();
+
+
+        //TreeView.prototype.showSearchPanel = function () {
+        //    this.searchPanel = (this.searchPanel || new SearchPanel(this));
+        //    this.searchMode = true;
+        //    this.searchPanel.show();
+        //}
+        //TreeView.prototype.hideSearchPanel = function () {
+        //    if (this.searchPanel) {
+        //        this.searchPanel.hide();
+        //    }
+        //    this.searchPanel = null;
+        //    this.searchMode = false;
+        //}
+
+    })();
+
 
     this.root = new TreeNode(me, null, properties.root);
-
-    this.root.loadData(properties.data);
-
-
-    //Selection panel.
-    this.showSelection = properties.showSelection;
-    if (this.showSelection) {
-        this.selection = (function () {
-            var _container = jQuery('<div/>', {
-                    id: 'tree-selection-container',
-                    'class': 'tree-selection-container'
-                }).appendTo($(me.container));
-
-            var _header = jQuery('<div/>', {
-                id: 'tree-selection-header',
-                'class': 'tree-selection-header',
-                html: 'Selected'
-            }).appendTo($(_container));
-
-            var _nodes = jQuery('<div/>', {
-                id: 'tree-selection-nodes',
-                'class': 'tree-selection-nodes'
-            }).appendTo($(_container));
-
-            var selected = [];
-
-            function _refresh() {
-                $(_nodes).empty();
-                selected = me.root.getSelectedArray();
-
-                for (var i = 0; i < selected.length; i++) {
-                    var node = selected[i];
-                    var line = nodeLine(node, i);
-                }
-
-            }
-
-            var nodeLine = function (node, index) {
-                var $node = node;
-                var $index = index;
-                var $container = jQuery('<div/>', {
-                        'class': 'tree-selection-line'
-                }).appendTo(_nodes);
-
-                var $remover = jQuery('<div/>', {
-                    'class': 'tree-selection-line-remover'
-                }).
-                bind({
-                    'click': function () {
-                        $node.unselect();
-                    }
-                }).appendTo($container);
-
-                var $caption = jQuery('<div/>', {
-                    'class': 'tree-selection-line-caption',
-                    'html': node.name
-                }).appendTo($container);
-
-            }
+    //this.root.loadData(properties.data);
 
 
-            return {
-                refresh: function () {
-                    _refresh();
-                }
-            }
+    var $selection = (function () {
+        var _active = properties.showSelection;
 
-        })();
-    }
+        //this.selection = (function () {
+        //    var _container = jQuery('<div/>', {
+        //        id: 'tree-selection-container',
+        //        'class': 'tree-selection-container'
+        //    }).appendTo($(me.container));
 
-    if (!me.isEmbedded) {
-        this.buttons = (function () {
-            me.buttonsPanel = jQuery('<div/>', {
-                id: 'tree-buttons-panel',
-                'class': 'tree-buttons-panel'
-            }).appendTo($(me.container));
+        //    var _header = jQuery('<div/>', {
+        //        id: 'tree-selection-header',
+        //        'class': 'tree-selection-header',
+        //        html: 'Selected'
+        //    }).appendTo($(_container));
 
-            var buttonsContainer = jQuery('<div/>', {
-                id: 'tree-buttons-container',
-                'class': 'tree-buttons-container'
-            }).appendTo($(me.buttonsPanel));
+        //    var _nodes = jQuery('<div/>', {
+        //        id: 'tree-selection-nodes',
+        //        'class': 'tree-selection-nodes'
+        //    }).appendTo($(_container));
 
-            var btnOk = jQuery('<input/>', {
-                id: 'tree-button-ok',
-                'class': 'tree-button',
-                'type': 'submit',
-                'value': 'OK'
-            }).
-            bind({
-                'click': function () {
-                    var items = me.root.getSelectedArray();
-                    if (items && items.length) {
-                        $events.trigger({
-                            'type': 'confirm',
-                            'items': items
-                        });
-                    } else {
-                        $events.trigger({
-                            'type': 'cancel'
-                        });
-                    }
+        //    var selected = [];
 
+        //    function _refresh() {
+        //        $(_nodes).empty();
+        //        selected = me.root.getSelectedArray();
 
-                }
-            }).appendTo($(buttonsContainer));
+        //        for (var i = 0; i < selected.length; i++) {
+        //            var node = selected[i];
+        //            var line = nodeLine(node, i);
+        //        }
 
-            var btnCancel = jQuery('<input/>', {
-                id: 'tree-button-cancel',
-                'class': 'tree-button',
-                'type': 'submit',
-                'value': 'Cancel'
-            }).
-            bind({
-                'click': function () {
-                    $events.trigger({
-                        'type': 'cancel'
-                    });
-                }
-            }).appendTo($(buttonsContainer));
-        })();
-    }
+        //    }
+
+        //    var nodeLine = function (node, index) {
+        //        var $node = node;
+        //        var $index = index;
+        //        var $container = jQuery('<div/>', {
+        //            'class': 'tree-selection-line'
+        //        }).appendTo(_nodes);
+
+        //        var $remover = jQuery('<div/>', {
+        //            'class': 'tree-selection-line-remover'
+        //        }).
+        //        bind({
+        //            'click': function () {
+        //                $node.unselect();
+        //            }
+        //        }).appendTo($container);
+
+        //        var $caption = jQuery('<div/>', {
+        //            'class': 'tree-selection-line-caption',
+        //            'html': node.name
+        //        }).appendTo($container);
+
+        //    }
 
 
+        //    return {
+        //        refresh: function () {
+        //            _refresh();
+        //        }
+        //    }
 
-    this.dragDropManager = (function () {
-        var drag = null;
-        var drop = null;
+        //})();
 
-        $(document).bind({
-            'mousemove': function (e) {
+    })();
+    
+    var $buttons = (function () {
+        //this.buttons = (function () {
+        //    me.buttonsPanel = jQuery('<div/>', {
+        //        id: 'tree-buttons-panel',
+        //        'class': 'tree-buttons-panel'
+        //    }).appendTo($(me.container));
 
-                e.preventDefault();
-                if (e && drag) {
+        //    var buttonsContainer = jQuery('<div/>', {
+        //        id: 'tree-buttons-container',
+        //        'class': 'tree-buttons-container'
+        //    }).appendTo($(me.buttonsPanel));
 
-                    var x = e.pageX;
-                    var y = e.pageY;
-
-                    if (drop) {
-                        var previousArea = drop.dropArea;
-                        if (previousArea.isHovered(x, y)) {
-                            return;
-                        } else {
-                            previousArea.unselect();
-                        }
-                    } else {
-                        me.root.dropArea.check(x, y);
-                    }
-                }
-            }
-        });
-
-        $events.bind({
-            dropin: function (e) {
-                if (e.node !== drag) {
-                    drop = e.node;
-                }
-            },
-            dropout: function (e) {
-                if (drop === e.node) {
-                    drop = null;
-                }
-            },
-            dragin: function (e) {
-                drag = e.node;
-            },
-            dragout: function (e) {
-                if (drag && drop) {
-                    me.trigger({
-                        type: 'transfer',
-                        node: drag,
-                        to: drop
-                    });
-                    drag = null;
-                }
-            },
-            inactivate: function(e){
-                if (drag === e.node) {
-                    drag = null;
-                }
-            },
-            transfer: function (e) {
-                if (e.node && e.to) {
-                    e.node.transfer(e.to);
-                }
-            }
-        });
+        //    var btnOk = jQuery('<input/>', {
+        //        id: 'tree-button-ok',
+        //        'class': 'tree-button',
+        //        'type': 'submit',
+        //        'value': 'OK'
+        //    }).
+        //    bind({
+        //        'click': function () {
+        //            var items = me.root.getSelectedArray();
+        //            if (items && items.length) {
+        //                $events.trigger({
+        //                    'type': 'confirm',
+        //                    'items': items
+        //                });
+        //            } else {
+        //                $events.trigger({
+        //                    'type': 'cancel'
+        //                });
+        //            }
 
 
-        return {
-            hasDropArea: function () {
-                return (drop ? true : false);
-            },
-            getDrag: function () {
-                return drag;
-            }
-        }
+        //        }
+        //    }).appendTo($(buttonsContainer));
+
+        //    var btnCancel = jQuery('<input/>', {
+        //        id: 'tree-button-cancel',
+        //        'class': 'tree-button',
+        //        'type': 'submit',
+        //        'value': 'Cancel'
+        //    }).
+        //    bind({
+        //        'click': function () {
+        //            $events.trigger({
+        //                'type': 'cancel'
+        //            });
+        //        }
+        //    }).appendTo($(buttonsContainer));
+        //})();
+    })();
+
+    var $dragdrop = (function () {
+        //var drag = null;
+        //var drop = null;
+
+        //$(document).bind({
+        //    'mousemove': function (e) {
+
+        //        e.preventDefault();
+        //        if (e && drag) {
+
+        //            var x = e.pageX;
+        //            var y = e.pageY;
+
+        //            if (drop) {
+        //                var previousArea = drop.dropArea;
+        //                if (previousArea.isHovered(x, y)) {
+        //                    return;
+        //                } else {
+        //                    previousArea.unselect();
+        //                }
+        //            } else {
+        //                me.root.dropArea.check(x, y);
+        //            }
+        //        }
+        //    }
+        //});
+
+        //$events.bind({
+        //    dropin: function (e) {
+        //        if (e.node !== drag) {
+        //            drop = e.node;
+        //        }
+        //    },
+        //    dropout: function (e) {
+        //        if (drop === e.node) {
+        //            drop = null;
+        //        }
+        //    },
+        //    dragin: function (e) {
+        //        drag = e.node;
+        //    },
+        //    dragout: function (e) {
+        //        if (drag && drop) {
+        //            me.trigger({
+        //                type: 'transfer',
+        //                node: drag,
+        //                to: drop
+        //            });
+        //            drag = null;
+        //        }
+        //    },
+        //    inactivate: function(e){
+        //        if (drag === e.node) {
+        //            drag = null;
+        //        }
+        //    },
+        //    transfer: function (e) {
+        //        if (e.node && e.to) {
+        //            e.node.transfer(e.to);
+        //        }
+        //    }
+        //});
+
+
+        //return {
+        //    hasDropArea: function () {
+        //        return (drop ? true : false);
+        //    },
+        //    getDrag: function () {
+        //        return drag;
+        //    }
+        //}
 
     })();
 
-    this.activeNode = null;
+    var $navigator = (function () {
 
-    this.navigator = (function () {
+        //$(document).bind({
+        //    'keydown': function (e) {
 
-        $(document).bind({
-            'keydown': function (e) {
-
-                if (!me.visible) {
-                    return;
-                }
+        //        if (!me.visible) {
+        //            return;
+        //        }
                 
-                //Special shortcuts.
-                if (e.ctrlKey) {
-                    //Search panel (Ctrl + F/f)
-                    switch (e.which) {
-                        case 70:
-                        case 102:
-                            //search panel.
-                            e.preventDefault();
-                            e.stopPropagation();
-                            me.showSearchPanel();
-                            break;
-                    }
-                }
+        //        //Special shortcuts.
+        //        if (e.ctrlKey) {
+        //            //Search panel (Ctrl + F/f)
+        //            switch (e.which) {
+        //                case 70:
+        //                case 102:
+        //                    //search panel.
+        //                    e.preventDefault();
+        //                    e.stopPropagation();
+        //                    me.showSearchPanel();
+        //                    break;
+        //            }
+        //        }
 
 
-                if (me.searchMode || (me.activeNode != null && me.activeNode.renamer.isActive())) {
-                    return;
-                }
+        //        if (me.searchMode || (me.activeNode != null && me.activeNode.renamer.isActive())) {
+        //            return;
+        //        }
 
-                //Escape applies even for the case if none node is selected.
-                if (e.which === 27) {
-                    $events.trigger({
-                        'type' : 'cancel'
-                    });
-                }
+        //        //Escape applies even for the case if none node is selected.
+        //        if (e.which === 27) {
+        //            $events.trigger({
+        //                'type' : 'cancel'
+        //            });
+        //        }
 
-                if (me.activeNode) {
-                    switch (e.which) {
-                        case 37: //Arrow left
-                            _collapse();
-                            e.stopPropagation();
-                            break;
-                        case 38: //Arrow up
-                            e.stopPropagation();
-                            e.preventDefault();
-                            _moveUp();
-                            break;
-                        case 39: //Arrow right
-                            _expand();
-                            e.stopPropagation();
-                            break;
-                        case 40: //Arrow down
-                            e.stopPropagation();
-                            e.preventDefault();
-                            _moveDown();
-                            break;
-                        case 36: //Home
-                            e.stopPropagation();
-                            e.preventDefault();
-                            _moveToParent();
-                            break;
-                        case 35: //End
-                            e.stopPropagation();
-                            e.preventDefault();
-                            break;
-                        case 33: //PageUp
-                            e.stopPropagation();
-                            e.preventDefault();
-                            _moveToRoot();
-                            break;
-                        case 34: //PageDown
-                            e.stopPropagation();
-                            e.preventDefault();
-                            _moveToLastItem();
-                            break;
-                        case 113: //F2
-                            e.stopPropagation();
-                            e.preventDefault();
-                            me.activeNode.renamer.activate();
-                            break;
-                        case 46: //Delete
-                            e.stopPropagation();
-                            e.preventDefault();
-                            me.activeNode.delete();
-                            _moveToParent();
-                            break;
-                        case 45: //Insert
-                            e.stopPropagation();
-                            e.preventDefault();
-                            _addNewNode();
-                            break;
-                        case 13: //Enter
-                            e.stopPropagation();
-                            e.preventDefault();
-                            switch (me.mode) {
-                                case MODE.SINGLE: _selectActive(); break;
-                                case MODE.MULTI: _confirm(); break;
-                            }
-                            break;
-                            //Confirmation.
-                        case 32: //Space
-                            e.stopPropagation();
-                            e.preventDefault();
-                            switch (me.mode) {
-                                case MODE.SINGLE: _selectActive(); break;
-                                case MODE.MULTI: me.activeNode.select(); break;
-                            }
-                            break;
-                    }
-                }
+        //        if (me.activeNode) {
+        //            switch (e.which) {
+        //                case 37: //Arrow left
+        //                    _collapse();
+        //                    e.stopPropagation();
+        //                    break;
+        //                case 38: //Arrow up
+        //                    e.stopPropagation();
+        //                    e.preventDefault();
+        //                    _moveUp();
+        //                    break;
+        //                case 39: //Arrow right
+        //                    _expand();
+        //                    e.stopPropagation();
+        //                    break;
+        //                case 40: //Arrow down
+        //                    e.stopPropagation();
+        //                    e.preventDefault();
+        //                    _moveDown();
+        //                    break;
+        //                case 36: //Home
+        //                    e.stopPropagation();
+        //                    e.preventDefault();
+        //                    _moveToParent();
+        //                    break;
+        //                case 35: //End
+        //                    e.stopPropagation();
+        //                    e.preventDefault();
+        //                    break;
+        //                case 33: //PageUp
+        //                    e.stopPropagation();
+        //                    e.preventDefault();
+        //                    _moveToRoot();
+        //                    break;
+        //                case 34: //PageDown
+        //                    e.stopPropagation();
+        //                    e.preventDefault();
+        //                    _moveToLastItem();
+        //                    break;
+        //                case 113: //F2
+        //                    e.stopPropagation();
+        //                    e.preventDefault();
+        //                    me.activeNode.renamer.activate();
+        //                    break;
+        //                case 46: //Delete
+        //                    e.stopPropagation();
+        //                    e.preventDefault();
+        //                    me.activeNode.delete();
+        //                    _moveToParent();
+        //                    break;
+        //                case 45: //Insert
+        //                    e.stopPropagation();
+        //                    e.preventDefault();
+        //                    _addNewNode();
+        //                    break;
+        //                case 13: //Enter
+        //                    e.stopPropagation();
+        //                    e.preventDefault();
+        //                    switch (me.mode) {
+        //                        case MODE.SINGLE: _selectActive(); break;
+        //                        case MODE.MULTI: _confirm(); break;
+        //                    }
+        //                    break;
+        //                    //Confirmation.
+        //                case 32: //Space
+        //                    e.stopPropagation();
+        //                    e.preventDefault();
+        //                    switch (me.mode) {
+        //                        case MODE.SINGLE: _selectActive(); break;
+        //                        case MODE.MULTI: me.activeNode.select(); break;
+        //                    }
+        //                    break;
+        //            }
+        //        }
 
-            }
+        //    }
 
-        });
+        //});
 
-        function _confirm() {
-            me.trigger({
-                'type': 'confirm',
-                'items': _getSelectedArray()
-            });
-        }
+        //function _confirm() {
+        //    me.trigger({
+        //        'type': 'confirm',
+        //        'items': _getSelectedArray()
+        //    });
+        //}
 
         
-        function _getSelectedArray() {
-            return me.root.getSelectedArray();
-        }
+        //function _getSelectedArray() {
+        //    return me.root.getSelectedArray();
+        //}
 
 
-        function _selectActive() {
-            me.trigger({
-                'type': 'confirm',
-                'item' : me.activeNode
-            });
-        }
+        //function _selectActive() {
+        //    me.trigger({
+        //        'type': 'confirm',
+        //        'item' : me.activeNode
+        //    });
+        //}
 
-        function _addNewNode() {
-            var expander = me.activeNode.expander;
-            if (!expander.isExpanded()) {
-                expander.expand();
-            }
-            me.activeNode.addNewNode();
-        }
+        //function _addNewNode() {
+        //    var expander = me.activeNode.expander;
+        //    if (!expander.isExpanded()) {
+        //        expander.expand();
+        //    }
+        //    me.activeNode.addNewNode();
+        //}
 
-        function _expand() {
-            if (me.activeNode.expander) {
-                me.activeNode.expander.expand();
-            }
-        }
+        //function _expand() {
+        //    if (me.activeNode.expander) {
+        //        me.activeNode.expander.expand();
+        //    }
+        //}
 
-        function _collapse() {
-            if (me.activeNode.expander) {
-                me.activeNode.expander.collapse();
-            }
-        }
+        //function _collapse() {
+        //    if (me.activeNode.expander) {
+        //        me.activeNode.expander.collapse();
+        //    }
+        //}
 
-        function _moveToParent() {
-            if (!me.activeNode.isRoot()) {
-                changeSelection(me.activeNode.parent);
-            }
-        }
+        //function _moveToParent() {
+        //    if (!me.activeNode.isRoot()) {
+        //        changeSelection(me.activeNode.parent);
+        //    }
+        //}
 
-        function _moveToRoot() {
-            changeSelection(me.root);
-        }
+        //function _moveToRoot() {
+        //    changeSelection(me.root);
+        //}
 
-        function _moveToLastItem() {
-            var node = me.root;
-            while (node.expander.isExpanded()) {
-                node = node.getLastChild();
-            }
-            changeSelection(node);
-        }
+        //function _moveToLastItem() {
+        //    var node = me.root;
+        //    while (node.expander.isExpanded()) {
+        //        node = node.getLastChild();
+        //    }
+        //    changeSelection(node);
+        //}
 
-        function _moveUp() {
-            var previousNode = me.activeNode.previousNode();
-            if (previousNode) {
+        //function _moveUp() {
+        //    var previousNode = me.activeNode.previousNode();
+        //    if (previousNode) {
 
-                var node = previousNode;
-                while (node.expander.isExpanded()) {
-                    node = node.getLastChild();
-                }
-                changeSelection(node);
-            } else {
-                if (!me.activeNode.isRoot()) {
-                    changeSelection(me.activeNode.parent);
-                }
-            }
-        }
+        //        var node = previousNode;
+        //        while (node.expander.isExpanded()) {
+        //            node = node.getLastChild();
+        //        }
+        //        changeSelection(node);
+        //    } else {
+        //        if (!me.activeNode.isRoot()) {
+        //            changeSelection(me.activeNode.parent);
+        //        }
+        //    }
+        //}
 
-        function _moveDown() {
-            if (me.activeNode.expander && me.activeNode.expander.isExpanded()) {
-                var childNode = me.activeNode.getChildNode(0);
-                if (childNode) {
-                    changeSelection(childNode);
-                }
-            } else {
-                if (!me.activeNode.isRoot()) {
-                    var nextNode = me.activeNode.nextNode();
+        //function _moveDown() {
+        //    if (me.activeNode.expander && me.activeNode.expander.isExpanded()) {
+        //        var childNode = me.activeNode.getChildNode(0);
+        //        if (childNode) {
+        //            changeSelection(childNode);
+        //        }
+        //    } else {
+        //        if (!me.activeNode.isRoot()) {
+        //            var nextNode = me.activeNode.nextNode();
 
-                    var parent = me.activeNode.parent;
-                    while (nextNode === null && parent.isNode) {
-                        nextNode = parent.nextNode();
-                        parent = parent.parent;
-                    }
+        //            var parent = me.activeNode.parent;
+        //            while (nextNode === null && parent.isNode) {
+        //                nextNode = parent.nextNode();
+        //                parent = parent.parent;
+        //            }
 
-                    if (nextNode) {
-                        changeSelection(nextNode);
-                    }
+        //            if (nextNode) {
+        //                changeSelection(nextNode);
+        //            }
 
-                }
-            }
-        }
+        //        }
+        //    }
+        //}
 
-        function changeSelection(node) {
-            me.activeNode.inactivate();
-            node.activate();
-        }
+        //function changeSelection(node) {
+        //    me.activeNode.inactivate();
+        //    node.activate();
+        //}
 
     })();
 
-    this.root.activate();
+    //this.root.activate();
 
-    if (!this.visible) {
-        this.hide();
+    if (!$visible) {
+        me.hide();
     }
 
 }
-TreeView.prototype.trigger = function (e) {
-    this.events.trigger(e);
-}
-TreeView.prototype.bind = function (e) {
-    this.events.bind(e);
-}
-TreeView.prototype.hide = function () {
-
-    this.visible = false;
-
-    if (this.background) {
-        $(this.background).css({
-            'display': 'none'
-        });
-    }
-
-    $(this.container).css({
-        'display' : 'none'
-    });
-}
-TreeView.prototype.showSearchPanel = function () {
-    this.searchPanel = (this.searchPanel || new SearchPanel(this));
-    this.searchMode = true;
-    this.searchPanel.show();
-}
-TreeView.prototype.hideSearchPanel = function () {
-    if (this.searchPanel) {
-        this.searchPanel.hide();
-    }
-    this.searchPanel = null;
-    this.searchMode = false;
-}
-TreeView.prototype.show = function () {
-
-    this.visible = true;
-
-    if (this.background) {
-        $(this.background).css({
-            'display': 'block',
-            'z-index' : my.ui.addTopLayer()
-        });
-    }
-
-    $(this.container).css({
-        'display': 'block'
-    });
-}
-TreeView.prototype.reset = function () {
-    if (this.node) {
-        this.node.unselect();
-        this.node.collapse();
-    }
-}
-TreeView.prototype.destroy = function () {
-    this.ui.destroy();
-}
 
 
-
-
-
-
-
-
-
+//TreeNode
+//Represents a single line in a tree view.
+//Events generated:
+// expand
+// collapse
+// move
+// select
+// unselect
+// childStatusChanged
+// hasSelectedChildren
+// activateDroparea
+// deactivateDroparea
+// addNode
+// removeNode
+// sort
+// statusChanged
+// move
+// click
+// release
+// startRenamer
+// escapeRenamer
+//=================
+//TreeView:
+// editName
 function TreeNode(tree, parent, object){
     var me = this;
-
+    //Parental tree.
     this.tree = tree;
-
     //Node properties.
     this.key = (typeof(object.key) === 'function' ? object.key() : object.key) || '';
     this.name = (typeof (object.name) === 'function' ? object.name() : object.name) || '';
     this.object = object;
     this.parent = parent;
-
-
-    this.mouseClicked = false;
-    this.isActive = false;
-    this.isNode = true;
+    //State variables.
+    //this.mouseClicked = false;
+    //this.isActive = false;
+    //this.isNode = true;
 
 
     var $events = (function () {
@@ -797,6 +798,13 @@ function TreeNode(tree, parent, object){
         //it is always visible.
         var _visible = (me.parent ? me.parent.isExpanded() : true);
 
+        var _position = {
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0
+        };
+
         var _container = jQuery('<div/>', {
             'class': 'node-container'
         });
@@ -809,6 +817,19 @@ function TreeNode(tree, parent, object){
             'class': 'children-container'
         }).appendTo(_container);
 
+        function _calculatePosition() {
+            var _pos = $(_container).offset();
+            var _width = $(_container).width();
+            var _height = $(_container).height();
+            _position = {
+                left: _pos.left,
+                top: _pos.top,
+                width: _width,
+                height: _height,
+                right: _pos.left + _width,
+                bottom: _pos.top + _height
+            }
+        };
 
         //Events listeners.
         var _listener = (function () {
@@ -835,6 +856,12 @@ function TreeNode(tree, parent, object){
                 }
             });
 
+            me.tree.bind({
+                'expand collapse': function (e) {
+                    _calculatePosition();
+                }
+            });
+
             if (me.parent) {
                 me.parent.bind({
                     'expand': function () {
@@ -853,11 +880,23 @@ function TreeNode(tree, parent, object){
             $(object).appendTo(_children);
         }
 
+        function _isHovered(x, y) {
+            if (_visible) {
+                if (x >= _position.left && x <= _position.right && y >= _position.top && y <= _position.bottom) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
 
         return {
             container: _container,
             line: _line,
-            children: _children
+            children: _children,
+            isHovered: function (x, y) {
+                return _isHovered(x, y);
+            }
         }
 
     }());
@@ -1336,28 +1375,32 @@ function TreeNode(tree, parent, object){
         })();
 
         var _ui = (function () {
-            var _textbox = _textbox || jQuery('<input/>', {
-                'class': 'edit-name'
-            }).css({
-                'visibility': 'hidden'
-            }).bind({
-                'keydown': function (e) {
-                    switch (e.which) {
-                        case 13: //Enter
-                            e.preventDefault();
-                            e.stopPropagation();
-                            _confirm($(this).val());
-                            break;
-                        case 27: //Escape
-                            e.preventDefault();
-                            e.stopPropagation();
-                            $events({
-                                'type': 'escapeRenamer'
-                            });
-                            break;
+            var _textbox;
+            
+            function createTextbox(){
+                _textbox = _textbox || jQuery('<input/>', {
+                    'class': 'edit-name'
+                }).css({
+                    'visibility': 'hidden'
+                }).bind({
+                    'keydown': function (e) {
+                        switch (e.which) {
+                            case 13: //Enter
+                                e.preventDefault();
+                                e.stopPropagation();
+                                _confirm($(this).val());
+                                break;
+                            case 27: //Escape
+                                e.preventDefault();
+                                e.stopPropagation();
+                                $events({
+                                    'type': 'escapeRenamer'
+                                });
+                                break;
+                        }
                     }
-                }
-            }).appendTo($ui.container);
+                }).appendTo($ui.container);
+            }
 
             function _isOutside(x, y){
                 var _position = $(_textbox).offset();
@@ -1375,16 +1418,15 @@ function TreeNode(tree, parent, object){
 
             return {
                 destroy: function () {
-                    function destroy() {
-                        $(_textbox).remove();
-                        _textbox = null;
-                    }
+                    $(_textbox).remove();
+                    _textbox = null;
                 },
                 render: function () {
+                    if (!_textbox) createTextbox();
                     show(_textbox);
                     $(_textbox).val(me.name).focus().select();
                     me.tree.trigger({
-                        'type': 'edit_name'
+                        'type': 'editName'
                     });
                 },
                 isOutside: function(x, y){
@@ -1470,8 +1512,6 @@ function TreeNode(tree, parent, object){
     };
 
 
-
-
     var $droparea = (function () {
         var _visible = false;
         var _position = {
@@ -1487,7 +1527,6 @@ function TreeNode(tree, parent, object){
                     _calculatePosition();
                 }
             });
-
         })();
 
         function _calculatePosition() {
@@ -1516,189 +1555,174 @@ function TreeNode(tree, parent, object){
             });
         }
 
-    })();
 
+        //function _check(x, y) {
+        //    if (me.tree.dragDropManager.hasDropArea()) {
+        //        return;
+        //    } else if (_isHovered(x, y) && me.tree.dragDropManager.getDrag() !== me) {
+        //        _select();
+        //    } else {
+        //        for (var key in me.nodes) {
+        //            if (me.nodes.hasOwnProperty(key)) {
+        //                var node = me.nodes[key];
+        //                if (node) {
+        //                    node.dropArea.check(x, y);
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
-    this.dropArea = (function () {
-        var visible = false;
-        var selected = false;
-
-
-        function _check(x, y) {
-            if (me.tree.dragDropManager.hasDropArea()) {
-                return;
-            } else if (_isHovered(x, y) && me.tree.dragDropManager.getDrag() !== me) {
-                _select();
-            } else {
-                for (var key in me.nodes) {
-                    if (me.nodes.hasOwnProperty(key)) {
-                        var node = me.nodes[key];
-                        if (node) {
-                            node.dropArea.check(x, y);
-                        }
-                    }
-                }
-            }
-        }
-
-        return {
-            check: function (x, y) {
-                _check(x, y);
-            }
-        }
 
     })();
-
-
-    $(document).bind({
-        'mousemove': function (e) {
-            e.preventDefault();
-            if (me.mouseClicked) {
-                me.mover.move(e);
-            }
-        },
-        'mouseup': function (e) {
-            e.preventDefault();
-            me.mover.drop(e);
-            me.mouseClicked = false;
-        }
-    });
-
 
     var $mover = (function () {
         var _active = false;
-        var _x = 0;
-        var _y = 0;
-        var _left = 0;
-        var _top = 0;
+        var _position = {
+            x: 0,
+            y: 0,
+            left: 0,
+            top: 0
+        }
 
         var _events = (function () {
+            $(document).bind({
+                'mousemove': function (e) {
+                    e.preventDefault();
+                    if (_active) {
+                        $events.trigger({
+                            'type': 'move',
+                            'x': e.pageX,
+                            'y': e.pageY,
+                        });
+                    }
+                },
+                'mouseup': function (e) {
+                    e.preventDefault();
+                    $events.trigger({
+                        'type' : 'release'
+                    });
+                }
+            });
+
             $events.bind({
                 'click': function (e) {
                     if (e.active === false) return;
                     _active = true;
+                },
+                'move': function (e) {
+                    if (e.active === false) return;
+                    if (!_active) {
+                        _activate(e.x, e.y);
+                        me.tree.trigger({
+                            'type': 'dragin',
+                            node: me
+                        });
+                    }
+                    _move(e.x, e.y);
+                },
+                'release': function (e) {
+                    if (e.active === false) return;
+                    if (_active) {
+                        _deactivate();
+                        me.tree.trigger({
+                            type: 'dragout',
+                            node: me
+                        });
+                    }
                 }
             });
+
         })();
 
+        var _ui = (function () {
+            var _control;
 
-
-    })();
-
-    this.mover = (function () {
-        var active = false;
-        var x = 0;
-        var y = 0;
-        var left = 0;
-        var top = 0;
-
-        var div = null;
-
-        function createDiv() {
-            var control = jQuery('<div/>', {
-                'class': 'move',
-                html: me.name
-            }).
-            css({
-                'visibility': 'hidden'
-            }).
-            appendTo(me.mainContainer);
-            return control;
-        }
-
-        function activate(left, top) {
-            if (div === null) {
-                div = createDiv();
+            function createControl() {
+                _control = _control || jQuery('<div/>', {
+                    'class': 'move',
+                    html: me.name
+                }).css({
+                    'visibility': 'hidden'
+                }).appendTo($ui.container);
             }
-            active = true;
-            show(div);
-            x = left;
-            y = top;
+
+            return {
+                hide: function (e) {
+                    if (e.active === false) return;
+                    hide(_control);
+                },
+                render: function (e) {
+                    if (!_control) createControl();
+                    show(_control);
+                },
+                move: function (position) {
+                    if (!control) return;
+                    _position.left = position.left;
+                    _position.top = position.top;
+                    $(_control).css(position);
+                }
+            }
+
+        })();
+        
+        function _activate(left, top) {
+            _active = true;
+            _ui.render();
+            _position.x = left;
+            _position.y = top;
             moveDiv($(me.caption).offset());
         }
 
-        function deactivate() {
-            active = false;
-            hide(div);
+        function _deactivate() {
+            _active = false;
+            _ui.hide();
         }
 
-        function _move(e) {
-            var _x = e.pageX;
-            var _y = e.pageY;
+        function _move(x, y) {
 
-            moveDiv({
-                left: left + (_x - x),
-                top: top + (_y - y)
+            _ui.move({
+                left: left + (x - _position.x),
+                top: top + (y - _position.y)
             });
 
-            x = _x;
-            y = _y;
+            _position.x = x;
+            _position.y = y;
 
-            $('#debug').html('X: ' + e.pageX + ' | Y: ' + e.pageY);
-
-        }
-
-
-        function moveDiv(position) {
-            left = position.left;
-            top = position.top;
-            $(div).css(position);
         }
 
         return {
-            move: function (e) {
-                if (!active) {
-                    activate(e.pageX, e.pageY);
-                    me.tree.trigger({
-                        type: 'dragin',
-                        node: me
-                    });
-                }
-                _move(e);
-            },
             isActive: function () {
-                return active;
-            },
-            drop: function (e) {
-                if (active) {
-                    deactivate();
-                    me.tree.trigger({
-                        type: 'dragout',
-                        node: me
-                    });
-                }
+                return _active;
             }
         }
 
     })();
 
-    this.path = function (thisInclude) {
-        var node;
-        var path = '';
 
-        if (thisInclude) {
-            node = this;
-        } else {
-            node = this.parent
-        }
+    //this.path = function (thisInclude) {
+    //    var node;
+    //    var path = '';
 
-        if (node.isRoot()) {
-            return '';
-        }
+    //    if (thisInclude) {
+    //        node = this;
+    //    } else {
+    //        node = this.parent
+    //    }
 
-        while (!node.isRoot()) {
-            path = node.name + (path ? '  >  ' + path : '');
-            node = node.parent;
-        }
-        return path;
-    }
+    //    if (node.isRoot()) {
+    //        return '';
+    //    }
+
+    //    while (!node.isRoot()) {
+    //        path = node.name + (path ? '  >  ' + path : '');
+    //        node = node.parent;
+    //    }
+    //    return path;
+    //}
 
 
 }
-
-
-
-
 
 
 
