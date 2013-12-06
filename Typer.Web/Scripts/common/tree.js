@@ -1,9 +1,9 @@
-﻿
-var MODE = {
+﻿var MODE = {
     NONE: 0,
     SINGLE: 1,
     MULTI: 2
 };
+
 
 
 $(function () {
@@ -46,141 +46,47 @@ function TreeView(properties){
     }
 
 
-    this.ui = (function () {
-        if (properties.blockOtherElements) {
-            me.background = jQuery('<div/>', {
-                id: 'tree-background',
-                'class': 'tree-background'
-            }).
-            css({
-                'z-index': my.ui.addTopLayer()
-            }).
-            appendTo($(document.body));
-        }
+    var $events = (function () {
+        var _listener = {};
 
-        if (me.isEmbedded) {
-            me.background = jQuery('<div/>').
-            css({
-                'width': '100%',
-                'height': '100%',
-                'position': 'relative',
-                'display': 'block'
-            }).
-            appendTo($(properties.container));
-        }
-
-        var background = (me.background || $(document.body));
-
-        var frame = jQuery('<div/>', {
-            id: 'tree-container-frame',
-            'class': 'tree-container-frame'
-        }).appendTo($(background));
-
-
-        
-        //Change styling if tree is embedded.
-        if (me.isEmbedded) {
-            $(frame).css({
-                'position': 'relative',
-                'float': 'left',
-                'width': '100%',
-                'height': '100%',
-                'left': '0px',
-                'top': '0px',
-                'padding': '0px'
-            });
-        }
-
-        me.container = jQuery('<div/>', {
-            id: 'tree-container',
-            'class': 'tree-container'
-        }).
-        appendTo($(frame));
-
-
-        if (!me.isEmbedded) {
-            var btnQuit = jQuery('<div/>', {
-                id: 'tree-container-exit',
-                'class': 'tree-container-exit'
-            }).
-            bind({
-                'click': function () {
-                    me.events.trigger({
-                        'type': 'cancel'
-                    });
-                }
-            }).
-            appendTo($(me.container));
-        }
-
-
-        me._searchPanel = jQuery('<div/>', {
-            id: 'tree-search-panel',
-            'class': 'tree-search-panel'
-        }).
-        css({
-            'display': 'none'
-        }).
-        appendTo($(me.container));
-        me.searchMode = false;
-
-
-        //Place container inside the screen.
-        if (properties.x !== undefined) {
-            me.container.css('left', properties.x);
-        }
-        if (properties.y !== undefined) {
-            me.container.css('top', properties.y);
-        }
-
-        return {
-            destroy: function () {
-                if (me.background) {
-                    $(me.background).remove();
-                } else {
-                    $(frame).remove();
-                }
-            }
-        }
-
-    })();
-
-    this.events = (function () {
-        var _container = jQuery('<div/>', {
-            'class': 'events-container'
-        }).appendTo(me.container);
-
-
-        _container.bind({
+        $(_listener).bind({
             expand: function (e) {
+                if (e.active === false) return;
                 me.root.dropArea.recalculate();
             },
             collapse: function (e) {
+                if (e.active === false) return;
                 me.root.dropArea.recalculate();
             },
             activate: function (e) {
+                if (e.active === false) return;
                 if (me.activeNode && me.activeNode != e.node) {
                     me.activeNode.inactivate();
                 }
                 me.activeNode = e.node;
             },
             inactivate: function (e) {
+                if (e.active === false) return;
                 if (me.activeNode === e.node) {
                     me.activeNode = null;
                 }
             },
             'delete': function (e) {
+                if (e.active === false) return;
             },
             newNode: function (e) {
+                if (e.active === false) return;
                 e.node.activate();
             },
             confirm: function (e) {
+                if (e.active === false) return;
                 alert('confirm');
                 if (!me.isEmbedded) {
                     me.hide();
                 }
             },
             cancel: function (e) {
+                if (e.active === false) return;
                 if (!me.isEmbedded) {
                     me.hide();
                 }
@@ -192,14 +98,123 @@ function TreeView(properties){
 
         return {
             trigger: function (e) {
-                _container.trigger(e);
+                $(_listener).trigger(e);
             },
             bind: function (a) {
-                $(_container).bind(a);
+                $(_listener).bind(a);
             }
         }
 
     })();
+    this.trigger = function (e) {
+        $events.trigger(e);
+    }
+    this.bind = function (e) {
+        $events.bind(e);
+    }
+
+
+    var $ui = (function () {
+        var _background;
+
+        if (properties.blockOtherElements) {
+            _background = jQuery('<div/>', {
+                'class': 'tree-background'
+            }).
+            css({
+                'z-index': my.ui.addTopLayer()
+            }).
+            appendTo($(document.body));
+        }
+
+        if (me.isEmbedded) {
+            _background = jQuery('<div/>').
+            css({
+                'width': '100%',
+                'height': '100%',
+                'position': 'relative',
+                'display': 'block'
+            }).
+            appendTo($(properties.container));
+        }
+
+        _background = (_background || $(document.body));
+
+        var _frame = jQuery('<div/>', {
+            'class': 'tree-container-frame'
+        }).appendTo($(_background));
+
+
+        
+        //Change styling if tree is embedded.
+        if (me.isEmbedded) {
+            $(_frame).css({
+                'position': 'relative',
+                'float': 'left',
+                'width': '100%',
+                'height': '100%',
+                'left': '0px',
+                'top': '0px',
+                'padding': '0px'
+            });
+        }
+
+        var _container = jQuery('<div/>', {
+            'class': 'tree-container'
+        }).appendTo($(_frame));
+
+        //Place container inside the screen.
+        if (properties.x !== undefined) {
+            $(_container).css('left', properties.x);
+        }
+        if (properties.y !== undefined) {
+            $(_container).css('top', properties.y);
+        }
+
+
+        if (!me.isEmbedded) {
+            var btnQuit = jQuery('<div/>', {
+                'class': 'tree-container-exit'
+            }).
+            bind({
+                'click': function (e) {
+                    if (e.active === false) return;
+                    $events.trigger({
+                        'type': 'cancel'
+                    });
+                }
+            }).appendTo($(_container));
+        }
+
+
+        //me._searchPanel = jQuery('<div/>', {
+        //    id: 'tree-search-panel',
+        //    'class': 'tree-search-panel'
+        //}).
+        //css({
+        //    'display': 'none'
+        //}).
+        //appendTo($(_container));
+        //me.searchMode = false;
+
+
+
+
+        return {
+            destroy: function () {
+                if (_background !== document.body) {
+                    $(_background).remove();
+                } else {
+                    $(_frame).remove();
+                }
+            }
+        }
+
+    })();
+
+
+
+
 
     this.getContainer = function () {
         return this.container;
@@ -298,12 +313,12 @@ function TreeView(properties){
                 'click': function () {
                     var items = me.root.getSelectedArray();
                     if (items && items.length) {
-                        me.events.trigger({
+                        $events.trigger({
                             'type': 'confirm',
                             'items': items
                         });
                     } else {
-                        me.events.trigger({
+                        $events.trigger({
                             'type': 'cancel'
                         });
                     }
@@ -320,7 +335,7 @@ function TreeView(properties){
             }).
             bind({
                 'click': function () {
-                    me.events.trigger({
+                    $events.trigger({
                         'type': 'cancel'
                     });
                 }
@@ -357,7 +372,7 @@ function TreeView(properties){
             }
         });
 
-        me.events.bind({
+        $events.bind({
             dropin: function (e) {
                 if (e.node !== drag) {
                     drop = e.node;
@@ -437,7 +452,7 @@ function TreeView(properties){
 
                 //Escape applies even for the case if none node is selected.
                 if (e.which === 27) {
-                    me.events.trigger({
+                    $events.trigger({
                         'type' : 'cancel'
                     });
                 }
@@ -704,8 +719,8 @@ function TreeNode(tree, parent, object){
     this.tree = tree;
 
     //Node properties.
-    this.key = (typeof(object.key) === "function" ? object.key() : object.key) || '';
-    this.name = (typeof (object.name) === "function" ? object.name() : object.name) || '';
+    this.key = (typeof(object.key) === 'function' ? object.key() : object.key) || '';
+    this.name = (typeof (object.name) === 'function' ? object.name() : object.name) || '';
     this.object = object;
     this.parent = parent;
 
@@ -723,20 +738,36 @@ function TreeNode(tree, parent, object){
 
         $(_listener).bind({
             'addNode': function (e) {
+                if (e.active === false) return;
                 if (me.object.events) {
-                    me.object.events().trigger({
+                    var _events = (typeof (me.object.events) === 'function' ? object.events() : object.events);
+                    _events.trigger({
                         'type': 'add',
                         'value': e.node.object
                     });
                 }
             },
             'removeNode': function (e) {
+                if (e.active === false) return;
                 if (me.object.events) {
-                    me.object.events().trigger({
+                    var _events = (typeof (me.object.events) === 'function' ? object.events() : object.events);
+                    _events.trigger({
                         'type': 'remove',
                         'value': e.node.object
                     });
                 }
+            },
+            'activateDroparea': function(e){
+                me.tree.trigger({
+                    'type' : 'dropin',
+                    'node': me
+                });
+            },
+            'deactivateDroparea': function(e){
+                me.tree.trigger({
+                    'type' : 'dropout',
+                    'node': me
+                });
             }
             //rename: [node], [name]
             //tranfer: [node], [to]
@@ -759,7 +790,13 @@ function TreeNode(tree, parent, object){
         $events.bind(e);
     }
 
+
     var $ui = (function () {
+        //Define if this element is visible on the screen.
+        //If parent is not defined, this node is root node and
+        //it is always visible.
+        var _visible = (me.parent ? me.parent.isExpanded() : true);
+
         var _container = jQuery('<div/>', {
             'class': 'node-container'
         });
@@ -777,15 +814,38 @@ function TreeNode(tree, parent, object){
         var _listener = (function () {
             $events.bind({
                 expand: function (e) {
+                    if (e.active === false) return;
                     show(_children);
                 },
                 collapse: function (e) {
+                    if (e.active === false) return;
                     hide(_children);
                 },
-                addNode: function(e){
+                addNode: function (e) {
+                    if (e.active === false) return;
                     _addChild(e.container);
+                },
+                sort: function (e) {
+                    var _array = e.array;
+                    if (_array.length > 1) {
+                        for (var i = _array.length - 1; i > 0; i--) {
+                            $(_array[i].container()).before($(_array[i - 1].container));
+                        }
+                    }
                 }
             });
+
+            if (me.parent) {
+                me.parent.bind({
+                    'expand': function () {
+                        _visible = true;
+                    },
+                    'collapse': function () {
+                        _visible = false;
+                    }
+                });
+            }
+
         })();
 
 
@@ -801,6 +861,10 @@ function TreeNode(tree, parent, object){
         }
 
     }());
+    this.container = function () {
+        return $ui.container;
+    }
+
 
     var $nodes = (function () {
         var _items = {};
@@ -820,14 +884,20 @@ function TreeNode(tree, parent, object){
             _sorted.sort(function(a, b){
                 return a.key - b.key;
             });
+            $events.trigger({
+                'type': 'sort',
+                'array': _sorted
+            });
         }
 
         var _events = (function () {
             $events.bind({
                 'addNode': function (e) {
+                    if (e.active === false) return;
                     _addNode(e.node);
                 },
                 'removeNode': function (e) {
+                    if (e.active === false) return;
                     if (e.node) {
                         _removeNode(e.node)
                     } else if (e.key) {
@@ -900,6 +970,7 @@ function TreeNode(tree, parent, object){
             'class': 'icon '
         }).bind({
             'click': function (e) {
+                if (e.active === false) return;
                 e.preventDefault();
                 e.stopPropagation();
                 if (_expandable) {
@@ -908,22 +979,23 @@ function TreeNode(tree, parent, object){
             }
         }).appendTo($ui.line);
 
-
-
         var _events = (function () {
             $events.bind({
-                'addNode': function () {
+                'addNode': function (e) {
+                    if (e.active === false) return;
                     _expandable = true;
                     if (me.tree.options.expandWhenAddingNewNode) {
                         _expanded = true;
                     }
                     _render();
                 },
-                'removeNode': function () {
+                'removeNode': function (e) {
+                    if (e.active === false) return;
                     _expandable = ($nodes.size() > 0);
                     _render();
                 },
-                'expand': function () {
+                'expand': function (e) {
+                    if (e.active === false) return;
                     _expanded = true;
                     _render();
 
@@ -934,13 +1006,13 @@ function TreeNode(tree, parent, object){
                     }
 
                 },
-                'collapse': function () {
+                'collapse': function (e) {
+                    if (e.active === false) return;
                     _expanded = false;
                     _render();
                 }
             });
         })();
-
         
         function _revertStatus() {
             if (_expanded) {
@@ -952,7 +1024,7 @@ function TreeNode(tree, parent, object){
 
         function _expand() {
             if (_expandable && !_expanded) {
-                me.events.trigger({
+                $events.trigger({
                     'type': 'expand'
                 });
             }
@@ -960,7 +1032,7 @@ function TreeNode(tree, parent, object){
 
         function _collapse() {
             if (_expandable && _expanded) {
-                me.events.trigger({
+                $events.trigger({
                     'type': 'collapse'
                 });
             }
@@ -1003,6 +1075,9 @@ function TreeNode(tree, parent, object){
         }
 
     })(object.expanded);
+    this.isExpanded = function () {
+        return $expander.isExpanded();
+    }
 
     var $selector = (function (value) {
         var _selected = value;
@@ -1016,7 +1091,8 @@ function TreeNode(tree, parent, object){
             }).css({
                 'display': (me.tree.mode === MODE.MULTI ? 'block' : 'none')
             }).bind({
-                'click': function () {
+                'click': function (e) {
+                    if (e.active === false) return;
                     $events.trigger({
                         'type' : 'statusChanged',
                         'applyForChildren': true,
@@ -1037,7 +1113,16 @@ function TreeNode(tree, parent, object){
 
         var _events = (function () {
             $events.bind({
+                'select': function (e) {
+                    if (me.tree.mode === MODE.SINGLE) {
+                        me.tree.trigger({
+                            'type': 'select',
+                            'node': me
+                        });
+                    }
+                },
                 'select unselect': function (e) {
+                    if (e.active === false) return;
                     _ui.check(e.type === 'select');
                     if (e.applyForChildren){
                         _applyForChildren(e.type);
@@ -1046,23 +1131,25 @@ function TreeNode(tree, parent, object){
                         _applyForParent(e.type);
                     }
                 },
-                'statusChanged': function(e){
-                    me.events.trigger({
+                'statusChanged': function (e) {
+                    if (e.active === false) return;
+                    $events.trigger({
                         'type': _selected ? 'unselect' : 'select',
                         'applyForParent' : true,
                         'applyForChildren' : true
                     });
                 },
-                'childStatusChanged' : function(){
+                'childStatusChanged': function (e) {
+                    if (e.active === false) return;
                     var selectedChildren = $nodes.countSelected();
                     if (selectedChildren){
-                        me.events.trigger({
+                        $events.trigger({
                             'type' : (selectedChildren === $nodes.size() ? 'select' : 'hasSelectedChildren'),
                             'applyForChildren' : false,
                             'applyForParent': true
                         });
                     } else {
-                        me.events.trigger({
+                        $events.trigger({
                             'type': 'unselect',
                             'applyForChildren' : false,
                             'applyForParent': true
@@ -1114,7 +1201,8 @@ function TreeNode(tree, parent, object){
                 html: me.name
             }).bind({
                 'mousedown': function (e) {
-                    me.events.trigger({
+                    if (e.active === false) return;
+                    $events.trigger({
                         'type' : 'click'
                     });
                     //e.preventDefault();
@@ -1136,16 +1224,33 @@ function TreeNode(tree, parent, object){
                     //}
                 },
                 'mouseup': function (e) {
-                    if (!me.mover.isActive() && me.mouseClicked) {
-                        me.activate();
-                    }
-                    me.mouseClicked = false;
+                    if (e.active === false) return;
+                    $events.trigger({
+                        'type' : 'release'
+                    });
+                    //if (!me.mover.isActive() && me.mouseClicked) {
+                    //    me.activate();
+                    //}
+                    //me.mouseClicked = false;
                 }
             }).appendTo($ui.line);
 
             return {
-                caption: function () {
+                textbox: function () {
                     return _caption;
+                },
+                position: function(){
+                    var _position = $(_caption).offset();
+                    var _width = $(_caption).width();
+                    var _height = $(_caption).height();
+                    return {
+                        left: _position.left,
+                        top: _position.top,
+                        width: _width,
+                        height: _height,
+                        right: _position.left + _width,
+                        bottom: _position.top + _height
+                    }
                 }
             }
 
@@ -1153,12 +1258,17 @@ function TreeNode(tree, parent, object){
 
         var _events = (function () {
             $events.bind({
-                'click': function () {
+                'click': function (e) {
+                    if (e.active === false) return;
                     if (_active) {
                         if (me.tree.mode === MODE.SINGLE) {
-                            //Select and confirm.
+                            $events.trigger({
+                                'type': 'select'
+                            });
                         } else {
-                            //Activate renamer.
+                            $events.trigger({
+                                'type': 'startRenamer'
+                            });
                         }
                     } else {
                         _active = true;
@@ -1167,122 +1277,252 @@ function TreeNode(tree, parent, object){
                         }, me.tree.options.doubleClickDelay || 250);
                     }
                 },
-                'select hasSelectedChildren': function () {
-                    $(_ui.caption).css({
+                'select hasSelectedChildren': function (e) {
+                    if (e.active === false) return;
+                    $(_ui.textbox()).css({
                         'font-weight' : 'bold'
                     });
                 },
-                'unselect': function () {
-                    $(_ui.caption).css({
+                'unselect': function (e) {
+                    if (e.active === false) return;
+                    $(_ui.textbox()).css({
                         'font-weight': 'normal'
                     });
+                },
+                'activateDroparea': function (e) {
+                    if (e.active === false) return;
+                    $(_ui.textbox()).addClass('drop-area');
+                },
+                'deactivateDroparea': function (e) {
+                    if (e.active === false) return;
+                    $(_ui.textbox()).removeClass('drop-area');
                 }
             });
         })();
 
+        return {
+            position: function(){
+                return _ui.position();
+            }
+        }
+
     })();
 
+    var $renamer = (function () {
+        var _active = false;
 
-    this.caption = jQuery('<div/>', {
-        'class': 'caption',
-        html: me.name
-    }).
-    bind({
-        'mousedown': function (e) {
-            e.preventDefault();
-            me.mouseClicked = true;
-            if (me.isActive) {
+        var _listener = (function () {
+            $events.bind({
+                'startRenamer': function () {
+                    _activate();
+                },
+                'escapeRenamer': function () {
+                    _escape();
+                }                
+            });
 
-                if (me.tree.mode === MODE.SINGLE) {
-                    me.select();
-                } else {
-                    e.preventDefault;
-                    me.renamer.activate();
-                    me.inactivate();
+            $(document).bind({
+                'mousedown': function (e) {
+                    if (_active && e && _ui.isOutside(e.pageX, e.pageY)) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        $events({
+                            'type': 'escapeRenamer'
+                        });
+                    }
+                }
+            });
+
+        })();
+
+        var _ui = (function () {
+            var _textbox = _textbox || jQuery('<input/>', {
+                'class': 'edit-name'
+            }).css({
+                'visibility': 'hidden'
+            }).bind({
+                'keydown': function (e) {
+                    switch (e.which) {
+                        case 13: //Enter
+                            e.preventDefault();
+                            e.stopPropagation();
+                            _confirm($(this).val());
+                            break;
+                        case 27: //Escape
+                            e.preventDefault();
+                            e.stopPropagation();
+                            $events({
+                                'type': 'escapeRenamer'
+                            });
+                            break;
+                    }
+                }
+            }).appendTo($ui.container);
+
+            function _isOutside(x, y){
+                var _position = $(_textbox).offset();
+                var _xa = _position.left;
+                var _ya = _position.top;
+                var _xz = _xa + $(_textbox).width();
+                var _yz = _ya + $(_textbox).height();
+
+                if (x >= _xa && x <= _xz && y >= _ya && y <= _yz) {
+                    return false;
+                }
+
+                return true;
+            }
+
+            return {
+                destroy: function () {
+                    function destroy() {
+                        $(_textbox).remove();
+                        _textbox = null;
+                    }
+                },
+                render: function () {
+                    show(_textbox);
+                    $(_textbox).val(me.name).focus().select();
                     me.tree.trigger({
-                        'type': 'dragout',
-                        'node': me
+                        'type': 'edit_name'
                     });
-                    e.stopPropagation();
+                },
+                isOutside: function(x, y){
+                    return _isOutside(x, y);
                 }
             }
-        },
-        'mouseup': function (e) {
-            if (!me.mover.isActive() && me.mouseClicked) {
-                me.activate();
-            }
-            me.mouseClicked = false;
+
+        })();
+
+        function _activate() {
+            _active = true;
+            _ui.render();
         }
-    }).
-    appendTo(this.line);
 
-
-
-
-    $(document).bind({
-        'mousedown' : function(e){
-            if (me.renamer && me.renamer.isActive()) {
-                if (e && me.renamer.isOutside(e.pageX, e.pageY)) {
-                    me.renamer.escape();
-                }
-            }
-        },
-        'mousemove': function (e) {
-            e.preventDefault();
-            if (me.mouseClicked) {
-                me.mover.move(e);
-            }
-        },
-        'mouseup': function (e) {
-            e.preventDefault();
-            me.mover.drop(e);
-            me.mouseClicked = false;
+        function _validate(name) {
+            return true;
         }
-    });
+
+        function _confirm(value) {
+            //        var validation = validateName(value);
+            //        if (validation === true) {
+            //            applyNewName(value);
+            //        }
+        }
+
+        function _escape() {
+            _active = false;
+            _ui.destroy();
+
+            //Kasowanie jeżeli jest to nowy node.
+            //if (me.key.length === 0) {
+            //    me.parent.activate();
+            //    me.cancel();
+            //}
+        }
 
 
-    this.getContainer = function () {
-        return this.container;
+        //function applyNewName(name) {
+
+        //    if (name.length) {
+        //        if (me.key.length === 0) {
+        //            me.key = name;
+        //            me.changeName(name);
+        //            me.parent.addNode(me);
+        //            me.parent.expander.expand();
+        //            _escape();
+        //            me.tree.trigger({
+        //                'type': 'newNode',
+        //                'node': me,
+        //                'parentId': me.parent.id
+        //            });
+        //        } else {
+        //            if (me.name !== name) {
+        //                var prevName = me.name;
+        //                me.changeName(name);
+        //                me.tree.trigger({
+        //                    'type': 'rename',
+        //                    'node': me,
+        //                    'name': name,
+        //                    'prevName': prevName
+        //                });
+        //            }
+        //            _escape();
+        //        }
+        //    } else {
+        //        if (me.key.length === 0) {
+        //            me.cancel();
+        //        }
+        //    }
+
+        //}
+
+
+        return {
+            isActive: function () {
+                return _active;
+            }
+        }
+
+    })();
+    this.isBeingRenamed = function () {
+        return $renamer.isActive();
     };
 
 
-    this.position = function (div) {
-        return $(div).offset();
-    }
 
-    this.dropArea = (function () {
-        var visible = false;
-        var selected = false;
-        var xa = 0;
-        var xz = 0;
-        var ya = 0;
-        var yz = 0;
+
+    var $droparea = (function () {
+        var _visible = false;
+        var _position = {
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0
+        };
+
+        var _listener = (function () {
+            me.tree.bind({
+                'expand collapse': function () {
+                    _calculatePosition();
+                }
+            });
+
+        })();
 
         function _calculatePosition() {
-            var caption = me.caption;
-            var position = $(caption).offset();
-            var width = $(caption).width();
-            var height = $(caption).height();
-
-            if (width === 0 || height === 0) {
-                visible = false;
-            } else {
-                visible = true;
-                xa = position.left;
-                ya = position.top;
-                xz = xa + width;
-                yz = ya + height;
-            }
+            _position = $caption.position();
+            _visible = (_position.width && _position.height);
         };
 
         function _isHovered(x, y) {
-            if (visible) {
-                if (x >= xa && x <= xz && y >= ya && y <= yz) {
+            if (_visible) {
+                if (x >= _position.left && x <= _position.right && y >= _position.top && y <= _position.bottom) {
                     return true;
                 }
             }
             return false;
         }
+
+        function _select() {
+            $events.trigger({
+                'type' : 'activateDroparea'
+            });
+        }
+
+        function _unselect() {
+            $events.trigger({
+                'type': 'deactivateDroparea'
+            });
+        }
+
+    })();
+
+
+    this.dropArea = (function () {
+        var visible = false;
+        var selected = false;
+
 
         function _check(x, y) {
             if (me.tree.dragDropManager.hasDropArea()) {
@@ -1301,52 +1541,47 @@ function TreeNode(tree, parent, object){
             }
         }
 
-        function _unselect() {
-            //Switch off as drop area.
-            $(me.caption).removeClass('drop-area');
-            me.tree.trigger({
-                type: 'dropout',
-                node: me
-            });
-        }
-
-        function _select() {
-            $(me.caption).addClass('drop-area');
-            me.tree.trigger({
-                type: 'dropin',
-                node: me
-            });
-        }
-
-        //Setting initial position.
-        _calculatePosition();
-
-
         return {
-            calculatePosition: function () {
-                _calculatePosition();
-            },
-            unselect: function () {
-                _unselect();
-            },
-            isHovered: function(x, y){
-                return _isHovered(x, y);
-            },
             check: function (x, y) {
                 _check(x, y);
-            },
-            recalculate: function () {
-                _calculatePosition();
-                for (var key in me.nodes) {
-                    if (me.nodes.hasOwnProperty(key)) {
-                        var node = me.nodes[key];
-                        if (node) {
-                            node.dropArea.recalculate();
-                        }
-                    }
-                }
             }
         }
+
+    })();
+
+
+    $(document).bind({
+        'mousemove': function (e) {
+            e.preventDefault();
+            if (me.mouseClicked) {
+                me.mover.move(e);
+            }
+        },
+        'mouseup': function (e) {
+            e.preventDefault();
+            me.mover.drop(e);
+            me.mouseClicked = false;
+        }
+    });
+
+
+    var $mover = (function () {
+        var _active = false;
+        var _x = 0;
+        var _y = 0;
+        var _left = 0;
+        var _top = 0;
+
+        var _events = (function () {
+            $events.bind({
+                'click': function (e) {
+                    if (e.active === false) return;
+                    _active = true;
+                }
+            });
+        })();
+
+
 
     })();
 
@@ -1370,7 +1605,6 @@ function TreeNode(tree, parent, object){
             appendTo(me.mainContainer);
             return control;
         }
-
 
         function activate(left, top) {
             if (div === null) {
@@ -1438,175 +1672,6 @@ function TreeNode(tree, parent, object){
 
     })();
 
-    this.renamer = (function () {
-        var active = false;
-        var textbox = null;
-
-        function createTextbox() {
-            var control = jQuery('<input/>', {
-                'class': 'edit-name'
-            }).
-            css({
-                'visibility': 'hidden'
-            }).
-            bind({
-                'keydown': function (e) {
-                    switch (e.which) {
-                        case 13: //Enter
-                            e.preventDefault();
-                            e.stopPropagation();
-                            var value = $(this).val();
-                            var validation = validateName(value);
-                            if (validation === true) {
-                                applyNewName(value);
-                            }
-                            break;
-                        case 27: //Escape
-                            e.preventDefault();
-                            e.stopPropagation();
-                            _escape();
-                            break;
-                    }
-                }
-            }).
-            appendTo(me.mainContainer);
-            return control;
-        }
-
-        function validateName(name) {
-            return true;
-        }
-
-        function applyNewName(name) {
-
-            if (name.length) {
-                if (me.key.length === 0) {
-                    me.key = name;
-                    me.changeName(name);
-                    me.parent.addNode(me);
-                    me.parent.expander.expand();
-                    _escape();
-                    me.tree.trigger({
-                        'type': 'newNode',
-                        'node': me,
-                        'parentId': me.parent.id
-                    });
-                } else {
-                    if (me.name !== name) {
-                        var prevName = me.name;
-                        me.changeName(name);
-                        me.tree.trigger({
-                            'type': 'rename',
-                            'node': me,
-                            'name': name,
-                            'prevName': prevName
-                        });
-                    }
-                    _escape();
-                }
-            } else {
-                if (me.key.length === 0) {
-                    me.cancel();
-                }
-            }
-
-        }
-
-        function destroy() {
-            $(textbox).remove();
-            textbox = null;
-        }
-
-        function _activate() {
-            if (textbox === null) {
-                textbox = createTextbox();
-            }
-            active = true;
-            show(textbox);
-            $(textbox).css($(me.caption).offset()).val(me.name).focus().select();
-        }
-
-        function _escape() {
-            active = false;
-            destroy();
-            if (me.key.length === 0) {
-                me.parent.activate();
-                me.cancel();
-            }
-        }
-
-        return {
-            activate: function (e) {
-                if (!active) {
-                    _activate();
-                    me.tree.trigger({
-                        type: 'edit_name'
-                    });
-                }
-            },
-            isActive: function () {
-                return active;
-            },
-            escape: function () {
-                _escape();
-            },
-            isOutside: function (x, y) {
-                var position = $(textbox).offset();
-                var xa = position.left;
-                var ya = position.top;
-                var xz = xa + $(textbox).width();
-                var yz = ya + $(textbox).height();
-
-                if (x >= xa && x <= xz && y >= ya && y <= yz) {
-                    return false;
-                }
-
-                return true;
-
-            }
-        }
-
-    })();
-
-    this.sorter = (function () {
-        me.nodesArray = []
-
-        var createNodesTable = function () {
-            for (var key in me.nodes) {
-                var index = 0;
-                if (me.nodes.hasOwnProperty(key)) {
-                    var node = me.nodes[key];
-                    me.nodesArray.push(node);
-                }
-            }
-        }
-
-        var sort = function () {
-            me.nodesArray.sort(function (obj1, obj2) {
-                return (obj1.name < obj2.name ? -1 : 1);
-            });
-        }
-
-        var rearrange = function () {
-            for (var i = me.nodesArray.length - 1; i > 0; i--) {
-                $(me.nodesArray[i].mainContainer).before($(me.nodesArray[i - 1].mainContainer));
-                me.nodesArray[i].index = i;
-            }
-        }
-
-        return {
-            sort: function () {
-                me.nodesArray = [];
-                createNodesTable();
-                if (Object.keys(me.nodes).length > 1) {
-                    sort();
-                    rearrange();
-                }
-            }
-        }
-
-    })();
-
     this.path = function (thisInclude) {
         var node;
         var path = '';
@@ -1628,7 +1693,16 @@ function TreeNode(tree, parent, object){
         return path;
     }
 
+
 }
+
+
+
+
+
+
+
+
 TreeNode.prototype.loadData = function (data) {
     var me = this;
     if (data && data.length) {
