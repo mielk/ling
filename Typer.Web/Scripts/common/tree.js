@@ -771,6 +771,7 @@ function TreeView(properties){
 // release
 // startRenamer
 // escapeRenamer
+// load
 //=================
 //TreeView:
 // editName
@@ -975,21 +976,11 @@ function TreeNode(tree, parent, object){
         var _items = {};
         var _sorted = [];
 
-        function _sort() {
-            _sorted.sort(function(a, b){
-                return a.key - b.key;
-            });
-            $events.trigger({
-                'type': 'sort',
-                'array': _sorted
-            });
-        }
-
         var _events = (function () {
             $events.bind({
                 'addNode': function (e) {
                     if (e.active === false) return;
-                    _addNode(e.node);
+                    _addNode(e.node, e.sort);
                 },
                 'removeNode': function (e) {
                     if (e.active === false) return;
@@ -1003,9 +994,19 @@ function TreeNode(tree, parent, object){
             });
         })();
 
-        function _addNode(node){
+        function _sort() {
+            _sorted.sort(function (a, b) {
+                return a.key - b.key;
+            });
+            $events.trigger({
+                'type': 'sort',
+                'array': _sorted
+            });
+        }
+
+        function _addNode(node, sort){
             _items[node.key] = node;
-            _refreshArray();
+            if (sort !== false) _refreshArray();
         }
 
         function _removeNode(node){
@@ -1034,9 +1035,15 @@ function TreeNode(tree, parent, object){
             for (var i = 0; i < $items.length; i++) {
                 var node = new TreeNode(me.tree, me, $items[i]);
                 _items[node.key] = node;
-                _sorted[i] = node;
+                _sorted.push(node);
             }
+
+            $events.trigger({
+                'type': 'load'
+            });
+
             _sort();
+
         }
 
         return {
@@ -1096,7 +1103,7 @@ function TreeNode(tree, parent, object){
                     }
                     _render();
                 },
-                'removeNode': function (e) {
+                'removeNode load': function (e) {
                     if (e.active === false) return;
                     _expandable = ($nodes.size() > 0);
                     _render();
@@ -1147,9 +1154,9 @@ function TreeNode(tree, parent, object){
 
         function _render() {
             if (_expandable) {
-                $(button).html(_expanded ? '-' : '+');
+                $(_button).html(_expanded ? '-' : '+');
             } else {
-                $(button).html('.');
+                $(_button).html('.');
             }
         }
 

@@ -56,10 +56,10 @@ my.categories = (function () {
             var _listener = {};
             $(_listener).bind({
                 'add': function () {
-                    alert('add');
+
                 },
                 'remove': function () {
-                    alert('remove');
+                    
                 }
             });
             return {
