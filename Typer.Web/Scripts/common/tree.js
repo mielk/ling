@@ -1104,6 +1104,7 @@ function TreeNode(tree, parent, object){
         $selector.isSelected();
     }
 
+
     var $caption = (function () {
         var _active = false;
 
@@ -1142,6 +1143,11 @@ function TreeNode(tree, parent, object){
                 }
             }).appendTo($ui.line);
 
+            return {
+                caption: function () {
+                    return _caption;
+                }
+            }
 
         })();
 
@@ -1160,6 +1166,16 @@ function TreeNode(tree, parent, object){
                             _active = false;
                         }, me.tree.options.doubleClickDelay || 250);
                     }
+                },
+                'select hasSelectedChildren': function () {
+                    $(_ui.caption).css({
+                        'font-weight' : 'bold'
+                    });
+                },
+                'unselect': function () {
+                    $(_ui.caption).css({
+                        'font-weight': 'normal'
+                    });
                 }
             });
         })();
