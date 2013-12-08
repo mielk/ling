@@ -258,7 +258,7 @@ $(function () {
 
 
     var treeProperties = {
-        'mode': MODE.SINGLE,
+        'mode': MODE.MULTI,
         'root': my.categories.getRoot(),
         'blockOtherElements': false,
         'showSelection': false,
@@ -276,7 +276,7 @@ $(function () {
             my.categories.remove(e.node);
         },
         rename: function (e) {
-            my.categories.updateName(e.node, e.prevName);
+            my.categories.updateName(e.node, e.oldName);
         },
         transfer: function (e) {
             my.categories.updateParent(e.node, e.to);

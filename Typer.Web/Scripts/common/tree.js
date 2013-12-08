@@ -34,7 +34,20 @@ $(function () {
 
 
 
-
+/* TreeView
+   
+   Events:
+   #expand
+   #collapse
+   #activate
+   #deactivate
+   #delete
+   #newNode
+   #confirm
+   #select
+   #cancel
+   #transfer            
+ */
 function TreeView(properties){
     var me = this;
 
@@ -55,25 +68,26 @@ function TreeView(properties){
         var _listener = {};
 
         $(_listener).bind({
-            expand: function (e) {
+            select: function (e) {
                 if (e.active === false) return;
-                me.root.dropArea.recalculate();
-            },
-            collapse: function (e) {
-                if (e.active === false) return;
-                me.root.dropArea.recalculate();
+                if (me.mode === MODE.SINGLE) {
+                    $(_listener).trigger({
+                        'type': 'confirm',
+                        'item': e.node
+                    });
+                }
             },
             activate: function (e) {
                 if (e.active === false) return;
-                if (me.activeNode && me.activeNode != e.node) {
-                    me.activeNode.inactivate();
+                if ($activeNode && $activeNode != e.node) {
+                    $activeNode.inactivate();
                 }
-                me.activeNode = e.node;
+                $activeNode = e.node;
             },
             inactivate: function (e) {
                 if (e.active === false) return;
-                if (me.activeNode === e.node) {
-                    me.activeNode = null;
+                if ($activeNode === e.node) {
+                    $activeNode = null;
                 }
             },
             'delete': function (e) {
@@ -85,7 +99,7 @@ function TreeView(properties){
             },
             confirm: function (e) {
                 if (e.active === false) return;
-                alert('confirm');
+                alert('Confirm: ' + (e.item ? e.item.name : e.items.length));
                 if (!$isEmbedded) {
                     me.hide();
                 }
@@ -157,7 +171,8 @@ function TreeView(properties){
                 'position': 'relative',
                 'float': 'left',
                 'width': '100%',
-                'height': '100%',
+                'min-height': '100%',
+                'height': 'auto',
                 'left': '0px',
                 'top': '0px',
                 'padding': '0px'
@@ -771,6 +786,7 @@ function TreeView(properties){
 // release
 // startRenamer
 // escapeRenamer
+// rename
 // load
 //=================
 //TreeView:
@@ -785,16 +801,11 @@ function TreeNode(tree, parent, object){
     this.object = object;
     this.parent = parent;
     //State variables.
-    //this.mouseClicked = false;
-    //this.isActive = false;
-    //this.isNode = true;
+    this.new = false;
 
 
     var $events = (function () {
         var _listener = {};
-        //var _container = jQuery('<div/>', {
-        //    'class': 'events-container'
-        //});
 
         $(_listener).bind({
             'addNode': function (e) {
@@ -827,6 +838,27 @@ function TreeNode(tree, parent, object){
                 me.tree.trigger({
                     'type' : 'dropout',
                     'node': me
+                });
+            },
+            'expand': function (e) {
+                me.tree.trigger({
+                    'type': 'expand',
+                    'node': me
+                });
+            },
+            'collapse': function (e) {
+                me.tree.trigger({
+                    'type': 'collapse',
+                    'node': me
+                });
+            },
+            'rename': function (e) {
+                me.name = e.name;
+                me.tree.trigger({
+                    'type': 'rename',
+                    'node': me,
+                    'oldName': e.oldName,
+                    'name': e.name
                 });
             }
             //rename: [node], [name]
@@ -895,11 +927,11 @@ function TreeNode(tree, parent, object){
             $events.bind({
                 expand: function (e) {
                     if (e.active === false) return;
-                    show(_children);
+                    display(_children, true);
                 },
                 collapse: function (e) {
                     if (e.active === false) return;
-                    hide(_children);
+                    display(_children, false);
                 },
                 addNode: function (e) {
                     if (e.active === false) return;
@@ -971,6 +1003,7 @@ function TreeNode(tree, parent, object){
             node.render($ui.children);
         });
     }
+
 
     var $nodes = (function () {
         var _items = {};
@@ -1058,17 +1091,19 @@ function TreeNode(tree, parent, object){
                     }
                 }
             },
-            countSelected: function(){
+            countSelected: function(includePartiallySelected){
                 var _counter = 0;
                 for (var key in _items) {
                     if (_items.hasOwnProperty(key)){
                         var item = _items[key];
                         if (item.isSelected()){
-                            counter++;
+                            _counter += 1;
+                        } else if (includePartiallySelected && item.hasSelectedChildren()) {
+                            _counter += 0.5;
                         }
                     }
                 }
-                return counter;
+                return _counter;
             },
             load: function () {
                 _load();
@@ -1077,6 +1112,7 @@ function TreeNode(tree, parent, object){
 
     })();
     
+
     var $expander = (function (value) {
         var _expandable = false;
         var _expanded = value ? true : false;
@@ -1160,24 +1196,6 @@ function TreeNode(tree, parent, object){
             }
         }
 
-        function _expand() {
-            if (_expandable) {
-                return;
-            }
-
-            expanded = true;
-            $(button).html('-');
-            display(me.container, true);
-
-            if (!me.isRoot()) {
-                me.parent.expander.expand();
-            }
-
-            me.tree.trigger({
-                type: 'expand',
-                node: me
-            });
-        }
 
         return {
             isExpandable: function(){
@@ -1192,6 +1210,7 @@ function TreeNode(tree, parent, object){
     this.isExpanded = function () {
         return $expander.isExpanded();
     }
+
 
     var $selector = (function (value) {
         var _selected = value;
@@ -1227,7 +1246,15 @@ function TreeNode(tree, parent, object){
 
         var _events = (function () {
             $events.bind({
+                'select hasSelectedChildren': function (e) {
+                    _hasSelectedChildren = true;
+                },
+                'unselect': function (e) {
+                    _hasSelectedChildren = false;
+                },
                 'select': function (e) {
+                    _selected = true;
+                    _ui.check(true);
                     if (me.tree.mode === MODE.SINGLE) {
                         me.tree.trigger({
                             'type': 'select',
@@ -1235,9 +1262,13 @@ function TreeNode(tree, parent, object){
                         });
                     }
                 },
-                'select unselect': function (e) {
+                'unselect hasSelectedChildren': function (e) {
+                    _selected = false;
+                    _ui.check(false);
+                },
+                'select unselect hasSelectedChildren': function (e) {
                     if (e.active === false) return;
-                    _ui.check(e.type === 'select');
+                    
                     if (e.applyForChildren){
                         _applyForChildren(e.type);
                     }
@@ -1249,13 +1280,13 @@ function TreeNode(tree, parent, object){
                     if (e.active === false) return;
                     $events.trigger({
                         'type': _selected ? 'unselect' : 'select',
-                        'applyForParent' : true,
+                        'applyForParent': true,
                         'applyForChildren' : true
                     });
                 },
                 'childStatusChanged': function (e) {
                     if (e.active === false) return;
-                    var selectedChildren = $nodes.countSelected();
+                    var selectedChildren = $nodes.countSelected(true);
                     if (selectedChildren){
                         $events.trigger({
                             'type' : (selectedChildren === $nodes.size() ? 'select' : 'hasSelectedChildren'),
@@ -1302,7 +1333,10 @@ function TreeNode(tree, parent, object){
 
     })(object.selected);
     this.isSelected = function(){
-        $selector.isSelected();
+        return $selector.isSelected();
+    }
+    this.hasSelectedChildren = function () {
+        return $selector.hasSelectedChildren();
     }
 
 
@@ -1317,7 +1351,9 @@ function TreeNode(tree, parent, object){
                 'mousedown': function (e) {
                     if (e.active === false) return;
                     $events.trigger({
-                        'type' : 'click'
+                        'type': 'click',
+                        'x': e.pageX,
+                        'y': e.pageY
                     });
                     //e.preventDefault();
                     //me.mouseClicked = true;
@@ -1365,6 +1401,12 @@ function TreeNode(tree, parent, object){
                         right: _position.left + _width,
                         bottom: _position.top + _height
                     }
+                },
+                append: function (control) {
+                    $(control).appendTo(_caption);
+                },
+                rename: function (name) {
+                    $(_caption).html(name);
                 }
             }
 
@@ -1410,6 +1452,10 @@ function TreeNode(tree, parent, object){
                 'deactivateDroparea': function (e) {
                     if (e.active === false) return;
                     $(_ui.textbox()).removeClass('drop-area');
+                },
+                'rename': function(e){
+                    if (e.active === false) return;
+                    _ui.rename(e.name);
                 }
             });
         })();
@@ -1417,6 +1463,9 @@ function TreeNode(tree, parent, object){
         return {
             position: function(){
                 return _ui.position();
+            },
+            append: function (control) {
+                _ui.append(control);
             }
         }
 
@@ -1427,12 +1476,14 @@ function TreeNode(tree, parent, object){
 
         var _listener = (function () {
             $events.bind({
-                'startRenamer': function () {
+                'startRenamer': function (e) {
+                    if (e.active === false) return;
                     _activate();
                 },
-                'escapeRenamer': function () {
+                'escapeRenamer': function (e) {
+                    if (e.active === false) return;
                     _escape();
-                }                
+                }
             });
 
             $(document).bind({
@@ -1440,7 +1491,7 @@ function TreeNode(tree, parent, object){
                     if (_active && e && _ui.isOutside(e.pageX, e.pageY)) {
                         e.preventDefault();
                         e.stopPropagation();
-                        $events({
+                        $events.trigger({
                             'type': 'escapeRenamer'
                         });
                     }
@@ -1468,13 +1519,14 @@ function TreeNode(tree, parent, object){
                             case 27: //Escape
                                 e.preventDefault();
                                 e.stopPropagation();
-                                $events({
+                                $events.trigger({
                                     'type': 'escapeRenamer'
                                 });
                                 break;
                         }
                     }
-                }).appendTo($ui.container);
+                });
+                $caption.append(_textbox);
             }
 
             function _isOutside(x, y){
@@ -1506,7 +1558,7 @@ function TreeNode(tree, parent, object){
                 },
                 isOutside: function(x, y){
                     return _isOutside(x, y);
-                }
+                },
             }
 
         })();
@@ -1521,10 +1573,16 @@ function TreeNode(tree, parent, object){
         }
 
         function _confirm(value) {
-            //        var validation = validateName(value);
-            //        if (validation === true) {
-            //            applyNewName(value);
-            //        }
+            var validation = _validateName(value);
+            if (validation === true) {
+                _applyNewName(value);
+                //applyNewName(value);
+            }
+        }
+
+        function _validateName(name) {
+            //To be implemented.
+            return true;
         }
 
         function _escape() {
@@ -1539,7 +1597,15 @@ function TreeNode(tree, parent, object){
         }
 
 
-        //function applyNewName(name) {
+        function _applyNewName(name) {
+
+            if (!me.new) {
+                $events.trigger({
+                    'type': 'rename',
+                    'oldName': me.name,
+                    'name': name
+                });
+            }
 
         //    if (name.length) {
         //        if (me.key.length === 0) {
@@ -1572,7 +1638,7 @@ function TreeNode(tree, parent, object){
         //        }
         //    }
 
-        //}
+        }
 
 
         return {
@@ -1653,11 +1719,16 @@ function TreeNode(tree, parent, object){
 
     var $mover = (function () {
         var _active = false;
+        var _inProgress = false;
         var _position = {
-            x: 0,
-            y: 0,
-            left: 0,
-            top: 0
+            caption: {
+                top: 0,
+                left: 0
+            },
+            click: {
+                top: 0,
+                left: 0
+            }
         }
 
         var _events = (function () {
@@ -1682,29 +1753,41 @@ function TreeNode(tree, parent, object){
 
             $events.bind({
                 'click': function (e) {
-                    if (e.active === false) return;
                     _active = true;
+                    _position.caption = $caption.position();
+                    _position.click = {
+                        'left': e.x,
+                        'top': e.y
+                    }
+                },
+                'startRenamer': function (e) {
+                    _active = false;
                 },
                 'move': function (e) {
                     if (e.active === false) return;
-                    if (!_active) {
-                        _activate(e.x, e.y);
+                    if (!_active) return;
+
+                    if (!_inProgress) {
+                        _inProgress = true;
+                        _activate();
                         me.tree.trigger({
                             'type': 'dragin',
                             node: me
                         });
                     }
-                    _move(e.x, e.y);
+                    _ui.move(e.x, e.y);
                 },
                 'release': function (e) {
                     if (e.active === false) return;
                     if (_active) {
-                        _deactivate();
+                        _ui.hide();
                         me.tree.trigger({
                             type: 'dragout',
                             node: me
                         });
                     }
+                    _active = false;
+                    _inProgress = false;
                 }
             });
 
@@ -1722,6 +1805,12 @@ function TreeNode(tree, parent, object){
                 }).appendTo($ui.container);
             }
 
+            function _move(x, y) {
+                var _x = x - _position.click.left + _position.caption.left;
+                var _y = y - _position.click.top + _position.caption.top;
+                $(_control).css({ left: _x, top: _y });
+            }
+
             return {
                 hide: function () {
                     hide(_control);
@@ -1730,39 +1819,18 @@ function TreeNode(tree, parent, object){
                     if (!_control) createControl();
                     show(_control);
                 },
-                move: function (position) {
+                move: function (x, y) {
                     if (!_control) return;
-                    _position.left = position.left;
-                    _position.top = position.top;
-                    $(_control).css(position);
+                    _move(x, y);
                 }
             }
 
         })();
         
-        function _activate(left, top) {
+        function _activate(x, y) {
             _active = true;
             _ui.render();
-            _position.x = left;
-            _position.y = top;
-            moveDiv($(me.caption).offset());
-        }
-
-        function _deactivate() {
-            _active = false;
-            _ui.hide();
-        }
-
-        function _move(x, y) {
-
-            _ui.move({
-                left: _position.left + (x - _position.x),
-                top: _position.top + (y - _position.y)
-            });
-
-            _position.x = x;
-            _position.y = y;
-
+            //my.notify.display("Mover activated");
         }
 
         return {

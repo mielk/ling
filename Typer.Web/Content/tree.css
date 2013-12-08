@@ -232,14 +232,16 @@ div.children-container
 .edit-name
 {
     display: block !important;
-    position: fixed !important;
+    position: absolute !important;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
+    left: -1px !important;
+    top: -3px !important;
     z-index: 1;
     width: auto;
     height: 20px;
-    margin-top: -2px;
+    margin-top: 0;
     padding: 1px 6px;
     border: 1px solid rgba(21, 21, 21, 0.3);
     line-height: 16px;
