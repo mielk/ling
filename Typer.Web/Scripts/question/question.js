@@ -659,13 +659,13 @@ function Question(data, properties) {
         function selectCategories() {
             var tree = new TreeView({
                 'mode': MODE.MULTI,
-                'data': my.categories.getRoot().items,
+                'root': my.categories.getRoot(),
                 'blockOtherElements': true,
                 'showSelection': true,
                 'hidden': true
             });
 
-            tree.reset();
+            tree.reset({ unselect: true, collapse: false });
             tree.bind({
                 'confirm': function (e) {
                     me.events.trigger({

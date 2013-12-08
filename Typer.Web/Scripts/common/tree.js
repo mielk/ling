@@ -45,6 +45,7 @@ $(function () {
    #newNode
    #confirm
    #select
+   #unselect
    #cancel
    #transfer            
  */
@@ -206,7 +207,6 @@ function TreeView(properties){
             }).appendTo($(_container));
         }
 
-
         return {
             destroy: function () {
                 if (_background !== document.body) {
@@ -246,7 +246,14 @@ function TreeView(properties){
     this.destroy = function () {
         $ui.destroy();
     }
-
+    this.reset = function (e) {
+        if (e.unselect) {
+            $root.trigger({ 'type': 'unselect' });
+        }
+        if (e.collapse) {
+            $root.trigger({ 'type': 'collapse' });
+        }
+    }
     //TreeView.prototype.reset = function () {
     //    if (this.node) {
     //        this.node.unselect();
@@ -254,157 +261,235 @@ function TreeView(properties){
     //    }
     //}
 
+
+    var $root = new TreeNode(me, null, properties.root);
+
     var $searchPanel = (function () {
         var _active = false;
+
         var _ui = (function () {
             var _container = jQuery('<div/>', {
                 'class': 'tree-search-panel'
             }).css({
                 'display': 'none'
             });
-            
+
             $ui.append(_container);
+
+            return {
+                hide: function () {
+                    display(_container, false);
+                },
+                show: function () {
+                    display(_container, true);
+                    $(_container).css({
+                        'z-index': my.ui.addTopLayer()
+                    });
+                },
+                container: function () {
+                    return _container;
+                }
+            }
 
         })();
 
+        var _dropdown;
 
-        //TreeView.prototype.showSearchPanel = function () {
-        //    this.searchPanel = (this.searchPanel || new SearchPanel(this));
-        //    this.searchMode = true;
-        //    this.searchPanel.show();
-        //}
-        //TreeView.prototype.hideSearchPanel = function () {
-        //    if (this.searchPanel) {
-        //        this.searchPanel.hide();
-        //    }
-        //    this.searchPanel = null;
-        //    this.searchMode = false;
-        //}
+        function _activate() {
+            _dropdown = _dropdown || new DropDown({
+                parent: _ui.container(),
+                data: $root.getNodesForSearching(),
+                background: false,
+                displayed: 'displayed'
+            });
 
+            _dropdown.bind({
+                'deactivate': function (e) {
+                    $events.trigger({
+                        'type': 'endSearching'
+                    });
+                },
+                'selected': function (e) {
+                    $events.trigger({
+                        'type': 'searchSelection',
+                        'node': e.object.object
+                    });
+                }
+            });
 
+            _ui.show();
+        }
 
-        //function SearchPanel(tree) {
-        //    var me = this;
-        //    this.tree = tree;
-        //    this.dropdown = null;
+        var _events = (function () {
+            $events.bind({
+                'startSearching': function (e) {
+                    if (e.active === false) return;
+                    _active = true;
+                },
+                'endSearching searchSelection': function (e) {
+                    if (e.active === false) return;
+                    _active = false;
+                    _ui.hide();
+                }
+            });
 
-        //    $(this.tree._searchPanel).empty();
-        //    this.container = this.tree._searchPanel;
+        })();
 
-        //}
-        //SearchPanel.prototype.show = function () {
-        //    var me = this;
+        (function ini(){
+            $ui.append(_ui.container());
+        })();
 
-        //    $(this.container).css({
-        //        'display': 'block',
-        //        'z-index': 2
-        //    });
-
-        //    var searchData = this.tree.root.getNodesForSearching();
-
-        //    var properties = {
-        //        parent: $(this.container),
-        //        'data': searchData,
-        //        background: false,
-        //        displayed: 'displayed'
-        //    };
-
-        //    if (this.dropdown === null) {
-        //        this.dropdown = new DropDown(properties);
-        //    }
-
-        //    this.dropdown.listener().bind({
-        //        'deactivate': function () {
-        //            me.tree.hideSearchPanel();
-        //        },
-        //        'selected': function (e) {
-        //            me.tree.hideSearchPanel();
-        //            var node = e.object.object;
-        //            node.activate();
-        //        }
-        //    });
-
-        //    this.dropdown.activate();
-
-        //}
-        //SearchPanel.prototype.hide = function () {
-        //    $(this.container).css({
-        //        'display': 'none'
-        //    });
-        //}
-
-
+        return {
+            isActive: function () {
+                return _active;
+            }
+        }
 
     })();
 
-    var $root = new TreeNode(me, null, properties.root);
-    //this.root.loadData(properties.data);
+    var $children = (function(){
 
+        var _ui = (function () {
+
+            var _container = jQuery('<div/>');
+
+            $ui.append(_container);
+
+            return {
+                container: function () {
+                    return _container;
+                }
+            }
+
+        })();
+
+        (function ini() {
+            $ui.append(_ui.container());
+        })();
+
+        return {
+            container: function () {
+                return _ui.container();
+            }
+        }
+
+    })();
 
     var $selection = (function () {
         var _active = properties.showSelection;
 
-        //this.selection = (function () {
-        //    var _container = jQuery('<div/>', {
-        //        id: 'tree-selection-container',
-        //        'class': 'tree-selection-container'
-        //    }).appendTo($(me.container));
+        var _events = (function () {
+            $events.bind({
+                'select unselect': function (e) {
+                    if (e.active === false) return;
+                    _refresh();
+                }
+            });
 
-        //    var _header = jQuery('<div/>', {
-        //        id: 'tree-selection-header',
-        //        'class': 'tree-selection-header',
-        //        html: 'Selected'
-        //    }).appendTo($(_container));
+        })();
 
-        //    var _nodes = jQuery('<div/>', {
-        //        id: 'tree-selection-nodes',
-        //        'class': 'tree-selection-nodes'
-        //    }).appendTo($(_container));
+        var _ui = (function () {
 
-        //    var selected = [];
+            var _container = jQuery('<div/>', {
+                'class': 'tree-selection-container'
+            }).css({
+                'display': _active ? 'block' : 'none'
+            });
 
-        //    function _refresh() {
-        //        $(_nodes).empty();
-        //        selected = me.root.getSelectedArray();
+            var _header = jQuery('<div/>', {
+                'class': 'tree-selection-header',
+                html: 'Selected'
+            }).appendTo($(_container));
 
-        //        for (var i = 0; i < selected.length; i++) {
-        //            var node = selected[i];
-        //            var line = nodeLine(node, i);
-        //        }
+            var _nodes = jQuery('<div/>', {
+                id: 'tree-selection-nodes',
+                'class': 'tree-selection-nodes'
+            }).appendTo($(_container));
 
-        //    }
-
-        //    var nodeLine = function (node, index) {
-        //        var $node = node;
-        //        var $index = index;
-        //        var $container = jQuery('<div/>', {
-        //            'class': 'tree-selection-line'
-        //        }).appendTo(_nodes);
-
-        //        var $remover = jQuery('<div/>', {
-        //            'class': 'tree-selection-line-remover'
-        //        }).
-        //        bind({
-        //            'click': function () {
-        //                $node.unselect();
-        //            }
-        //        }).appendTo($container);
-
-        //        var $caption = jQuery('<div/>', {
-        //            'class': 'tree-selection-line-caption',
-        //            'html': node.name
-        //        }).appendTo($container);
-
-        //    }
+            $ui.append(_container);
 
 
-        //    return {
-        //        refresh: function () {
-        //            _refresh();
-        //        }
-        //    }
+            function _refresh() {
+                _nodes.empty();
 
-        //})();
+                var selected = $root.util.getSelectedArray();
+                for (var i = 0; i < selected.length; i++) {
+                    var node = selected[i];
+                    var line = nodeLine(node);
+                    line.appendTo(_nodes);
+                }
+            }
+
+
+            function nodeLine(node) {
+                var _node = node;
+                var _ui = (function () {
+                    var _container = jQuery('<div/>', {
+                        'class': 'tree-selection-line'
+                    });
+
+                    var _remover = jQuery('<div/>', {
+                        'class': 'tree-selection-line-remover'
+                    }).
+                    bind({
+                        'click': function () {
+                            _node.trigger({
+                                'type': 'unselect'
+                            });
+                        }
+                    }).appendTo(_container);
+
+                    var _caption = jQuery('<div/>', {
+                        'class': 'tree-selection-line-caption',
+                        'html': _node.name
+                    }).appendTo(_container);
+
+                    return {
+                        appendTo: function (container) {
+                            $(_container).appendTo(container);
+                        }
+                    }
+
+                })();
+
+                return {
+                    appendTo: function (container) {
+                        _ui.appendTo(container)
+                    }
+                }
+
+            }
+
+
+            return {
+                hide: function () {
+                    display(_container, false);
+                },
+                show: function () {
+                    display(_container, true);
+                    $(_container).css({
+                        'z-index': my.ui.addTopLayer()
+                    });
+                },
+                container: function () {
+                    return _container;
+                },
+                refresh: function () {
+                    _refresh();
+                }
+            }
+
+        })();
+
+
+
+        function _refresh() {
+            _ui.refresh();
+        }
+
+        (function ini(){
+            $ui.append(_ui.container());
+        })();
 
     })();
     
@@ -756,7 +841,7 @@ function TreeView(properties){
 
     //this.root.activate();
     (function ini() {
-        $root.render($ui.container());
+        $root.render($children.container());
         if (!$visible) $ui.hide();
     })();
 
@@ -838,6 +923,16 @@ function TreeNode(tree, parent, object){
                 me.tree.trigger({
                     'type' : 'dropout',
                     'node': me
+                });
+            },
+            'select': function (e) {
+                me.tree.trigger({
+                    'type': 'select'
+                });
+            },
+            'unselect': function (e) {
+                me.tree.trigger({
+                    'type': 'unselect'
                 });
             },
             'expand': function (e) {
@@ -1842,6 +1937,49 @@ function TreeNode(tree, parent, object){
     })();
 
 
+    //Util functions.
+    this.util = {
+        getNodesForSearching: function () {
+            return [];
+        }
+        //getNodesForSearching: function () {
+        //    var array = [];
+
+        //    if (me.parent) {    //Add itself (except for root).
+        //        //array.push(me.getSearchObject);
+        //    }
+
+        //    //Add nodes.
+        //    $nodes.each(function (node) {
+        //        var _array = node.getNodesForSearching();
+        //        array.push(_array);
+        //    });
+
+        //    return array;
+
+        //},
+        //getSelectedArray: function () {
+        //    var array = [];
+
+        //    if ($selector.isSelected()) {
+        //        array.push(me);
+        //    } else if ($selector.hasSelectedChildren()) {
+        //        $nodes.each(function (node) {
+        //            var _array = node.getSelectedArray();
+        //            array.push(_array);
+        //        });
+        //    }
+
+        //    return array;
+
+        //}
+
+    }
+    
+
+
+    
+
     //this.path = function (thisInclude) {
     //    var node;
     //    var path = '';
@@ -1875,43 +2013,10 @@ function TreeNode(tree, parent, object){
 
 
 
-TreeNode.prototype.loadData = function (data) {
-    var me = this;
-    if (data && data.length) {
-        this.expander.setExpandableStatus(true);
-        for (var key in data) {
-            if (data.hasOwnProperty(key)) {
-                var item = data[key];
-                var node = new TreeNode({
-                    tree: me.tree,
-                    key: item.key,
-                    name: item.caption,
-                    parent: me,
-                    expanded: item.expanded,
-                    object: item.object
-                });
-                this.nodes[item.key] = node;
-                node.selector.setValue(item.selected);
-                node.loadData(item.items);
-            }
-        }
-
-        this.sorter.sort();
-
-    } else {
-
-        this.expander.setExpandableStatus(false);
-
-    }
-}
 
 
-TreeNode.prototype.getName = function () {
-    return this.name;
-}
-TreeNode.prototype.getKey = function () {
-    return this.key;
-}
+
+
 TreeNode.prototype.transfer = function (destination) {
     if (this === destination) {
         this.isActive = false;
@@ -2058,30 +2163,7 @@ TreeNode.prototype.unselect = function () {
         this.tree.selection.refresh();
     }
 }
-TreeNode.prototype.getNodesForSearching = function () {
-    var a = [];
-    var counter = 0;
 
-    if (!this.isRoot()) {
-        //Add itself (except for root).
-        a[counter++] = this.getSearchObject();
-    }
-
-    //Add nodes.
-    for (var key in this.nodes) {
-        if (this.nodes.hasOwnProperty(key)) {
-            var node = this.nodes[key];
-            var arr = node.getNodesForSearching();
-
-            for (var i = 0; i < arr.length; i++) {
-                a[counter++] = arr[i];
-            }
-        }
-    }
-
-    return a;
-
-}
 TreeNode.prototype.getSearchObject = function () {
     return {
         object: this,
@@ -2089,28 +2171,6 @@ TreeNode.prototype.getSearchObject = function () {
         prepend: this.path() + (this.parent.isRoot() ? '' : '  >  '),
         displayed: this.name
     }
-}
-TreeNode.prototype.getSelectedArray = function () {
-    var a = [];
-    var counter = 0;
-
-    if (this.selector.isSelected()) {
-        a[counter++] = this;
-    } else if (this.selector.hasSelectedChildren()) {
-        for (var key in this.nodes) {
-            if (this.nodes.hasOwnProperty(key)) {
-                var node = this.nodes[key];
-                var arr = node.getSelectedArray();
-
-                for (var i = 0; i < arr.length; i++) {
-                    a[counter++] = arr[i];
-                }
-            }
-        }
-    }
-
-    return a;
-
 }
 
 
