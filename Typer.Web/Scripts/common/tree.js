@@ -928,15 +928,16 @@ function TreeNode(tree, parent, object){
     this.new = false;
 
 
+    //Events handler and listener.
     var $events = (function () {
-        var _listener = {};
+        var listener = {};
 
-        $(_listener).bind({
+        $(listener).bind({
             'addNode': function (e) {
                 if (e.active === false) return;
                 if (me.object.events) {
-                    var _events = (typeof (me.object.events) === 'function' ? object.events() : object.events);
-                    _events.trigger({
+                    var events = (typeof (me.object.events) === 'function' ? object.events() : object.events);
+                    events.trigger({
                         'type': 'add',
                         'value': e.node.object
                     });
@@ -945,8 +946,8 @@ function TreeNode(tree, parent, object){
             'removeNode': function (e) {
                 if (e.active === false) return;
                 if (me.object.events) {
-                    var _events = (typeof (me.object.events) === 'function' ? object.events() : object.events);
-                    _events.trigger({
+                    var events = (typeof (me.object.events) === 'function' ? object.events() : object.events);
+                    events.trigger({
                         'type': 'remove',
                         'value': e.node.object
                     });
@@ -993,10 +994,10 @@ function TreeNode(tree, parent, object){
 
         return {
             trigger: function (e) {
-                $(_listener).trigger(e);
+                $(listener).trigger(e);
             },
             bind: function (e) {
-                $(_listener).bind(e);
+                $(listener).bind(e);
             }
         };
     })();
@@ -1006,6 +1007,9 @@ function TreeNode(tree, parent, object){
     this.bind = function (e) {
         $events.bind(e);
     };
+    
+
+    //User interface module.
     var $ui = (function () {
         //Define if this element is visible on the screen.
         //If parent is not defined, this node is root node and
@@ -1128,108 +1132,111 @@ function TreeNode(tree, parent, object){
             node.render($ui.children);
         });
     };
-    var $nodes = (function () {
-        var _items = {};
-        var _sorted = [];
+    
 
-        var _events = (function () {
+    //Children nodes module.
+    var $nodes = (function () {
+        var items = {};
+        var sorted = [];
+
+        var events = (function () {
             $events.bind({
                 'addNode': function (e) {
                     if (e.active === false) return;
-                    _addNode(e.node, e.sort);
+                    addNode(e.node, e.sort);
                 },
                 'removeNode': function (e) {
                     if (e.active === false) return;
                     if (e.node) {
-                        _removeNode(e.node);
+                        removeNode(e.node);
                     } else if (e.key) {
-                        _removeNodeByKey(e.key);
+                        removeNodeByKey(e.key);
                     }
-                    _refreshArray();
+                    refreshArray();
                 }
             });
         })();
 
-        function _sort() {
-            _sorted.sort(function (a, b) {
+        function sort() {
+            sorted.sort(function (a, b) {
                 return a.key - b.key;
             });
             $events.trigger({
                 'type': 'sort',
-                'array': _sorted
+                'array': sorted
             });
         }
 
-        function _addNode(node, sort){
-            _items[node.key] = node;
-            if (sort !== false) _refreshArray();
+        function addNode($node, $sort){
+            items[$node.key] = $node;
+            if ($sort !== false) refreshArray();
         }
 
-        function _removeNode(node){
-            for (var key in _items) {
-                if (_items.hasOwnProperty(key)) {
-                    var _node = _items[key];
-                    if (_node === node) {
-                        delete _items[key];
+        function removeNode(node){
+            for (var key in items) {
+                if (items.hasOwnProperty(key)) {
+                    var $node = items[key];
+                    if ($node === node) {
+                        delete items[key];
                     }
                 }
             }
-            _refreshArray();
+            refreshArray();
         }
 
-        function _removeNodeByKey(key){
-            delete _items[key];
+        function removeNodeByKey(key){
+            delete items[key];
         }
 
-        function _refreshArray(){
-            _sorted = my.array.objectToArray(_items);
-            _sorted.sort();
+        function refreshArray(){
+            sorted = my.array.objectToArray(items);
+            sorted.sort();
         }
 
-        function _load() {
+        function load() {
             var $items = (typeof (me.object.items) === "function" ? me.object.items() : me.object.items);
             for (var i = 0; i < $items.length; i++) {
                 var node = new TreeNode(me.tree, me, $items[i]);
-                _items[node.key] = node;
-                _sorted.push(node);
+                items[node.key] = node;
+                sorted.push(node);
             }
 
             $events.trigger({
                 'type': 'load'
             });
 
-            _sort();
+            sort();
 
         }
 
         return {
             size: function () {
-                return _sorted.length;
+                return sorted.length;
             },
             each: function (fn) {
-                for (var key in _items) {
-                    if (_items.hasOwnProperty(key)){
-                        var item = _items[key];
+                for (var key in items) {
+                    if (items.hasOwnProperty(key)){
+                        var item = items[key];
                         fn(item);
                     }
                 }
             },
             countSelected: function(includePartiallySelected){
-                var _counter = 0;
-                for (var key in _items) {
-                    if (_items.hasOwnProperty(key)){
-                        var item = _items[key];
+                var counter = 0;
+                for (var key in items) {
+                    if (items.hasOwnProperty(key)){
+                        var item = items[key];
                         if (item.isSelected()){
-                            _counter += 1;
+                            counter += 1;
                         } else if (includePartiallySelected && item.hasSelectedChildren()) {
-                            _counter += 0.5;
+                            counter += 0.5;
                         }
                     }
                 }
-                return _counter;
+                return counter;
             },
             load: function () {
-                _load();
+                load();
             }
         };
     })();
@@ -1244,41 +1251,44 @@ function TreeNode(tree, parent, object){
             return false;
         }
     };
+    
+
+    //Expander module.
     var $expander = (function () {
-        var _expandable = false;
-        var _expanded = false;
-        var _button = jQuery('<div/>', {
+        var expandable = false;
+        var expanded = false;
+        var button = jQuery('<div/>', {
             'class': 'icon '
         }).bind({
             'click': function (e) {
                 if (e.active === false) return;
                 e.preventDefault();
                 e.stopPropagation();
-                if (_expandable) {
-                    _revertStatus();
+                if (expandable) {
+                    revertStatus();
                 }
             }
         }).appendTo($ui.line);
 
-        var _events = (function () {
+        var events = (function () {
             $events.bind({
                 'addNode': function (e) {
                     if (e.active === false) return;
-                    _expandable = true;
+                    expandable = true;
                     if (me.tree.options.expandWhenAddingNewNode) {
-                        _expanded = true;
+                        expanded = true;
                     }
-                    _render();
+                    render();
                 },
                 'removeNode load': function (e) {
                     if (e.active === false) return;
-                    _expandable = ($nodes.size() > 0);
-                    _render();
+                    expandable = ($nodes.size() > 0);
+                    render();
                 },
                 'expand': function (e) {
                     if (e.active === false) return;
-                    _expanded = true;
-                    _render();
+                    expanded = true;
+                    render();
 
                     if (me.parent) {
                         me.parent.trigger({
@@ -1289,58 +1299,62 @@ function TreeNode(tree, parent, object){
                 },
                 'collapse': function (e) {
                     if (e.active === false) return;
-                    _expanded = false;
-                    _render();
+                    expanded = false;
+                    render();
                 }
             });
 
         })();
         
-        function _revertStatus() {
-            if (_expanded) {
-                _collapse();
+        function revertStatus() {
+            if (expanded) {
+                collapse();
             } else {
-                _expand();
+                expand();
             }
         }
 
-        function _expand() {
-            if (_expandable && !_expanded) {
+        function expand() {
+            if (expandable && !expanded) {
                 $events.trigger({
                     'type': 'expand'
                 });
             }
         }
 
-        function _collapse() {
-            if (_expandable && _expanded) {
+        function collapse() {
+            if (expandable && expanded) {
                 $events.trigger({
                     'type': 'collapse'
                 });
             }
         }
 
-        function _render() {
-            if (_expandable) {
-                $(_button).html(_expanded ? '-' : '+');
+        function render() {
+            if (expandable) {
+                $(button).html(expanded ? '-' : '+');
             } else {
-                $(_button).html('.');
+                $(button).html('.');
             }
         }
 
 
         return {
             isExpandable: function(){
-                return _expandable;
+                return expandable;
             },
             isExpanded: function(){
-                return (_expandable ? _expanded : false);
+                return (expandable ? expanded : false);
             }
         };
     })();
     this.isExpanded = function () {
         return $expander.isExpanded();
     };
+    
+
+
+    //Selecting module.
     var $selector = (function (value) {
         var selected = value || false;
         var hasSelectedChildren = false;
@@ -1479,7 +1493,7 @@ function TreeNode(tree, parent, object){
 
 
     var $caption = (function () {
-        var _active = false;
+        var active = false;
 
         var _ui = (function () {
             var _caption = jQuery('<div/>', {
@@ -1553,7 +1567,7 @@ function TreeNode(tree, parent, object){
             $events.bind({
                 'click': function (e) {
                     if (e.active === false) return;
-                    if (_active) {
+                    if (active) {
                         if (me.tree.mode === MODE.SINGLE) {
                             $events.trigger({
                                 'type': 'select'
@@ -1564,9 +1578,9 @@ function TreeNode(tree, parent, object){
                             });
                         }
                     } else {
-                        _active = true;
+                        active = true;
                         setTimeout(function () {
-                            _active = false;
+                            active = false;
                         }, me.tree.options.doubleClickDelay || 250);
                     }
                 },
