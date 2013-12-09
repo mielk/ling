@@ -1938,46 +1938,40 @@ function TreeNode(tree, parent, object){
 
 
     //Util functions.
-    this.util = {
-        getNodesForSearching: function () {
-            return [];
+    this.util = (function () {
+        return {
+            getSelectedArray: function () {
+                var array = [];
+
+                if ($selector.isSelected()) {
+                    array.push(me);
+                } else if ($selector.hasSelectedChildren()) {
+                    $nodes.each(function (node) {
+                        var _array = node.getSelectedArray();
+                        array.push(_array);
+                    });
+                }
+
+                return array;
+            },
+            getNodesForSearching: function () {
+                var array = [];
+
+                if (me.parent) {    //Add itself (except for root).
+                    //array.push(me.getSearchObject);
+                }
+
+                //Add nodes.
+                $nodes.each(function (node) {
+                    var _array = node.getNodesForSearching();
+                    array.push(_array);
+                });
+
+                return array;
+
+            }
         }
-        //getNodesForSearching: function () {
-        //    var array = [];
-
-        //    if (me.parent) {    //Add itself (except for root).
-        //        //array.push(me.getSearchObject);
-        //    }
-
-        //    //Add nodes.
-        //    $nodes.each(function (node) {
-        //        var _array = node.getNodesForSearching();
-        //        array.push(_array);
-        //    });
-
-        //    return array;
-
-        //},
-        //getSelectedArray: function () {
-        //    var array = [];
-
-        //    if ($selector.isSelected()) {
-        //        array.push(me);
-        //    } else if ($selector.hasSelectedChildren()) {
-        //        $nodes.each(function (node) {
-        //            var _array = node.getSelectedArray();
-        //            array.push(_array);
-        //        });
-        //    }
-
-        //    return array;
-
-        //}
-
-    }
-    
-
-
+    })();
     
 
     //this.path = function (thisInclude) {
