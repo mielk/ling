@@ -87,7 +87,7 @@ function HashTable(obj) {
 my.notify = (function () {
     var options = {
         clickToHide: true,
-        autoHide: true,
+        autoHide: false,
         autoHideDelay: 3000,
         arrowShow: false,
         // default positions

@@ -57,9 +57,7 @@ function TreeView(properties){
     this.options = {
         expandWhenAddingNewNode: true,
         doubleClickDelay: 500,
-    }
-
-    //Private properties.
+    }; //Private properties.
     var $visible = (properties.hidden === true ? false : true);
     var $isEmbedded = (properties.container !== undefined);
     var $activeNode = null;
@@ -123,17 +121,14 @@ function TreeView(properties){
             bind: function (a) {
                 $(_listener).bind(a);
             }
-        }
-
+        };
     })();
     this.trigger = function (e) {
         $events.trigger(e);
-    }
+    };
     this.bind = function (e) {
         $events.bind(e);
-    }
-
-
+    };
     var $ui = (function () {
         var _background;
 
@@ -234,18 +229,17 @@ function TreeView(properties){
             container: function(){
                 return _container;
             }
-        }
-
+        };
     })();
     this.hide = function () {
         $ui.hide();
-    }
+    };
     this.show = function () {
         $ui.show();
-    }
+    };
     this.destroy = function () {
         $ui.destroy();
-    }
+    };
     this.reset = function (e) {
         if (e.unselect) {
             $root.trigger({ 'type': 'unselect' });
@@ -253,15 +247,7 @@ function TreeView(properties){
         if (e.collapse) {
             $root.trigger({ 'type': 'collapse' });
         }
-    }
-    //TreeView.prototype.reset = function () {
-    //    if (this.node) {
-    //        this.node.unselect();
-    //        this.node.collapse();
-    //    }
-    //}
-
-
+    };
     var $root = new TreeNode(me, null, properties.root);
 
     var $searchPanel = (function () {
@@ -289,8 +275,7 @@ function TreeView(properties){
                 container: function () {
                     return _container;
                 }
-            }
-
+            };
         })();
 
         var _dropdown;
@@ -343,8 +328,7 @@ function TreeView(properties){
             isActive: function () {
                 return _active;
             }
-        }
-
+        };
     })();
 
     var $children = (function(){
@@ -359,8 +343,7 @@ function TreeView(properties){
                 container: function () {
                     return _container;
                 }
-            }
-
+            };
         })();
 
         (function ini() {
@@ -371,8 +354,7 @@ function TreeView(properties){
             container: function () {
                 return _ui.container();
             }
-        }
-
+        };
     })();
 
     var $selection = (function () {
@@ -412,7 +394,7 @@ function TreeView(properties){
             function _refresh() {
                 _nodes.empty();
 
-                var selected = $root.util.getSelectedArray();
+                var selected = $root.util.getSelectedNodes();
                 for (var i = 0; i < selected.length; i++) {
                     var node = selected[i];
                     var line = nodeLine(node);
@@ -433,9 +415,7 @@ function TreeView(properties){
                     }).
                     bind({
                         'click': function () {
-                            _node.trigger({
-                                'type': 'unselect'
-                            });
+                            _node.select(false);
                         }
                     }).appendTo(_container);
 
@@ -448,16 +428,14 @@ function TreeView(properties){
                         appendTo: function (container) {
                             $(_container).appendTo(container);
                         }
-                    }
-
+                    };
                 })();
 
                 return {
                     appendTo: function (container) {
-                        _ui.appendTo(container)
+                        _ui.appendTo(container);
                     }
-                }
-
+                };
             }
 
 
@@ -477,8 +455,7 @@ function TreeView(properties){
                 refresh: function () {
                     _refresh();
                 }
-            }
-
+            };
         })();
 
 
@@ -494,82 +471,139 @@ function TreeView(properties){
     })();
     
     var $buttons = (function () {
-        //this.buttons = (function () {
-        //    me.buttonsPanel = jQuery('<div/>', {
-        //        id: 'tree-buttons-panel',
-        //        'class': 'tree-buttons-panel'
-        //    }).appendTo($(me.container));
 
-        //    var buttonsContainer = jQuery('<div/>', {
-        //        id: 'tree-buttons-container',
-        //        'class': 'tree-buttons-container'
-        //    }).appendTo($(me.buttonsPanel));
-
-        //    var btnOk = jQuery('<input/>', {
-        //        id: 'tree-button-ok',
-        //        'class': 'tree-button',
-        //        'type': 'submit',
-        //        'value': 'OK'
-        //    }).
-        //    bind({
-        //        'click': function () {
-        //            var items = me.root.getSelectedArray();
-        //            if (items && items.length) {
-        //                $events.trigger({
-        //                    'type': 'confirm',
-        //                    'items': items
-        //                });
-        //            } else {
-        //                $events.trigger({
-        //                    'type': 'cancel'
-        //                });
-        //            }
+        var _ui = (function () {
+            var _panel = jQuery('<div/>', {
+                'class': 'tree-buttons-panel'
+            });
+            var _container = jQuery('<div/>', {
+                id: 'tree-buttons-container',
+                'class': 'tree-buttons-container'
+            });
+            var ok = jQuery('<input/>', {
+                'class': 'tree-button',
+                'type': 'submit',
+                'value': 'OK'
+            }).bind({
+                'click': function () {
+                    var items = $root.util.getSelectedNodes();
+                    if (items) {
+                        $events.trigger({
+                            'type': 'confirm',
+                            'items': items
+                        });
+                    } else {
+                        $events.trigger({
+                            'type': 'cancel'
+                        });
+                    }
 
 
-        //        }
-        //    }).appendTo($(buttonsContainer));
+                }
+            }).appendTo($(_container));
 
-        //    var btnCancel = jQuery('<input/>', {
-        //        id: 'tree-button-cancel',
-        //        'class': 'tree-button',
-        //        'type': 'submit',
-        //        'value': 'Cancel'
-        //    }).
-        //    bind({
-        //        'click': function () {
-        //            $events.trigger({
-        //                'type': 'cancel'
-        //            });
-        //        }
-        //    }).appendTo($(buttonsContainer));
-        //})();
+            var btnCancel = jQuery('<input/>', {
+                'class': 'tree-button',
+                'type': 'submit',
+                'value': 'Cancel'
+            }).
+            bind({
+                'click': function () {
+                    $events.trigger({
+                        'type': 'cancel'
+                    });
+                }
+            }).appendTo($(_container));
+
+            return {
+                panel: function () {
+                    return _panel;
+                }
+            };
+        })();
+
+        (function ini(){
+            $ui.append(_ui.panel());
+        })();
+
     })();
 
     var $dragdrop = (function () {
-        //var drag = null;
-        //var drop = null;
+        var drag = null;
+        var drop = null;
+
+
+        var events = (function () {
+            $(document).bind({
+                'mousemove': function (e) {
+                    e.preventDefault();
+                    if (drag) {
+                        _findDropArea(e.pageX, e.pageY);
+                    }
+                }
+            });
+
+            $events.bind({
+                dropin: function (e) {
+                    if (e.active === false) return;
+                    if (e.node !== drag) {      //Prevent from transfering node to itself.
+                        drop = e.node;
+                    }
+                    my.notify.display('Dropin: ' + e.node.name);
+                },
+                dropout: function (e) {
+                    if (e.active === false) return;
+                    if (drop === e.node) {
+                        drop = null;
+                    }
+                    my.notify.display('Dropout: ' + e.node.name);
+                },
+                dragin: function (e) {
+                    if (e.active === false) return;
+                    drag = e.node;
+                    my.notify.display('Dragin: ' + e.node.name);
+                },
+                dragout: function (e) {
+                    if (e.active === false) return;
+                    my.notify.display('Dragout: ' + e.node.name);
+                },
+                //    dragout: function (e) {
+                //        if (drag && drop) {
+                //            me.trigger({
+                //                type: 'transfer',
+                //                node: drag,
+                //                to: drop
+                //            });
+                //            drag = null;
+                //        }
+                //    },                
+            });
+
+        })();
+
+
+        function _findDropArea(x, y) {
+            if (drop) {
+                if (drop.isHovered(x, y)) {
+                    return;
+                } else {
+                    drop.trigger({
+                        'type': 'deactivateDroparea'
+                    });
+                }
+            } else {
+                var hovered = $root.findHovered(x, y);
+                if (hovered) {
+                    hovered.trigger({
+                        'type': 'activateDroparea'
+                    });
+                }
+            }
+        }
+
 
         //$(document).bind({
-        //    'mousemove': function (e) {
 
-        //        e.preventDefault();
-        //        if (e && drag) {
-
-        //            var x = e.pageX;
-        //            var y = e.pageY;
-
-        //            if (drop) {
-        //                var previousArea = drop.dropArea;
-        //                if (previousArea.isHovered(x, y)) {
-        //                    return;
-        //                } else {
-        //                    previousArea.unselect();
-        //                }
-        //            } else {
-        //                me.root.dropArea.check(x, y);
-        //            }
-        //        }
-        //    }
         //});
 
         //$events.bind({
@@ -842,7 +876,13 @@ function TreeView(properties){
     //this.root.activate();
     (function ini() {
         $root.render($children.container());
+        $events.trigger({
+            'type': 'afterRendering',
+            'recalculate' : true
+        });
+
         if (!$visible) $ui.hide();
+
     })();
 
     
@@ -866,7 +906,6 @@ function TreeView(properties){
 // removeNode
 // sort
 // statusChanged
-// move
 // click
 // release
 // startRenamer
@@ -925,26 +964,18 @@ function TreeNode(tree, parent, object){
                     'node': me
                 });
             },
-            'select': function (e) {
-                me.tree.trigger({
-                    'type': 'select'
-                });
-            },
-            'unselect': function (e) {
-                me.tree.trigger({
-                    'type': 'unselect'
-                });
-            },
             'expand': function (e) {
                 me.tree.trigger({
                     'type': 'expand',
-                    'node': me
+                    'node': me,
+                    'recalculate': e.recalculate
                 });
             },
             'collapse': function (e) {
                 me.tree.trigger({
                     'type': 'collapse',
-                    'node': me
+                    'node': me,
+                    'recalculate': e.recalculate
                 });
             },
             'rename': function (e) {
@@ -967,17 +998,14 @@ function TreeNode(tree, parent, object){
             bind: function (e) {
                 $(_listener).bind(e);
             }
-        }
-
+        };
     })();
     this.trigger = function (e) {
         $events.trigger(e);
-    }
+    };
     this.bind = function (e) {
         $events.bind(e);
-    }
-
-
+    };
     var $ui = (function () {
         //Define if this element is visible on the screen.
         //If parent is not defined, this node is root node and
@@ -1014,7 +1042,7 @@ function TreeNode(tree, parent, object){
                 height: _height,
                 right: _pos.left + _width,
                 bottom: _pos.top + _height
-            }
+            };
         };
 
         //Events listeners.
@@ -1043,8 +1071,11 @@ function TreeNode(tree, parent, object){
             });
 
             me.tree.bind({
-                'expand collapse': function (e) {
-                    _calculatePosition();
+                'expand collapse afterRendering': function (e) {
+                    if (e.active === false) return;
+                    if (e.recalculate) {
+                        _calculatePosition();
+                    }
                 }
             });
 
@@ -1086,20 +1117,17 @@ function TreeNode(tree, parent, object){
             append: function (container) {
                 $(_container).appendTo(container);
             }
-        }
-
+        };
     }());
     this.container = function () {
         return $ui.container;
-    }
+    };
     this.render = function (container) {
         $ui.append(container);
         $nodes.each(function (node) {
             node.render($ui.children);
         });
-    }
-
-
+    };
     var $nodes = (function () {
         var _items = {};
         var _sorted = [];
@@ -1113,7 +1141,7 @@ function TreeNode(tree, parent, object){
                 'removeNode': function (e) {
                     if (e.active === false) return;
                     if (e.node) {
-                        _removeNode(e.node)
+                        _removeNode(e.node);
                     } else if (e.key) {
                         _removeNodeByKey(e.key);
                     }
@@ -1203,14 +1231,22 @@ function TreeNode(tree, parent, object){
             load: function () {
                 _load();
             }
-        }
-
+        };
     })();
-    
-
-    var $expander = (function (value) {
+    this.isDescendant = function (node) {
+        if (node.parent) {
+            if (node.parent === me) {
+                return true;
+            } else {
+                return (me.isDescendant(node.parent));
+            }
+        } else {
+            return false;
+        }
+    };
+    var $expander = (function () {
         var _expandable = false;
-        var _expanded = value ? true : false;
+        var _expanded = false;
         var _button = jQuery('<div/>', {
             'class': 'icon '
         }).bind({
@@ -1257,6 +1293,7 @@ function TreeNode(tree, parent, object){
                     _render();
                 }
             });
+
         })();
         
         function _revertStatus() {
@@ -1299,57 +1336,49 @@ function TreeNode(tree, parent, object){
             isExpanded: function(){
                 return (_expandable ? _expanded : false);
             }
-        }
-
-    })(object.expanded);
+        };
+    })();
     this.isExpanded = function () {
         return $expander.isExpanded();
-    }
-
-
+    };
     var $selector = (function (value) {
-        var _selected = value;
-        var _hasSelectedChildren = false;
+        var selected = value || false;
+        var hasSelectedChildren = false;
 
-        var _ui = (function () {
-            var _box = jQuery('<input/>', {
+        var ui = (function () {
+            var box = jQuery('<input/>', {
                 type: 'checkbox',
                 'class': 'select-checkbox',
-                'value': _selected
+                'value': selected
             }).css({
                 'display': (me.tree.mode === MODE.MULTI ? 'block' : 'none')
             }).bind({
                 'click': function (e) {
                     if (e.active === false) return;
-                    $events.trigger({
-                        'type' : 'statusChanged',
-                        'applyForChildren': true,
-                        'applyForParent': true
-                    });
+                    _select();
                 }
             }).appendTo($ui.line);
 
             return {
-                check: function (value) {
-                    $(_box).prop({
-                        'checked': value
+                check: function ($value) {
+                    $(box).prop({
+                        'checked': $value
                     });
                 }
-            }
-
+            };
         })();
 
-        var _events = (function () {
+        var events = (function () {
             $events.bind({
                 'select hasSelectedChildren': function (e) {
-                    _hasSelectedChildren = true;
+                    hasSelectedChildren = true;
                 },
                 'unselect': function (e) {
-                    _hasSelectedChildren = false;
+                    hasSelectedChildren = false;
                 },
                 'select': function (e) {
-                    _selected = true;
-                    _ui.check(true);
+                    selected = true;
+                    ui.check(true);
                     if (me.tree.mode === MODE.SINGLE) {
                         me.tree.trigger({
                             'type': 'select',
@@ -1358,26 +1387,18 @@ function TreeNode(tree, parent, object){
                     }
                 },
                 'unselect hasSelectedChildren': function (e) {
-                    _selected = false;
-                    _ui.check(false);
+                    selected = false;
+                    ui.check(false);
                 },
                 'select unselect hasSelectedChildren': function (e) {
                     if (e.active === false) return;
                     
                     if (e.applyForChildren){
-                        _applyForChildren(e.type);
+                        applyForChildren(e.type);
                     }
                     if (e.applyForParent){
-                        _applyForParent(e.type);
+                        applyForParent(e.type);
                     }
-                },
-                'statusChanged': function (e) {
-                    if (e.active === false) return;
-                    $events.trigger({
-                        'type': _selected ? 'unselect' : 'select',
-                        'applyForParent': true,
-                        'applyForChildren' : true
-                    });
                 },
                 'childStatusChanged': function (e) {
                     if (e.active === false) return;
@@ -1399,7 +1420,7 @@ function TreeNode(tree, parent, object){
             });
         })();
 
-        function _applyForChildren(type) {
+        function applyForChildren(type) {
             $nodes.each(function (node) {
                 node.trigger({
                     'type' : type,
@@ -1409,7 +1430,7 @@ function TreeNode(tree, parent, object){
             });
         }
 
-        function _applyForParent(){
+        function applyForParent(){
             if (me.parent){
                 me.parent.trigger({
                     'type' : 'childStatusChanged'
@@ -1417,22 +1438,44 @@ function TreeNode(tree, parent, object){
             }
         }
 
-        return{
-            isSelected: function(){
-                return _selected;
-            },
-            hasSelectedChildren: function(){
-                return _hasSelectedChildren;
-            }
+        function _select(value) {
+            selected = (value === undefined ? !selected : value);
+            var _type = selected ? 'select' : 'unselect';
+            $events.trigger({
+                'type': _type,
+                'applyForParent': true,
+                'applyForChildren': true
+            });
+            me.tree.trigger({
+                'type': _type,
+                'node': me
+            });
         }
 
+        return{
+            isSelected: function () {
+                var name = me.name;
+                return selected;
+            },
+            hasSelectedChildren: function () {
+                var name = me.name;
+                return hasSelectedChildren;
+            },
+            select: function (value) {
+                _select(value);
+            }
+        };
     })(object.selected);
-    this.isSelected = function(){
+    this.isSelected = function () {
         return $selector.isSelected();
-    }
+    };
     this.hasSelectedChildren = function () {
         return $selector.hasSelectedChildren();
-    }
+    };
+    this.select = function (value) {
+        $selector.select(value);
+    };
+
 
 
     var $caption = (function () {
@@ -1495,7 +1538,7 @@ function TreeNode(tree, parent, object){
                         height: _height,
                         right: _position.left + _width,
                         bottom: _position.top + _height
-                    }
+                    };
                 },
                 append: function (control) {
                     $(control).appendTo(_caption);
@@ -1503,8 +1546,7 @@ function TreeNode(tree, parent, object){
                 rename: function (name) {
                     $(_caption).html(name);
                 }
-            }
-
+            };
         })();
 
         var _events = (function () {
@@ -1562,9 +1604,10 @@ function TreeNode(tree, parent, object){
             append: function (control) {
                 _ui.append(control);
             }
-        }
-
+        };
     })();
+
+
 
     var $renamer = (function () {
         var _active = false;
@@ -1626,12 +1669,12 @@ function TreeNode(tree, parent, object){
 
             function _isOutside(x, y){
                 var _position = $(_textbox).offset();
-                var _xa = _position.left;
-                var _ya = _position.top;
-                var _xz = _xa + $(_textbox).width();
-                var _yz = _ya + $(_textbox).height();
+                var xa = _position.left;
+                var ya = _position.top;
+                var xz = xa + $(_textbox).width();
+                var yz = ya + $(_textbox).height();
 
-                if (x >= _xa && x <= _xz && y >= _ya && y <= _yz) {
+                if (x >= xa && x <= xz && y >= ya && y <= yz) {
                     return false;
                 }
 
@@ -1654,8 +1697,7 @@ function TreeNode(tree, parent, object){
                 isOutside: function(x, y){
                     return _isOutside(x, y);
                 },
-            }
-
+            };
         })();
 
         function _activate() {
@@ -1740,78 +1782,81 @@ function TreeNode(tree, parent, object){
             isActive: function () {
                 return _active;
             }
-        }
-
+        };
     })();
     this.isBeingRenamed = function () {
         return $renamer.isActive();
     };
 
 
+
     var $droparea = (function () {
-        var _visible = false;
-        var _position = {
+        var visible = false;
+        var position = {
             left: 0,
             right: 0,
             top: 0,
             bottom: 0
         };
 
-        var _listener = (function () {
+        var listener = (function () {
             me.tree.bind({
-                'expand collapse': function () {
-                    _calculatePosition();
+                'expand collapse afterRendering': function (e) {
+                    if (e.active === false) return;
+                    if (e.recalculate) {
+                        calculatePosition();
+                    }
                 }
             });
         })();
 
-        function _calculatePosition() {
-            _position = $caption.position();
-            _visible = (_position.width && _position.height);
+        function calculatePosition() {
+            position = $caption.position();
+            visible = (position.width && position.height);
         };
 
-        function _isHovered(x, y) {
-            if (_visible) {
-                if (x >= _position.left && x <= _position.right && y >= _position.top && y <= _position.bottom) {
+        function isHovered(x, y) {
+            if (visible) {
+                if (x >= position.left && x <= position.right && y >= position.top && y <= position.bottom) {
                     return true;
                 }
             }
             return false;
         }
 
-        function _select() {
-            $events.trigger({
-                'type' : 'activateDroparea'
-            });
+
+        function findHovered(x, y) {
+            var name = me.name;
+            if (isHovered(x, y)) {
+                return me;
+            } else if ($ui.isHovered(x, y)) {
+                var hovered = null;
+                $nodes.each(function (node) {
+                    if (hovered === null) {
+                        hovered = node.findHovered(x, y);
+                    }
+                });
+                return hovered;
+            }
+            return null;
         }
 
-        function _unselect() {
-            $events.trigger({
-                'type': 'deactivateDroparea'
-            });
-        }
-
-
-        //function _check(x, y) {
-        //    if (me.tree.dragDropManager.hasDropArea()) {
-        //        return;
-        //    } else if (_isHovered(x, y) && me.tree.dragDropManager.getDrag() !== me) {
-        //        _select();
-        //    } else {
-        //        for (var key in me.nodes) {
-        //            if (me.nodes.hasOwnProperty(key)) {
-        //                var node = me.nodes[key];
-        //                if (node) {
-        //                    node.dropArea.check(x, y);
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-
-
+        return {
+            isHovered: function (x, y) {
+                return isHovered(x, y);
+            },
+            findHovered: function (x, y) {
+                return findHovered(x, y);
+            }
+        };
     })();
-
+    this.isHovered = function (x, y) {
+        return $droparea.isHovered(x, y);
+    };
+    this.findHovered = function (x, y) {
+        return $droparea.findHovered(x, y);
+    };
+    
     var $mover = (function () {
         var _active = false;
         var _inProgress = false;
@@ -1824,8 +1869,7 @@ function TreeNode(tree, parent, object){
                 top: 0,
                 left: 0
             }
-        }
-
+        };
         var _events = (function () {
             $(document).bind({
                 'mousemove': function (e) {
@@ -1853,7 +1897,7 @@ function TreeNode(tree, parent, object){
                     _position.click = {
                         'left': e.x,
                         'top': e.y
-                    }
+                    };
                 },
                 'startRenamer': function (e) {
                     _active = false;
@@ -1918,8 +1962,7 @@ function TreeNode(tree, parent, object){
                     if (!_control) return;
                     _move(x, y);
                 }
-            }
-
+            };
         })();
         
         function _activate(x, y) {
@@ -1932,23 +1975,26 @@ function TreeNode(tree, parent, object){
             isActive: function () {
                 return _active;
             }
-        }
-
+        };
     })();
+
+
 
 
     //Util functions.
     this.util = (function () {
         return {
-            getSelectedArray: function () {
+            getSelectedNodes: function () {
                 var array = [];
+                array.length = 0;
 
                 if ($selector.isSelected()) {
+                    //array[0] = me;
                     array.push(me);
                 } else if ($selector.hasSelectedChildren()) {
                     $nodes.each(function (node) {
-                        var _array = node.getSelectedArray();
-                        array.push(_array);
+                        var _array = node.util.getSelectedNodes();
+                        Array.prototype.push.apply(array, _array);
                     });
                 }
 
@@ -1963,14 +2009,14 @@ function TreeNode(tree, parent, object){
 
                 //Add nodes.
                 $nodes.each(function (node) {
-                    var _array = node.getNodesForSearching();
+                    var _array = node.util.getNodesForSearching();
                     array.push(_array);
                 });
 
                 return array;
 
             }
-        }
+        };
     })();
     
 
@@ -1999,6 +2045,13 @@ function TreeNode(tree, parent, object){
     //Initializing functions.
     (function ini() {
         $nodes.load();
+        if (object.expanded) {
+            var name = me.name;
+            $events.trigger({
+                'type': 'expand',
+                'recalculate': me.parent ? false : true
+            });
+        }
     })();
 
 
@@ -2020,7 +2073,7 @@ TreeNode.prototype.transfer = function (destination) {
             destination.addNode(this);
         }
     }
-}
+};
 TreeNode.prototype.addNode = function (node) {
     //alert('moving node ' + node.name + ' to ' + this.name);
     node.moveTo(this);
@@ -2029,38 +2082,38 @@ TreeNode.prototype.addNode = function (node) {
     this.resetStatus();
     this.dropArea.unselect();
     this.dropArea.recalculate();
-}
+};
 TreeNode.prototype.moveTo = function (newParent) {
     if (this.parent) {
         this.parent.removeNode(this.key);
     }
     this.parent = newParent;
     this.mainContainer.appendTo($(newParent.getContainer()));
-}
+};
 TreeNode.prototype.isRoot = function () {
     var value = (this.parent.isNode ? false : true);
     return value;
-}
+};
 TreeNode.prototype.resetStatus = function () {
     if (Object.keys(this.nodes).length > 0) {
         this.expander.setExpandableStatus(true);
     } else {
         this.expander.setExpandableStatus(false);
     }
-}
+};
 TreeNode.prototype.getChildNode = function (i) {
     if (i >= 0 && i < this.nodesArray.length) {
         return this.nodesArray[i];
     }
     return null;
-}
+};
 TreeNode.prototype.getLastChild = function () {
     if (this.nodesArray.length < 1) {
         return null;
     } else {
         return this.nodesArray[this.nodesArray.length - 1];
     }
-}
+};
 TreeNode.prototype.activate = function () {
     this.isActive = true;
 
@@ -2074,7 +2127,7 @@ TreeNode.prototype.activate = function () {
         'type': 'activate',
         'node': this
     });
-}
+};
 TreeNode.prototype.inactivate = function () {
     this.isActive = false;
     $(this.caption).removeClass('selected');
@@ -2082,21 +2135,21 @@ TreeNode.prototype.inactivate = function () {
         'type': 'inactivate',
         'node': this
     });
-}
+};
 TreeNode.prototype.nextNode = function () {
     if (this.isRoot() === true) {
         return null;
     } else {
         return this.parent.getChildNode(this.index + 1);
     }
-}
+};
 TreeNode.prototype.previousNode = function () {
     if (this.isRoot() === true) {
         return null;
     } else {
         return this.parent.getChildNode(this.index - 1);
     }
-}
+};
 TreeNode.prototype.delete = function () {
     if (!this.isRoot()) {
         this.parent.removeNode(this.key);
@@ -2112,11 +2165,11 @@ TreeNode.prototype.delete = function () {
         });
 
     }
-}
+};
 TreeNode.prototype.removeNode = function (key) {
     delete this.nodes[key];
     this.sorter.sort();
-}
+};
 TreeNode.prototype.addNewNode = function () {
     var me = this;
     var node = new TreeNode({
@@ -2129,15 +2182,15 @@ TreeNode.prototype.addNewNode = function () {
         'node': node
     });
     node.renamer.activate();
-}
+};
 TreeNode.prototype.cancel = function () {
     $(this.mainContainer).remove();
     this.parent.removeNode(this.key);
-}
+};
 TreeNode.prototype.changeName = function (name) {
     this.name = name;
     $(this.caption).html(name);
-}
+};
 TreeNode.prototype.select = function () {
     if (this.tree.mode === MODE.SINGLE) {
         this.tree.trigger({
@@ -2150,24 +2203,21 @@ TreeNode.prototype.select = function () {
             this.tree.selection.refresh();
         }
     }
-}
+};
 TreeNode.prototype.unselect = function () {
     if (this.tree.mode === MODE.MULTI) {
         this.selector.unselect();
         this.tree.selection.refresh();
     }
-}
-
+};
 TreeNode.prototype.getSearchObject = function () {
     return {
         object: this,
         name: this.name,
         prepend: this.path() + (this.parent.isRoot() ? '' : '  >  '),
         displayed: this.name
-    }
-}
-
-
+    };
+};
 
 function hide(div) {
     $(div).css({

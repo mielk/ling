@@ -65,6 +65,7 @@
     width: 24px !important;
     height: 24px !important;
     background-color: green !important;
+    z-index: 1 !important;
 }
 
 .tree-buttons-panel
