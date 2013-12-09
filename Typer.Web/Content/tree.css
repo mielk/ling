@@ -155,21 +155,20 @@ div.children-container
     cursor: pointer;
 }
 
-.tree-line .caption:hover
-{
+.tree-line .caption:hover {
     border: 1px dotted #444 ;
+    background-color: #00ff00;
     background-color: rgba(0, 255, 0, 0.4);
 }
 
-.tree-line .drop-area
-{
+.tree-line .drop-area {
     border: 1px dotted #444;
+    background-color: #00ff00;
     background-color: rgba(0, 255, 0, 0.4);
 }
 
 
-.move
-{
+.move {
     display: block !important;
     position: fixed !important;
     width: auto;
