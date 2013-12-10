@@ -1,7 +1,6 @@
 ﻿var my = my || {};
 
 
-
 //HashTable
 function HashTable(obj) {
     this.length = 0;
@@ -13,39 +12,37 @@ function HashTable(obj) {
         }
     }
 
-    this.setItem = function (key, value) {
+    this.setItem = function(key, value) {
         var previous = undefined;
         if (this.hasItem(key)) {
             previous = this.items[key];
-        }
-        else {
+        } else {
             this.length++;
         }
         this.items[key] = value;
         return previous;
-    }
+    };
 
-    this.getItem = function (key) {
+    this.getItem = function(key) {
         return this.hasItem(key) ? this.items[key] : undefined;
-    }
+    };
 
-    this.hasItem = function (key) {
+    this.hasItem = function(key) {
         return this.items.hasOwnProperty(key);
-    }
+    };
 
-    this.removeItem = function (key) {
+    this.removeItem = function(key) {
         if (this.hasItem(key)) {
-            previous = this.items[key];
+            var previous = this.items[key];
             this.length--;
             delete this.items[key];
             return previous;
-        }
-        else {
+        } else {
             return undefined;
         }
-    }
+    };
 
-    this.keys = function () {
+    this.keys = function() {
         var keys = [];
         for (var k in this.items) {
             if (this.hasItem(k)) {
@@ -53,9 +50,9 @@ function HashTable(obj) {
             }
         }
         return keys;
-    }
+    };
 
-    this.values = function () {
+    this.values = function() {
         var values = [];
         for (var k in this.items) {
             if (this.hasItem(k)) {
@@ -63,32 +60,47 @@ function HashTable(obj) {
             }
         }
         return values;
-    }
+    };
 
-    this.each = function (fn) {
+    this.each = function(fn) {
         for (var k in this.items) {
             if (this.hasItem(k)) {
                 fn(k, this.items[k]);
             }
         }
-    }
+    };
 
-    this.size = function () {
+    this.size = function() {
         return this.length;
-    }
+    };
 
-    this.clear = function () {
-        this.items = {}
+    this.clear = function() {
+        this.items = {};
         this.length = 0;
-    }
+    };
 }
 
 
-my.notify = (function () {
+//Class to handle events.
+function EventListener() {
+    this.listener = {};
+}
+EventListener.prototype.trigger = function (e) {
+    $(this.listener).trigger(e);
+};
+EventListener.prototype.bind = function (e) {
+    $(this.listener).bind(e);
+};
+
+
+
+
+
+my.notify = (function() {
     var options = {
         clickToHide: true,
-        autoHide: false,
-        autoHideDelay: 3000,
+        autoHide: true,
+        autoHideDelay: 2000,
         arrowShow: false,
         // default positions
         elementPosition: 'bottom right',
@@ -103,28 +115,27 @@ my.notify = (function () {
     };
 
     return {
-        display: function (msg, success) {
+        display: function(msg, success) {
             options.className = (success ? 'success' : 'error');
             $.notify(msg, options);
         }
-    }
+    };
 
 
-})()
+})();
     
 my.ui = (function () {
 
     var topLayer = 0;
 
     return {
-
-        extraWidth: function (element) {
+        extraWidth: function(element) {
             if (element) {
                 var $e = $(element);
                 if ($e) {
                     return $e.padding().left + $e.padding().right +
-                            $e.border().left + $e.border().right +
-                            $e.margin().left + $e.margin().right;
+                        $e.border().left + $e.border().right +
+                        $e.margin().left + $e.margin().right;
                 } else {
                     return 0;
                 }
@@ -133,13 +144,13 @@ my.ui = (function () {
             }
         },
 
-        extraHeight: function (element) {
+        extraHeight: function(element) {
             if (element) {
                 var $e = $(element);
                 if ($e) {
                     return $e.padding().top + $e.padding().bottom +
-                            $e.border().top + $e.border().bottom +
-                            $e.margin().top + $e.margin().bottom;
+                        $e.border().top + $e.border().bottom +
+                        $e.margin().top + $e.margin().bottom;
                 } else {
                     return 0;
                 }
@@ -148,7 +159,7 @@ my.ui = (function () {
             }
         },
 
-        moveCaret : function (win, charCount) {
+        moveCaret: function(win, charCount) {
             var sel, range;
             if (win.getSelection) {
                 sel = win.getSelection();
@@ -157,7 +168,7 @@ my.ui = (function () {
                     var newOffset = sel.focusOffset + charCount;
                     sel.collapse(textNode, Math.min(textNode.length, newOffset));
                 }
-            } else if ( (sel = win.document.selection) ) {
+            } else if ((sel = win.document.selection)) {
                 if (sel.type != "Control") {
                     range = sel.createRange();
                     range.move("character", charCount);
@@ -166,19 +177,14 @@ my.ui = (function () {
             }
         },
 
-        placeCaret: function (win, position) {
-
-        },
-
-        addTopLayer: function () {
+        addTopLayer: function() {
             return ++topLayer;
         },
 
-        releaseTopLayer: function () {
+        releaseTopLayer: function() {
             topLayer--;
         }
-
-    }
+    };
 
 })();
 
@@ -186,12 +192,11 @@ my.ui = (function () {
 my.text = (function () {
 
     return {
-
         /*  Funkcja:    onlyDigits
          *  Opis:       Funkcja usuwa z podanego stringa wszystkie
-         *              znaki nie będšce cyframi.
+         *              znaki nie będące cyframi.
          */
-        onlyDigits: function (s) {
+        onlyDigits: function(s) {
             return (s + '').match(/^-?\d*/g);
         },
 
@@ -200,23 +205,23 @@ my.text = (function () {
 
 
         /*  Funkcja:    substring
-         *  Opis:       Funkcja zwraca podcišg znaków tekstu bazowego [base]
-         *              znajdujšcy się pomiędzy podanymi znacznikami [start]
+         *  Opis:       Funkcja zwraca podciąg znaków tekstu bazowego [base]
+         *              znajdujący się pomiędzy podanymi znacznikami [start]
          *              oraz [end].
          */
-        substring: function (base, start, end, isCaseSensitive) {
+        substring: function(base, start, end, isCaseSensitive) {
             var tempBase, tempStart, tempEnd;
 
             //Checks if all the parameters are defined.
-            if (base === undefined || start === undefined || end === undefined) {
+            if (base === undefined || base === null || start === undefined || start === null || end === undefined || end === null) {
                 return '';
             }
 
 
             if (isCaseSensitive) {
-                tempBase = base.toString();
-                tempStart = start.toString();
-                tempEnd = end.toString();
+                tempBase = base ? base.toString() : 0;
+                tempStart = start ? start.toString() : 0;
+                tempEnd = end ? end.toString() : 0;
             } else {
                 tempBase = base.toString().toLowerCase();
                 tempStart = start.toString().toLowerCase();
@@ -224,7 +229,7 @@ my.text = (function () {
             }
 
 
-            //Wyznacza pozycje poczštkowego i końcowego stringa w stringu bazowym.
+            //Wyznacza pozycje początkowego i końcowego stringa w stringu bazowym.
             var iStart = (tempStart.length ? tempBase.indexOf(tempStart) : 0);
             //alert('baseString: ' + baseString + '; start: ' + start + '; end: ' + end + '; caseSensitive: ' + isCaseSensitive);
             if (iStart < 0) {
@@ -236,33 +241,29 @@ my.text = (function () {
 
         },
 
-
-        isLetter: function (char) {
-            return (char.length === 1 && char.match(/[a-z]/i) ? true : false);
+        isLetter: function($char) {
+            return ($char.length === 1 && $char.match(/[a-z]/i) ? true : false);
         },
 
-        containLettersNumbersUnderscore: function (str) {
+        containLettersNumbersUnderscore: function(str) {
             return (str.match(/^\w+$/) ? true : false);
         },
 
-        isValidMail: function (mail) {
+        isValidMail: function(mail) {
             return (mail.match(/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/) ? true : false);
         },
 
-        startsWith: function (base, prefix) {
+        startsWith: function(base, prefix) {
             var s = base.substr(0, prefix.length);
             return (s === prefix);
         }
-
-
-
-    }
+    };
 
 })();
 
 my.array = (function () {
     return {
-        objectToArray: function (object) {
+        objectToArray: function(object) {
             var array = [];
             for (var key in object) {
                 if (object.hasOwnProperty(key)) {
@@ -272,24 +273,33 @@ my.array = (function () {
             }
             return array;
         }
-    }
+    };
 })();
 
 /* Funkcje daty i czasu */
 my.dates = (function () {
 
-    return {
+    return {        
+        TIMEBAND: {
+            D: { name: 'day', period: 1 },
+            W: { name: 'week', period: 7 },
+            M: { name: 'month', period: 30 }
+        },
 
         /*   Funkcja:    dateDifference
         *    Opis:       Funkcja zwraca różnicę pomiędzy datami [start] i [end],
-        *                wyrażonš w jednostkach przypisanych do podanego timebandu.
+        *                wyrażoną w jednostkach przypisanych do podanego timebandu.
         */
-        dateDifference: function (timeband, start, end) {
+        dateDifference: function(timeband, start, end) {
             switch (timeband) {
-                case TIMEBAND.D: return this.daysDifference(start, end);
-                case TIMEBAND.W: return this.weeksDifference(start, end);
-                case TIMEBAND.M: return this.monthsDifference(start, end);
-                default: return 0;
+            case TIMEBAND.D:
+                return this.daysDifference(start, end);
+            case TIMEBAND.W:
+                return this.weeksDifference(start, end);
+            case TIMEBAND.M:
+                return this.monthsDifference(start, end);
+            default:
+                return 0;
             }
         },
 
@@ -299,12 +309,12 @@ my.dates = (function () {
 
         /*   Funkcja:    daysDifference
         *    Opis:       Funkcja zwraca różnicę pomiędzy datami [start] i [end],
-        *                wyrażonš w dniach.
+        *                wyrażoną w dniach.
         */
-        daysDifference: function (start, end) {
-            var MILIS_IN_DAY = 86400000;
-            var startDay = Math.floor(start.getTime() / MILIS_IN_DAY);
-            var endDay = Math.floor(end.getTime() / MILIS_IN_DAY);
+        daysDifference: function(start, end) {
+            var milisInDay = 86400000;
+            var startDay = Math.floor(start.getTime() / milisInDay);
+            var endDay = Math.floor(end.getTime() / milisInDay);
             return (endDay - startDay);
         },
 
@@ -314,9 +324,9 @@ my.dates = (function () {
 
         /*   Funkcja:    weeksDifference
         *    Opis:       Funkcja zwraca różnicę pomiędzy datami [start] i [end],
-        *                wyrażonš w tygodniach.
+        *                wyrażoną w tygodniach.
         */
-        weeksDifference: function (start, end) {
+        weeksDifference: function(start, end) {
             var result = Math.floor(daysDifference(start, end) / 7);
             return (end.getDay() < start.getDay() ? result : result);
         },
@@ -327,9 +337,9 @@ my.dates = (function () {
 
         /*   Funkcja:    monthsDifference
         *    Opis:       Funkcja zwraca różnicę pomiędzy datami [start] i [end],
-        *                wyrażonš w miesišcach.
+        *                wyrażoną w miesiącach.
         */
-        monthsDifference: function (start, end) {
+        monthsDifference: function(start, end) {
             var yearStart = start.getFullYear();
             var monthStart = start.getMonth();
             var yearEnd = end.getFullYear();
@@ -344,12 +354,12 @@ my.dates = (function () {
 
 
         /*   Funkcja:    workingDays
-        *    Opis:       Funkcja zwraca liczbę dni pracujšcych pomiędzy dwiema datami.
+        *    Opis:       Funkcja zwraca liczbę dni pracujących pomiędzy dwiema datami.
         */
-        workingDays: function (start, end) {
+        workingDays: function(start, end) {
             var sDate = (start.getDay() > 5 ? start.getDate() - (start.getDay() - 5) : start);
             var eDate = (end.getDay() > 5 ? end.getDate() - (end.getDay() - 5) : end);
-            return (weekDifference(sDate, eDate) * 5) + (eDate.getDay() - sDate.getDay());
+            return (weeksDifference(sDate, eDate) * 5) + (eDate.getDay() - sDate.getDay());
         },
 
 
@@ -357,15 +367,15 @@ my.dates = (function () {
 
 
         /*   Funkcja:    toString
-        *    Opis:       Funkcja zwraca tekstowš reprezentację danej daty.
+        *    Opis:       Funkcja zwraca tekstową reprezentację danej daty.
         */
-        toString: function (date) {
+        toString: function(date) {
             var year = date.getFullYear();
             var month = date.getMonth() + 1;
             var day = date.getDate();
             return year + '-' +
-                    (month < 10 ? '0' : '') + month + '-' +
-                    (day < 10 ? '0' : '') + day;
+                (month < 10 ? '0' : '') + month + '-' +
+                (day < 10 ? '0' : '') + day;
         },
 
 
@@ -375,7 +385,7 @@ my.dates = (function () {
         /*   Funkcja:    fromString
         *    Opis:       Funkcja konwertująca podany tekst na datę.
         */
-        fromString: function (s) {
+        fromString: function(s) {
             var year = s.substr(0, 4) * 1;
             var month = s.substr(5, 2) * 1 - 1;
             var day = s.substr(8, 2) * 1;
@@ -387,9 +397,9 @@ my.dates = (function () {
 
 
         /*   Funkcja:    getMonth
-        *    Opis:       Funkcja zwracajšca nazwę podanego miesišca.
+        *    Opis:       Funkcja zwracająca nazwę podanego miesiąca.
         */
-        monthName: function (month, isShort) {
+        monthName: function(month, isShort) {
             var months = {
                 1: ['styczeń', 'sty'],
                 2: ['luty', 'lut'],
@@ -408,7 +418,6 @@ my.dates = (function () {
             return months[month][isShort ? 1 : 0];
 
         }
-
-    }
+    };
 
 })();

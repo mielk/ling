@@ -76,7 +76,7 @@ var dict = dict || {
     NameCannotBeEmpty: {
         POL: 'Nazwa nie może być pusta',
         ENG: 'Name cannot be empty'
-    }, 
+    },
     NameCannotBeLongerThan: {
         POL: 'Nazwa nie może być dłuższa niż {0} znaków',
         ENG: 'Name cannot be longer than {0} characters'
@@ -84,18 +84,27 @@ var dict = dict || {
     NameAlreadyExists: {
         POL: 'Istnieje już zapytanie o takiej nazwie',
         ENG: 'This name has been used already'
+    },
+    NodeCannotBeMovedToDescendant: {
+        POL: 'Element nie może być przeniesiony do własnego potomka',
+        ENG: 'Node cannot be moved into its own descendant'    
+    },
+    NodeCannotBeMovedToItself: {
+        POL: 'Element nie może być przeniesiony do samego siebie',
+        ENG: 'Node cannot be moved into itself'
     }
-}
+    
+};
 
 
 var MessageBundle = MessageBundle || (function () {
 
     return {
-        get: function (msg, params) {
+        get: function(msg, params) {
             var text = msg[my.language.code];
 
             if (params) {
-                for (index = 0; index < params.length; ++index) {
+                for (var index = 0; index < params.length; ++index) {
                     var toBeReplaced = '{' + index + '}';
                     text = text.replace(toBeReplaced, params[index]);
                 }
@@ -104,7 +113,7 @@ var MessageBundle = MessageBundle || (function () {
             return text;
 
         }
-    }
+    };
 
 
 }());
