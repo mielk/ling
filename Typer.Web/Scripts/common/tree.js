@@ -136,7 +136,8 @@ function Tree(properties) {
 
     this.search = new SearchPanel(this);
 
-    this.children = jQuery('<div/>').appendTo(this.view.container);
+    this.children = jQuery('<div/>');
+    this.view.append(this.children);
 
     this.selection = new SelectionPanel(this, properties.showSelection);
 
@@ -152,7 +153,7 @@ function Tree(properties) {
     
 
     //Initializing function.
-    this.root.view.append(this.view.container);
+    this.root.view.append(this.children);
     if (!this.visible) {
         this.hide();
     }
@@ -192,7 +193,7 @@ function TreeView(tree, container, x, y) {
     this.embedded = (container ? true : false);
     this.background = (function() {
         if (me.embedded) {
-            jQuery('<div/>').
+            return jQuery('<div/>').
             css({
                 'width': '100%',
                 'height': '100%',
@@ -201,14 +202,14 @@ function TreeView(tree, container, x, y) {
             }).
             appendTo($(container));
         } else {
-            jQuery('<div/>', {
+            return jQuery('<div/>', {
                  'class': 'tree-background'
             }).
             css({ 'z-index': my.ui.addTopLayer() }).
             appendTo($(document.body));
         }
-    });
-    
+    })(); 
+
     var $frame = jQuery('<div/>', {
         'class': 'tree-container-frame'
     }).appendTo($(this.background));
@@ -244,7 +245,7 @@ function TreeView(tree, container, x, y) {
 
 
     //Create exit button.
-    if (this.embedded) {
+    if (!this.embedded) {
         var $quit = jQuery('<div/>', {
             'class': 'tree-container-exit'
         }).bind({
@@ -349,7 +350,7 @@ function SelectionPanel(tree, showSelection) {
         'class': 'tree-selection-container'
     }).css({
         'display': this.active ? 'block' : 'none'
-    }).appendTo(me.tree.view.container);
+    });
     
     // ReSharper disable once UnusedLocals
     var header = jQuery('<div/>', {
@@ -362,6 +363,7 @@ function SelectionPanel(tree, showSelection) {
         'class': 'tree-selection-nodes'
     }).appendTo($(container));
 
+    this.tree.view.append($(container));
 
 }
 SelectionPanel.prototype.refresh = function () {
@@ -794,6 +796,8 @@ function TreeNode(tree, parent, object) {
 
     this.selector = new NodeSelector(this);
 
+    this.caption = new NodeCaption(this);
+
     this.load(object.items);
 
 }
@@ -805,7 +809,7 @@ TreeNode.prototype.load = function(items) {
         this.addNode(node, false);
     }
     this.nodes.sort();
-    this.adjustExpandButton();
+    this.expander.adjustButton();
 };
 TreeNode.prototype.addNode = function (node, sort) {
     this.view.addChild(node.view.container);
@@ -819,13 +823,7 @@ TreeNode.prototype.addNode = function (node, sort) {
 };
 TreeNode.prototype.removeNode = function(node) {
     this.nodes.removeNode(node);
-    this.adjustExpandButton();
-};
-TreeNode.prototype.adjustExpandButton = function() {
-    if (this.nodes.size()) {
-        this.expander.expandable = true;
-    }
-    this.expander.render();
+    this.expander.adjustButton();
 };
 TreeNode.prototype.isExpandable = function() {
     return (this.expander.expandable ? true : false);
@@ -835,6 +833,7 @@ TreeNode.prototype.isExpanded = function() {
 };
 TreeNode.prototype.expand = function() {
     this.view.expand();
+    this.expander.setState(true);
     this.expander.render();
     this.nodes.each(function(node) {
         node.view.visible = true;
@@ -842,6 +841,7 @@ TreeNode.prototype.expand = function() {
 };
 TreeNode.prototype.collapse = function() {
     this.view.collapse();
+    this.expander.setState(false);
     this.expander.render();
     this.nodes.each(function (node) {
         node.view.visible = false;
@@ -855,23 +855,16 @@ TreeNode.prototype.hasSelectedChildren = function () {
 };
 TreeNode.prototype.select = function (value, applyForChildren, applyForParent) {
     this.selector.select(value, applyForChildren, applyForParent);
-
     if (value && this.tree.mode === MODE.SINGLE) {
         alert('Trigger tree select');
     }
-    
-    this.caption.refresh();
-
-};
-TreeNode.prototype.revertState = function() {
-    this.selector.revert();
     this.caption.refresh();
 };
-TreeNode.prototype.hasSelectedChildren = function() {
+TreeNode.prototype.partiallySelected = function() {
     this.selector.hasSelectedChildren = true;
-    this.caption.hasSelectedChildren();
+    this.selector.check(false);
     if (this.parent) {
-        this.parent.hasSelectedChildren();
+        this.parent.partiallySelected();
     }
     this.caption.refresh();
 };
@@ -1034,7 +1027,7 @@ NodesManager.prototype.each = function(fn) {
 };
 NodesManager.prototype.countSelected = function(includePartiallySelected) {
     var counter = 0;
-    for (var key in items) {
+    for (var key in this.items) {
         if (this.items.hasOwnProperty(key)) {
             var item = this.items[key];
             if (item.isSelected()) {
@@ -1044,6 +1037,7 @@ NodesManager.prototype.countSelected = function(includePartiallySelected) {
             }
         }
     }
+    return counter;
 };
 NodesManager.prototype.isDescendant = function(node) {
     if (this.node.parent) {
@@ -1081,7 +1075,6 @@ NodeExpander.prototype.revertStatus = function () {
         } else {
             this.node.expand();
         }
-        this.expanded = !this.expanded;
     }
 };
 NodeExpander.prototype.render = function() {
@@ -1090,6 +1083,13 @@ NodeExpander.prototype.render = function() {
     } else {
         $(this.button).html('.');
     }
+};
+NodeExpander.prototype.setState = function (value) {
+    this.expanded = value;
+};
+NodeExpander.prototype.adjustButton = function () {
+    this.expandable = (this.node.nodes.size() > 0);
+    this.render();
 };
 
 
@@ -1108,7 +1108,7 @@ function NodeSelector(node, value) {
     }).bind({
         'click': function (e) {
             if (e.active === false) return;
-            me.node.revert();
+            me.revert();
         }
     }).appendTo(me.node.view.line);
 
@@ -1148,10 +1148,10 @@ NodeSelector.prototype.checkChildrenStatus = function () {
         if (selectedChildren === this.node.nodes.size()) {
             this.node.select(true, false, true);
         } else {
-            this.node.hasSelectedChildren();
+            this.node.partiallySelected();
         }
     } else {
-        this.node.unselect(false, false, true);
+        this.node.select(false, false, true);
     }
     
     if (this.node.parent) {
@@ -1198,14 +1198,11 @@ function NodeCaption(node) {
         }
     }).appendTo(me.node.view.line);
 }
-
 NodeCaption.prototype.refresh = function() {
     var me = this;
-    if (this.node.selector.hasSelectedChildren) {
-        $(this.caption).css({
-            'font-weight':  me.node.selector.hasSelectedChildren ? 'bold' : 'normal'
-        });
-    }
+    $(this.caption).css({
+        'font-weight':  me.node.selector.hasSelectedChildren ? 'bold' : 'normal'
+    });
 };
 NodeCaption.prototype.dropArea = function(value) {
     var $class = 'drop-area';
