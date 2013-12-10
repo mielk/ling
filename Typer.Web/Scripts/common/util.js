@@ -82,13 +82,13 @@ function HashTable(obj) {
 
 
 //Class to handle events.
-function EventListener() {
+function EventHandler() {
     this.listener = {};
 }
-EventListener.prototype.trigger = function (e) {
+EventHandler.prototype.trigger = function (e) {
     $(this.listener).trigger(e);
 };
-EventListener.prototype.bind = function (e) {
+EventHandler.prototype.bind = function (e) {
     $(this.listener).bind(e);
 };
 

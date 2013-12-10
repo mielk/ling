@@ -657,7 +657,7 @@ function Question(data, properties) {
         }
 
         function selectCategories() {
-            var tree = new TreeView({
+            var tree = new Tree({
                 'mode': MODE.MULTI,
                 'root': my.categories.getRoot(),
                 'blockOtherElements': true,
@@ -666,7 +666,7 @@ function Question(data, properties) {
             });
 
             tree.reset({ unselect: true, collapse: false });
-            tree.bind({
+            tree.eventHandler.bind({
                 'confirm': function (e) {
                     me.events.trigger({
                         'type': 'changeCategory',
