@@ -1,7 +1,20 @@
 ﻿my = my || {};
 
 
-(function () {
+$(function () {
+
+    var container = $('#category-options')[0];
+    var searchData = [
+                    { name: 'Europe', countries: ['Polska', 'Albania', 'Luksemburg'] },
+                    { name: 'South America', countries: ['Brazil', 'Venezuela', 'Argentina'] }
+    ]
+    var dropdown = new DropDown({
+        container: container,
+        caption: 'Select option ...',
+        data: searchData
+    });
+    //dropdown.activate();
+
 
     //var test = (function () {
     //    var _listener = jQuery('<div/>').appendTo($(document.body));
@@ -42,7 +55,7 @@
 
     //alert('end');
 
-})();
+});
 
 my.categories = (function () {
     var root;

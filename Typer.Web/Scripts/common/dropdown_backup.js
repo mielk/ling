@@ -33,221 +33,8 @@ $(function () {
 });
 
 
+
 function DropDown(properties) {
-    var me = this;
-    this.view = new DropDownView(this, properties);
-    this.options = {
-        slots: properties.slots || 10
-    };
-    this.eventHandler = new EventHandler();
-    this.navigator = new DropDownNavigator(this);
-    this.optionsManager = new DropDownOptionsManager(this, properties.data);
-}
-DropDown.prototype.clear = function () {
-    this.view.clear();
-}
-DropDown.prototype.appendTo = function(container){
-    this.view.appendTo(container);
-}
-DropDown.prototype.bind = function(e){
-    this.eventHandler.bind(e);
-}
-DropDown.prototype.trigger = function(e){
-    this.eventHandler.trigger(e);
-}
-
-
-
-
-
-function DropDownView(dropdown, properties) {
-    var me = this;
-    this.dropdown = dropdown;
-
-    //UI components.
-    //Parental container.
-    var parent = properties.container;
-    this.container = jQuery('<div/>', {
-        'class': 'dropdown-container',
-        'visibility': 'visible'
-    }).appendTo($(parent));
-
-    this.arrow = jQuery('<div/>', {
-        'class': 'dropdown-arrow'
-    }).appendTo($(this.container));
-
-    var textspan = jQuery('<span/>', {
-        'class': 'textbox'
-    }).bind({
-        'click': function () {
-            if (this.textbox) {
-                $(this.textbox).focus();
-            }
-        }
-    }).appendTo($(this.container));
-
-    this.textbox = jQuery('<input/>', {
-        type: 'textbox',
-        'class': 'dropdown-textbox'
-    }).appendTo($(textspan));
-
-    this.options = jQuery('<div/>', {
-        'class': 'dropdown-options-container'
-    }).css({
-        'display' : 'none'
-    }).appendTo($(this.container));
-
-}
-DropDownView.prototype.clear = function () {
-
-}
-DropDownView.prototype.appendTo = function(container){
-    $(this.container).appendTo($(container));
-}
-
-
-function DropDownNavigator(dropdown) {
-    var me = this;
-    this.dropdown = dropdown;
-
-
-    $(document).bind({
-        'keydown': function (e) {
-            if (e.which === 27) {   //Escape
-                me.dropdown.clear();
-                me.dropdown.deactivate();
-            }
-        }
-    });
-
-}
-
-
-function DropDownOptionsManager(dropdown, data) {
-    var me = this;
-    this.dropdown = dropdown;
-    this.slots = [];
-    this.slots.length = this.dropdown.options.slots;
-
-    this.renderSlots();
-
-}
-DropDownOptionsManager.prototype.renderSlots = function () {
-    var container = this.dropdown.view.options;
-    for (var i = 0; i < this.slots.length; i++) {
-        this.slots[i] = jQuery('<div/>', {
-            'class': 'dropdown-option'
-        }).appendTo($(container));
-    }
-}
-
-function DropDownOption(manager, properties) {
-    var me = this;
-    this.dropdown = manager.dropdown;
-    this.manager = manager;
-    this.key = (typeof (properties.key) === 'function' ? properties.key() : properties.key) || '';
-    this.name = (typeof (properties.name) === 'function' ? properties.name() : properties.name) || '';
-    this.object = (typeof (properties.object) === 'function' ? properties.object() : properties.object) || '';
-    this.prepend = properties.prepend || '';
-    this.append = properties.append || '';
-
-}
-function DropDownOptionView(option) {
-    var me = this;
-    this.option = option;
-}
-
-
-function optionLabel(index) {
-    //--- UI components ---
-    var SELECTED_CSS_CLASS = 'dropdown-selected';
-    var $container = $('<div>', { id: ('mlq_option_' + new Date().getTime()), 'class': 'dropdown-option' }).
-                                                            css({ 'display': 'block', 'padding-top': '2px' });
-    var $index = index;
-    var $object;
-    //---------------------
-
-    function optionContainer() {
-        return $($container);
-    }
-
-    return {
-        insert: function (div) {
-            $o = optionContainer();
-            $o.appendTo(div);
-            $o.
-                bind({
-                    mousedown: function (e) {
-                        if ($object != $selectedOption) {
-                            $selectedOption = $object;
-                            if ($selectedOption) {
-                                events().trigger({
-                                    'type': 'selected',
-                                    'option': $selectedOption,
-                                    'object': $selectedOption.getObject(),
-                                    'text': $selectedOption.getCaption()
-                                });
-                            }
-                        }
-                    },
-                    mousemove: function (e) {
-                        hoverOption($index);
-                    },
-                    keyup: function (e) {
-                        switch (e.which) {
-                            case 13:
-                                container().trigger({
-                                    'type': 'selected',
-                                    'object': $object,
-                                    'control': $o,
-                                    'text': $o.html()
-                                });
-                                break;
-                        }
-                    }
-                });
-        },
-        getHeight: function () {
-            var $o = optionContainer();
-            return $o.height() //+ my.ui.extraHeight($o);
-        },
-        setContent: function (content) {
-            optionContainer().html(content);
-        },
-        setObject: function (object) {
-            $object = object;
-        },
-        show: function () {
-            optionContainer().css('display', 'block');
-        },
-        hide: function () {
-            optionContainer().css('display', 'none');
-        },
-        getIndex: function () {
-            return $index;
-        },
-        getObject: function () {
-            return $object;
-        },
-        select: function () {
-            optionContainer().addClass(SELECTED_CSS_CLASS);
-        },
-        deselect: function () {
-            optionContainer().removeClass(SELECTED_CSS_CLASS);
-        }
-    }
-}
-
-
-
-
-
-
-
-
-
-
-function DropDown2(properties) {
     var $parent = properties.parent ? $(properties.parent) : $(document.body);
     //---------------------------------
     var $id = properties.id || ('mlq_dropdown_' + new Date().getTime());
@@ -277,6 +64,31 @@ function DropDown2(properties) {
     createUI();
     optionsArea().render();
     //-------------------------------
+
+
+    //Uzyskiwanie dostępu do kontrolek tego drop-downa.
+    function container() {
+        if (!_container) createUI();
+        return $(_container);
+    }
+
+    function textbox() {
+        if (!_textbox) createUI();
+        return $(_textbox);
+    }
+
+    function arrow() {
+        if (!_arrow) createUI();
+        return $(_arrow);
+    }
+
+    function events() {
+        if (!_events) createUI();
+        return $(_events);
+    }
+
+
+
 
 
 
@@ -846,6 +658,51 @@ function DropDown2(properties) {
     /* ==================================== */
 
 
+
+
+
+    function createUI() {
+        if (!_container) {
+            _container = $('<div>', { id: $id, 'class': 'dropdown-container' }).appendTo($parent).css({ 'visibility': 'visible' });
+            _arrow = $('<div>', { id: $id + '_textbox', 'class': 'dropdown-arrow' }).appendTo(_container);
+
+            var _txtSpan = jQuery('<span/>', {
+                    'class': 'textbox'
+                }).
+                bind({
+                    'click': function () {
+                        if (_textbox) {
+                            $(_textbox).focus();
+                        }
+                    }
+                }).
+                appendTo(_container);
+
+            _textbox = jQuery('<input/>', {
+                id: $id + '_textbox',
+                type: 'textbox',
+                'class': 'dropdown-textbox'
+            }).appendTo(_txtSpan);
+
+            _events = $('<div>', { id: 'main_events_listener', 'class': 'eventsListener' }).css('display', 'none').appendTo(_container);
+
+            _optionsArea = optionsArea();
+        }
+    }
+
+
+    $(document).bind({
+        'keydown': function (e) {
+            if (e.which === 27) {   //Escape
+                $(_textbox).val('');
+                $(_events).trigger({
+                    'type' : 'deactivate'
+                });
+            }
+        }
+    });
+
+
     function clearFilter() {
         $text = '';
         optionsArea().forceFilter();
@@ -865,11 +722,22 @@ function DropDown2(properties) {
     /* ==================================== */
     return {
         //----------------------------------
-        getSelected: function () {
+        appendTo: function(parent) {
+            container().appendTo(parent);
+            //adjustControls();
+        },
+        //----------------------------------
+        addListener: function(fn) {
+            container().bind({
+                'selected': fn
+            });
+        },
+        //----------------------------------
+        getSelected: function() {
             return $selectedOption;
         },
         //----------------------------------
-        loadOptions: function (options) {
+        loadOptions: function(options) {
             if (options) {
                 $options = options;
                 optionsArea().refresh();
@@ -877,19 +745,25 @@ function DropDown2(properties) {
             }
         },
         //----------------------------------
-        clearSelection: function () {
+        clearSelection: function() {
             $selectedOption = null;
             textbox().val('');
             clearFilter();
         },
         //----------------------------------
-        listener: function () {
+        listener: function() {
             return events();
         },
         //----------------------------------
-
+        trigger: function(e) {
+            events().trigger(e);
+        },
         //----------------------------------
-        activate: function () {
+        bind: function(e) {
+            events().bind(e);
+        },
+        //----------------------------------
+        activate: function() {
             textbox().focus();
         }
     };

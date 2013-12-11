@@ -37,20 +37,16 @@ $(function () {
 /* TreeView
    
    Events:
+   !confirm
+   !add
+   !remove
+   !rename
+   !transfer
    #expand
    #collapse
    #activate
    #deactivate
-   #delete
-   #newNode
-   #confirm
-   #select
-   #unselect
-   #cancel
-   #transfer            
  */
-
-
 function Tree(properties) {
     // ReSharper disable once UnusedLocals
     var me = this;
@@ -149,7 +145,6 @@ function Tree(properties) {
     }
 
 }
-
 Tree.prototype.hide = function() {
     this.view.hide();
 };
@@ -185,6 +180,12 @@ Tree.prototype.setActiveNode = function (node) {
         previous.deactivate();
     }
 };
+Tree.prototype.clearActiveNode = function () {
+    if (this.node) {
+        this.node.deactivate();
+    }
+    this.node = null;
+}
 
 
 
@@ -340,6 +341,9 @@ SearchPanel.prototype.deactivate = function() {
 };
 SearchPanel.prototype.select = function(node) {
     node.activate();
+    if (node.parent) {
+        node.parent.expand();
+    }
     this.deactivate();
 };
 
@@ -859,6 +863,9 @@ TreeNode.prototype.expand = function() {
     this.view.expand();
     this.expander.setState(true);
     this.expander.render();
+    if (this.parent && !this.parent.isExpanded()) {
+        this.parent.expand();
+    }
     this.nodes.each(function(node) {
         node.view.visible = true;
     });
@@ -971,6 +978,8 @@ TreeNode.prototype.insert = function(name) {
     }
 
     this.parent.addNode(this, true);
+    this.caption.rename(name);
+    this.expander.adjustButton();
     this.activate();
 
     this.tree.trigger({
@@ -1117,7 +1126,7 @@ TreeNode.prototype.addNewNode = function() {
     this.newNode = new TreeNode(this.tree, this, {});
     this.newNode.new = true;
     this.view.addChild(this.newNode.view.container);
-    this.deactivate();
+    this.tree.clearActiveNode();
     this.newNode.renamer.activate();
 };
 

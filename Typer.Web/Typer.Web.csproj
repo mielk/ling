@@ -249,6 +249,7 @@
     <Compile Include="App_Start\NinjectWebCommon.Bindings.cs" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\categories\categories.js" />
+    <Content Include="Scripts\common\dropdown_backup.js" />
     <Content Include="Scripts\common\tree.js" />
     <Content Include="Scripts\common\dropdown.js" />
     <Content Include="Scripts\common\notify.js" />
