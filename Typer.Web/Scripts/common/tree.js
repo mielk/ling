@@ -174,11 +174,11 @@ Tree.prototype.destroy = function () {
 };
 Tree.prototype.reset = function (properties) {
     if (properties.unselect) {
-        
+        this.root.select(false);
     }
     
     if (properties.collapse) {
-        
+        this.root.collapse();
     }
 
 };
@@ -186,7 +186,7 @@ Tree.prototype.confirm = function () {
     
 };
 Tree.prototype.cancel = function() {
-
+    this.view.hide();
 };
 Tree.prototype.bind = function(e) {
     this.eventHandler.bind(e);
@@ -404,16 +404,16 @@ function NodeLine(node) {
     }).
     bind({
         'click': function () {
-            me.node.select(false);
+            me.node.select(false, true, true, true);
         }
-    }).appendTo(container);
+    }).appendTo(this.container);
     
 
     // ReSharper disable once UnusedLocals
     var caption = jQuery('<div/>', {
         'class': 'tree-selection-line-caption',
         'html': me.node.name
-    }).appendTo(container);
+    }).appendTo(this.container);
 }
 
 
@@ -895,14 +895,18 @@ TreeNode.prototype.isSelected = function() {
 TreeNode.prototype.hasSelectedChildren = function () {
     return this.selector.hasSelectedChildren;
 };
-TreeNode.prototype.select = function (value, applyForChildren, applyForParent) {
+TreeNode.prototype.select = function (value, applyForChildren, applyForParent, refreshSelected) {
     this.selector.select(value, applyForChildren, applyForParent);
     if (value && this.tree.mode === MODE.SINGLE) {
         alert('Trigger tree select');
     }
     this.caption.refresh();
+    if (refreshSelected) {
+        this.tree.selection.refresh();
+    }
 };
-TreeNode.prototype.partiallySelected = function() {
+TreeNode.prototype.partiallySelected = function () {
+    this.selector.selected = false;
     this.selector.hasSelectedChildren = true;
     this.selector.check(false);
     if (this.parent) {
@@ -913,7 +917,7 @@ TreeNode.prototype.partiallySelected = function() {
 TreeNode.prototype.click = function (x, y) {
     var me = this;
     if (this.clicked) {
-        if (this.node.tree.mode === MODE.SINGLE) {
+        if (this.tree.mode === MODE.SINGLE) {
             //Select.
         } else {
             //Start renamer.
@@ -1224,8 +1228,10 @@ NodeSelector.prototype.check = function(value) {
        'checked': value
     });
 };
-NodeSelector.prototype.revert = function() {
-    this.node.select(!this.selected, true, true);
+NodeSelector.prototype.revert = function () {
+    var value = !this.selected;
+    this.check(value);
+    this.node.select(value, true, true, true);
 };
 NodeSelector.prototype.select = function(value, applyForChildren, applyForParent) {
     this.selected = value;
@@ -1240,7 +1246,7 @@ NodeSelector.prototype.select = function(value, applyForChildren, applyForParent
 };
 NodeSelector.prototype.applyForChildren = function (value) {
     this.node.nodes.each(function(node) {
-        node.select(value, true, false);
+        node.select(value, true, false, false);
     });
 };
 NodeSelector.prototype.applyForParent = function () {
@@ -1252,12 +1258,12 @@ NodeSelector.prototype.checkChildrenStatus = function () {
     var selectedChildren = this.node.nodes.countSelected(true);
     if (selectedChildren) {
         if (selectedChildren === this.node.nodes.size()) {
-            this.node.select(true, false, true);
+            this.node.select(true, false, true, false);
         } else {
             this.node.partiallySelected();
         }
     } else {
-        this.node.select(false, false, true);
+        this.node.select(false, false, true, false);
     }
     
     if (this.node.parent) {
@@ -1334,7 +1340,6 @@ NodeCaption.prototype.getPosition = function() {
         bottom: position.top + height
     };
 };
-
 
 
 function NodeRenamer(node) {
@@ -1511,6 +1516,63 @@ NodeDragMover.prototype.move = function (x, y) {
 };
 
 
+TreeNode.prototype.getSelectedNodes = function() {
+    var array = [];
+    array.length = 0;
+
+    if (this.isSelected()) {
+        array.push(this);
+    } else if (this.hasSelectedChildren()) {
+        this.nodes.each(function (node) {
+            var $array = node.getSelectedNodes();
+            Array.prototype.push.apply(array, $array);
+        });
+    }
+
+    return array;
+
+};
+TreeNode.prototype.getNodesForSearching = function() {
+    var array = [];
+
+    if (this.parent) {    //Add itself (except for root).
+        array.push(this.getSearchObject());
+    }
+
+    //Add nodes.
+    this.nodes.each(function (node) {
+        var $array = node.getNodesForSearching();
+        Array.prototype.push.apply(array, $array);
+    });
+
+    return array;
+};
+TreeNode.prototype.isRoot = function () {
+    return (this.parent === null);
+};
+TreeNode.prototype.path = function (includeThis) {
+    var node;
+    var path = '';
+
+    node = includeThis ? this : this.parent;
+    if (node.isRoot()) {
+        return '';
+    }
+    while (!node.isRoot()) {
+        path = node.name + (path ? '  >  ' + path : '');
+        node = node.parent;
+    }
+    return path;
+};
+TreeNode.prototype.getSearchObject = function() {
+    return {
+        object: this,
+        name: this.name,
+        prepend: this.path() + (this.parent.isRoot() ? '' : '  >  '),
+        displayed: this.name
+    };
+};
+
 
     //function TreeNode(tree, parent, object) {
 
@@ -1609,76 +1671,6 @@ NodeDragMover.prototype.move = function (x, y) {
 
 
 
-    //    //Util functions.
-    //    this.util = (function () {
-    //        return {
-    //            getSelectedNodes: function () {
-    //                var array = [];
-    //                array.length = 0;
-
-    //                if ($selector.isSelected()) {
-    //                    array.push(me);
-    //                } else if ($selector.hasSelectedChildren()) {
-    //                    $nodes.each(function (node) {
-    //                        var $array = node.util.getSelectedNodes();
-    //                        Array.prototype.push.apply(array, $array);
-    //                    });
-    //                }
-
-    //                return array;
-    //            },
-    //            isRoot: function() {
-    //                return (me.parent === null);
-    //            },
-    //            getNodesForSearching: function () {
-    //                var array = [];
-
-    //                if (me.parent) {    //Add itself (except for root).
-    //                    array.push(me.util.getSearchObject());
-    //                }
-
-    //                //Add nodes.
-    //                $nodes.each(function (node) {
-    //                    var $array = node.util.getNodesForSearching();
-    //                    Array.prototype.push.apply(array, $array);
-    //                });
-
-    //                return array;
-
-    //            },
-    //            path: function (thisInclude) {
-    //                var $node;
-    //                var $path = '';
-
-    //                if (thisInclude) {
-    //                    $node = me;
-    //                } else {
-    //                    $node = me.parent;
-    //                }
-
-    //                if ($node.util.isRoot()) {
-    //                    return '';
-    //                }
-
-    //                while (!$node.util.isRoot()) {
-    //                    $path = $node.name + ($path ? '  >  ' + $path : '');
-    //                    $node = $node.parent;
-    //                }
-    //                return $path;
-    //            },
-    //            getSearchObject: function() {
-    //                return {
-    //                    object: this,
-    //                    name: me.name,
-    //                    prepend: me.util.path() + (me.parent.util.isRoot() ? '' : '  >  '),
-    //                    displayed: me.name
-    //                };
-    //            }
-            
-
-
-    //        };
-    //    })();
 
 
     //    //Initializing functions.
