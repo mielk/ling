@@ -251,6 +251,10 @@ div.children-container
     cursor: text;
 }
 
+.edit-name:focus {
+    outline-style: none !important;
+}
+
 .select-checkbox
 {
     float: left;

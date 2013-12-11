@@ -722,22 +722,22 @@ function DropDown(properties) {
     /* ==================================== */
     return {
         //----------------------------------
-        appendTo: function (parent) {
+        appendTo: function(parent) {
             container().appendTo(parent);
             //adjustControls();
         },
         //----------------------------------
-        addListener: function (fn) {
+        addListener: function(fn) {
             container().bind({
                 'selected': fn
             });
         },
         //----------------------------------
-        getSelected: function () {
+        getSelected: function() {
             return $selectedOption;
         },
         //----------------------------------
-        loadOptions: function (options) {
+        loadOptions: function(options) {
             if (options) {
                 $options = options;
                 optionsArea().refresh();
@@ -745,20 +745,28 @@ function DropDown(properties) {
             }
         },
         //----------------------------------
-        clearSelection: function () {
+        clearSelection: function() {
             $selectedOption = null;
             textbox().val('');
             clearFilter();
         },
         //----------------------------------
-        listener: function () {
+        listener: function() {
             return events();
         },
         //----------------------------------
-        activate: function () {
+        trigger: function(e) {
+            events().trigger(e);
+        },
+        //----------------------------------
+        bind: function(e) {
+            events().bind(e);
+        },
+        //----------------------------------
+        activate: function() {
             textbox().focus();
         }
-    }
+    };
     /* ==================================== */
 
 }

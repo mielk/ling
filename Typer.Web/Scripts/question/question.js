@@ -128,14 +128,14 @@ function Question(data, properties) {
     this.name = data.Question.Name || '';
     this.weight = data.Question.Weight || 1;
     this.categories = [];
-    this.categoriesString = function () {
+    this.categoriesString = function() {
         var s = '';
         for (var i = 0; i < me.categories.length; i++) {
             var category = me.categories[i];
             s = s + (s ? '; ' : '') + category.name;
         }
         return s;
-    }
+    };
     this.languages = createLanguageCollection(data.UserLanguages);
     this.properties = properties || {};
 
@@ -226,7 +226,13 @@ function Question(data, properties) {
                 alert('confirm; weight: ' + me.weight);
             },
             changeCategory: function (e) {
-                me.categories = e.items;
+                if (e.items) {
+                    me.categories = e.items;
+                } else if (e.item) {
+                    me.categories = [];
+                    me.categories.push(e.item);
+                }
+                
             }
 
         });
@@ -650,7 +656,7 @@ function Question(data, properties) {
                 'value': '...'
             }).on({
                 'click': function (e) {
-                    selectCategories()
+                    selectCategories();
                 }
             });
             return $button;
@@ -681,7 +687,7 @@ function Question(data, properties) {
                     my.categories.remove(e.node);
                 },
                 rename: function (e) {
-                    my.categories.updateName(e.node, e.prevName);
+                    my.categories.updateName(e.node, e.previous);
                 },
                 transfer: function (e) {
                     my.categories.updateParent(e.node, e.to);

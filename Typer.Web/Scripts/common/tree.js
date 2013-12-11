@@ -71,6 +71,21 @@ function Tree(properties) {
     this.eventHandler.bind({
         transfer: function(e) {
             my.notify.display('Node ' + e.node.name + ' transferred from ' + e.from.name + ' to ' + e.to.name, true);
+        },
+        confirm: function(e) {
+            if (me.mode === MODE.SINGLE) {
+                my.notify.display('Selected: ' + e.item.name, true);
+            }
+            me.cancel();
+        },
+        rename: function(e) {
+            my.notify.display('Node ' + e.previous + ' changed its name to ' + e.name, true);
+        },
+        remove: function(e) {
+            my.notify.display('Node ' + e.node.name + ' has been removed', true);
+        },
+        add: function(e) {
+            my.notify.display('Node ' + e.node.name + ' has been added', true);
         }
         //select
         //activate
@@ -90,32 +105,9 @@ function Tree(properties) {
         //        });
         //    }
         //},
-        //activate: function (e) {
-        //    if (e.active === false) return;
-        //    if ($activeNode && $activeNode != e.node) {
-        //        $activeNode.inactivate();
-        //    }
-        //    $activeNode = e.node;
-        //},
-        //inactivate: function (e) {
-        //    if (e.active === false) return;
-        //    if ($activeNode === e.node) {
-        //        $activeNode = null;
-        //    }
-        //},
-        //'delete': function (e) {
-        //    if (e.active === false) return;
-        //},
         //newNode: function (e) {
         //    if (e.active === false) return;
         //    e.node.activate();
-        //},
-        //confirm: function (e) {
-        //    if (e.active === false) return;
-        //    alert('Confirm: ' + (e.item ? e.item.name : e.items.length));
-        //    if (!$isEmbedded) {
-        //        me.hide();
-        //    }
         //},
         //cancel: function (e) {
         //    if (e.active === false) return;
@@ -123,14 +115,6 @@ function Tree(properties) {
         //        me.hide();
         //    }
         //},
-        //transfer: function (e) {
-        //    $events.trigger({
-        //        'type': 'rearrange',
-        //        'recalculate': true
-        //    });
-        //}
-        //rename: [node], [name]
-        //tranfer: [node], [to]
     });
 
     
@@ -153,10 +137,13 @@ function Tree(properties) {
 
     //Data.
     this.root = new TreeNode(me, null, properties.root);
+
+    this.node = null;
     
 
     //Initializing function.
     this.root.view.append(this.children);
+    this.root.activate();
     if (!this.visible) {
         this.hide();
     }
@@ -182,9 +169,6 @@ Tree.prototype.reset = function (properties) {
     }
 
 };
-Tree.prototype.confirm = function () {
-    
-};
 Tree.prototype.cancel = function() {
     this.view.hide();
 };
@@ -194,6 +178,16 @@ Tree.prototype.bind = function(e) {
 Tree.prototype.trigger = function(e) {
     this.eventHandler.trigger(e);
 };
+Tree.prototype.setActiveNode = function (node) {
+    if (this.node !== node) {
+        if (this.node) {
+            this.node.deactivate();
+        }
+        this.node = node;
+    }
+};
+
+
 
 function TreeView(tree, container, x, y) {
     var me = this;
@@ -318,6 +312,7 @@ SearchPanel.prototype.show = function() {
     });    
 };
 SearchPanel.prototype.activate = function () {
+    var me = this;
     this.active = true;
 
     this.dropdown = this.dropdown || new DropDown({
@@ -329,22 +324,23 @@ SearchPanel.prototype.activate = function () {
     
     this.dropdown.bind({
         'deactivate': function () {
-            this.deactivate();
+            me.deactivate();
         },
         'selected': function (e) {
-            this.selected(e.object.object);
+            me.select(e.object.object);
         }
     });
 
     this.show();
+    this.dropdown.activate();
 
 };
 SearchPanel.prototype.deactivate = function() {
     this.active = false;
     this.hide();
 };
-SearchPanel.prototype.select = function($node) {
-    //Object selected.
+SearchPanel.prototype.select = function(node) {
+    node.activate();
     this.deactivate();
 };
 
@@ -424,7 +420,7 @@ function ButtonsPanel(tree) {
     //UI components.
     var panel = jQuery('<div/>', {
         'class': 'tree-buttons-panel'
-    }).appendTo(me.tree.view.container);
+    });
     
     var container = jQuery('<div/>', {
         id: 'tree-buttons-container',
@@ -452,6 +448,8 @@ function ButtonsPanel(tree) {
             me.tree.cancel();
         }
     }).appendTo(container);
+
+    this.tree.view.append($(panel));
 
 }
 
@@ -547,11 +545,12 @@ function TreeNavigator(tree) {
     var me = this;
     this.tree = tree;
 
-
     $(document).bind({        
         'keydown': function(e) {
             if (!me.tree.visible) return;
             
+            var node = me.tree.node;
+
             if (e.ctrlKey) {
                 //Search panel (Ctrl + F/f)
                 switch(e.which) {
@@ -565,123 +564,172 @@ function TreeNavigator(tree) {
                 }
             }
             
+            //Keyboard events are not active if search or renaming mode is on.
+            if (me.tree.search.active || (node && node.renamer.active)) {
+                return;
+            }
+            
 
+            //Escape applies even for the case if none node is selected.
+            if (e.which === 27) {
+                me.tree.cancel();
+            }
 
-        }
+            function preventDefault() {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            //Definition of key shortcuts.
+            if (node) {
+                switch (e.which) {
+                    case 37: //Arrow left
+                        preventDefault();
+                        node.collapse();
+                        break;
+                    case 38: //Arrow up
+                        preventDefault();
+                        moveUp();
+                        break;
+                    case 39: //Arrow right
+                        preventDefault();
+                        node.expand();
+                        break;
+                    case 40: //Arrow down
+                        preventDefault();
+                        moveDown();
+                        break;
+                    case 36: //Home
+                        preventDefault();
+                        if (node.parent) {
+                            me.tree.setActiveNode(node.parent);
+                        }
+                        break;
+                    case 35: //End
+                        preventDefault();
+                        break;
+                    case 33: //PageUp
+                        preventDefault();
+                        me.tree.setActiveNode(me.tree.root);
+                        break;
+                    case 34: //PageDown
+                        preventDefault();
+                        moveToLastItem();
+                        break;
+                    case 113: //F2
+                        preventDefault();
+                        node.renamer.activate();
+                        break;
+                    case 46: //Delete
+                        e.stopPropagation();
+                        e.preventDefault();
+                        me.tree.setActiveNode(node.parent);
+                        node.delete();
+                        break;
+                    case 45: //Insert
+                        e.stopPropagation();
+                        e.preventDefault();
+                        node.addNewNode();
+                        break;
+                    case 13: //Enter
+                        e.stopPropagation();
+                        e.preventDefault();
+                        confirm();
+                        break;
+                    case 32: //Space
+                        e.stopPropagation();
+                        e.preventDefault();
+                        switch (me.tree.mode) {
+                            case MODE.SINGLE: selectActive(); break;
+                            case MODE.MULTI: node.selector.revert(); break;
+                        }
+                        break;
+                }
+            }
+
+        }        
     });
 
-    //$(document).bind({
-    //    'keydown': function (e) {
 
-    //        if (me.searchMode || (me.activeNode != null && me.activeNode.renamer.isActive())) {
-    //            return;
-    //        }
-
-    //        //Escape applies even for the case if none node is selected.
-    //        if (e.which === 27) {
-    //            $events.trigger({
-    //                'type' : 'cancel'
-    //            });
-    //        }
-
-    //        if (me.activeNode) {
-    //            switch (e.which) {
-    //                case 37: //Arrow left
-    //                    _collapse();
-    //                    e.stopPropagation();
-    //                    break;
-    //                case 38: //Arrow up
-    //                    e.stopPropagation();
-    //                    e.preventDefault();
-    //                    _moveUp();
-    //                    break;
-    //                case 39: //Arrow right
-    //                    _expand();
-    //                    e.stopPropagation();
-    //                    break;
-    //                case 40: //Arrow down
-    //                    e.stopPropagation();
-    //                    e.preventDefault();
-    //                    _moveDown();
-    //                    break;
-    //                case 36: //Home
-    //                    e.stopPropagation();
-    //                    e.preventDefault();
-    //                    _moveToParent();
-    //                    break;
-    //                case 35: //End
-    //                    e.stopPropagation();
-    //                    e.preventDefault();
-    //                    break;
-    //                case 33: //PageUp
-    //                    e.stopPropagation();
-    //                    e.preventDefault();
-    //                    _moveToRoot();
-    //                    break;
-    //                case 34: //PageDown
-    //                    e.stopPropagation();
-    //                    e.preventDefault();
-    //                    _moveToLastItem();
-    //                    break;
-    //                case 113: //F2
-    //                    e.stopPropagation();
-    //                    e.preventDefault();
-    //                    me.activeNode.renamer.activate();
-    //                    break;
-    //                case 46: //Delete
-    //                    e.stopPropagation();
-    //                    e.preventDefault();
-    //                    me.activeNode.delete();
-    //                    _moveToParent();
-    //                    break;
-    //                case 45: //Insert
-    //                    e.stopPropagation();
-    //                    e.preventDefault();
-    //                    _addNewNode();
-    //                    break;
-    //                case 13: //Enter
-    //                    e.stopPropagation();
-    //                    e.preventDefault();
-    //                    switch (me.mode) {
-    //                        case MODE.SINGLE: _selectActive(); break;
-    //                        case MODE.MULTI: _confirm(); break;
-    //                    }
-    //                    break;
-    //                    //Confirmation.
-    //                case 32: //Space
-    //                    e.stopPropagation();
-    //                    e.preventDefault();
-    //                    switch (me.mode) {
-    //                        case MODE.SINGLE: _selectActive(); break;
-    //                        case MODE.MULTI: me.activeNode.select(); break;
-    //                    }
-    //                    break;
-    //            }
-    //        }
-
-    //    }
-
-    //});
-
-    //function _confirm() {
-    //    me.trigger({
-    //        'type': 'confirm',
-    //        'items': _getSelectedArray()
-    //    });
-    //}
+    function moveUp() {
+        var node = me.tree.node;
+        var previous = node.getPreviousSibling();
+        
+        if (previous) {
+            node = previous;
+            while (node.isExpanded()) {
+                node = node.getLastChild();
+            }
+            activate(node);
+        } else {
+            if (!node.isRoot()) {
+                activate(node.parent);
+            }
+        }
+    }
 
 
-    //function _getSelectedArray() {
-    //    return me.root.getSelectedArray();
-    //}
+    function moveDown() {
+        var node = me.tree.node;
+        if (node.isExpanded()) {
+            var childNode = node.getChildNode(0);
+            if (childNode) {
+                activate(childNode);
+                return true;
+            }
+        }
 
+        var parent = node;
+        var next = null;
+        
+        while (next === null && parent) {
+            next = parent.getNextSibling();
+            parent = parent.parent;
+        }
 
-    //function _selectActive() {
-    //    me.trigger({
-    //        'type': 'confirm',
-    //        'item' : me.activeNode
-    //    });
-    //}
+        if (next) {
+            activate(next);
+            return true;
+        }
+
+        return false;
+
+    }
+
+    function moveToLastItem() {
+        var node = me.tree.root;
+        while (node.isExpanded()) {
+            node = node.getLastChild();
+        }
+        activate(node);
+    }
+
+    function activate(node) {
+        me.tree.setActiveNode(node);
+    }
+
+    function confirm() {
+        switch (me.tree.mode) {
+            case MODE.SINGLE:
+                selectActive();
+                break;
+            case MODE.MULTI:
+                me.tree.trigger({
+                    type: 'confirm',
+                    items: me.tree.root.getSelectedNodes()
+                });
+        }
+    }
+
+    function selectActive() {
+        var node = me.tree.node;
+        if (node) {
+            me.tree.trigger({
+                type: 'confirm',
+                node: node
+            });
+        }
+    }
 
     //function _addNewNode() {
     //    var expander = me.activeNode.expander;
@@ -690,82 +738,7 @@ function TreeNavigator(tree) {
     //    }
     //    me.activeNode.addNewNode();
     //}
-
-    //function _expand() {
-    //    if (me.activeNode.expander) {
-    //        me.activeNode.expander.expand();
-    //    }
-    //}
-
-    //function _collapse() {
-    //    if (me.activeNode.expander) {
-    //        me.activeNode.expander.collapse();
-    //    }
-    //}
-
-    //function _moveToParent() {
-    //    if (!me.activeNode.isRoot()) {
-    //        changeSelection(me.activeNode.parent);
-    //    }
-    //}
-
-    //function _moveToRoot() {
-    //    changeSelection(me.root);
-    //}
-
-    //function _moveToLastItem() {
-    //    var node = me.root;
-    //    while (node.expander.isExpanded()) {
-    //        node = node.getLastChild();
-    //    }
-    //    changeSelection(node);
-    //}
-
-    //function _moveUp() {
-    //    var previousNode = me.activeNode.previousNode();
-    //    if (previousNode) {
-
-    //        var node = previousNode;
-    //        while (node.expander.isExpanded()) {
-    //            node = node.getLastChild();
-    //        }
-    //        changeSelection(node);
-    //    } else {
-    //        if (!me.activeNode.isRoot()) {
-    //            changeSelection(me.activeNode.parent);
-    //        }
-    //    }
-    //}
-
-    //function _moveDown() {
-    //    if (me.activeNode.expander && me.activeNode.expander.isExpanded()) {
-    //        var childNode = me.activeNode.getChildNode(0);
-    //        if (childNode) {
-    //            changeSelection(childNode);
-    //        }
-    //    } else {
-    //        if (!me.activeNode.isRoot()) {
-    //            var nextNode = me.activeNode.nextNode();
-
-    //            var parent = me.activeNode.parent;
-    //            while (nextNode === null && parent.isNode) {
-    //                nextNode = parent.nextNode();
-    //                parent = parent.parent;
-    //            }
-
-    //            if (nextNode) {
-    //                changeSelection(nextNode);
-    //            }
-
-    //        }
-    //    }
-    //}
-
-    //function changeSelection(node) {
-    //    me.activeNode.inactivate();
-    //    node.activate();
-    //}
-
+    
 }
 
 
@@ -831,7 +804,11 @@ function TreeNode(tree, parent, object) {
 }
 
 TreeNode.prototype.load = function(items) {
-    var $items = (typeof(items) === "function" ? items() : items);
+    var $items = (typeof (items) === "function" ? items() : items);
+    
+    //Applying for newly created nodes.
+    if (!$items) return;
+    
     for (var i = 0; i < $items.length; i++) {
         var node = new TreeNode(this.tree, this, $items[i]);
         this.addNode(node, false);
@@ -850,7 +827,7 @@ TreeNode.prototype.addNode = function (node, sort) {
     
     this.triggerObjectEvent({
         type: 'add',
-        node: node
+        object: node.object
     });
 };
 TreeNode.prototype.removeNode = function(node) {
@@ -858,7 +835,17 @@ TreeNode.prototype.removeNode = function(node) {
     this.expander.adjustButton();
     this.triggerObjectEvent({
         type: 'remove',
-        node: node
+        object: node.object
+    });
+};
+TreeNode.prototype.delete = function () {
+    if (this.parent) {
+        this.parent.removeNode(this);
+        this.view.delete();
+    }
+    this.tree.trigger({
+        type: 'remove',
+        node: this
     });
 };
 TreeNode.prototype.triggerObjectEvent = function(e) {
@@ -896,13 +883,18 @@ TreeNode.prototype.hasSelectedChildren = function () {
     return this.selector.hasSelectedChildren;
 };
 TreeNode.prototype.select = function (value, applyForChildren, applyForParent, refreshSelected) {
-    this.selector.select(value, applyForChildren, applyForParent);
     if (value && this.tree.mode === MODE.SINGLE) {
-        alert('Trigger tree select');
-    }
-    this.caption.refresh();
-    if (refreshSelected) {
-        this.tree.selection.refresh();
+        var me = this;
+        me.tree.trigger({
+            type: 'confirm',
+            item: me
+        });
+    } else {
+        this.selector.select(value, applyForChildren, applyForParent);
+        this.caption.refresh();
+        if (refreshSelected) {
+            this.tree.selection.refresh();
+        }
     }
 };
 TreeNode.prototype.partiallySelected = function () {
@@ -918,9 +910,9 @@ TreeNode.prototype.click = function (x, y) {
     var me = this;
     if (this.clicked) {
         if (this.tree.mode === MODE.SINGLE) {
-            //Select.
+            me.select(true, true, true, true);
         } else {
-            //Start renamer.
+            me.renamer.activate();
         }
     } else {
         this.clicked = true;
@@ -970,50 +962,171 @@ TreeNode.prototype.transfer = function(to) {
     to.addNode(this);
     
 };
-TreeNode.prototype.changeName = function(name) {
+
+//Applied for newly created nodes.
+TreeNode.prototype.insert = function(name) {
+    this.key = name;
     this.name = name;
-    this.tree.trigger({        
-        type: 'changeName',
-        node: this,
-        name: name
-    });
-    this.caption.rename(name);
-    this.triggerObjectEvent({
-        type: 'changeName',
-        name: name
+
+    if (this.parent) {
+        this.parent.triggerObjectEvent({
+            type: 'newItem',
+            name: name
+        });
+    }
+
+    this.parent.addNode(this, true);
+    this.activate();
+
+    this.tree.trigger({
+        type: 'add',
+        node: this
     });
 
-    //    if (name.length) {
-    //        if (me.key.length === 0) {
-    //            me.key = name;
-    //            me.changeName(name);
-    //            me.parent.addNode(me);
-    //            me.parent.expander.expand();
-    //            _escape();
-    //            me.tree.trigger({
-    //                'type': 'newNode',
-    //                'node': me,
-    //                'parentId': me.parent.id
-    //            });
-    //        } else {
-    //            if (me.name !== name) {
-    //                var prevName = me.name;
-    //                me.changeName(name);
-    //                me.tree.trigger({
-    //                    'type': 'rename',
-    //                    'node': me,
-    //                    'name': name,
-    //                    'prevName': prevName
-    //                });
-    //            }
-    //            _escape();
-    //        }
-    //    } else {
-    //        if (me.key.length === 0) {
-    //            me.cancel();
-    //        }
-    //    }
 };
+//Applied for newly created nodes.
+TreeNode.prototype.cancel = function() {
+    if (this.parent) {
+        this.parent.newNode = null;
+    }
+    this.view.delete();
+};
+
+TreeNode.prototype.changeName = function (name) {
+    
+    if (this.new) {
+        this.insert(name);
+    } else {
+        this.tree.trigger({
+            type: 'rename',
+            node: this,
+            previous: this.name,
+            name: name
+        });
+        this.name = name;
+        this.caption.rename(name);
+        this.triggerObjectEvent({
+            type: 'changeName',
+            name: name
+        });
+    }
+
+};
+
+TreeNode.prototype.getSelectedNodes = function() {
+    var array = [];
+    array.length = 0;
+
+    if (this.isSelected()) {
+        array.push(this);
+    } else if (this.hasSelectedChildren()) {
+        this.nodes.each(function (node) {
+            var $array = node.getSelectedNodes();
+            Array.prototype.push.apply(array, $array);
+        });
+    }
+
+    return array;
+
+};
+TreeNode.prototype.getNodesForSearching = function() {
+    var array = [];
+
+    if (this.parent) {    //Add itself (except for root).
+        array.push(this.getSearchObject());
+    }
+
+    //Add nodes.
+    this.nodes.each(function (node) {
+        var $array = node.getNodesForSearching();
+        Array.prototype.push.apply(array, $array);
+    });
+
+    return array;
+};
+TreeNode.prototype.isRoot = function () {
+    return (this.parent === null);
+};
+TreeNode.prototype.path = function (includeThis) {
+    var node;
+    var path = '';
+
+    node = includeThis ? this : this.parent;
+    if (node.isRoot()) {
+        return '';
+    }
+    while (!node.isRoot()) {
+        path = node.name + (path ? '  >  ' + path : '');
+        node = node.parent;
+    }
+    return path;
+};
+TreeNode.prototype.getSearchObject = function() {
+    return {
+        object: this,
+        name: this.name,
+        prepend: this.path() + (this.parent.isRoot() ? '' : '  >  '),
+        displayed: this.name
+    };
+};
+TreeNode.prototype.getChildNode = function(i) {
+    return this.nodes.get(i);
+};
+TreeNode.prototype.getLastChild = function() {
+    var size = this.nodes.size();
+    if (size) {
+        return this.nodes.get(size - 1);
+    } else {
+        return null;
+    }
+};
+TreeNode.prototype.getFirstChild = function() {
+    if (this.nodes.size()) {
+        return this.nodes.get(0);
+    } else {
+        return null;
+    }
+};
+TreeNode.prototype.getPreviousSibling = function() {
+    var parent = this.parent;
+    if (parent) {
+        var index = parent.nodes.index(this);
+        return index < 0 ? null : parent.getChildNode(index - 1);
+    } else {
+        return null;
+    }
+};
+TreeNode.prototype.getNextSibling = function() {
+    var parent = this.parent;
+    if (parent) {
+        var index = parent.nodes.index(this);
+        return index < 0 ? null : parent.getChildNode(index + 1);
+    } else {
+        return null;
+    }
+};
+TreeNode.prototype.activate = function() {
+    this.active = true;
+    if (this.parent) {
+        this.parent.expand();
+    }
+    this.caption.activate(true);
+    this.tree.setActiveNode(this);
+};
+TreeNode.prototype.deactivate = function() {
+    this.active = false;
+    this.caption.activate(false);
+    this.tree.setActiveNode(null);
+};
+TreeNode.prototype.addNewNode = function() {
+    this.newNode = new TreeNode(this.tree, this, {});
+    this.newNode.new = true;
+    this.view.addChild(this.newNode.view.container);
+    this.deactivate();
+    this.newNode.renamer.activate();
+};
+
+
 
 
 function TreeNodeView(node) {
@@ -1085,7 +1198,9 @@ TreeNodeView.prototype.collapse = function () {
 TreeNodeView.prototype.append = function($container) {
     $(this.container).appendTo($container);
 };
-
+TreeNodeView.prototype.delete = function() {
+    $(this.container).remove();
+};
 
 function NodesManager(node) {
     this.node = node;
@@ -1161,6 +1276,23 @@ NodesManager.prototype.isDescendant = function (node) {
         return false;
     }
 };
+NodesManager.prototype.get = function (i) {
+    if (i >= 0 && i < this.sorted.length) {
+        return this.sorted[i];
+    }
+    return null;
+};
+NodesManager.prototype.index = function(node) {
+    for (var i = 0; i < this.sorted.length; i++) {
+        var item = this.sorted[i];
+        if (item === node) {
+            return i;
+        }
+    }
+    return -1;
+};
+
+
 
 function NodeExpander(node) {
     var me = this;
@@ -1282,31 +1414,11 @@ function NodeCaption(node) {
         'mousedown': function (e) {
             if (e.active === false) return;
             me.node.click(e.pageX, e.pageY);
-            //e.preventDefault();
-            //me.mouseClicked = true;
-            //if (me.isActive) {
-
-            //    if (me.tree.mode === MODE.SINGLE) {
-            //        me.select();
-            //    } else {
-            //        e.preventDefault;
-            //        me.renamer.activate();
-            //        me.inactivate();
-            //        me.tree.trigger({
-            //            'type': 'dragout',
-            //            'node': me
-            //        });
-            //        e.stopPropagation();
-            //    }
-            //}
+            me.node.activate();
         },
         'mouseup': function (e) {
             if (e.active === false) return;
             me.node.release();
-            //if (!me.mover.isActive() && me.mouseClicked) {
-            //    me.activate();
-            //}
-            //me.mouseClicked = false;
         }
     }).appendTo(me.node.view.line);
 }
@@ -1340,6 +1452,14 @@ NodeCaption.prototype.getPosition = function() {
         bottom: position.top + height
     };
 };
+NodeCaption.prototype.activate = function (value) {
+    var className = 'selected';
+    if (value) {
+        $(this.caption).addClass(className);
+    } else {
+        $(this.caption).removeClass(className);
+    }
+};
 
 
 function NodeRenamer(node) {
@@ -1357,12 +1477,14 @@ function NodeRenamer(node) {
                 e.preventDefault();
                 e.stopPropagation();
                 me.escape();
+                me.node.activate();
             }
         }
     });
 
 }
-NodeRenamer.prototype.createTextbox = function(){
+NodeRenamer.prototype.createTextbox = function () {
+    var me = this;
     this.textbox = this.textbox || jQuery('<input/>', {
         'class': 'edit-name'
     }).css({
@@ -1373,16 +1495,16 @@ NodeRenamer.prototype.createTextbox = function(){
                 case 13: //Enter
                     e.preventDefault();
                     e.stopPropagation();
-                    this.confirm($(this).val());
+                    me.confirm($(this).val());
                     break;
                 case 27: //Escape
                     e.preventDefault();
                     e.stopPropagation();
-                    this.escape();
+                    me.escape();
                     break;
             }
         }
-    }).appendTo(this.tree.caption.caption);
+    }).appendTo(me.node.caption.caption);
             
 };
 NodeRenamer.prototype.activate = function() {
@@ -1392,10 +1514,11 @@ NodeRenamer.prototype.activate = function() {
     $(this.textbox).val(this.node.name).focus().select();
 };
 NodeRenamer.prototype.confirm = function(name) {
-    var validation = validateName(name);
+    var validation = this.validateName(name);
     if (validation === true) {
         this.node.changeName(name);
     }
+    this.escape();
 };
 NodeRenamer.prototype.validateName = function(name) {
     my.notify.display('To be implemented -> NodeRenamer.prototype.validateName');
@@ -1516,195 +1639,15 @@ NodeDragMover.prototype.move = function (x, y) {
 };
 
 
-TreeNode.prototype.getSelectedNodes = function() {
-    var array = [];
-    array.length = 0;
-
-    if (this.isSelected()) {
-        array.push(this);
-    } else if (this.hasSelectedChildren()) {
-        this.nodes.each(function (node) {
-            var $array = node.getSelectedNodes();
-            Array.prototype.push.apply(array, $array);
-        });
-    }
-
-    return array;
-
-};
-TreeNode.prototype.getNodesForSearching = function() {
-    var array = [];
-
-    if (this.parent) {    //Add itself (except for root).
-        array.push(this.getSearchObject());
-    }
-
-    //Add nodes.
-    this.nodes.each(function (node) {
-        var $array = node.getNodesForSearching();
-        Array.prototype.push.apply(array, $array);
-    });
-
-    return array;
-};
-TreeNode.prototype.isRoot = function () {
-    return (this.parent === null);
-};
-TreeNode.prototype.path = function (includeThis) {
-    var node;
-    var path = '';
-
-    node = includeThis ? this : this.parent;
-    if (node.isRoot()) {
-        return '';
-    }
-    while (!node.isRoot()) {
-        path = node.name + (path ? '  >  ' + path : '');
-        node = node.parent;
-    }
-    return path;
-};
-TreeNode.prototype.getSearchObject = function() {
-    return {
-        object: this,
-        name: this.name,
-        prepend: this.path() + (this.parent.isRoot() ? '' : '  >  '),
-        displayed: this.name
-    };
-};
 
 
     //function TreeNode(tree, parent, object) {
 
-    //    //Events handler and listener.
-    //    var $events = (function () {
-    //        var listener = {};
-
-    //        $(listener).bind({
-    //            'addNode removeNode': function (e) {
-    //                if (e.active === false) return;
-    //                if (me.object.events) {
-    //                    var events = (typeof (me.object.events) === 'function' ? object.events() : object.events);
-    //                    events.trigger({
-    //                        'type': e.type === 'addNode' ? 'add' : 'remove',
-    //                        'value': e.node.object
-    //                    });
-    //                }
-                
-    //                if ($expander.isExpanded()) {
-    //                    me.tree.trigger({                        
-    //                       'type': 'rearrange' 
-    //                    });
-    //                }
-
-    //            },
-    //            'activateDroparea': function(e){
-    //                me.tree.trigger({
-    //                    'type' : 'dropin',
-    //                    'node': me
-    //                });
-    //            },
-    //            'deactivateDroparea': function(e){
-    //                me.tree.trigger({
-    //                    'type' : 'dropout',
-    //                    'node': me
-    //                });
-    //            },
-    //            'rename': function (e) {
-    //                me.name = e.name;
-    //                me.tree.trigger({
-    //                    'type': 'rename',
-    //                    'node': me,
-    //                    'oldName': e.oldName,
-    //                    'name': e.name
-    //                });
-    //            },
-    //            'transfer': function (e) {
-    //                if (e.active === false) return;
-
-    //                var previous = me.parent;
-    //                me.parent = e.to;
-
-    //                if (e.to) {
-    //                    e.to.trigger({
-    //                        'type': 'addNode',
-    //                        'node': me,
-    //                        'sort': true
-    //                    });
-    //                }
-
-    //                if (previous) {
-    //                    previous.trigger({
-    //                        'type': 'removeNode',
-    //                        'node': me
-    //                    });
-    //                }
-                
-    //                //Inform parental tree object.
-    //                me.tree.trigger({                    
-    //                    'type': 'transfer',
-    //                    'node': me,
-    //                    'from': previous,
-    //                    'to': e.to
-    //                });
-
-    //            }
-    //        });
-
-    //        return {
-    //            trigger: function (e) {
-    //                $(listener).trigger(e);
-    //            },
-    //            bind: function (e) {
-    //                $(listener).bind(e);
-    //            }
-    //        };
-    //    })();
-    //    this.trigger = function (e) {
-    //        $events.trigger(e);
-    //    };
-    //    this.bind = function (e) {
-    //        $events.bind(e);
-    //    };
-    
 
 
 
 
 
-
-    //    //Initializing functions.
-    //    (function ini() {
-    //        $nodes.load();
-    //        if (object.expanded) {
-    //            var name = me.name;
-    //            $events.trigger({
-    //                'type': 'expand',
-    //                'recalculate': me.parent ? false : true
-    //            });
-    //        }
-    //    })();
-
-
-    //}
-
-
-
-
-
-
-
-
-    ////TreeNode.prototype.transfer = function (destination) {
-    ////    if (this === destination) {
-    ////        this.isActive = false;
-    ////    } else {
-    ////        if (!this.isRoot()) {
-    ////            this.parent.removeNode(this);
-    ////            destination.addNode(this);
-    ////        }
-    ////    }
-    ////};
     ////TreeNode.prototype.addNode = function (node) {
     ////    //alert('moving node ' + node.name + ' to ' + this.name);
     ////    node.moveTo(this);
@@ -1714,93 +1657,9 @@ TreeNode.prototype.getSearchObject = function() {
     ////    this.dropArea.unselect();
     ////    this.dropArea.recalculate();
     ////};
-    //TreeNode.prototype.moveTo = function (newParent) {
-    //    if (this.parent) {
-    //        this.parent.removeNode(this.key);
-    //    }
-    //    this.parent = newParent;
-    //    this.mainContainer.appendTo($(newParent.getContainer()));
-    //};
-    ////TreeNode.prototype.isRoot = function () {
-    ////    var value = (this.parent.isNode ? false : true);
-    ////    return value;
-    ////};
-    //TreeNode.prototype.resetStatus = function () {
-    //    if (Object.keys(this.nodes).length > 0) {
-    //        this.expander.setExpandableStatus(true);
-    //    } else {
-    //        this.expander.setExpandableStatus(false);
-    //    }
-    //};
-    //TreeNode.prototype.getChildNode = function (i) {
-    //    if (i >= 0 && i < this.nodesArray.length) {
-    //        return this.nodesArray[i];
-    //    }
-    //    return null;
-    //};
-    //TreeNode.prototype.getLastChild = function () {
-    //    if (this.nodesArray.length < 1) {
-    //        return null;
-    //    } else {
-    //        return this.nodesArray[this.nodesArray.length - 1];
-    //    }
-    //};
-    //TreeNode.prototype.activate = function () {
-    //    this.isActive = true;
 
-    //    if (this.parent.isNode){ // && !this.parent.expander.isExpanded()) {
-    //        this.parent.expander.expand();
-    //    }
 
-    //    $(this.caption).addClass('selected');
 
-    //    this.tree.trigger({
-    //        'type': 'activate',
-    //        'node': this
-    //    });
-    //};
-    //TreeNode.prototype.inactivate = function () {
-    //    this.isActive = false;
-    //    $(this.caption).removeClass('selected');
-    //    this.tree.trigger({
-    //        'type': 'inactivate',
-    //        'node': this
-    //    });
-    //};
-    //TreeNode.prototype.nextNode = function () {
-    //    if (this.isRoot() === true) {
-    //        return null;
-    //    } else {
-    //        return this.parent.getChildNode(this.index + 1);
-    //    }
-    //};
-    //TreeNode.prototype.previousNode = function () {
-    //    if (this.isRoot() === true) {
-    //        return null;
-    //    } else {
-    //        return this.parent.getChildNode(this.index - 1);
-    //    }
-    //};
-    //TreeNode.prototype.delete = function () {
-    //    if (!this.isRoot()) {
-    //        this.parent.removeNode(this.key);
-    //        this.parent.resetStatus();
-
-    //        $(this.mainContainer).css({
-    //            'display' : 'none'
-    //        });
-
-    //        this.tree.trigger({
-    //            'type': 'delete',
-    //            'node': this
-    //        });
-
-    //    }
-    //};
-    ////TreeNode.prototype.removeNode = function (key) {
-    ////    delete this.nodes[key];
-    ////    this.sorter.sort();
-    ////};
     //TreeNode.prototype.addNewNode = function () {
     //    var me = this;
     //    var node = new TreeNode({
@@ -1813,33 +1672,6 @@ TreeNode.prototype.getSearchObject = function() {
     //        'node': node
     //    });
     //    node.renamer.activate();
-    //};
-    //TreeNode.prototype.cancel = function () {
-    //    $(this.mainContainer).remove();
-    //    this.parent.removeNode(this.key);
-    //};
-    ////TreeNode.prototype.changeName = function (name) {
-    ////    this.name = name;
-    ////    $(this.caption).html(name);
-    ////};
-    ////TreeNode.prototype.select = function () {
-    ////    if (this.tree.mode === MODE.SINGLE) {
-    ////        this.tree.trigger({
-    ////            'type': 'confirm',
-    ////            'item': this
-    ////        });
-    ////    } else if (this.tree.mode === MODE.MULTI) {
-    ////        this.selector.click();
-    ////        if (this.tree.selection) {
-    ////            this.tree.selection.refresh();
-    ////        }
-    ////    }
-    ////};
-    //TreeNode.prototype.unselect = function () {
-    //    if (this.tree.mode === MODE.MULTI) {
-    //        this.selector.unselect();
-    //        this.tree.selection.refresh();
-    //    }
     //};
 
 
