@@ -179,11 +179,10 @@ Tree.prototype.trigger = function(e) {
     this.eventHandler.trigger(e);
 };
 Tree.prototype.setActiveNode = function (node) {
-    if (this.node !== node) {
-        if (this.node) {
-            this.node.deactivate();
-        }
-        this.node = node;
+    var previous = this.node;
+    this.node = node;
+    if (previous && previous !== node) {
+        previous.deactivate();
     }
 };
 
@@ -602,7 +601,7 @@ function TreeNavigator(tree) {
                     case 36: //Home
                         preventDefault();
                         if (node.parent) {
-                            me.tree.setActiveNode(node.parent);
+                            node.parent.activate();
                         }
                         break;
                     case 35: //End
@@ -610,7 +609,7 @@ function TreeNavigator(tree) {
                         break;
                     case 33: //PageUp
                         preventDefault();
-                        me.tree.setActiveNode(me.tree.root);
+                        me.tree.root.activate();
                         break;
                     case 34: //PageDown
                         preventDefault();
@@ -623,7 +622,7 @@ function TreeNavigator(tree) {
                     case 46: //Delete
                         e.stopPropagation();
                         e.preventDefault();
-                        me.tree.setActiveNode(node.parent);
+                        node.parent.activate();
                         node.delete();
                         break;
                     case 45: //Insert
@@ -660,10 +659,10 @@ function TreeNavigator(tree) {
             while (node.isExpanded()) {
                 node = node.getLastChild();
             }
-            activate(node);
+            node.activate();
         } else {
             if (!node.isRoot()) {
-                activate(node.parent);
+                node.parent.activate();
             }
         }
     }
@@ -674,7 +673,7 @@ function TreeNavigator(tree) {
         if (node.isExpanded()) {
             var childNode = node.getChildNode(0);
             if (childNode) {
-                activate(childNode);
+                childNode.activate();
                 return true;
             }
         }
@@ -688,7 +687,7 @@ function TreeNavigator(tree) {
         }
 
         if (next) {
-            activate(next);
+            next.activate();
             return true;
         }
 
@@ -701,11 +700,7 @@ function TreeNavigator(tree) {
         while (node.isExpanded()) {
             node = node.getLastChild();
         }
-        activate(node);
-    }
-
-    function activate(node) {
-        me.tree.setActiveNode(node);
+        node.activate();
     }
 
     function confirm() {
@@ -988,6 +983,7 @@ TreeNode.prototype.insert = function(name) {
 TreeNode.prototype.cancel = function() {
     if (this.parent) {
         this.parent.newNode = null;
+        this.parent.activate();
     }
     this.view.delete();
 };
@@ -1116,7 +1112,6 @@ TreeNode.prototype.activate = function() {
 TreeNode.prototype.deactivate = function() {
     this.active = false;
     this.caption.activate(false);
-    this.tree.setActiveNode(null);
 };
 TreeNode.prototype.addNewNode = function() {
     this.newNode = new TreeNode(this.tree, this, {});
@@ -1501,6 +1496,7 @@ NodeRenamer.prototype.createTextbox = function () {
                     e.preventDefault();
                     e.stopPropagation();
                     me.escape();
+                    if (me.node.new) me.node.cancel();
                     break;
             }
         }
