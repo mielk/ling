@@ -1215,20 +1215,6 @@ NodeCaption.prototype.dropArea = function(value) {
 NodeCaption.prototype.rename = function(name) {
     $(this.caption).html(name);
 };
-
-
-//var $caption = (function () {
-//    var active = false;
-
-
-
-//    var ui = (function () {
-        
-
-//        return {
-//            textbox: function () {
-//                return caption;
-//            },
 //            position: function () {
 //                var position = $(caption).offset();
 //                var width = $(caption).width();
@@ -1242,32 +1228,196 @@ NodeCaption.prototype.rename = function(name) {
 //                    bottom: position.top + height
 //                };
 //            },
-//            append: function (control) {
-//                $(control).appendTo(caption);
-//            },
-//        };
-//    })();
-
-//    var events = (function () {
-//        $events.bind({
-//            'click': function (e) {
-
-//            },
-
-//        });
-//    })();
-
-//    return {
-//        position: function () {
-//            return ui.position();
-//        },
-//        append: function (control) {
-//            ui.append(control);
-//        }
-//    };
-//})();
 
 
+function NodeRenamer(node) {
+    var me = this;
+    this.node = node;
+    this.active = false;
+
+    //UI components.
+    this.textbox = null;
+
+    function createTextbox() {
+        this.textbox = this.textbox || jQuery('<input/>', {
+            'class': 'edit-name'
+        }).css({
+            'visibility': 'hidden'
+        }).bind({
+            'keydown': function (e) {
+                switch (e.which) {
+                    case 13: //Enter
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.confirm($(this).val());
+                        break;
+                    case 27: //Escape
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.escape();
+                        break;
+                }
+            }
+        });
+        $caption.append(textbox);
+        
+    }
+
+}
+NodeRenamer.prototype.activate = function () {
+    this.active = true;
+    
+    render: function () {
+        if (!textbox) createTextbox();
+        show(textbox);
+        $(textbox).val(me.name).focus().select();
+        me.tree.trigger({
+            'type': 'editName'
+        });
+    }
+}
+NodeRenamer.prototype.confirm = function (name) {
+
+}
+NodeRenamer.prototype.escape = function () {
+    this.active = false;
+    $(this.textbox).remove();
+    this.textbox = null;
+}
+NodeRenamer.prototype.isOutside = function (x, y) {
+    var position = $(this.textbox).offset();
+    var xa = position.left;
+    var ya = position.top;
+    var xz = xa + $(this.textbox).width();
+    var yz = ya + $(this.textbox).height();
+
+    if (x >= xa && x <= xz && y >= ya && y <= yz) {
+        return false;
+    }
+
+    return true;
+}
+
+
+    var $renamer = (function () {
+
+        var listener = (function () {
+            $events.bind({
+                'startRenamer': function (e) {
+                    if (e.active === false) return;
+                    activate();
+                },
+                'escapeRenamer': function (e) {
+                    if (e.active === false) return;
+                    escape();
+                }
+            });
+
+            $(document).bind({
+                'mousedown': function (e) {
+                    if (active && e && ui.isOutside(e.pageX, e.pageY)) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        $events.trigger({
+                            'type': 'escapeRenamer'
+                        });
+                    }
+                }
+            });
+
+        })();
+
+        var ui = (function () {
+            var textbox;
+
+            return {
+
+            };
+        })();
+
+        function activate() {
+            active = true;
+            ui.render();
+        }
+
+        function confirm(value) {
+            var validation = validateName(value);
+            if (validation === true) {
+                applyNewName(value);
+                //applyNewName(value);
+            }
+        }
+
+        function validateName(name) {
+            //To be implemented.
+            return true;
+        }
+
+        function escape() {
+            active = false;
+            ui.destroy();
+
+            //Kasowanie jeżeli jest to nowy node.
+            //if (me.key.length === 0) {
+            //    me.parent.activate();
+            //    me.cancel();
+            //}
+        }
+
+
+        function applyNewName(name) {
+
+            if (!me.new) {
+                $events.trigger({
+                    'type': 'rename',
+                    'oldName': me.name,
+                    'name': name
+                });
+            }
+
+        //    if (name.length) {
+        //        if (me.key.length === 0) {
+        //            me.key = name;
+        //            me.changeName(name);
+        //            me.parent.addNode(me);
+        //            me.parent.expander.expand();
+        //            _escape();
+        //            me.tree.trigger({
+        //                'type': 'newNode',
+        //                'node': me,
+        //                'parentId': me.parent.id
+        //            });
+        //        } else {
+        //            if (me.name !== name) {
+        //                var prevName = me.name;
+        //                me.changeName(name);
+        //                me.tree.trigger({
+        //                    'type': 'rename',
+        //                    'node': me,
+        //                    'name': name,
+        //                    'prevName': prevName
+        //                });
+        //            }
+        //            _escape();
+        //        }
+        //    } else {
+        //        if (me.key.length === 0) {
+        //            me.cancel();
+        //        }
+        //    }
+
+        }
+
+
+        return {
+            isActive: function () {
+                return active;
+            }
+        };
+    })();
+    this.isBeingRenamed = function () {
+        return $renamer.isActive();
+    };
 
 
 
@@ -1368,182 +1518,6 @@ NodeCaption.prototype.rename = function(name) {
 
 
 
-
-
-//    var $renamer = (function () {
-//        var active = false;
-
-//        var listener = (function () {
-//            $events.bind({
-//                'startRenamer': function (e) {
-//                    if (e.active === false) return;
-//                    activate();
-//                },
-//                'escapeRenamer': function (e) {
-//                    if (e.active === false) return;
-//                    escape();
-//                }
-//            });
-
-//            $(document).bind({
-//                'mousedown': function (e) {
-//                    if (active && e && ui.isOutside(e.pageX, e.pageY)) {
-//                        e.preventDefault();
-//                        e.stopPropagation();
-//                        $events.trigger({
-//                            'type': 'escapeRenamer'
-//                        });
-//                    }
-//                }
-//            });
-
-//        })();
-
-//        var ui = (function () {
-//            var textbox;
-            
-//            function createTextbox(){
-//                textbox = textbox || jQuery('<input/>', {
-//                    'class': 'edit-name'
-//                }).css({
-//                    'visibility': 'hidden'
-//                }).bind({
-//                    'keydown': function (e) {
-//                        switch (e.which) {
-//                            case 13: //Enter
-//                                e.preventDefault();
-//                                e.stopPropagation();
-//                                confirm($(this).val());
-//                                break;
-//                            case 27: //Escape
-//                                e.preventDefault();
-//                                e.stopPropagation();
-//                                $events.trigger({
-//                                    'type': 'escapeRenamer'
-//                                });
-//                                break;
-//                        }
-//                    }
-//                });
-//                $caption.append(textbox);
-//            }
-
-//            function isOutside(x, y){
-//                var position = $(textbox).offset();
-//                var xa = position.left;
-//                var ya = position.top;
-//                var xz = xa + $(textbox).width();
-//                var yz = ya + $(textbox).height();
-
-//                if (x >= xa && x <= xz && y >= ya && y <= yz) {
-//                    return false;
-//                }
-
-//                return true;
-//            }
-
-//            return {
-//                destroy: function () {
-//                    $(textbox).remove();
-//                    textbox = null;
-//                },
-//                render: function () {
-//                    if (!textbox) createTextbox();
-//                    show(textbox);
-//                    $(textbox).val(me.name).focus().select();
-//                    me.tree.trigger({
-//                        'type': 'editName'
-//                    });
-//                },
-//                isOutside: function(x, y){
-//                    return isOutside(x, y);
-//                },
-//            };
-//        })();
-
-//        function activate() {
-//            active = true;
-//            ui.render();
-//        }
-
-//        function confirm(value) {
-//            var validation = validateName(value);
-//            if (validation === true) {
-//                applyNewName(value);
-//                //applyNewName(value);
-//            }
-//        }
-
-//        function validateName(name) {
-//            //To be implemented.
-//            return true;
-//        }
-
-//        function escape() {
-//            active = false;
-//            ui.destroy();
-
-//            //Kasowanie jeżeli jest to nowy node.
-//            //if (me.key.length === 0) {
-//            //    me.parent.activate();
-//            //    me.cancel();
-//            //}
-//        }
-
-
-//        function applyNewName(name) {
-
-//            if (!me.new) {
-//                $events.trigger({
-//                    'type': 'rename',
-//                    'oldName': me.name,
-//                    'name': name
-//                });
-//            }
-
-//        //    if (name.length) {
-//        //        if (me.key.length === 0) {
-//        //            me.key = name;
-//        //            me.changeName(name);
-//        //            me.parent.addNode(me);
-//        //            me.parent.expander.expand();
-//        //            _escape();
-//        //            me.tree.trigger({
-//        //                'type': 'newNode',
-//        //                'node': me,
-//        //                'parentId': me.parent.id
-//        //            });
-//        //        } else {
-//        //            if (me.name !== name) {
-//        //                var prevName = me.name;
-//        //                me.changeName(name);
-//        //                me.tree.trigger({
-//        //                    'type': 'rename',
-//        //                    'node': me,
-//        //                    'name': name,
-//        //                    'prevName': prevName
-//        //                });
-//        //            }
-//        //            _escape();
-//        //        }
-//        //    } else {
-//        //        if (me.key.length === 0) {
-//        //            me.cancel();
-//        //        }
-//        //    }
-
-//        }
-
-
-//        return {
-//            isActive: function () {
-//                return active;
-//            }
-//        };
-//    })();
-//    this.isBeingRenamed = function () {
-//        return $renamer.isActive();
-//    };
 
 
 
