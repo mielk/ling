@@ -1,33 +1,47 @@
-﻿var searchData = [
-    //{ name: 'Europe', countries: ['Polska', 'Albania', 'Luksemburg'] },
-    //{ name: 'South America', countries: ['Brazil', 'Venezuela', 'Argentina'] },
-    { name: 'A' },
-    { name: 'B' },
-    { name: 'C' },
-    { name: 'D' },
-    { name: 'E' },
-    { name: 'F' },
-    { name: 'G' },
-    { name: 'H' },
-    { name: 'I' },
-    { name: 'J' },
-    { name: 'K' },
-    { name: 'L' },
-    { name: 'M' },
-    { name: 'N' },
-    { name: 'O' },
-    { name: 'P' },
-    { name: 'Q' },
-    { name: 'R' },
-    { name: 'S' },
-    { name: 'T' },
-    { name: 'U' },
-    { name: 'V' },
-    { name: 'W' },
-    { name: 'X' },
-    { name: 'Y' },
-    { name: 'Z' }
-];
+﻿//var searchData = [
+//    //{ name: 'Europe', countries: ['Polska', 'Albania', 'Luksemburg'] },
+//    //{ name: 'South America', countries: ['Brazil', 'Venezuela', 'Argentina'] },
+//    { name: '7p5C3Z1LORy69e8' },
+//    { name: 'iRaLmh2xovulIoL' },
+//    { name: 'eruKPXbNhhQ619Q' },
+//    { name: '76qVT7AFybcG388' },
+//    { name: 'r5T8W8PdI1oG0qR' },
+//    { name: 'h4Y4Aeibql6TcYO' },
+//    { name: '22JoC7Sg6b75QGA' },
+//    { name: 'yby12QFLqzkWn0m' },
+//    { name: 'oMz6jSb7DnExDc5' },
+//    { name: 'h2wk50JG7B4083q' },
+//    { name: 'jW9sor390vun1oJ' },
+//    { name: '7E4UtMC51G7wyOB' },
+//    { name: 'vt9EVQ8NdQs1AGK' },
+//    { name: 'hzU3a9l48QIiRss' },
+//    { name: 'adVD1N6529ywvE6' },
+//    { name: 'xP7DGjI88F1lCU6' },
+//    { name: 'S6EZj4Ifx0iUDSg' },
+//    { name: '2T6jnUM692eQmC8' },
+//    { name: '174h642GQ7AUIm0' },
+//    { name: 'S7HtTffyH4M4Nif' },
+//    { name: '6QkU8iuw6nYlFE0' },
+//    { name: '2Np3Ar5vZ8ax249' },
+//    { name: 'fJalChxzB4cT773' },
+//    { name: '815Cg1lEZ4U0RoW' },
+//    { name: '5pQPKF254YO0hQW' },
+//    { name: '22Nh5opzCl8FAwZ' },
+//    { name: '2yQ6PEn6lGE6HCs' },
+//    { name: 'c584S0qKSJC68u4' },
+//    { name: '78PcV1BH4bcIe77' },
+//    { name: '204Ha4QEeb748GC' },
+//    { name: '9gmb10VHpjI097a' },
+//    { name: '8sKB2Wn5e6m623a' },
+//    { name: 'rUvxjznyGMSzh2P' },
+//    { name: 'FvJgN2rJgROuP6e' },
+//    { name: 'R5jMRwDXulm3rii' },
+//    { name: 'qVzr7S4sqWWPrWP' },
+//    { name: 'EKi9YUR5VGkA5aj' },
+//    { name: 'Fp2G0ET5iHkCkah' },
+//    { name: 'tDzQETUq125iE6r' },
+//    { name: '49523o3vddgPbk1' }
+//];
 
 
 
@@ -62,14 +76,24 @@ $(function () {
 function DropDown(properties) {
     this.view = new DropDownView(this, properties);
     this.options = {
-        slots: properties.slots || 10
+        slots: properties.slots || 10,
+        caseSensitive: properties.caseSensitive || false,
+        confirmWithFirstClick: properties.confirmWithFirstClick || false
     };
     this.eventHandler = new EventHandler();
+    this.filter = new DropDownFilter(this);
     this.navigator = new DropDownNavigator(this);
     this.render = new DropDownRenderManager(this);
     this.optionsManager = new DropDownOptionsManager(this, properties.data);
 
     this.render.render();
+    this.render.display(false);
+
+    this.eventHandler.bind({        
+       select: function(e) {
+           my.notify.display('Option ' + e.object.name + ' selected', true);
+       } 
+    });
 
 }
 DropDown.prototype.clear = function() {
@@ -84,8 +108,24 @@ DropDown.prototype.bind = function(e) {
 DropDown.prototype.trigger = function(e) {
     this.eventHandler.trigger(e);
 };
-
-
+DropDown.prototype.activate = function () {
+    this.filter.activate();
+};
+DropDown.prototype.deactivate = function () {
+    this.render.clear();
+    this.render.activate(false);
+    this.filter.clear();
+    this.trigger({
+        type: 'deactivate'
+    });
+};
+DropDown.prototype.select = function(object) {
+    this.trigger({
+        type: 'select',
+        object: object
+    });
+    this.deactivate();
+};
 
 
 
@@ -136,6 +176,65 @@ DropDownView.prototype.add = function(element) {
     $(element).appendTo($(this.container));
 };
 
+
+function DropDownFilter(dropdown) {
+    var me = this;
+    this.dropdown = dropdown;
+    this.active = false;
+    this.textbox = me.dropdown.view.textbox;
+    this.filter = '';
+
+    $(this.textbox).bind({
+        focus: function () {
+            me.active = true;
+        },
+        keydown: function(e) {
+            if (me.active && e.which === 27) {
+                me.dropdown.clear();
+                me.dropdown.deactivate();
+            }
+        },
+        keyup: function (e) {
+            var ctrl = e.currentTarget;
+            var text = ctrl.value;
+            if (me.filter != text) {
+                var append = (text.indexOf(me.filter) >= 0 ? true : false);
+                me.filter = text;
+                me.runFilter(append);
+            }
+        }
+    });
+
+}
+DropDownFilter.prototype.activate = function () {
+    var me = this;
+    $(this.textbox).val(me.filter);
+    this.dropdown.render.activate(false);
+    $(this.textbox).select();
+    $(this.textbox).focus();
+};
+DropDownFilter.prototype.deactivate = function () {
+    this.active = false;
+};
+DropDownFilter.prototype.clear = function() {
+    this.filter = '';
+    $(this.textbox).val(this.filter);
+};
+DropDownFilter.prototype.runFilter = function (append) {
+    var manager = this.dropdown.optionsManager;
+    if (append) {
+        manager.filter(this.filter);
+    } else {
+        manager.filterFromScratch(this.filter);
+    }
+
+    this.dropdown.render.clear();
+    this.dropdown.render.render();
+    this.dropdown.render.display(this.dropdown.optionsManager.filtered.length);
+
+};
+
+
 function DropDownNavigator(dropdown) {
     var me = this;
     this.dropdown = dropdown;
@@ -143,9 +242,58 @@ function DropDownNavigator(dropdown) {
 
     $(document).bind({
         'keydown': function (e) {
-            if (e.which === 27) {   //Escape
-                me.dropdown.clear();
-                me.dropdown.deactivate();
+
+            var filterActive = me.dropdown.filter.active;
+
+            function preventDefault() {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            switch (e.which) {
+                case 13:
+                    if (filterActive) return;
+                    me.dropdown.render.selectCurrent();
+                    break;
+                case 27: //Escape
+                    if (filterActive) return;
+                    preventDefault();
+                    me.dropdown.filter.activate();
+                    break;
+                case 38: //Arrow up
+                    preventDefault();
+                    if (filterActive) return;
+                    me.dropdown.render.moveCursor(-1);
+                    break;
+                case 40: //Arrow down
+                    preventDefault();
+                    if (!e.shiftKey) {
+                        me.dropdown.filter.deactivate();
+                        me.dropdown.render.activate(true);
+                        me.dropdown.render.moveCursor(1);
+                    }
+                    break;
+                case 36: //Home
+                    if (filterActive) return;
+                    preventDefault();
+                    me.dropdown.render.moveToFirst();
+                    break;
+                case 35: //End
+                    if (filterActive) return;
+                    preventDefault();
+                    me.dropdown.render.moveToLast();
+                    break;
+                case 33: //PageUp
+                    if (filterActive) return;
+                    preventDefault();
+                    me.dropdown.render.moveMore(-1);
+                    break;
+                case 34: //PageDown
+                    if (filterActive) return;
+                    preventDefault();
+                    me.dropdown.render.moveMore(1);
+                    break;
+                    
             }
         }
     });
@@ -159,7 +307,10 @@ function DropDownRenderManager(dropdown) {
     this.dropdown = dropdown;
     this.slots = [];
     this.slots.length = this.dropdown.options.slots;
-    this.startCounter = -1;
+    this.startCounter = 0;
+    this.activeIndex = -1;
+    this.activeSlot = null;
+    
     
     this.container = jQuery('<div/>', {
         'class': 'dropdown-options-container'
@@ -194,14 +345,105 @@ DropDownRenderManager.prototype.render = function () {
     var slots = this.slots.length;
     var start = Math.max(Math.min(this.startCounter, size - slots), 0);
     var data = this.dropdown.optionsManager.getDataArray(start, start + slots - 1);
+    var filter = this.dropdown.optionsManager.filterText;
     
     for (var i = 0; i < data.length; i++) {
         var slot = this.slots[i];
-        slot.insertOption(data[i]);
+        slot.insertOption(data[i], filter);
     }
 
     this.scrollbar.adjust(slots, size, start);
 
+};
+DropDownRenderManager.prototype.moveCursor = function (offset) {
+    
+    //Special case - if first item is selected and offset is one position up, 
+    //the list lost its focus, and textbox is being activated.
+    if (this.activeIndex === 0 && this.startCounter === 0 && offset < 0) {
+        this.clear();
+        this.dropdown.filter.activate();
+        return;
+    }
+
+    var newIndex = this.activeIndex + offset;
+    if (newIndex >= this.slots.length || newIndex < 0) {
+        this.moveList(offset);
+    } else {
+        this.activeIndex = newIndex;
+        if (this.activeSlot) {
+            this.activeSlot.activate(false);
+        }
+        this.activeSlot = this.slots[this.activeIndex];
+        this.activeSlot.activate(true);
+    }
+
+};
+DropDownRenderManager.prototype.moveList = function (offset) {
+    var slots = this.slots.length;
+    var size = this.dropdown.optionsManager.selectedCounter();
+    var newCounter = this.startCounter + offset;
+    var maxCounter = size - slots;
+    
+    if (newCounter < 0 && this.activeIndex > 0) {
+        this.moveToFirst();
+        this.render();
+    } else if (newCounter < 0 && this.activeIndex === 0) {
+        //Already first item.
+    } else if (newCounter > maxCounter && this.activeIndex < slots - 1) {
+        this.moveToLast();
+    } else if (newCounter > maxCounter && this.active === slots - 1) {
+        //Already last item.
+    } else {
+        this.startCounter = Math.min(Math.max(newCounter, 0), maxCounter);
+        this.render();
+    }
+  
+};
+DropDownRenderManager.prototype.moveMore = function(offset) {
+    this.moveCursor(offset * this.slots.length);
+};
+DropDownRenderManager.prototype.moveToFirst = function () {
+    this.moveTo(0, 0);
+};
+DropDownRenderManager.prototype.moveToLast = function () {
+    var size = this.dropdown.optionsManager.selectedCounter();
+    var slots = this.slots.length;
+    this.moveTo(size - slots, slots - 1);
+};
+DropDownRenderManager.prototype.moveTo = function(counter, index) {
+    this.startCounter = counter;
+    this.activeIndex = index;
+    if (this.activeSlot) {
+        this.activeSlot.activate(false);
+    }
+    this.activeSlot = this.slots[this.activeIndex];
+    this.activeSlot.activate(true);
+    this.render();
+};
+DropDownRenderManager.prototype.clear = function() {
+    if (this.activeSlot) {
+        this.activeSlot.activate(false);
+    }
+    this.startCounter = 0;
+    this.activeIndex = -1;
+};
+DropDownRenderManager.prototype.activate = function (value) {
+    var state = (this.slots[0].option !== null && value !== false);
+    this.display(state);
+    this.dropdown.filter.active = !state;
+};
+DropDownRenderManager.prototype.display = function(value) {
+    $(this.container).css({
+        'display': (value ? 'block' : 'none')
+    });
+    if (value) {
+        this.scrollbar.adjust();
+    }
+};
+DropDownRenderManager.prototype.selectCurrent = function () {
+    if (this.activeSlot) {
+        this.activeSlot.select();
+    }
 };
 
 
@@ -212,19 +454,25 @@ function DropDownSlot(manager, index) {
     this.dropdown = manager.dropdown;
     this.index = index;
     this.option = null;
+    this.active = false;
     
     //UI components.
     this.container = jQuery('<div/>', {
         'class': 'dropdown-option'
+    }).bind({
+        'mousedown': function () {
+            me.select();
+        }
     });
 
     this.manager.addSlot($(this.container));
 
 }
-DropDownSlot.prototype.insertOption = function(option) {
+DropDownSlot.prototype.insertOption = function (option, filter) {
+    this.option = option;
     if (option) {
         this.show();
-        $(this.container).html(option.name);
+        $(this.container).html(option.html(filter));
     } else {
         this.hide();
     }
@@ -238,6 +486,20 @@ DropDownSlot.prototype.show = function () {
     $(this.container).css({
         'display': 'block'
     });
+};
+DropDownSlot.prototype.activate = function (value) {
+    var selectedClass = 'dropdown-selected';
+    this.active = value;
+    
+    if (value) {
+        $(this.container).addClass(selectedClass);
+    } else {
+        $(this.container).removeClass(selectedClass);
+    }
+    
+};
+DropDownSlot.prototype.select = function () {
+    this.dropdown.select(this.option.object);
 };
 
 
@@ -262,15 +524,25 @@ function DropDownScrollbar(manager) {
     }).appendTo($(this.panel));
 
 }
-DropDownScrollbar.prototype.adjust = function(slots, items, startIndex) {
-    if (items > slots) {
+DropDownScrollbar.prototype.adjust = function (slots, size, start) {
+    size = size || this.dropdown.optionsManager.selectedCounter();
+    slots = slots || this.dropdown.render.slots.length;
+    start = start || Math.max(Math.min(this.dropdown.render.startCounter, size - slots), 0);
+
+    if (size > slots) {
+        
         $(this.container).css({            
-            'display': 'block' 
+            'display': 'block'
         });
 
+        var height = $(this.container).height();
+
+        var $height = ((slots * height / size) - 2) + 'px';
+        var $top = ((start * height / size) + 1) + 'px';
+
         $(this.pointer).css({            
-            'height': (slots * 100 / items) + '%',
-            'top': (startIndex * 100 / items) + '%'
+            'height': $height,
+            'top': $top
         });
         
     } else {
@@ -288,6 +560,8 @@ function DropDownOptionsManager(dropdown, data) {
     
     this.options = {};
     this.sorted = [];
+
+    this.filterText = '';
     this.filtered = [];
 
     this.loadData(data);
@@ -333,6 +607,46 @@ DropDownOptionsManager.prototype.getDataArray = function (start, end) {
 DropDownOptionsManager.prototype.selectedCounter = function() {
     return this.filtered.length;
 };
+DropDownOptionsManager.prototype.get = function(index) {
+    if (index >= 0 && index < this.filtered.length) {
+        return this.filtered[index];
+    }
+    return null;
+};
+DropDownOptionsManager.prototype.filter = function(filter) {
+    this.filterText = filter;
+    var array = [];
+    var caseSensitive = this.dropdown.options.caseSensitive;
+
+    for (var i = 0; i < this.filtered.length; i++) {
+        var option = this.filtered[i];
+        if (option.matchFilter(filter, caseSensitive)) {
+            array.push(option);
+        }
+    }
+
+    this.filtered = array;
+
+};
+DropDownOptionsManager.prototype.filterFromScratch = function(filter) {
+    var caseSensitive = this.dropdown.options.caseSensitive;
+    this.filterText = filter;
+    this.filtered.length = 0;
+    
+    if (filter.length) {
+        for (var j = 0; j < this.sorted.length; j++) {
+            var option = this.sorted[j];
+            if (option.matchFilter(filter, caseSensitive)) {
+                this.filtered.push(option);
+            }
+        }
+    } else {
+        for (var i = 0; i < this.sorted.length; i++) {
+            this.filtered.push(this.sorted[i]);
+        }
+    }
+
+};
 
 
 function DropDownOption(manager, properties) {
@@ -346,747 +660,20 @@ function DropDownOption(manager, properties) {
     this.object = (typeof (properties.object) === 'function' ? properties.object() : properties.object) || '';
     this.prepend = properties.prepend || '';
     this.append = properties.append || '';
-
 }
-
-
-
-
-function optionLabel(index) {
-    //--- UI components ---
-    var selectedCssClass = 'dropdown-selected';
-    var $container = $('<div>', { id: ('mlq_option_' + new Date().getTime()), 'class': 'dropdown-option' }).
-                                                            css({ 'display': 'block', 'padding-top': '2px' });
-    var $index = index;
-    var $object;
-    //---------------------
-
-    function optionContainer() {
-        return $($container);
-    }
-
-    return {
-        insert: function (div) {
-            $o = optionContainer();
-            $o.appendTo(div);
-            $o.
-                bind({
-                    mousedown: function (e) {
-                        if ($object != $selectedOption) {
-                            $selectedOption = $object;
-                            if ($selectedOption) {
-                                events().trigger({
-                                    'type': 'selected',
-                                    'option': $selectedOption,
-                                    'object': $selectedOption.getObject(),
-                                    'text': $selectedOption.getCaption()
-                                });
-                            }
-                        }
-                    },
-                    mousemove: function (e) {
-                        hoverOption($index);
-                    },
-                    keyup: function (e) {
-                        switch (e.which) {
-                            case 13:
-                                container().trigger({
-                                    'type': 'selected',
-                                    'object': $object,
-                                    'control': $o,
-                                    'text': $o.html()
-                                });
-                                break;
-                        }
-                    }
-                });
-        },
-        getHeight: function () {
-            var $o = optionContainer();
-            return $o.height() //+ my.ui.extraHeight($o);
-        },
-        setContent: function (content) {
-            optionContainer().html(content);
-        },
-        setObject: function (object) {
-            $object = object;
-        },
-        show: function () {
-            optionContainer().css('display', 'block');
-        },
-        hide: function () {
-            optionContainer().css('display', 'none');
-        },
-        getIndex: function () {
-            return $index;
-        },
-        getObject: function () {
-            return $object;
-        },
-        select: function () {
-            optionContainer().addClass(selectedCssClass);
-        },
-        deselect: function () {
-            optionContainer().removeClass(selectedCssClass);
-        }
-    }
-}
-
-
-
-
-
-
-
-
-
-
-function DropDown2(properties) {
-    var $parent = properties.parent ? $(properties.parent) : $(document.body);
-    //---------------------------------
-    var $id = properties.id || ('mlq_dropdown_' + new Date().getTime());
-    var $caption = properties.caption || 'Select option ...';
-    var $options = properties.data || [];
-    //var $width = properties.width || 200;
-    var $optionHeight = properties.optionHeight || 24;
-    var $visibleOptions = properties.visibleOptions || 10;
-    var $txtWidth = 0.8;
-    var $mustMatch = (properties.mustMatch === undefined ? true : properties.mustMatch);
-    var $caseSensitive = properties.caseSensitive || false;
-    var $searchedField = properties.searched || 'name';
-    var $displayedField = properties.displayed || 'name';
-    //---------------------------------
-    var _container;
-    var _textbox;
-    var _arrow;
-    var _optionsArea;
-    var _events;
-    //--- States ----------------------
-    var $text = '';
-    var $selectedOption = null;
-    //---------------------------------
-
-
-    //Initializing this drop-down ...
-    createUI();
-    optionsArea().render();
-    //-------------------------------
-
-
-
-    /* === Global events =========================== */
-    events().bind({
-        'selected': function (e) {
-
-            if (e.option) {
-                var $t = e.text;
-                textbox().val($t);
-                clearFilter();
-            }
-
-        },
-        'deactivate': function (e) {
-            _remove();
-        }
-    });
-
-    container().bind({
-        'focusout': function (e) {
-            optionsArea().render(false);
-        }
-    });
-
-
-    textbox().bind({
-        'click': function (e) {
-            var $o = optionsArea();
-            if (!$o.isVisible()) {
-                $o.render(true);
-            }
-        },
-        'keyup': function (e) {
-            switch (e.which) {
-                case 13: //Enter
-                    var _selected = optionsArea().getCurrentObject();
-                    if (_selected != $selectedOption) {
-                        $selectedOption = _selected;
-
-                        //Jeżeli list wyświetlanych opcji zawiera tylko jeden
-                        //element, jest on automatycznie wybierany.
-                        if (!$selectedOption) {
-                            $selectedOption = optionsArea().getOnlyOption();
-                        }
-
-                        if ($selectedOption) {
-                            events().trigger({
-                                'type': 'selected',
-                                'option': $selectedOption,
-                                'object': $selectedOption.getObject(),
-                                'text': $selectedOption.getCaption()
-                            });
-                        }
-
-                    }
-
-                    break;
-
-                case 9:     //Horizontal tab
-                case 16:    //Data link escape
-                    //Żeby uniknąć filtrowania listy w momencie wejścia do textbox().
-                    break;
-
-                case 27: //Escape
-                    container().trigger({ type: 'clear' });
-                    break;
-                case 38: //Arrow up.
-                    container().trigger({ type: 'arrow_up' });
-                    break;
-                case 39: //Arrow right.
-                    var _selected = optionsArea().getCurrentObject();
-                    if (_selected != $selectedOption) {
-                        $selectedOption = _selected;
-                        if ($selectedOption) {
-                            events().trigger({
-                                'type': 'selected',
-                                'option': $selectedOption,
-                                'object': $selectedOption.getObject(),
-                                'text': $selectedOption.getCaption()
-                            });
-                        }
-                    }
-                    break;
-                case 40: //Arrow down.
-                    container().trigger({ type: 'arrow_down' });
-                    break;
-                default:
-                    var ctrl = e.currentTarget;
-                    var text = ctrl.value;
-                    if ($text != text) {
-                        var append = (text.indexOf($text) >= 0 ? true : false);
-                        $text = text;
-                        container().trigger({ type: 'filter', 'append': append, 'filterText': $text });
-                    }
-            }
-        }
-    });
-    /* ==================================== */
-
-
-
-    /* ==================================== */
-    function optionsArea() {
-        if (!_optionsArea) {
-            _optionsArea = function () {
-                //States & properties.
-                var $start = 0;
-                //UI components.
-                var $container;
-                var $optionLabels = [];
-                //Logic.
-                var $optionObjects = [];
-                var $displayed = $optionObjects;
-                var $selected = null;
-                var $visible = false;
-
-
-                //Zdarzenie 'selected' jest przypisane do kontrolki events(), a nie
-                //container(), jak pozostałe zdarzenia, ponieważ musi być widoczne
-                //również na zewnątrz DropDowna.
-                events().bind({
-                    'selected': function (e) {
-                        if ($selected) {
-                            $selected.deselect();
-                            filter({ 'filterText': e.text });
-                        }
-                        _render(false);
-                    }
-                });
-
-                container().bind({
-                    'filter': function (e) {
-                        if (e.append) {
-                            filter();
-                        } else {
-                            filterFromScratch();
-                        }
-                    },
-                    'arrow_up': function (e) {
-                        moveUp();
-                    },
-                    'arrow_down': function (e) {
-                        moveDown();
-                    },
-                    'clear': function (e) {
-                        filterFromScratch();
-                        //$displayed = [];
-                        clearSelection();
-                        optionsArea().render(false);
-                    }
-                });
-
-
-
-                //Translate array of options into objects.
-                (function convertOptionsToObjects() {
-                    _refreshOptions();
-                })();
-
-
-                function optionsContainer() {
-                    if (!$container) {
-                        $container = $('<div>', { id: 'mlq_optionsContainer_' + new Date().getTime(), 'class': 'dropdown-options-container' }).
-                            appendTo(container()).css({ 'display': 'none' });
-
-                        for (var i = 0; i < $visibleOptions; i++) {
-                            $optionLabels[i] = optionLabel(i);
-                            $optionLabels[i].insert($container);
-                        }
-
-                    }
-
-                    return $($container);
-
-                }
-
-
-                function _refreshOptions() {
-                    $optionObject = [];
-                    for (var i = 0; i < $options.length; i++) {
-                        var _opt = $options[i];
-                        $optionObjects[i] = option({
-                            'index': i,
-                            'value': _opt,
-                            'prepend': _opt.prepend,
-                            'caption': (_opt[$displayedField] || _opt.name || _opt.text || _opt.key || _opt.displayed || _opt.label || _opt.value || _opt[$searchedField])
-                        });
-                    }
-                }
-
-
-                function optionLabel(index) {
-                    //--- UI components ---
-                    var SELECTED_CSS_CLASS = 'dropdown-selected';
-                    var $container = $('<div>', { id: ('mlq_option_' + new Date().getTime()), 'class': 'dropdown-option' }).
-                                                                            css({ 'display': 'block', 'padding-top': '2px' });
-                    var $index = index;
-                    var $object;
-                    //---------------------
-
-                    function optionContainer() {
-                        return $($container);
-                    }
-
-                    return {
-                        insert: function (div) {
-                            $o = optionContainer();
-                            $o.appendTo(div);
-                            $o.
-                                bind({
-                                    mousedown: function (e) {
-                                        if ($object != $selectedOption) {
-                                            $selectedOption = $object;
-                                            if ($selectedOption) {
-                                                events().trigger({
-                                                    'type': 'selected',
-                                                    'option': $selectedOption,
-                                                    'object': $selectedOption.getObject(),
-                                                    'text': $selectedOption.getCaption()
-                                                });
-                                            }
-                                        }
-                                    },
-                                    mousemove: function (e) {
-                                        hoverOption($index);
-                                    },
-                                    keyup: function (e) {
-                                        switch (e.which) {
-                                            case 13:
-                                                container().trigger({
-                                                    'type': 'selected',
-                                                    'object': $object,
-                                                    'control': $o,
-                                                    'text': $o.html()
-                                                });
-                                                break;
-                                        }
-                                    }
-                                });
-                        },
-                        getHeight: function () {
-                            var $o = optionContainer();
-                            return $o.height() //+ my.ui.extraHeight($o);
-                        },
-                        setContent: function (content) {
-                            optionContainer().html(content);
-                        },
-                        setObject: function (object) {
-                            $object = object;
-                        },
-                        show: function(){
-                            optionContainer().css('display', 'block');
-                        },
-                        hide: function(){
-                            optionContainer().css('display', 'none');
-                        },
-                        getIndex: function () {
-                            return $index;
-                        },
-                        getObject: function () {
-                            return $object;
-                        },
-                        select: function () {
-                            optionContainer().addClass(SELECTED_CSS_CLASS);
-                        },
-                        deselect: function () {
-                            optionContainer().removeClass(SELECTED_CSS_CLASS);
-                        }
-                    }
-                }
-
-
-                //===================================
-                function filterFromScratch(e) {
-                    //Reset the array of displayed.
-                    var j = 0;
-                    var visibility = true;
-                    var $filter = (e ? e.filterText : '') || $text;
-
-                    if ($filter.length > 0) {
-                        $displayed = [];
-                        for (var i = 0; i < $optionObjects.length; i++) {
-                            var opt = $optionObjects[i];
-                            if (opt.matchFilter($filter)) {
-                                $displayed[j++] = opt;
-                            }
-                        }
-
-                    } else {
-
-                        //Czyści podświetlenie z dotychczasowej listy
-                        //wyświetlanych itemów.
-                        for (var i = 0; i < $displayed.length; i++) {
-                            var opt = $displayed[i];
-                            if (opt) opt.clear();
-                        }
-
-                        $displayed = $optionObjects;
-                        visibility = false;
-                    }
-
-                    _render(visibility);
-
-                }
-
-
-                //===================================
-                function filter(e) {
-                    //Reset the array of displayed.
-                    var j = 0;
-                    var visibility = true;
-                    var $filter = (e ? e.filterText : '') || $text;
-
-
-                    if ($filter.length > 0) {
-                        var $matched = [];
-                        for (var i = 0; i < $displayed.length; i++) {
-                            var opt = $displayed[i];
-                            if (opt.matchFilter($filter)) {
-                                $matched[j++] = opt;
-                            }
-                        }
-
-                        $displayed = $matched;
-
-                    } else {
-
-                        //Czyści podświetlenie z dotychczasowej listy
-                        //wyświetlanych itemów.
-                        for (var i = 0; i < $displayed.length; i++) {
-                            var opt = $displayed[i];
-                            if (opt) opt.clear();
-                        }
-                        $displayed = $optionObjects;
-                        visibility = false;
-                    }
-
-                    _render(visibility);
-
-                }
-
-                //===================================
-
-                function hoverOption(index) {
-
-                    //Deselect the previously selected option.
-                    if ($selected) $selected.deselect();
-
-                    //Select new option.
-                    $selected = $optionLabels[index];
-                    $selected.select();
-
-                }
-
-                //===================================
-
-                function moveDown() {
-
-                    var index = ($selected ? $selected.getIndex() : -1);
-
-                    //If the last options is currently selected, there is
-                    //no possibility to move down.
-                    if (index < $visibleOptions - 1) {
-
-                        hoverOption(++index);
-
-                        //Show the options container.
-                        if (!$visible) _render(true);
-
-                    } else {
-
-                        //clearSelection();
-                        //_render(false);
-
-                    }
-
-                }
-
-
-                //===================================
-
-                function moveUp() {
-
-                    var index = ($selected ? $selected.getIndex() : -1);
-
-                    //If the last options is currently selected, there is
-                    //no possibility to move down.
-                    if (index > 0) {
-
-                        hoverOption(--index);
-
-                    } else {
-
-                        clearSelection();
-                        _render(false);
-
-                    }
-
-                }
-
-                //===================================
-
-                function clearSelection() {
-                    if ($selected) $selected.deselect();
-                    $selected = null;
-                }
-
-                //===================================
-
-                function _render(visibility) {
-
-                    $container = optionsContainer();
-
-                    if (visibility) {
-
-                        //Temporarily hide container to avoid screen flickering.
-                        $container.css({ 'display': 'none' });
-
-                        $startIndex = ($displayed.length <= $visibleOptions ? 0 : $start);
-                        $endIndex = ($displayed.length <= $visibleOptions ? $displayed.length - 1 : $start + $visibleOptions - 1);
-                        $height = 0;
-
-                        for (var i = $startIndex; i < $visibleOptions; i++) {
-                            //Create references to option and label.
-                            var option = $displayed[i];
-                            var label = $optionLabels[i];
-                            //Calculate the height of container.
-                            //$height += label.getHeight();
-
-                            if (i <= $endIndex) {
-                                //Assign object and its text to the label.
-                                var text = option.getContent();
-                                label.setContent(text);
-                                label.setObject(option);
-                                label.show();
-                            } else {
-                                label.hide();
-                            }
-                        }
-
-                    }
-
-
-                    clearSelection();
-                    $visible = visibility;
-
-
-
-                    //Restore container visibility or hide it (depending on the value of 'visibility' parameter).
-                    $container.css({
-                        //'height': (visibility ? $height + 'px' : '0px'),
-                        'display': (visibility ? 'block' : 'none'),
-                        'border-bottom': (visibility && $displayed.length > 0 ? '1px #6d7c99 solid' : 'none')
-                    });
-
-                }
-
-
-
-
-                /* ==================================== */
-                return {
-                    render: function (visibility) {
-                        _render(visibility);
-                    },
-                    //----------------------------------
-                    isVisible: function () {
-                        return $visible;
-                    },
-                    //----------------------------------
-                    //Jeżeli przy aktualnym filtrze na wyświetlanej liście znajduje się
-                    //tylko jedna opcja, to jest ona zwracana. W przeciwnym razie
-                    //zwracane jest null.
-                    getOnlyOption: function () {
-                        if ($displayed.length == 1) {
-                            return $displayed[0];
-                        }
-                        return null;
-                    },
-                    //----------------------------------
-                    getCurrentObject: function () {
-                        return ($selected ? $selected.getObject() : null);
-                    },
-                    //----------------------------------
-                    refresh: function () {
-                        _refreshOptions();
-                    },
-                    //----------------------------------
-                    forceFilter: function () {
-                        filterFromScratch();
-                    }
-                }
-                /* ==================================== */
-
-
-            }();
-        }
-
-        return _optionsArea;
-
-    }
-
-    /* ==================================== */
-
-    function option(e) {
-        var $index = e.index || 0;
-        var $value = e.value || null;
-        var $caption = e.caption || $value;
-        var $prepend = (e.prepend === undefined ? '' : e.prepend);
-        var $image;
-        //--- Filtering ---
-        var $base;
-        var $html;
-        //-----------------
-
-
-
-        function clearContent() {
-            $html = $caption;
-        }
-
-
-        container().bind({
-            'filter': function (e) { clearContent(); }
-        });
-
-
-        return {
-            //----------------------------------
-            matchFilter: function (base) {
-                var $base = base;
-                var $position = ($caseSensitive ? $caption.indexOf(base) : $caption.toLowerCase().indexOf(base.toLowerCase()));
-
-                if ($position >= 0) {
-                    var baseEnd = $position + base.length;
-                    $html = $caption.substr(0, $position) + '<span class="dropdown-matched-text">' +
-                            $caption.substr($position, base.length) + '</span>' +
-                            $caption.substr(baseEnd, $caption.length - baseEnd);
-                    return true;
-                } else {
-                    return false;
-                }
-
-            },
-            //----------------------------------
-            getContent: function () {
-                var s = $html || $caption; 
-                return ($prepend ? $prepend + s : s);
-            },
-            //----------------------------------
-            getCaption: function () {
-                return $caption;
-            },
-            //----------------------------------
-            getObject: function () {
-                return $value;
-            },
-            //----------------------------------
-            clear: function () {
-                $html = $caption;
-            }
-            //----------------------------------
-        }
-
-    }
-    /* ==================================== */
-
-
-    function clearFilter() {
-        $text = '';
-        optionsArea().forceFilter();
-    }
-
-
-    function _remove() {
-        container().remove();
-    }
-
-
-    (function () {
-        $(_textbox).focus();
-    })();
-
-
-    /* ==================================== */
-    return {
-        //----------------------------------
-        getSelected: function () {
-            return $selectedOption;
-        },
-        //----------------------------------
-        loadOptions: function (options) {
-            if (options) {
-                $options = options;
-                optionsArea().refresh();
-                optionsArea().render(false);
-            }
-        },
-        //----------------------------------
-        clearSelection: function () {
-            $selectedOption = null;
-            textbox().val('');
-            clearFilter();
-        },
-        //----------------------------------
-        listener: function () {
-            return events();
-        },
-        //----------------------------------
-
-        //----------------------------------
-        activate: function () {
-            textbox().focus();
-        }
-    };
-    /* ==================================== */
-
-}
+DropDownOption.prototype.matchFilter = function(filter, caseSensitive) {
+    var position = (caseSensitive ? this.name.indexOf(filter) : this.name.toLowerCase().indexOf(filter.toLowerCase()));
+    return (position >= 0);
+};
+DropDownOption.prototype.html = function (filter) {
+    var classFound = 'dropdown-matched-text';
+    var openTag = '<span class="' + classFound + '">';
+    var closeTag = '</span>';
+    var filterStart = this.name.toLowerCase().indexOf(filter.toLowerCase());
+    var filterCase = this.name.substr(filterStart, filter.length);
+
+    var html = this.prepend + (filter ? this.name.replace(filterCase, openTag + filterCase + closeTag)  : this.name) + this.append;
+
+    return html;
+
+};

@@ -71,6 +71,8 @@ function Tree(properties) {
         confirm: function(e) {
             if (me.mode === MODE.SINGLE) {
                 my.notify.display('Selected: ' + e.item.name, true);
+            } else {
+                my.notify.display(e.item.length + ' item(s) selected', true);
             }
             me.cancel();
         },
@@ -316,18 +318,19 @@ SearchPanel.prototype.activate = function () {
     this.active = true;
 
     this.dropdown = this.dropdown || new DropDown({
-        parent: this.container,
+        container: me.container,
         data: this.tree.root.getNodesForSearching(),
-        background: false,
-        displayed: 'displayed'
+        slots: 10,
+        caseSensitive: false,
+        confirmWithFirstClick: true
     });
     
     this.dropdown.bind({
         'deactivate': function () {
             me.deactivate();
         },
-        'selected': function (e) {
-            me.select(e.object.object);
+        'select': function (e) {
+            me.select(e.object);
         }
     });
 
@@ -437,7 +440,10 @@ function ButtonsPanel(tree) {
         'value': 'OK'
     }).bind({
         'click': function () {
-            me.tree.confirm();
+            me.tree.trigger({
+                type: 'confirm',
+                item: me.tree.root.getSelectedNodes()
+            });
         }
     }).appendTo(container);
 
@@ -1068,10 +1074,10 @@ TreeNode.prototype.path = function (includeThis) {
 };
 TreeNode.prototype.getSearchObject = function() {
     return {
-        object: this,
+        key: this.key,
         name: this.name,
-        prepend: this.path() + (this.parent.isRoot() ? '' : '  >  '),
-        displayed: this.name
+        object: this,
+        prepend: this.path() + (this.parent.isRoot() ? '' : '  >  ')
     };
 };
 TreeNode.prototype.getChildNode = function(i) {
@@ -1642,42 +1648,6 @@ NodeDragMover.prototype.move = function (x, y) {
     var $y = y - p.click.top + p.caption.top;
     $(this.control).css({ left: $x, top: $y });
 };
-
-
-
-
-    //function TreeNode(tree, parent, object) {
-
-
-
-
-
-
-    ////TreeNode.prototype.addNode = function (node) {
-    ////    //alert('moving node ' + node.name + ' to ' + this.name);
-    ////    node.moveTo(this);
-    ////    this.nodes[node.getKey()] = node;
-    ////    this.sorter.sort();
-    ////    this.resetStatus();
-    ////    this.dropArea.unselect();
-    ////    this.dropArea.recalculate();
-    ////};
-
-
-
-    //TreeNode.prototype.addNewNode = function () {
-    //    var me = this;
-    //    var node = new TreeNode({
-    //            tree: me.tree,
-    //            parent: me,
-    //            expanded: false
-    //        });
-    //    this.tree.trigger({
-    //        'type': 'activate',
-    //        'node': node
-    //    });
-    //    node.renamer.activate();
-    //};
 
 
     function hide(div) {
