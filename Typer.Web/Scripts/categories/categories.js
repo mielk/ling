@@ -5,9 +5,35 @@ $(function () {
 
     var container = $('#category-options')[0];
     var searchData = [
-                    { name: 'Europe', countries: ['Polska', 'Albania', 'Luksemburg'] },
-                    { name: 'South America', countries: ['Brazil', 'Venezuela', 'Argentina'] }
-    ]
+        //{ name: 'Europe', countries: ['Polska', 'Albania', 'Luksemburg'] },
+        //{ name: 'South America', countries: ['Brazil', 'Venezuela', 'Argentina'] },
+        { name: 'A' },
+        { name: 'B' },
+        { name: 'C' },
+        { name: 'D' },
+        { name: 'E' },
+        { name: 'F' },
+        { name: 'G' },
+        { name: 'H' },
+        { name: 'I' },
+        { name: 'J' },
+        { name: 'K' },
+        { name: 'L' },
+        { name: 'M' },
+        { name: 'N' },
+        { name: 'O' },
+        { name: 'P' },
+        { name: 'Q' },
+        { name: 'R' },
+        { name: 'S' },
+        { name: 'T' },
+        { name: 'U' },
+        { name: 'V' },
+        { name: 'W' },
+        { name: 'X' },
+        { name: 'Y' },
+        { name: 'Z' }
+    ];
     var dropdown = new DropDown({
         container: container,
         caption: 'Select option ...',

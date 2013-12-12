@@ -180,12 +180,12 @@ Tree.prototype.setActiveNode = function (node) {
         previous.deactivate();
     }
 };
-Tree.prototype.clearActiveNode = function () {
+Tree.prototype.clearActiveNode = function() {
     if (this.node) {
         this.node.deactivate();
     }
     this.node = null;
-}
+};
 
 
 

@@ -1,7 +1,33 @@
-﻿var searchData =  [
-                { name: 'Europe', countries: ['Polska', 'Albania', 'Luksemburg'] },
-                { name: 'South America', countries: ['Brazil', 'Venezuela', 'Argentina'] }
-            ]
+﻿var searchData = [
+    //{ name: 'Europe', countries: ['Polska', 'Albania', 'Luksemburg'] },
+    //{ name: 'South America', countries: ['Brazil', 'Venezuela', 'Argentina'] },
+    { name: 'A' },
+    { name: 'B' },
+    { name: 'C' },
+    { name: 'D' },
+    { name: 'E' },
+    { name: 'F' },
+    { name: 'G' },
+    { name: 'H' },
+    { name: 'I' },
+    { name: 'J' },
+    { name: 'K' },
+    { name: 'L' },
+    { name: 'M' },
+    { name: 'N' },
+    { name: 'O' },
+    { name: 'P' },
+    { name: 'Q' },
+    { name: 'R' },
+    { name: 'S' },
+    { name: 'T' },
+    { name: 'U' },
+    { name: 'V' },
+    { name: 'W' },
+    { name: 'X' },
+    { name: 'Y' },
+    { name: 'Z' }
+];
 
 
 
@@ -19,9 +45,9 @@ $(function () {
                 $(document.body).addClass('unselectable');
 
                 // Some setup here, like remembering the original location, etc
-                $(window).on('mousemove', function (e) {
+                $(window).on('mousemove', function () {
                     // Do the thing!
-                    $this.on('mouseup', function (e) {
+                    $this.on('mouseup', function () {
                         $(document.body).removeClass('unselectable');
                         //$('*').removeClass('unselectable');
                         // Other clean-up tasks here
@@ -34,27 +60,30 @@ $(function () {
 
 
 function DropDown(properties) {
-    var me = this;
     this.view = new DropDownView(this, properties);
     this.options = {
         slots: properties.slots || 10
     };
     this.eventHandler = new EventHandler();
     this.navigator = new DropDownNavigator(this);
+    this.render = new DropDownRenderManager(this);
     this.optionsManager = new DropDownOptionsManager(this, properties.data);
+
+    this.render.render();
+
 }
-DropDown.prototype.clear = function () {
+DropDown.prototype.clear = function() {
     this.view.clear();
-}
-DropDown.prototype.appendTo = function(container){
+};
+DropDown.prototype.appendTo = function(container) {
     this.view.appendTo(container);
-}
-DropDown.prototype.bind = function(e){
+};
+DropDown.prototype.bind = function(e) {
     this.eventHandler.bind(e);
-}
-DropDown.prototype.trigger = function(e){
+};
+DropDown.prototype.trigger = function(e) {
     this.eventHandler.trigger(e);
-}
+};
 
 
 
@@ -67,6 +96,11 @@ function DropDownView(dropdown, properties) {
     //UI components.
     //Parental container.
     var parent = properties.container;
+    $(parent).css({
+        'overflow': 'visible',
+        'z-index': 2
+    });
+    
     this.container = jQuery('<div/>', {
         'class': 'dropdown-container',
         'visibility': 'visible'
@@ -80,31 +114,27 @@ function DropDownView(dropdown, properties) {
         'class': 'textbox'
     }).bind({
         'click': function () {
-            if (this.textbox) {
-                $(this.textbox).focus();
+            if (me.textbox) {
+                $(me.textbox).focus();
             }
         }
-    }).appendTo($(this.container));
+    }).appendTo($(me.container));
 
     this.textbox = jQuery('<input/>', {
         type: 'textbox',
         'class': 'dropdown-textbox'
     }).appendTo($(textspan));
 
-    this.options = jQuery('<div/>', {
-        'class': 'dropdown-options-container'
-    }).css({
-        'display' : 'none'
-    }).appendTo($(this.container));
-
 }
-DropDownView.prototype.clear = function () {
+DropDownView.prototype.clear = function() {
 
-}
-DropDownView.prototype.appendTo = function(container){
+};
+DropDownView.prototype.appendTo = function(container) {
     $(this.container).appendTo($(container));
-}
-
+};
+DropDownView.prototype.add = function(element) {
+    $(element).appendTo($(this.container));
+};
 
 function DropDownNavigator(dropdown) {
     var me = this;
@@ -123,44 +153,208 @@ function DropDownNavigator(dropdown) {
 }
 
 
-function DropDownOptionsManager(dropdown, data) {
+function DropDownRenderManager(dropdown) {
+    // ReSharper disable once UnusedLocals
     var me = this;
     this.dropdown = dropdown;
     this.slots = [];
     this.slots.length = this.dropdown.options.slots;
+    this.startCounter = -1;
+    
+    this.container = jQuery('<div/>', {
+        'class': 'dropdown-options-container'
+    }).css({
+        'display': 'block'
+    });
+    this.dropdown.view.add(this.container);
+    
+    this.options = jQuery('<div/>', {
+        'class': 'dropdown-options'
+    }).appendTo($(this.container));
 
-    this.renderSlots();
+    this.scrollbar = new DropDownScrollbar(this);
+
+    
+    this.createSlots();
 
 }
-DropDownOptionsManager.prototype.renderSlots = function () {
-    var container = this.dropdown.view.options;
+DropDownRenderManager.prototype.createSlots = function () {
     for (var i = 0; i < this.slots.length; i++) {
-        this.slots[i] = jQuery('<div/>', {
-            'class': 'dropdown-option'
-        }).appendTo($(container));
+        this.slots[i] = new DropDownSlot(this, i);
     }
+};
+DropDownRenderManager.prototype.append = function(element) {
+    $(element).appendTo($(this.container));
+};
+DropDownRenderManager.prototype.addSlot = function (slot) {
+    $(slot).appendTo($(this.options));
+};
+DropDownRenderManager.prototype.render = function () {
+    var size = this.dropdown.optionsManager.selectedCounter();
+    var slots = this.slots.length;
+    var start = Math.max(Math.min(this.startCounter, size - slots), 0);
+    var data = this.dropdown.optionsManager.getDataArray(start, start + slots - 1);
+    
+    for (var i = 0; i < data.length; i++) {
+        var slot = this.slots[i];
+        slot.insertOption(data[i]);
+    }
+
+    this.scrollbar.adjust(slots, size, start);
+
+};
+
+
+function DropDownSlot(manager, index) {
+    // ReSharper disable once UnusedLocals
+    var me = this;
+    this.manager = manager;
+    this.dropdown = manager.dropdown;
+    this.index = index;
+    this.option = null;
+    
+    //UI components.
+    this.container = jQuery('<div/>', {
+        'class': 'dropdown-option'
+    });
+
+    this.manager.addSlot($(this.container));
+
 }
+DropDownSlot.prototype.insertOption = function(option) {
+    if (option) {
+        this.show();
+        $(this.container).html(option.name);
+    } else {
+        this.hide();
+    }
+};
+DropDownSlot.prototype.hide = function() {
+    $(this.container).css({
+        'display': 'none'
+    });
+};
+DropDownSlot.prototype.show = function () {
+    $(this.container).css({
+        'display': 'block'
+    });
+};
+
+
+function DropDownScrollbar(manager) {
+    // ReSharper disable once UnusedLocals
+    var me = this;
+    this.manager = manager;
+    this.dropdown = manager.dropdown;
+    
+    //UI components.
+    this.container = jQuery('<div/>', {
+        'class': 'dropdown-scrollbar'
+    });
+    this.manager.append($(this.container));
+
+    this.panel = jQuery('<div/>', {
+        'class': 'dropdown-scrollbar-pointer-container'
+    }).appendTo($(this.container));
+    
+    this.pointer = jQuery('<div/>', {
+        'class': 'dropdown-scrollbar-pointer'
+    }).appendTo($(this.panel));
+
+}
+DropDownScrollbar.prototype.adjust = function(slots, items, startIndex) {
+    if (items > slots) {
+        $(this.container).css({            
+            'display': 'block' 
+        });
+
+        $(this.pointer).css({            
+            'height': (slots * 100 / items) + '%',
+            'top': (startIndex * 100 / items) + '%'
+        });
+        
+    } else {
+        $(this.container).css({
+            'display': 'none'
+        });
+    }
+};
+
+
+function DropDownOptionsManager(dropdown, data) {
+    // ReSharper disable once UnusedLocals
+    var me = this;
+    this.dropdown = dropdown;
+    
+    this.options = {};
+    this.sorted = [];
+    this.filtered = [];
+
+    this.loadData(data);
+
+}
+DropDownOptionsManager.prototype.loadData = function (data) {
+    var me = this;
+    if (data.length) { //Array
+        for (var i = 0; i < data.length; i++) {
+            var option = new DropDownOption(me, data[i]);
+            var key = option.key || option.name;
+            this.options[key] = option;
+        }
+    } else {
+        for (var $key in data) {
+            if (data.hasOwnProperty($key)) {
+                var item = data[$key];
+                var $option = new DropDownOption(me, item);
+                key = $option.key || $option.name;
+                this.options[key] = $option;
+            }
+        }
+    }
+
+    this.sorted = my.array.objectToArray(this.options);
+    this.sorted.sort(function (a, b) {
+        return a.name < b.name ? -1 : 1;
+    });
+    this.filtered = this.sorted;
+
+};
+DropDownOptionsManager.prototype.getDataArray = function (start, end) {
+    var array = [];
+    for (var i = start; i <= end; i++) {
+        if (i < this.filtered.length) {
+            array.push(this.filtered[i]);
+        } else {
+            array.push(null);
+        }
+    }
+    return array;
+};
+DropDownOptionsManager.prototype.selectedCounter = function() {
+    return this.filtered.length;
+};
+
 
 function DropDownOption(manager, properties) {
+    // ReSharper disable once UnusedLocals
     var me = this;
     this.dropdown = manager.dropdown;
     this.manager = manager;
     this.key = (typeof (properties.key) === 'function' ? properties.key() : properties.key) || '';
     this.name = (typeof (properties.name) === 'function' ? properties.name() : properties.name) || '';
+    if (!this.key) this.key = this.name;
     this.object = (typeof (properties.object) === 'function' ? properties.object() : properties.object) || '';
     this.prepend = properties.prepend || '';
     this.append = properties.append || '';
 
 }
-function DropDownOptionView(option) {
-    var me = this;
-    this.option = option;
-}
+
+
 
 
 function optionLabel(index) {
     //--- UI components ---
-    var SELECTED_CSS_CLASS = 'dropdown-selected';
+    var selectedCssClass = 'dropdown-selected';
     var $container = $('<div>', { id: ('mlq_option_' + new Date().getTime()), 'class': 'dropdown-option' }).
                                                             css({ 'display': 'block', 'padding-top': '2px' });
     var $index = index;
@@ -230,10 +424,10 @@ function optionLabel(index) {
             return $object;
         },
         select: function () {
-            optionContainer().addClass(SELECTED_CSS_CLASS);
+            optionContainer().addClass(selectedCssClass);
         },
         deselect: function () {
-            optionContainer().removeClass(SELECTED_CSS_CLASS);
+            optionContainer().removeClass(selectedCssClass);
         }
     }
 }
