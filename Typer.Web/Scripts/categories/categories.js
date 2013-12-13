@@ -7,9 +7,26 @@ function Category(parent, properties) {
     this.parent = parent;
     this.expanded = true;
     this.children = {};
-    this.items = function() {
+    this.items = function () {
         return my.array.objectToArray(me.children);
     };
+    
+    this.eventHandler = new EventHandler();
+    this.eventHandler.bind({        
+        rename: function(e) {
+            me.name = e.name;
+        },
+        add: function(e) {
+            
+        },
+        remove: function(e) {
+            
+        },
+        newItem: function (e) {
+
+        }
+    });
+    
     this.loadChildren(properties.children);
 }
 Category.prototype.addChild = function(category) {
@@ -26,6 +43,12 @@ Category.prototype.loadChildren = function(children) {
         this.addChild(category);
     }
 };
+Category.prototype.trigger = function(e) {
+    this.eventHandler.trigger(e);
+};
+Category.prototype.bind = function (e) {
+    this.eventHandler.bind(e);
+};
 
 
 function categoryProperties(properties) {
@@ -35,6 +58,20 @@ function categoryProperties(properties) {
         parentId: properties.ParentId,
         children: properties.Children
     };
+}
+
+function initCategoryView() {
+    var container = $('#categories-tree')[0];
+    if (container) {
+        var tree = new Tree({
+            container: container,
+            mode: MODE.NONE,
+            root: my.categories.getRoot(),
+            expandWhenAddingNewNode: true,
+            doubleClickDelay: 500
+        });
+        tree.show();
+    }
 }
 
 
@@ -156,3 +193,7 @@ my.categories = (function () {
     };
 
 })();
+
+$(function() {
+    initCategoryView();
+});

@@ -53,8 +53,9 @@ function Tree(properties) {
     //Public properties.
     this.mode = properties.mode ? properties.mode : MODE.SINGLE;
     this.options = {
-        expandWhenAddingNewNode: true,
-        doubleClickDelay: 500,
+        expandWhenAddingNewNode: properties.expandWhenAddingNewNode || true,
+        doubleClickDelay: properties.doubleClickDelay || 500,
+        buttons: properties.buttons || (properties.container ? false : true) || false
     };
     //Private properties.
     this.visible = (properties.hidden === true ? false : true);
@@ -90,7 +91,9 @@ function Tree(properties) {
 
     this.selection = new SelectionPanel(this, properties.showSelection);
 
-    this.buttons = new ButtonsPanel(this);
+    if (this.options.buttons) {
+        this.buttons = new ButtonsPanel(this);
+    }
 
     this.dragdrop = new DropArea(this);
 
@@ -815,9 +818,8 @@ TreeNode.prototype.delete = function () {
     });
 };
 TreeNode.prototype.triggerObjectEvent = function(e) {
-    if (this.object.events) {
-        var eventsHandler = (typeof(this.object.events) === 'function' ? this.object.events() : this.object.events);
-        eventsHandler.trigger(e);
+    if (this.object.trigger && typeof (this.object.trigger) === 'function') {
+        this.object.trigger(e);
     }
 };
 TreeNode.prototype.isExpandable = function() {
@@ -978,7 +980,7 @@ TreeNode.prototype.changeName = function (name) {
         this.name = name;
         this.caption.rename(name);
         this.triggerObjectEvent({
-            type: 'changeName',
+            type: 'rename',
             name: name
         });
         
