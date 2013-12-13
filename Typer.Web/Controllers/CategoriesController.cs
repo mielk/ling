@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using Typer.Domain.Entities;
 using Typer.Domain.Services;
 
@@ -11,12 +7,12 @@ namespace Typer.Web.Controllers
     public class CategoriesController : Controller
     {
 
-        private readonly ICategoryService service;
+        private readonly ICategoryService _service;
 
 
         public CategoriesController(ICategoryService service)
         {
-            this.service = service;
+            _service = service;
         }
 
         //
@@ -34,7 +30,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult GetCategories()
         {
-            Category root = service.getRoot();
+            var root = _service.GetRoot();
             return Json(root, JsonRequestBehavior.AllowGet);
 
         }
@@ -44,7 +40,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult UpdateName(int id, string name)
         {
-            var result = service.updateName(id, name);
+            var result = _service.UpdateName(id, name);
             return Json(result);
         }
 
@@ -53,7 +49,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult UpdateParentId(int id, int parentId)
         {
-            var result = service.updateParent(id, parentId);
+            var result = _service.UpdateParent(id, parentId);
             return Json(result);
         }
 
@@ -61,7 +57,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult RemoveCategory(int id)
         {
-            var result = service.deactivate(id);
+            var result = _service.Deactivate(id);
             return Json(result);
         }
 
@@ -69,8 +65,8 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult AddCategory(string name, int parentId)
         {
-            var user = (User) HttpContext.Session[Typer.Domain.Entities.User.SESSION_KEY];
-            var result = service.addCategory(name, parentId, user.UserID);
+            var user = (User) HttpContext.Session[Domain.Entities.User.SESSION_KEY];
+            var result = _service.AddCategory(name, parentId, user.UserID);
             return Json(result);
         }
 

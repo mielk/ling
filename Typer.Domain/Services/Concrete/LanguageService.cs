@@ -69,7 +69,7 @@ namespace Typer.Domain.Services
 
         private Language languageFromDto(LanguageDto dto)
         {
-            return new Language()
+            return new Language
             {
                 Id = dto.Id,
                 Name = dto.Name
@@ -78,7 +78,7 @@ namespace Typer.Domain.Services
 
         private LanguageDto languageToDto(Language language)
         {
-            return new LanguageDto()
+            return new LanguageDto
             {
                 Id = language.Id,
                 Name = language.Name

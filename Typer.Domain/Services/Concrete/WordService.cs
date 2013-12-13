@@ -121,7 +121,7 @@ namespace Typer.Domain.Services
 
         private Metaword metawordFromDto(MetawordDto dto)
         {
-            return new Metaword()
+            return new Metaword
             {
                 CreateDate = dto.CreateDate,
                 CreatorId = dto.CreatorId,
@@ -138,7 +138,7 @@ namespace Typer.Domain.Services
 
         private MetawordDto metawordToDto(Metaword metaword)
         {
-            return new MetawordDto()
+            return new MetawordDto
             {
                 CreateDate = metaword.CreateDate,
                 CreatorId = metaword.CreatorId,
@@ -155,7 +155,7 @@ namespace Typer.Domain.Services
 
         private Word wordFromDto(WordDto dto)
         {
-            return new Word()
+            return new Word
             {
                 CreateDate = dto.CreateDate,
                 CreatorId = dto.CreatorId,
@@ -173,7 +173,7 @@ namespace Typer.Domain.Services
 
         private WordDto wordToDto(Word word)
         {
-            return new WordDto()
+            return new WordDto
             {
                 CreateDate = word.CreateDate,
                 CreatorId = word.CreatorId,

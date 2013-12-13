@@ -981,6 +981,11 @@ TreeNode.prototype.changeName = function (name) {
             type: 'changeName',
             name: name
         });
+        
+        if (this.parent) {
+            this.parent.nodes.sort();
+        }
+
     }
 
 };
@@ -1129,9 +1134,19 @@ function TreeNodeView(node) {
 }
 TreeNodeView.prototype.sort = function(array) {
     if (array.length > 1) {
-        for (var i = array.length - 1; i > 0; i--) {
-            $(array[i].view.container).before($(array[i - 1].view.container));
+        
+        var children = jQuery('<div/>', {
+            'class': 'children-container'
+        });
+
+        for (var i = 0; i < array.length; i++) {
+            var node = array[i];
+            node.view.container.appendTo($(children));
         }
+
+        $(this.children).remove();
+        this.children = $(children).appendTo($(this.container));
+
     }
 };
 TreeNodeView.prototype.calculatePosition = function() {
@@ -1187,7 +1202,7 @@ NodesManager.prototype.addNode = function(node, sort) {
 };
 NodesManager.prototype.sort = function () {
     this.sorted.sort(function (a, b) {
-        return a.name < b.name ? -1 : 1;
+        return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
     });
     this.node.view.sort(this.sorted);
 };

@@ -86,7 +86,7 @@ namespace Typer.Domain.Services
 
         private User userFromDto(UserDto userDto)
         {
-            return new User()
+            return new User
             {
                 CountryId = userDto.CountryId,
                 DateOfBirth = userDto.DateOfBirth,
@@ -106,7 +106,7 @@ namespace Typer.Domain.Services
 
         private UserDto userToDto(User user)
         {
-            return new UserDto()
+            return new UserDto
             {
                 CountryId = user.CountryId,
                 DateOfBirth = user.DateOfBirth,

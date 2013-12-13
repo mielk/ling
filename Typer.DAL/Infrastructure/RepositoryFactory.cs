@@ -17,7 +17,7 @@ namespace Typer.DAL.Infrastructure
             questionsRepository = new EFQuestionsRepository();
             languageRepository = new EFLanguageRepository();
             wordsRepository = new EFWordsRepository();
-            categoryRepository = new EFCategoriesRepository();
+            categoryRepository = new EfCategoriesRepository();
         }
 
 

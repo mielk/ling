@@ -1,160 +1,131 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.Repositories;
 using Typer.DAL.TransferObjects;
 using Typer.Domain.Entities;
 
 
+// ReSharper disable once CheckNamespace
 namespace Typer.Domain.Services
 {
     public class CategoryService : ICategoryService
     {
-        private static readonly int ROOT_ID = 1;
-        private static List<Category> categories;
-        private static Dictionary<int, Category> categoriesMap = new Dictionary<int,Category>();
-        private static Category root { get; set; }
-        private static ICategoryRepository repository;
+        private const int RootID = 1;
+        private static List<Category> _categories;
+        private static readonly Dictionary<int, Category> CategoriesMap = new Dictionary<int,Category>();
+        private static Category Root { get; set; }
+        private static ICategoryRepository _repository;
 
-        public CategoryService(ICategoryRepository _repository)
+        public CategoryService(ICategoryRepository repository)
         {
-
-            if (repository == null)
-            {
-                repository = RepositoryFactory.getCategoryRepository();
-            }
-            else
-            {
-                repository = _repository;
-            }
+            _repository = _repository == null ? RepositoryFactory.getCategoryRepository() : repository;
         }
 
-        public IEnumerable<Category> getCategories()
+        public IEnumerable<Category> GetCategories()
         {
 
-            if (categories == null)
-                loadCategories();
+            if (_categories == null)
+                LoadCategories();
 
-            return categories;
+            return _categories;
 
         }
 
-        private static void loadCategories()
+        private static void LoadCategories()
         {
 
-            IEnumerable<CategoryDto> dataObjects = repository.getCategories();
-            categories = new List<Category>();
+            var dataObjects = _repository.GetCategories();
+            _categories = new List<Category>();
 
-            foreach (CategoryDto dto in dataObjects)
+            foreach (var category in dataObjects.Select(CategoryFromDto))
             {
-                Category category = categoryFromDto(dto);
-                categories.Add(category);
-                categoriesMap.Add(category.Id, category);
+                _categories.Add(category);
+                CategoriesMap.Add(category.Id, category);
             }
 
             //Create tree structure.
-            if (categoriesMap.ContainsKey(ROOT_ID))
+            if (!CategoriesMap.ContainsKey(RootID)) return;
+            Category root;
+            if (!CategoriesMap.TryGetValue(RootID, out root)) return;
+            Root = root;
+
+            foreach (var category in _categories.Where(category => category.ParentId > 0))
             {
-
-                Category _root;
-                if (categoriesMap.TryGetValue(ROOT_ID, out _root)){
-                    root = _root;
-
-                    foreach (Category category in categories)
-                    {
-                        if (category.ParentId > 0)
-                        {
-                            Category parent;
-                            if (categoriesMap.TryGetValue(category.ParentId, out parent))
-                            {
-                                category.setParent(parent);
-                                parent.addChild(category);
-                            }
-                        }
-                    }
-
-                }
-
+                Category parent;
+                if (!CategoriesMap.TryGetValue(category.ParentId, out parent)) continue;
+                parent.AddChild(category);
             }
-
         }
 
-        public Category getCategory(int id)
+        public Category GetCategory(int id)
         {
 
-            if (categories == null)
-                loadCategories();
+            if (_categories == null)
+                LoadCategories();
 
             Category category;
-            if (categoriesMap.TryGetValue(id, out category))
-            {
-                return category;
-            }
-            else
-            {
-                return null;
-            }
+            return CategoriesMap.TryGetValue(id, out category) ? category : null;
 
         }
 
-        public bool activate(int id)
+        public bool Activate(int id)
         {
-            return repository.activate(id);
+            return _repository.Activate(id);
         }
 
-        public bool deactivate(int id)
+        public bool Deactivate(int id)
         {
-            return repository.deactivate(id);
+            return _repository.Deactivate(id);
         }
-        public bool updateName(Category category, string name)
+        public bool UpdateName(Category category, string name)
         {
-            return repository.updateName(category.Id, name);
+            return _repository.UpdateName(category.Id, name);
         }
-        public bool updateName(int id, string name)
+        public bool UpdateName(int id, string name)
         {
-            return repository.updateName(id, name);
+            return _repository.UpdateName(id, name);
         }
-        public bool updateParent(Category category, int parentId)
+        public bool UpdateParent(Category category, int parentId)
         {
-            return repository.updateParent(category.Id, parentId);
+            return _repository.UpdateParent(category.Id, parentId);
         }
-        public bool updateParent(int id, int parentId)
+        public bool UpdateParent(int id, int parentId)
         {
-            return repository.updateParent(id, parentId);
+            return _repository.UpdateParent(id, parentId);
         }
-        public int addCategory(string name, int parentId, int userId)
+        public int AddCategory(string name, int parentId, int userId)
         {
-            CategoryDto dto = new CategoryDto
+            var dto = new CategoryDto
             {
                 Name = name,
                 ParentId = parentId,
                 IsActive = true
             };
-            return repository.addCategory(dto);
+            return _repository.AddCategory(dto);
         }
-        public Category getRoot()
+        public Category GetRoot()
         {
 
-            if (categories == null)
-                loadCategories();
+            if (_categories == null)
+                LoadCategories();
 
-            return root;
+            return Root;
 
         }
 
 
 
-        private static Category categoryFromDto(CategoryDto dto)
+        private static Category CategoryFromDto(CategoryDto dto)
         {
             return new Category(dto.Id, dto.Name, dto.ParentId){ IsActive = dto.IsActive };
         }
 
-        private static CategoryDto categoryToDto(Category category)
+
+/*
+        private static CategoryDto CategoryToDto(Category category)
         {
-            return new CategoryDto()
+            return new CategoryDto
             {
                 Id = category.Id,
                 IsActive = category.IsActive,
@@ -162,6 +133,7 @@ namespace Typer.Domain.Services
                 ParentId = category.ParentId
             };
         }
+*/
 
 
     }

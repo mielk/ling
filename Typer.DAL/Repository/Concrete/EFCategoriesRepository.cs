@@ -1,42 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.TransferObjects;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.DAL.Repositories
 {
-    public class EFCategoriesRepository : ICategoryRepository
+    public class EfCategoriesRepository : ICategoryRepository
     {
 
-        private static readonly EFDbContext context = EFDbContext.getInstance();
+        private static readonly EFDbContext Context = EFDbContext.getInstance();
 
 
 
-        public IEnumerable<CategoryDto> getCategories()
+        public IEnumerable<CategoryDto> GetCategories()
         {
-            return context.Categories;
+            return Context.Categories.Where(q => q.IsActive);
         }
 
-        public CategoryDto getCategory(int id)
+        public CategoryDto GetCategory(int id)
         {
-            return context.Categories.SingleOrDefault(q => q.Id == id);
+            return Context.Categories.SingleOrDefault(q => q.Id == id);
         }
 
 
 
 
-        public int addCategory(CategoryDto category)
+        public int AddCategory(CategoryDto category)
         {
             try
             {
-                context.Categories.Add(category);
-                context.SaveChanges();
+                Context.Categories.Add(category);
+                Context.SaveChanges();
                 return category.Id;
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 return -1;
             }
@@ -47,66 +46,53 @@ namespace Typer.DAL.Repositories
 
         #region Update methods.
 
-        public bool updateName(int id, string name)
+        public bool UpdateName(int id, string name)
         {
-            CategoryDto category = getCategory(id);
-            if (category != null)
+            var category = GetCategory(id);
+            if (category == null) return false;
+            try
             {
-                try
-                {
-                    category.Name = name;
-                    context.SaveChanges();
-                    return true;
-                }
-                catch (Exception exception)
-                {
-                    return false;
-                }
+                category.Name = name;
+                Context.SaveChanges();
+                return true;
             }
-
-            return false;
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
-        public bool updateParent(int id, int parentId)
+        public bool UpdateParent(int id, int parentId)
         {
-            CategoryDto category = getCategory(id);
-            if (category != null)
+            var category = GetCategory(id);
+            if (category == null) return false;
+            try
             {
-                try
-                {
-                    category.ParentId = parentId;
-                    context.SaveChanges();
-                    return true;
-                }
-                catch (Exception exception)
-                {
-                    return false;
-                }
+                category.ParentId = parentId;
+                Context.SaveChanges();
+                return true;
             }
-
-            return false;
-
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
-        public bool updateProperties(int id, string name, int parentId)
+        public bool UpdateProperties(int id, string name, int parentId)
         {
-            CategoryDto category = getCategory(id);
-            if (category != null)
+            var category = GetCategory(id);
+            if (category == null) return false;
+            try
             {
-                try
-                {
-                    category.Name = name;
-                    category.ParentId = parentId;
-                    context.SaveChanges();
-                    return true;
-                }
-                catch (Exception exception)
-                {
-                    return false;
-                }
+                category.Name = name;
+                category.ParentId = parentId;
+                Context.SaveChanges();
+                return true;
             }
-
-            return false;
+            catch (Exception)
+            {
+                return false;
+            }
         }
         
         #endregion
@@ -120,55 +106,42 @@ namespace Typer.DAL.Repositories
 
 
 
-        public bool activate(int id)
+        public bool Activate(int id)
         {
-            CategoryDto category = getCategory(id);
-            if (category != null)
+            var category = GetCategory(id);
+            if (category == null) return false;
+            if (category.IsActive)
+                return true;
+
+            try
             {
-                if (category.IsActive)
-                    return true;
-
-                try
-                {
-                    category.IsActive = true;
-                    context.SaveChanges();
-                    return true;
-                }
-                catch (Exception exception)
-                {
-                    return false;
-                }
-
+                category.IsActive = true;
+                Context.SaveChanges();
+                return true;
             }
-
-            return false;
-
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
-        public bool deactivate(int id)
+        public bool Deactivate(int id)
         {
-            CategoryDto category = getCategory(id);
-            if (category != null)
+            var category = GetCategory(id);
+            if (category == null) return false;
+            if (!category.IsActive)
+                return false;
+
+            try
             {
-
-                if (!category.IsActive)
-                    return false;
-
-                try
-                {
-                    category.IsActive = false;
-                    context.SaveChanges();
-                    return true;
-                }
-                catch (Exception exception)
-                {
-                    return false;
-                }
-
+                category.IsActive = false;
+                Context.SaveChanges();
+                return true;
             }
-
-            return false;
-
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
 

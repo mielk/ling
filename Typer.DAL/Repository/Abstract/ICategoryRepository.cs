@@ -1,21 +1,22 @@
 ﻿using System.Collections.Generic;
 using Typer.DAL.TransferObjects;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.DAL.Repositories
 {
     public interface ICategoryRepository
     {
-        IEnumerable<CategoryDto> getCategories();
-        CategoryDto getCategory(int id);
+        IEnumerable<CategoryDto> GetCategories();
+        CategoryDto GetCategory(int id);
 
-        int addCategory(CategoryDto category);
+        int AddCategory(CategoryDto category);
 
-        bool updateName(int id, string name);
-        bool updateParent(int id, int parentId);
-        bool updateProperties(int id, string name, int parentId);
+        bool UpdateName(int id, string name);
+        bool UpdateParent(int id, int parentId);
+        bool UpdateProperties(int id, string name, int parentId);
 
-        bool activate(int id);
-        bool deactivate(int id);
+        bool Activate(int id);
+        bool Deactivate(int id);
         
     }
 }

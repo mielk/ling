@@ -121,7 +121,7 @@ namespace Typer.Domain.Services
 
         private Question questionFromDto(QuestionDto dto)
         {
-            return new Question()
+            return new Question
             {
                 CreateDate = dto.CreateDate,
                 CreatorId = dto.CreatorId,
@@ -138,7 +138,7 @@ namespace Typer.Domain.Services
 
         private QuestionDto questionToDto(Question question)
         {
-            return new QuestionDto()
+            return new QuestionDto
             {
                 CreateDate = question.CreateDate,
                 CreatorId = question.CreatorId,
@@ -156,7 +156,7 @@ namespace Typer.Domain.Services
 
         private QuestionOption optionFromDto(QuestionOptionDto dto)
         {
-            return new QuestionOption()
+            return new QuestionOption
             {
                 Content = dto.Content,
                 CreateDate = dto.CreateDate,
@@ -175,7 +175,7 @@ namespace Typer.Domain.Services
 
         private QuestionOptionDto optionToDto(QuestionOption option)
         {
-            return new QuestionOptionDto()
+            return new QuestionOptionDto
             {
                 Content = option.Content,
                 CreateDate = option.CreateDate,

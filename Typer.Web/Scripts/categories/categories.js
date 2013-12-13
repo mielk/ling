@@ -33,7 +33,7 @@ function categoryProperties(properties) {
         key: properties.Id,
         name: properties.Name,
         parentId: properties.ParentId,
-        children: properties.children
+        children: properties.Children
     };
 }
 
