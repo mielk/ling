@@ -103,32 +103,33 @@ my.categories = (function () {
             });
 
         },
-        updateParent: function(node, to) {
+        updateParent: function(e) {
             dbOperation({
                 functionName: 'UpdateParentId',
                 data: {
-                    'id': node.key,
-                    'parentId': to.key,
+                    'id': e.node.key,
+                    'parentId': e.to.key,
                 },
-                success: 'Category ' + node.name + ' has been moved to ' + to.name,
-                error: 'Error when trying to move category ' + node.name + ' to ' + to.name,
+                success: 'Category ' + e.node.name + ' has been moved to ' + e.to.name,
+                error: 'Error when trying to move category ' + e.node.name + ' to ' + e.to.name,
                 // ReSharper disable once UnusedParameter
-                callback: function(e) {
-                    node.object.parent = to;
+                callback: function() {
+                    e.node.object.parent = e.to;
                 }
             });
         },
-        remove: function(node) {
+        remove: function(e) {
             dbOperation({
                 functionName: 'RemoveCategory',
                 data: {
-                    'id': node.key,
+                    'id': e.node.key,
                 },
-                success: 'Category ' + node.name + ' has been removed',
-                error: 'Error when trying to remove category ' + node.name
+                success: 'Category ' + e.node.name + ' has been removed',
+                error: 'Error when trying to remove category ' + e.node.name
             });
         },
-        addNew: function(node) {
+        addNew: function (e) {
+            var node = e.node;
             dbOperation({
                 functionName: 'AddCategory',
                 data: {

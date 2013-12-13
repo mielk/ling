@@ -645,17 +645,17 @@ function Question(data, properties) {
 
             tree.reset({ unselect: true, collapse: false });
             tree.eventHandler.bind({
-                'confirm': function (e) {
+                confirm: function (e) {
                     me.events.trigger({
                         'type': 'changeCategory',
                         'items': e.items
                     });
                     tree.destroy();
                 },
-                newNode: function (e) {
+                add: function (e) {
                     my.categories.addNew(e);
                 },
-                'delete': function (e) {
+                remove: function (e) {
                     my.categories.remove(e);
                 },
                 rename: function (e) {

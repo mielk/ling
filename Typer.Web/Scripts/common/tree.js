@@ -65,9 +65,6 @@ function Tree(properties) {
     this.eventHandler = new EventHandler();
     //Declare events specific for this class.
     this.eventHandler.bind({
-        transfer: function(e) {
-            my.notify.display('Node ' + e.node.name + ' transferred from ' + e.from.name + ' to ' + e.to.name, true);
-        },
         confirm: function(e) {
             if (me.mode === MODE.SINGLE) {
                 my.notify.display('Selected: ' + e.item.name, true);
@@ -76,42 +73,10 @@ function Tree(properties) {
             }
             me.cancel();
         },
+        // transfer
         // rename
-        remove: function(e) {
-            my.notify.display('Node ' + e.node.name + ' has been removed', true);
-        },
-        // ReSharper disable once UnusedParameter
-        add: function(e) {
-            my.notify.display('Node ' + e.node.name + ' has been added', true);
-        }
-        //select
-        //activate
-        //inactivate
-        //delete
-        //newNode
-        //confirm
-        //cancel
-        //transfer
-        //rename
-        //select: function (e) {
-        //    if (e.active === false) return;
-        //    if (me.mode === MODE.SINGLE) {
-        //        $(listener).trigger({
-        //            'type': 'confirm',
-        //            'item': e.node
-        //        });
-        //    }
-        //},
-        //newNode: function (e) {
-        //    if (e.active === false) return;
-        //    e.node.activate();
-        //},
-        //cancel: function (e) {
-        //    if (e.active === false) return;
-        //    if (!$isEmbedded) {
-        //        me.hide();
-        //    }
-        //},
+        // remove
+        // add
     });
 
     
@@ -835,6 +800,11 @@ TreeNode.prototype.removeNode = function(node) {
     });
 };
 TreeNode.prototype.delete = function () {
+
+    this.nodes.each(function(node) {
+        node.delete();
+    });
+
     if (this.parent) {
         this.parent.removeNode(this);
         this.view.delete();
