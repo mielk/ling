@@ -99,7 +99,7 @@ EventHandler.prototype.bind = function (e) {
 my.notify = (function() {
     var options = {
         clickToHide: true,
-        autoHide: false,
+        autoHide: true,
         autoHideDelay: 2000,
         arrowShow: false,
         // default positions

@@ -76,12 +76,11 @@ function Tree(properties) {
             }
             me.cancel();
         },
-        rename: function(e) {
-            my.notify.display('Node ' + e.previous + ' changed its name to ' + e.name, true);
-        },
+        // rename
         remove: function(e) {
             my.notify.display('Node ' + e.node.name + ' has been removed', true);
         },
+        // ReSharper disable once UnusedParameter
         add: function(e) {
             my.notify.display('Node ' + e.node.name + ' has been added', true);
         }
@@ -546,7 +545,7 @@ DropArea.prototype.setDragNode = function(node) {
     this.drag = node;
 };
 DropArea.prototype.isActive = function() {
-    return (drop ? true : false);
+    return (this.drop ? true : false);
 };
 
 
@@ -736,14 +735,6 @@ function TreeNavigator(tree) {
         }
     }
 
-    //function _addNewNode() {
-    //    var expander = me.activeNode.expander;
-    //    if (!expander.isExpanded()) {
-    //        expander.expand();
-    //    }
-    //    me.activeNode.addNewNode();
-    //}
-    
 }
 
 
@@ -1629,7 +1620,6 @@ NodeDragMover.prototype.start = function() {
     this.position.caption = this.node.caption.getPosition();
     this.createControl();
     show($(this.control));
-    my.notify.display('Mover for node ' + this.node.name + ' activated');
 };
 NodeDragMover.prototype.escape = function() {
     this.active = false;

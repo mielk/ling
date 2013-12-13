@@ -91,7 +91,7 @@ function DropDown(properties) {
 
     this.eventHandler.bind({        
        select: function(e) {
-           my.notify.display('Option ' + e.object.name + ' selected', true);
+           //my.notify.display('Option ' + e.object.name + ' selected', true);
        } 
     });
 

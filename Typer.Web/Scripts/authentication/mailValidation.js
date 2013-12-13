@@ -8,7 +8,6 @@ $(document).ready(function () {
 
 
 function adjustPlaceholder() {
-    var supported = Modernizr.input.placeholder;
     $("#account label").css({ 'display': 'block' });
 }
 

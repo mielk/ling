@@ -1,32 +1,4 @@
-﻿var categories = [{
-    key: 'A', caption: 'A', expanded: false, items: [
-        { key: 'AA', caption: 'AA', expanded: false, items: [] },
-        {
-            key: 'AB', caption: 'AB', expanded: true, items: [
-                { key: 'ABC', caption: 'ABC', expanded: true, items: [] },
-                { key: 'ABD', caption: 'ABD', expanded: true, items: [] }
-            ]
-        },
-        { key: 'AC', caption: 'AC', expanded: false, items: [] }
-    ]
-},
-{
-    key: 'B', caption: 'B', expanded: false, items: [
-        { key: 'BA', caption: 'BA', expanded: false, items: [] },
-        { key: 'BB', caption: 'BB', expanded: true, items: [] },
-        {
-            key: 'BC', caption: 'BC', expanded: false, items: [
-                  { key: 'BBC', caption: 'BBC', expanded: true, items: [] },
-                  { key: 'BBD', caption: 'BBD', expanded: true, items: [] }
-            ]
-        },
-        { key: 'BD', caption: 'BD', expanded: true, items: [] }
-    ]
-}];
-
-
-
-$(function () {
+﻿$(function () {
 
     $('.edit-question').bind({
         'click': function () {
@@ -681,16 +653,16 @@ function Question(data, properties) {
                     tree.destroy();
                 },
                 newNode: function (e) {
-                    my.categories.addNew(e.node);
+                    my.categories.addNew(e);
                 },
                 'delete': function (e) {
-                    my.categories.remove(e.node);
+                    my.categories.remove(e);
                 },
                 rename: function (e) {
-                    my.categories.updateName(e.node, e.previous);
+                    my.categories.updateName(e);
                 },
                 transfer: function (e) {
-                    my.categories.updateParent(e.node, e.to);
+                    my.categories.updateParent(e);
                 }
             });
             tree.show();

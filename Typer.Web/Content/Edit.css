@@ -179,10 +179,6 @@ input.id
     text-align: center;
 }
 
-input[disabled="disabled"] {
-     /* your CSS style */
-}
-
 
 .validation-summary-errors
 {

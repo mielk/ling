@@ -1,9 +1,4 @@
-﻿#test-container
-{
-    
-}
-
-.test-panel
+﻿.test-panel
 {
     display: table;
     position: relative;
