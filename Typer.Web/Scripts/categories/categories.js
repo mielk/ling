@@ -11,22 +11,6 @@ function Category(parent, properties) {
         return my.array.objectToArray(me.children);
     };
     
-    this.eventHandler = new EventHandler();
-    this.eventHandler.bind({        
-        rename: function(e) {
-            me.name = e.name;
-        },
-        add: function(e) {
-            
-        },
-        remove: function(e) {
-            
-        },
-        newItem: function (e) {
-
-        }
-    });
-    
     this.loadChildren(properties.children);
 }
 Category.prototype.addChild = function(category) {
@@ -42,12 +26,6 @@ Category.prototype.loadChildren = function(children) {
         // ReSharper disable once PossiblyUnassignedProperty
         this.addChild(category);
     }
-};
-Category.prototype.trigger = function(e) {
-    this.eventHandler.trigger(e);
-};
-Category.prototype.bind = function (e) {
-    this.eventHandler.bind(e);
 };
 
 
@@ -71,6 +49,20 @@ function initCategoryView() {
             doubleClickDelay: 500
         });
         tree.show();
+        tree.bind({
+            add: function (e) {
+                my.categories.addNew(e);
+            },
+            remove: function (e) {
+                my.categories.remove(e);
+            },
+            rename: function (e) {
+                my.categories.updateName(e);
+            },
+            transfer: function (e) {
+                my.categories.updateParente(e);
+            }
+        });
     }
 }
 
@@ -134,8 +126,8 @@ my.categories = (function () {
                 success: 'Category ' + e.previous + ' changed its name to ' + e.name,
                 error: 'Error when trying to change category name from ' + e.previous + ' to ' + e.name,
                 // ReSharper disable once UnusedParameter
-                callback: function($e) {
-                    e.node.object.name = e.node.name;
+                callback: function() {
+                    e.node.object.name = e.name;
                 }
             });
 
@@ -162,7 +154,10 @@ my.categories = (function () {
                     'id': e.node.key,
                 },
                 success: 'Category ' + e.node.name + ' has been removed',
-                error: 'Error when trying to remove category ' + e.node.name
+                error: 'Error when trying to remove category ' + e.node.name,
+                callback: function () {
+
+                }
             });
         },
         addNew: function (e) {

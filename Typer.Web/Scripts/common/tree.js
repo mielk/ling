@@ -73,7 +73,7 @@ function Tree(properties) {
                 my.notify.display(e.item.length + ' item(s) selected', true);
             }
             me.cancel();
-        },
+        }
         // transfer
         // rename
         // remove
@@ -917,7 +917,14 @@ TreeNode.prototype.isDescendant = function(node) {
 TreeNode.prototype.findHovered = function(x, y) {
     return this.droparea.findHovered(x, y);
 };
-TreeNode.prototype.transfer = function(to) {
+TreeNode.prototype.transfer = function (to) {
+    
+    //Root node cannot be transferred.
+    if (this.isRoot()) {
+        my.notify.display('Root node cannot be transferred', false);
+        return;
+    };
+    
     this.tree.trigger({
         type: 'transfer',
         node: this,
@@ -1137,17 +1144,23 @@ function TreeNodeView(node) {
 TreeNodeView.prototype.sort = function(array) {
     if (array.length > 1) {
         
-        var children = jQuery('<div/>', {
-            'class': 'children-container'
-        });
-
-        for (var i = 0; i < array.length; i++) {
-            var node = array[i];
-            node.view.container.appendTo($(children));
+        for (var i = array.length - 1; i > 0; i--) {
+            var up = array[i - 1];
+            var down = array[i];
+            $(down.view.container).before($(up.view.container));
         }
 
-        $(this.children).remove();
-        this.children = $(children).appendTo($(this.container));
+        //var children = jQuery('<div/>', {
+        //    'class': 'children-container'
+        //});
+
+        //for (var i = 0; i < array.length; i++) {
+        //    var node = array[i];
+        //    node.view.container.appendTo($(children));
+        //}
+
+        //$(this.children).remove();
+        //this.children = $(children).appendTo($(this.container));
 
     }
 };

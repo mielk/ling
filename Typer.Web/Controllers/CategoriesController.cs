@@ -36,6 +36,7 @@ namespace Typer.Web.Controllers
         }
 
 
+
         [HttpPost]
         [AllowAnonymous]
         public ActionResult UpdateName(int id, string name)
