@@ -23,5 +23,10 @@ namespace Typer.Domain.Entities
             ((List<Category>)Children).Add(child);
         }
 
+        public void RemoveChild(Category child)
+        {
+            ((List<Category>)Children).Remove(child);
+        }
+
     }
 }

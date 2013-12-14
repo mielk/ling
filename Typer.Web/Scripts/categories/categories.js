@@ -67,7 +67,7 @@ function initCategoryView() {
 }
 
 
-my.categories = (function () {
+my.categories = my.categories || (function () {
     var root;
 
     function loadRoot() {
@@ -80,6 +80,7 @@ my.categories = (function () {
             success: function (result) {
                 $root = result;
             },
+            cache: false,
             error: function (msg) {
                 alert(msg.status + " | " + msg.statusText);
             }
@@ -175,12 +176,13 @@ my.categories = (function () {
                         node.cancel();
                     } else {
                         node.key = key;
-                        node.object = {
+                        var category = new Category(node.parent.object, {
                             key: key,
                             name: node.name,
-                            parentId: node.parent.key
-                        };
-                        node.parent.addNode(node);
+                            children: {}
+                        });
+                        node.object = category;
+                        node.parent.object.addChild(category);
                     }
                 }
             });

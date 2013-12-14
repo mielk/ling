@@ -21,7 +21,9 @@ namespace Typer.Web
             bundles.Add(new ScriptBundle("~/bundles/global").Include(
                         "~/Scripts/jquery.sizes.js",
                         "~/Scripts/common/util.js",
-                        "~/Scripts/app/global.js"));
+                        "~/Scripts/app/global.js",
+                        "~/Scripts/common/tree.js",
+                        "~/Scripts/common/dropdown.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/notify").Include(
                         "~/Scripts/common/notify.js"));
@@ -37,12 +39,6 @@ namespace Typer.Web
 
             bundles.Add(new ScriptBundle("~/bundles/resend").Include(
                         "~/Scripts/authentication/mailValidation.js"));
-
-            bundles.Add(new ScriptBundle("~/bundles/tree").Include(
-                        "~/Scripts/common/tree.js"));
-
-            bundles.Add(new ScriptBundle("~/bundles/dropdown").Include(
-                                    "~/Scripts/common/dropdown.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/question").Include(
                                     "~/Scripts/question/question.js"));

@@ -76,33 +76,63 @@ namespace Typer.Domain.Services
 
         public bool Deactivate(int id)
         {
+            var category = GetCategory(id);
+            if (category == null) return false;
+
+            var parent = GetCategory(category.ParentId);
+            if (parent != null)
+            {
+                parent.RemoveChild(category);
+            }
+
             return _repository.Deactivate(id);
         }
         public bool UpdateName(Category category, string name)
         {
-            return _repository.UpdateName(category.Id, name);
+            return UpdateName(category.Id, name);
         }
         public bool UpdateName(int id, string name)
         {
+            var category = GetCategory(id);
+            if (category != null)
+            {
+                category.Name = name;
+            }
             return _repository.UpdateName(id, name);
         }
         public bool UpdateParent(Category category, int parentId)
         {
-            return _repository.UpdateParent(category.Id, parentId);
+            return UpdateParent(category.Id, parentId);
         }
         public bool UpdateParent(int id, int parentId)
         {
+            var category = GetCategory(id);
+            if (category != null)
+            {
+                category.ParentId = parentId;
+            }
             return _repository.UpdateParent(id, parentId);
         }
         public int AddCategory(string name, int parentId, int userId)
         {
+
             var dto = new CategoryDto
             {
                 Name = name,
                 ParentId = parentId,
                 IsActive = true
             };
-            return _repository.AddCategory(dto);
+
+            var id = _repository.AddCategory(dto);
+            var category = new Category(id, name, parentId);
+            var parent = GetCategory(parentId);
+            if (parent != null)
+            {
+                parent.AddChild(category);
+            }
+
+            return id;
+
         }
         public Category GetRoot()
         {
