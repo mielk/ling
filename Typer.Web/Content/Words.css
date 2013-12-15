@@ -23,30 +23,6 @@ span
 }
 
 
-input.default
-{
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    width: 100%;
-    color: #222;
-    background-color: rgb(245, 245, 245);
-}
-
-input.default:focus
-{
-    border-color: rgb(56, 71, 120);
-    color: rgb(56, 71, 120);
-    background-color: rgb(186, 210, 223);
-}
-
-
-input[type=submit].centered
-{
-    display: inline;
-    float: none;
-}
-
 .centered
 {
     text-align: center;

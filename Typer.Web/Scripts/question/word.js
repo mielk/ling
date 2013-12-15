@@ -117,11 +117,11 @@ function Metaword(data, properties) {
 
     this.eventHandler = new EventHandler();
 
+    this.validator = new MetawordValidator(this);
+
     this.view = new MetawordView(this, properties.container, properties.x, properties.y);
 
     this.meta = new MetawordMeta(this);
-
-    this.validator = new MetawordView(this);
 
     this.buttons = new MetawordButtons(this);
 
@@ -221,6 +221,9 @@ MetawordView.prototype.display = function () {
     $(this.frame).css({
         'display': 'block'
     });
+
+    this.word.meta.name.focus();
+
 }
 MetawordView.prototype.append = function (element) {
     $(element).appendTo(this.container);
@@ -243,7 +246,9 @@ MetawordValidator.prototype.validation = function (validation) {
     this.checkState();
 }
 MetawordValidator.prototype.checkState = function () {
-    this.word.buttons.enable(this.invalid.size());
+    if (this.word.buttons) {
+        this.word.buttons.enable(this.invalid.size());
+    }
 }
 
 
@@ -300,8 +305,6 @@ function MetawordMeta(metaword) {
     //    right: categoriesEditButton()
     //});
 
-    this.name.focus();
-
 }
 MetawordMeta.prototype.append = function (element) {
     $(element).appendTo($(this.container));
@@ -319,6 +322,10 @@ function DataLine(parent, properties) {
 
     this.parent.append(this.view.container);
 
+    if (this.validation) {
+        this.validate();
+    }
+
 }
 DataLine.prototype.validate = function () {
     var me = this;
@@ -326,12 +333,13 @@ DataLine.prototype.validate = function () {
 
     var isValid = this.validation({
         value: me.getValue(),
-        id: me.property
+        property: me.property,
+        id: me.word.id
     });
 
     this.format(isValid === true);
-    if (!isValid) {
-        $(this.error).text(isValid);
+    if (isValid !== true) {
+        $(this.view.error).text(isValid);
     }
 
     this.word.validator.validation({
@@ -378,7 +386,7 @@ function DataLineView(dataLine, properties) {
         'float': 'left'
     }).appendTo($(this.container)));
 
-    if (this.validation) {
+    if (this.dataLine.validation) {
         this.errorContainer = jQuery('<div/>').addClass('error').appendTo($(this.container));
         this.error = jQuery('<div/>', { 'class': 'error_content' }).appendTo(this.errorContainer);
         this.errorIcon = jQuery('<span/>', {'class': 'icon'}).appendTo($(this.container));
@@ -451,14 +459,14 @@ function DataLineView(dataLine, properties) {
     }
 
 }
-DataLineView.prototype.validate = function (isValid) {
+DataLineView.prototype.format = function (isValid) {
     if (isValid) {
         $(this.value).removeClass('invalid').addClass('valid');
-        $(this.errorContainer).css({ 'visibility': 'hidden' });
+        $(this.errorContainer).css({ 'display': 'none' });
         $(this.errorIcon).removeClass('iconInvalid').addClass('iconValid');
     } else {
         $(this.value).removeClass('valid').addClass('invalid');
-        $(this.errorContainer).css({ 'visibility': 'visible' });
+        $(this.errorContainer).css({ 'display': 'table' });
         $(this.errorIcon).removeClass('iconValid').addClass('iconInvalid');
     }
 
@@ -499,8 +507,8 @@ var nameChecker = (function(){
             url: "/Words/CheckName",
             type: "GET",
             data: {
-                'name': name,
-                'id': id
+                'id': id,
+                'name': name
             },
             datatype: "json",
             async: false,
@@ -777,7 +785,7 @@ function WeightPanelView(panel) {
             html: i + 1
         }).bind({
             'click': function (e) {
-                $(this.icons).trigger({
+                $(me.icons).trigger({
                     'type': 'clickIcon',
                     'weight': (this.id * 1 + 1)
                 });
@@ -825,6 +833,7 @@ WeightPanelView.prototype.setValue = function (value) {
             $(this).removeClass(me.checkedCssClass);
         }
     });
+    $(this.textbox).val(value);
     this.panel.weight = value;
 }
 
