@@ -120,10 +120,61 @@ namespace Typer.DAL.Repositories
 
 
 
+        public bool updateCategories(int wordId, int[] categories){
+
+            try{
+
+                if (!deleteCategories(wordId)) return false;
+
+                for (int i = 0; i < categories.Length; i++){
+                    var categoryId = categories[i];
+
+                    WordCategoryDto dto = new WordCategoryDto
+                    {
+                        CategoryId = categoryId,
+                        MetawordId = wordId,
+                        CreatorId = 1,
+                        CreateDate = DateTime.Now,
+                        IsActive = true
+                    };
+
+                    context.MatchWordCategory.Add(dto);
+                    context.SaveChanges();
+
+                }
+
+                return true;
+
+            } catch (Exception exception){
+                return false;
+            }
+        }
+
+        public bool deleteCategories(int wordId)
+        {
+            try
+            {
+
+                IEnumerable<WordCategoryDto> dtos = context.MatchWordCategory.Where(c => c.MetawordId == wordId);
+                foreach (WordCategoryDto dto in dtos)
+                {
+                    context.MatchWordCategory.Remove(dto);
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+            }
+
+            return false;
+
+        }
 
 
-
-
+        public IEnumerable<WordCategoryDto> getCategories(int metawordId)
+        {
+            return context.MatchWordCategory.Where(m => m.MetawordId == metawordId);
+        }
 
 
         public bool activate(int id)

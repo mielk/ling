@@ -16,6 +16,7 @@ namespace Typer.DAL.Infrastructure
         public DbSet<MetawordDto> Metawords { get; set; }
         public DbSet<WordDto> Words { get; set; }
         public DbSet<CategoryDto> Categories { get; set; }
+        public DbSet<WordCategoryDto> MatchWordCategory { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -27,6 +28,7 @@ namespace Typer.DAL.Infrastructure
             modelBuilder.Entity<MetawordDto>().ToTable("Metawords");
             modelBuilder.Entity<WordDto>().ToTable("Words");
             modelBuilder.Entity<CategoryDto>().ToTable("Categories");
+            modelBuilder.Entity<WordCategoryDto>().ToTable("MatchWordCategory");
         }
 
 

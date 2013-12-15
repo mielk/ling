@@ -73,6 +73,7 @@
     <Compile Include="Entities\UserLoginData.cs" />
     <Compile Include="Entities\UserRegistrationData.cs" />
     <Compile Include="Services\Concrete\UserService.cs" />
+    <Compile Include="Services\Factories\CategoryServiceFactory.cs" />
     <Compile Include="Services\Factories\WordServiceFactory.cs" />
     <Compile Include="Services\Factories\QuestionServiceFactory.cs" />
     <Compile Include="Services\Factories\LanguageServiceFactory.cs" />

@@ -68,7 +68,7 @@ function getLanguages() {
     var _languages;
 
     $.ajax({
-        url: "/Questions/GetLanguages",
+        url: "/Login/GetLanguages",
         type: "GET",
         datatype: "json",
         async: false,
@@ -952,7 +952,7 @@ Language.prototype.isUnique = function (content, optionId) {
     var unique = true;
     this.options.each(function (key, option) {
         if (option.content === content) {
-            if (option.name !== optionId) {
+            if (option.id !== optionId) {
                 unique = false;
             }
         }
@@ -1077,7 +1077,7 @@ function Option(properties) {
 }
 
 Option.prototype.isUniqueContent = function (content) {
-    return this.language.isUnique(content.trim(), this.name);
+    return this.language.isUnique(content.trim(), this.id);
 }
 Option.prototype.update = function (content, weight) {
     this.content = content;

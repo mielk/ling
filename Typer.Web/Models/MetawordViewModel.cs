@@ -12,9 +12,12 @@ namespace Typer.Web.Models
     {
 
         private ILanguageService languageService = LanguageServicesFactory.Instance().getService();
+        private IWordService wordService = WordServicesFactory.Instance().getService();
         public Metaword Metaword { get; set; }
         private int UserId;
         public IEnumerable<MetawordLanguageViewModel> UserLanguages { get; set; }
+        public IEnumerable<Category> Categories { get; set; }
+
 
 
         public MetawordViewModel(Metaword metaword, int userId)
@@ -22,9 +25,15 @@ namespace Typer.Web.Models
             Metaword = metaword;
             UserId = userId;
             UserLanguages = getLanguages();
+            Categories = getCategories(metaword.Id);
         }
 
 
+
+        private IEnumerable<Category> getCategories(int metawordId)
+        {
+            return wordService.getCategories(metawordId);
+        }
 
         private IEnumerable<MetawordLanguageViewModel> getLanguages()
         {

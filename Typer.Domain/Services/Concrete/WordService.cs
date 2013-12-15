@@ -16,6 +16,7 @@ namespace Typer.Domain.Services
 
 
         private readonly IWordsRepository repository;
+        private readonly ICategoryService categoryService = CategoryServicesFactory.Instance().getService();
 
         public WordService(IWordsRepository repository)
         {
@@ -117,6 +118,28 @@ namespace Typer.Domain.Services
         }
 
 
+        public bool updateCategories(int id, int[] categoriesId)
+        {
+            return repository.updateCategories(id, categoriesId);
+        }
+
+        public IEnumerable<Category> getCategories(int metawordId)
+        {
+
+            List<Category> categories = new List<Category>();
+            IEnumerable<WordCategoryDto> dtos = repository.getCategories(metawordId);
+
+            foreach (WordCategoryDto dto in dtos)
+            {
+                Category category = categoryService.GetCategory(dto.CategoryId);
+                categories.Add(category);
+            }
+
+            return categories;
+
+            
+
+        }
 
 
         private Metaword metawordFromDto(MetawordDto dto)

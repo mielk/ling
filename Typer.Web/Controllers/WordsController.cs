@@ -57,15 +57,22 @@ namespace Typer.Web.Controllers
             }
 
 
-
-
-
-
             [AllowAnonymous]
             public ActionResult UpdateWeight(int id, int weight)
             {
                 service.changeWeight(id, weight);
                 return Redirect(Request.UrlReferrer.ToString());
+            }
+
+
+
+
+            [HttpPost]
+            [AllowAnonymous]
+            public ActionResult UpdateCategories(int[] categories, int id)
+            {
+                var result = service.updateCategories(id, categories);
+                return Json(result);
             }
 
 

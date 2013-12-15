@@ -66,14 +66,6 @@ function Tree(properties) {
     this.eventHandler = new EventHandler();
     //Declare events specific for this class.
     this.eventHandler.bind({
-        confirm: function(e) {
-            if (me.mode === MODE.SINGLE) {
-                my.notify.display('Selected: ' + e.item.name, true);
-            } else {
-                my.notify.display(e.item.length + ' item(s) selected', true);
-            }
-            me.cancel();
-        }
         // transfer
         // rename
         // remove
@@ -109,11 +101,20 @@ function Tree(properties) {
     //Initializing function.
     this.root.view.append(this.children);
     this.root.activate();
+    this.initialSelection(properties.selected);
     if (!this.visible) {
         this.hide();
     }
 
 }
+Tree.prototype.initialSelection = function (selected) {
+    if (selected) {
+        for (var i = 0; i < selected.length; i++) {
+            var object = selected[i];
+            object.node.select(true, true, true, true);
+        }
+    }
+};
 Tree.prototype.hide = function() {
     this.view.hide();
 };
@@ -688,7 +689,7 @@ function TreeNavigator(tree) {
             case MODE.MULTI:
                 me.tree.trigger({
                     type: 'confirm',
-                    items: me.tree.root.getSelectedNodes()
+                    item: me.tree.root.getSelectedNodes()
                 });
         }
     }
@@ -741,6 +742,7 @@ function TreeNode(tree, parent, object) {
     this.key = (typeof (object.key) === 'function' ? object.key() : object.key) || '';
     this.name = (typeof (object.name) === 'function' ? object.name() : object.name) || '';
     this.object = object;
+    this.object.node = this;
     this.parent = parent;
     //State variables.
     this.new = false;

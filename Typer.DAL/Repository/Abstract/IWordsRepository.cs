@@ -14,6 +14,7 @@ namespace Typer.DAL.Repositories
         bool updateName(int id, string name);
         bool updateWeight(int id, int weight);
         bool updateProperties(int id, string name, int weight);
+        bool updateCategories(int id, int[] categories);
 
         bool activate(int id);
         bool deactivate(int id);
@@ -21,6 +22,7 @@ namespace Typer.DAL.Repositories
         bool nameExists(int id, string name);
 
         IEnumerable<WordDto> getWords(int metawordId);
+        IEnumerable<WordCategoryDto> getCategories(int metawordId);
         
     }
 }

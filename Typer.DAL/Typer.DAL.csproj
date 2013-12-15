@@ -61,6 +61,7 @@
     <Compile Include="Infrastructure\RepositoryFactory.cs" />
     <Compile Include="TransferObjects\CategoryDto.cs" />
     <Compile Include="TransferObjects\MetawordDto.cs" />
+    <Compile Include="TransferObjects\WordCategoryDto.cs" />
     <Compile Include="TransferObjects\WordDto.cs" />
     <Compile Include="TransferObjects\LanguageDto.cs" />
     <Compile Include="TransferObjects\QuestionDto.cs" />

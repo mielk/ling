@@ -1,51 +1,4 @@
-﻿//var searchData = [
-//    //{ name: 'Europe', countries: ['Polska', 'Albania', 'Luksemburg'] },
-//    //{ name: 'South America', countries: ['Brazil', 'Venezuela', 'Argentina'] },
-//    { name: '7p5C3Z1LORy69e8' },
-//    { name: 'iRaLmh2xovulIoL' },
-//    { name: 'eruKPXbNhhQ619Q' },
-//    { name: '76qVT7AFybcG388' },
-//    { name: 'r5T8W8PdI1oG0qR' },
-//    { name: 'h4Y4Aeibql6TcYO' },
-//    { name: '22JoC7Sg6b75QGA' },
-//    { name: 'yby12QFLqzkWn0m' },
-//    { name: 'oMz6jSb7DnExDc5' },
-//    { name: 'h2wk50JG7B4083q' },
-//    { name: 'jW9sor390vun1oJ' },
-//    { name: '7E4UtMC51G7wyOB' },
-//    { name: 'vt9EVQ8NdQs1AGK' },
-//    { name: 'hzU3a9l48QIiRss' },
-//    { name: 'adVD1N6529ywvE6' },
-//    { name: 'xP7DGjI88F1lCU6' },
-//    { name: 'S6EZj4Ifx0iUDSg' },
-//    { name: '2T6jnUM692eQmC8' },
-//    { name: '174h642GQ7AUIm0' },
-//    { name: 'S7HtTffyH4M4Nif' },
-//    { name: '6QkU8iuw6nYlFE0' },
-//    { name: '2Np3Ar5vZ8ax249' },
-//    { name: 'fJalChxzB4cT773' },
-//    { name: '815Cg1lEZ4U0RoW' },
-//    { name: '5pQPKF254YO0hQW' },
-//    { name: '22Nh5opzCl8FAwZ' },
-//    { name: '2yQ6PEn6lGE6HCs' },
-//    { name: 'c584S0qKSJC68u4' },
-//    { name: '78PcV1BH4bcIe77' },
-//    { name: '204Ha4QEeb748GC' },
-//    { name: '9gmb10VHpjI097a' },
-//    { name: '8sKB2Wn5e6m623a' },
-//    { name: 'rUvxjznyGMSzh2P' },
-//    { name: 'FvJgN2rJgROuP6e' },
-//    { name: 'R5jMRwDXulm3rii' },
-//    { name: 'qVzr7S4sqWWPrWP' },
-//    { name: 'EKi9YUR5VGkA5aj' },
-//    { name: 'Fp2G0ET5iHkCkah' },
-//    { name: 'tDzQETUq125iE6r' },
-//    { name: '49523o3vddgPbk1' }
-//];
-
-
-
-$(function () {
+﻿$(function () {
 
     //Switching off selecting text.
     $(document).
@@ -219,6 +172,7 @@ DropDownFilter.prototype.deactivate = function () {
 DropDownFilter.prototype.clear = function() {
     this.filter = '';
     $(this.textbox).val(this.filter);
+    this.dropdown.optionsManager.clear();
 };
 DropDownFilter.prototype.runFilter = function (append) {
     var manager = this.dropdown.optionsManager;
@@ -647,7 +601,9 @@ DropDownOptionsManager.prototype.filterFromScratch = function(filter) {
     }
 
 };
-
+DropDownOptionsManager.prototype.clear = function () {
+    this.filtered = this.sorted;
+}
 
 function DropDownOption(manager, properties) {
     // ReSharper disable once UnusedLocals

@@ -12,6 +12,7 @@ function Category(parent, properties) {
     };
     
     this.loadChildren(properties.children);
+    my.categories.addToFlyweight(this);
 }
 Category.prototype.addChild = function(category) {
     this.children[category.key] = category;
@@ -27,7 +28,11 @@ Category.prototype.loadChildren = function(children) {
         this.addChild(category);
     }
 };
-
+Category.prototype.path = function () {
+    if (!this.parent) return '';
+    var parentPath = this.parent.path();
+    return parentPath + (parentPath ? ' > ' : '') + this.name;
+}
 
 function categoryProperties(properties) {
     return {        
@@ -69,6 +74,7 @@ function initCategoryView() {
 
 my.categories = my.categories || (function () {
     var root;
+    var flyweight = new HashTable(null);
 
     function loadRoot() {
         var $root;
@@ -186,7 +192,17 @@ my.categories = my.categories || (function () {
                     }
                 }
             });
+        },
+        addToFlyweight: function (category) {
+            flyweight.setItem(category.key, category);
+        },
+        getCategory: function (id) {
+            if (!root) {
+                root = loadRoot();
+            }
+            return flyweight.getItem(id);
         }
+
     };
 
 })();
