@@ -4,12 +4,14 @@ using System.Web.Security;
 using Typer.Domain.Services;
 using Typer.Domain.Entities;
 using Typer.Common.Helpers;
+using System.Collections.Generic;
 
 namespace Typer.Web.Controllers
 {
 
     public class LoginController : Controller
     {
+        private ILanguageService languageService = LanguageServicesFactory.Instance().getService();
         private readonly IUserService userService;
         private readonly IMailSender mailSender;
         private RedirectResult navigationPoint
@@ -345,7 +347,18 @@ namespace Typer.Web.Controllers
         {            
             return PartialView(user);
         }
-        
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult GetLanguages()
+        {
+            User user = (User)HttpContext.Session[Typer.Domain.Entities.User.SESSION_KEY];
+            IEnumerable<Language> languages = languageService.getUserLanguages(user.UserID > 0 ? user.UserID : 1);
+            return Json(languages, JsonRequestBehavior.AllowGet);
+
+        }
+
 
 
     }

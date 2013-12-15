@@ -62,35 +62,30 @@ namespace Typer.Web
                                     "~/Content/categories.css"));
 
             bundles.Add(new StyleBundle("~/Content/tree").Include(
-                        "~/Content/normalize.css",
                         "~/Content/tree.css"));
 
             bundles.Add(new StyleBundle("~/Content/word").Include(
-                        "~/Content/normalize.css",
+                        "~/Content/edit.css",
+                        "~/Content/question.css",
                         "~/Content/words.css"));
 
             bundles.Add(new StyleBundle("~/Content/dropdown").Include(
-                                    "~/Content/normalize.css",
                                     "~/Content/dropdown.css"));
 
             bundles.Add(new StyleBundle("~/Content/question").Include(
-                                    "~/Content/normalize.css",
                                     "~/Content/edit.css",
                                     "~/Content/question.css"));
 
             bundles.Add(new StyleBundle("~/Content/test").Include(
-                        "~/Content/normalize.css",
                         "~/Content/test.css"));
 
             bundles.Add(new StyleBundle("~/Content/user").Include(
                                     "~/Content/userPanel.css"));
 
             bundles.Add(new StyleBundle("~/Content/login").Include(
-                        "~/Content/normalize.css",
                         "~/Content/login.css"));
 
             bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(
-                        "~/Content/normalize.css",
                         "~/Content/themes/base/jquery.ui.core.css",
                         "~/Content/themes/base/jquery.ui.resizable.css",
                         "~/Content/themes/base/jquery.ui.selectable.css",

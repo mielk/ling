@@ -4,13 +4,10 @@
     ViewBag.Title = "List";
     Layout = "~/Views/Shared/_Layout.cshtml";
     @Styles.Render("~/Content/word")
-    @Styles.Render("~/Content/tree")
-    @Styles.Render("~/Content/dropdown")
     @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/bundles/jqueryval")
-    @Scripts.Render("~/bundles/word")
-    @Scripts.Render("~/bundles/tree")
-    @Scripts.Render("~/bundles/dropdown")
+    @Scripts.Render("~/bundles/words")
+    @Scripts.Render("~/bundles/categories")
 }
 
 @*<div id="filter-panel">
@@ -31,11 +28,10 @@
 }
 
 
+
 <div id="add-button-container">
-    @Html.ActionLink("Add", "Add", "Metawords", new { @class = "add" })
+    <a id="add-item" class="add">Add</a> 
 </div>
-
-
 
 
 <div class="pager">

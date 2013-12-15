@@ -3,18 +3,6 @@
     display: block;
 }
 
-label
-{
-    display: table-cell;
-    width: 120px;
-    height: 100%;
-    line-height: 100%;
-    font-size: 13px;
-    font-weight: bold;
-    padding-left: 12px;
-    vertical-align: middle;
-}
-
 fieldset
 {
     border: none;
@@ -238,13 +226,6 @@ div.pager a.selected {
     background-color: rgb(253, 235, 191);
     border: 1px solid rgb(189, 133, 0);
 }
-
-
-
-
-
-
-
 
 
 

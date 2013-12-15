@@ -5,7 +5,7 @@ namespace Typer.DAL.TransferObjects
 {
     public class WordDto
     {
-        [Key()]
+        [Key]
         public int Id { get; set; }
         public int MetawordId { get; set; }
         public int LanguageId { get; set; }

@@ -1,6 +1,6 @@
 ﻿$(function () {
 
-    $('.edit-question').bind({
+    $('.edit-item').bind({
         'click': function () {
             var id = Number(this.innerHTML);
             if ($.isNumeric(id)) {
@@ -9,7 +9,7 @@
         }
     });
 
-    $('#add-question').bind({
+    $('#add-item').bind({
         'click': function () {
 
             var question = new Question({

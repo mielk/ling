@@ -127,17 +127,6 @@ namespace Typer.Web.Controllers
             return Json(questionViewModel, JsonRequestBehavior.AllowGet);
 
         }
-
-
-        [HttpGet]
-        [AllowAnonymous]
-        public ActionResult GetLanguages()
-        {
-            User user = (User) HttpContext.Session[Typer.Domain.Entities.User.SESSION_KEY];
-            IEnumerable<Language> languages = languageService.getUserLanguages(1);//user.UserID);
-            return Json(languages, JsonRequestBehavior.AllowGet);
-
-        }
         
 
     }

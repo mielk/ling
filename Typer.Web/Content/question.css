@@ -47,11 +47,6 @@ div
     font-weight: bold !important;
 }
 
-.events-container
-{
-    display: none;
-}
-
 .question-background
 {
     position: fixed;
