@@ -111,7 +111,8 @@ function Metaword(data, properties) {
     this.name = this.object.Name || '';
     this.weight = this.object.Weight || 1;
     this.categories = [];
-    this.languages = this.createLanguageCollection(data.UserLanguages);
+    this.blockOtherElements = properties.blockOtherElements;
+    
     this.properties = properties || {};
     this.type = TYPE.getItem(this.object.Type);
 
@@ -123,8 +124,9 @@ function Metaword(data, properties) {
 
     this.meta = new MetawordMeta(this);
 
-    this.buttons = new MetawordButtons(this);
+    this.languages = this.createLanguageCollection(data.UserLanguages);
 
+    this.buttons = new MetawordButtons(this);
 
 }
 Metaword.prototype.categoriesString = function () {
@@ -139,7 +141,7 @@ Metaword.prototype.createLanguageCollection = function (languages) {
     var arr = [];
     for (var i = 0; i < languages.length; i++) {
         var languageJson = languages[i];
-        arr[i] = new Language({
+        arr[i] = new Language(this, {
             id: languageJson.Language.Id,
             name: languageJson.Language.Name,
             flag: languageJson.Language.Flag,
@@ -150,10 +152,11 @@ Metaword.prototype.createLanguageCollection = function (languages) {
     return arr;
 }
 Metaword.prototype.cancel = function () {
-    //Cancel.
+    this.view.destroy();
 }
 Metaword.prototype.confirm = function () {
-    //Confirm.
+    alert('Confirmed');
+    this.view.destroy();
 }
 Metaword.prototype.displayEditForm = function () {
     this.view.display();
@@ -163,7 +166,7 @@ Metaword.prototype.displayEditForm = function () {
 function MetawordView(metaword, container, x, y) {
     var me = this;
     this.word = metaword;
-    this.blockOther = (container ? true : false);
+    this.blockOtherElements = this.word.blockOtherElements;
 
     this.background = container || jQuery('<div/>', {
                             id: 'question-background',
@@ -193,7 +196,7 @@ function MetawordView(metaword, container, x, y) {
             }).
             bind({
                 'click': function () {
-                    //Cancel.
+                    me.word.cancel();
                 }
             }).
             appendTo($(this.background));
@@ -210,7 +213,7 @@ function MetawordView(metaword, container, x, y) {
 }
 MetawordView.prototype.destroy = function () {
     $(this.background).empty();
-    if (this.blockOther) {
+    if (this.blockOtherElements) {
         $(this.background).remove();
     }
 }
@@ -247,7 +250,7 @@ MetawordValidator.prototype.validation = function (validation) {
 }
 MetawordValidator.prototype.checkState = function () {
     if (this.word.buttons) {
-        this.word.buttons.enable(this.invalid.size());
+        this.word.buttons.enable(this.invalid.size() === 0);
     }
 }
 
@@ -574,13 +577,14 @@ MetawordButtons.prototype.enable = function (value) {
     if (value) {
         $(this.ok).removeAttr('disabled');
     } else {
-        $(this.ok).attr('disable', 'disabled');
+        $(this.ok).attr('disabled', 'disabled');
     }
 }
 
 
-function Language(properties) {
+function Language(parent, properties) {
     var me = this;
+    this.parent = parent;
     this.id = properties.id;
     this.name = properties.name;
     this.flag = properties.image;
@@ -625,8 +629,6 @@ Language.prototype.isUnique = function (content, optionId) {
 }
 
 
-
-
 function LanguageView(language) {
 
     var me = this;
@@ -643,7 +645,7 @@ function LanguageView(language) {
     }).appendTo($(this.container));
 
 
-    this.collapse = jQuery('<div/>', {
+    this.collapseButton = jQuery('<div/>', {
         'class': 'collapse'
     }).bind({
         'click': function () {
@@ -707,6 +709,10 @@ function LanguageView(language) {
         }
     }).appendTo($(this.buttons));
 
+    this.refreshOptionsPanel();
+
+    this.language.parent.view.append($(this.container));
+
 }
 LanguageView.prototype.collapse = function(){
     this.isCollapsed = true;
@@ -720,14 +726,12 @@ LanguageView.prototype.collapse = function(){
 LanguageView.prototype.expand = function(){
     this.isCollapsed = false;
     this.refreshOptionsPanel();
-    $(this.options).css({
-        'display': 'block'
-    });
     $(this.buttons).css({
         'display': 'block'
     });
 };
-LanguageView.prototype.refreshOptionsPanel = function(){
+LanguageView.prototype.refreshOptionsPanel = function () {
+    var me = this;
     $(this.options).css({
         'display': (me.language.options.size() ? 'block' : 'none')
     });
