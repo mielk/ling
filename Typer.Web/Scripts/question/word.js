@@ -59,8 +59,9 @@ $(function () {
     $('.edit-item').bind({
         'click': function () {
             var id = Number(this.innerHTML);
+            var listLine = $(this).parent();
             if ($.isNumeric(id)) {
-                editMetaword(id);
+                editMetaword(id, listLine);
             }
         }
     });
@@ -84,11 +85,12 @@ $(function () {
 });
 
 
-function editMetaword(id) {
+function editMetaword(id, listLine) {
     var metawordJson = getItem('/Words/GetMetaword', id);
     var metaword = new Metaword(metawordJson, {
-                        blockOtherElements: true
-                    });
+        blockOtherElements: true,
+        listLine: listLine
+    });
     metaword.displayEditForm();
 }
 
@@ -168,6 +170,7 @@ function Metaword(data, properties) {
     this.name = this.object.Name || '';
     this.weight = this.object.Weight || 1;
     this.categories = this.initialCategoryCollection(data.Categories);
+    this.listLine = properties.listLine;
     
     this.properties = properties || {};
     this.type = TYPE.getItem(this.object.Type);
@@ -190,6 +193,12 @@ function Metaword(data, properties) {
                 my.words.updateCategory(e);
             }
             
+        },
+        refreshCategories: function () {
+            me.updateCategoriesString();
+            if (me.listLine) {
+                $(me.listLine).find('.categories').html(me.categoriesString);
+            }
         }
     });
 
@@ -210,13 +219,13 @@ function Metaword(data, properties) {
     })();
 
 }
-Metaword.prototype.categoriesString = function () {
+Metaword.prototype.updateCategoriesString = function () {
     var s = '';
     for (var i = 0; i < this.categories.length; i++) {
         var category = this.categories[i];
         s = s + (s ? ' | ' : '') + category.path();
     }
-    return s;
+    this.categoriesString = s;
 };
 Metaword.prototype.initialCategoryCollection = function (collection) {
     var array = [];
@@ -1030,7 +1039,7 @@ function CategoryPanelView(parent) {
     });
 }
 CategoryPanelView.prototype.refresh = function() {
-    $(this.value).html(this.parent.word.categoriesString());
+    $(this.value).html(this.parent.word.categoriesString);
 };
 
 

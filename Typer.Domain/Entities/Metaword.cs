@@ -50,7 +50,7 @@ namespace Typer.Domain.Entities
             get
             {
                 var categoriesString = string.Empty;
-                var categories = QuestionServicesFactory.Instance().GetService().GetCategories(Id);
+                var categories = WordServicesFactory.Instance().GetService().GetCategories(Id);
                 categoriesString = categories.Aggregate(categoriesString, (current, category) => current + ((current.Length > 0 ? " | " : string.Empty) + category.FullPath()));
                 return (categoriesString.Length == 0 ? "not assigned" : categoriesString);
             }

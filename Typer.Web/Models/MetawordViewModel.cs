@@ -29,7 +29,8 @@ namespace Typer.Web.Models
 
         private IEnumerable<Category> GetCategories(int metawordId)
         {
-            return _wordService.GetCategories(metawordId);
+            var categories = _wordService.GetCategories(metawordId);
+            return categories;
         }
 
         private IEnumerable<MetawordLanguageViewModel> GetLanguages()

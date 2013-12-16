@@ -186,7 +186,7 @@ function Question(data, properties) {
             }
 
         },
-        refreshCategories: function (e) {
+        refreshCategories: function () {
             me.updateCategoriesString();
             if (me.listLine) {
                 $(me.listLine).find('.categories').html(me.categoriesString);
