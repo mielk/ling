@@ -6,7 +6,7 @@ namespace Typer.DAL.TransferObjects
     public class QuestionOptionDto
     {
 
-		[Key()]
+		[Key]
         public int Id { get; set; }
         public int QuestionId { get; set; }
         public int LanguageId { get; set; }

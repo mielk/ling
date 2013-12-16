@@ -10,10 +10,10 @@ namespace Typer.Web.Controllers
 
     public class LoginController : Controller
     {
-        private ILanguageService languageService = LanguageServicesFactory.Instance().getService();
-        private readonly IUserService userService;
-        private readonly IMailSender mailSender;
-        private RedirectResult navigationPoint
+        private readonly ILanguageService _languageService = LanguageServicesFactory.Instance().GetService();
+        private readonly IUserService _userService;
+        private readonly IMailSender _mailSender;
+        private RedirectResult NavigationPoint
         {
             get { return Session["LoginControllerNavigationPoint"] as RedirectResult; }
             set { Session["LoginControllerNavigationPoint"] = value; }
@@ -22,14 +22,14 @@ namespace Typer.Web.Controllers
 
         public LoginController(IUserService userService, IMailSender mailSender)
         {
-            this.userService = userService;
-            this.mailSender = mailSender;
+            _userService = userService;
+            _mailSender = mailSender;
         }
 
 
-        private void setNavigationPoint()
+        private void SetNavigationPoint()
         {
-            navigationPoint = Request.UrlReferrer == null ? null : Redirect(Request.UrlReferrer.ToString());
+            NavigationPoint = Request.UrlReferrer == null ? null : Redirect(Request.UrlReferrer.ToString());
         }
 
 
@@ -44,7 +44,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult Login()
         {
-            setNavigationPoint();
+            SetNavigationPoint();
             return View();
         }
 
@@ -53,38 +53,23 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult Login(UserLoginData data)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(data);
+            var user = _userService.GetUser(data);
+
+            if (user == null)
             {
-
-                var user = userService.getUser(data);
-
-                if (user == null)
+                ModelState.AddModelError("", "Login or password is incorrect. Please try again.");
+            }
+            else
+            {
+                if (!user.MailVerified) return RedirectToAction("InactiveMail", "Login");
+                FormsAuthentication.SetAuthCookie(data.Username, false);
+                HttpContext.Session[Domain.Entities.User.SessionKey] = user;
+                if (NavigationPoint != null)
                 {
-                    ModelState.AddModelError("", "Login or password is incorrect. Please try again.");
+                    return NavigationPoint;
                 }
-                else
-                {
-                    
-                    if (user.MailVerified)
-                    {
-                        FormsAuthentication.SetAuthCookie(data.Username, false);
-                        HttpContext.Session[Domain.Entities.User.SESSION_KEY] = user;
-                        if (navigationPoint != null)
-                        {
-                            return navigationPoint;
-                        }
-                        else
-                        {
-                            return RedirectToAction("Test", "Home");
-                        }
-                    }
-                    else
-                    {
-                        return RedirectToAction("InactiveMail", "Login");
-                    }
-
-                }
-
+                return RedirectToAction("Test", "Home");
             }
             return View(data);
         }
@@ -93,7 +78,7 @@ namespace Typer.Web.Controllers
         public ActionResult Logout()
         {
             FormsAuthentication.SignOut();
-            HttpContext.Session[Domain.Entities.User.SESSION_KEY] = null;
+            HttpContext.Session[Domain.Entities.User.SessionKey] = null;
             return RedirectToAction("Index", "Home");
         }
 
@@ -108,7 +93,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            setNavigationPoint();
+            SetNavigationPoint();
             return View();
         }
 
@@ -117,28 +102,13 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult Register(UserRegistrationData data)
         {
+            if (!ModelState.IsValid) return View(data);
+            if (!data.IsValid()) return View(data);
+            var user = data.ToUser();
 
-            if (ModelState.IsValid)
-            {
-                if (data.isValid())
-                {
-
-                    var user = data.toUser();
-
-                    if (userService.addUser(user))
-                    {
-                        sendConfirmationMail(user);
-                        return View("AccountCreated", user);
-                    }
-                    else
-                    {
-                        return View("AccountCreationError", user);
-                    }
-                }
-            }
-
-            return View(data);
-
+            if (!_userService.AddUser(user)) return View("AccountCreationError", user);
+            SendConfirmationMail(user);
+            return View("AccountCreated", user);
         }
 
 
@@ -153,17 +123,13 @@ namespace Typer.Web.Controllers
         public ActionResult NavigateToHomePage()
         {
 
-            var url = navigationPoint;
+            var url = NavigationPoint;
 
             if (url != null)
             {
                 return url;
             }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
+            return RedirectToAction("Index", "Home");
         }
 
 
@@ -171,7 +137,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult CheckUsername(string username)
         {
-            var isExisting = userService.userExists(username);
+            var isExisting = _userService.UserExists(username);
             return Json(new { IsExisting = isExisting }, JsonRequestBehavior.AllowGet);
         }
 
@@ -179,9 +145,9 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult CheckMail(string mail)
         {
-            var user = userService.getUserByMail(mail);
-            var isExisting = (user == null ? false : true);
-            var isVerified = (user == null ? false : user.MailVerified);
+            var user = _userService.GetUserByMail(mail);
+            var isExisting = (user != null);
+            var isVerified = (user != null && user.MailVerified);
             return Json(new
             {
                 IsExisting = isExisting,
@@ -190,13 +156,13 @@ namespace Typer.Web.Controllers
         }
 
 
-        private bool sendConfirmationMail(User user)
+        private bool SendConfirmationMail(User user)
         {
-            return mailSender.Send(user.Email, "Account created", createVerificationMailContent(user));
+            return _mailSender.Send(user.Email, "Account created", CreateVerificationMailContent(user));
         }
 
 
-        private string createVerificationMailContent(User user)
+        private string CreateVerificationMailContent(User user)
         {
             var url = Url.Action("Verify", "Login", new { username = user.Username, token = user.VerificationCode }, "https");
             var content = string.Format(@"We have received the request for account at Typer.com for username {0}<br /><a href=""{1}"">Please click here to activate your account.</a>", user.Username, url);
@@ -204,29 +170,25 @@ namespace Typer.Web.Controllers
         }
 
 
-        private bool sendNewPassword(User user)
+        private bool SendNewPassword(User user)
         {
-            var pswd = generatePassword(12);
-            var encryptedPassword = SHA1.Encode(pswd);
+            var pswd = GeneratePassword(12);
+            var encryptedPassword = Sha1.Encode(pswd);
 
-            if (!userService.resetPassword(user, encryptedPassword))
+            if (!_userService.ResetPassword(user, encryptedPassword))
                 return false;
 
-            if (!mailSender.Send(user.Email, "New password", createPasswordMailContent(user, pswd)))
-                return false;
-
-            return true;
-
+            return _mailSender.Send(user.Email, "New password", CreatePasswordMailContent(user, pswd));
         }
 
 
-        private string generatePassword(int length)
+        private static string GeneratePassword(int length)
         {
             return Guid.NewGuid().ToString().Replace("-", "").Substring(0, length);
         }
 
 
-        private string createPasswordMailContent(User user, string password)
+        private static string CreatePasswordMailContent(User user, string password)
         {
             return "Password recovery" + "<br />" + 
                    "User: " + user.Username + "<br />" + 
@@ -255,14 +217,10 @@ namespace Typer.Web.Controllers
         public ActionResult InactiveMail(UserRegistrationData data)
         {
 
-            var user = userService.getUserByMail(data.Email);
-            var emailSent = sendConfirmationMail(user);
-            
-            if (emailSent){
-                return View("MailSent", user);
-            } else {
-                return View("ValidationMailSendingError", user);
-            }
+            var user = _userService.GetUserByMail(data.Email);
+            var emailSent = SendConfirmationMail(user);
+
+            return View(emailSent ? "MailSent" : "ValidationMailSendingError", user);
         }
 
 
@@ -271,7 +229,7 @@ namespace Typer.Web.Controllers
         public ViewResult Verify(string username, string token)
         {
 
-            var user = userService.getUserByName(username);
+            var user = _userService.GetUserByName(username);
 
             if (user == null)
                 //User prawdopodobnie został skasowany, bo za długo zwlekał z aktywacją konta.
@@ -280,7 +238,7 @@ namespace Typer.Web.Controllers
             if (token == user.VerificationCode)
             {
 
-                if (userService.verifyMail(user.UserID))
+                if (_userService.VerifyMail(user.UserID))
                 {
                     //Konto zostało aktywowane.
                     //Pokaż ekran z informacją o aktywacji konta.
@@ -291,7 +249,7 @@ namespace Typer.Web.Controllers
 
             //Problem podczas weryfikacji konta.
             //Wysłanie jeszcze jednego maila.
-            userService.resetVerificationCode(user.UserID);
+            _userService.ResetVerificationCode(user.UserID);
             return View("AccountActivationError", user);
 
         }
@@ -316,21 +274,18 @@ namespace Typer.Web.Controllers
         public ActionResult ResetPassword(UserRegistrationData data)
         {
 
-            var user = userService.getUserByMail(data.Email);
+            var user = _userService.GetUserByMail(data.Email);
             if (user == null || user.Email != data.Email)
             {
                 ViewBag.Message = "User name or password are incorrect";
             }
             else
             {
-                if (sendNewPassword(user))
+                if (SendNewPassword(user))
                 {
                     return View("ResetPasswordSuccess", user);
                 }
-                else
-                {
-                    ViewBag.Message = "Please try again in a few minutes";
-                }
+                ViewBag.Message = "Please try again in a few minutes";
             }
 
             return View("ResetPasswordError");
@@ -352,8 +307,8 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult GetLanguages()
         {
-            var user = (User)HttpContext.Session[Domain.Entities.User.SESSION_KEY];
-            var languages = languageService.getUserLanguages(user.UserID > 0 ? user.UserID : 1);
+            var user = (User)HttpContext.Session[Domain.Entities.User.SessionKey];
+            var languages = _languageService.GetUserLanguages(user.UserID > 0 ? user.UserID : 1);
             return Json(languages, JsonRequestBehavior.AllowGet);
 
         }

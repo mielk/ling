@@ -16,7 +16,7 @@ namespace Typer.Domain.Entities
             }
             set
             {
-                username = (value == null ? value : value.ToLower());
+                username = (value == null ? null : value.ToLower());
             }
         }
 

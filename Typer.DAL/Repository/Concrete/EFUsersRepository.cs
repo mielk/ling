@@ -3,115 +3,116 @@ using System.Linq;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.TransferObjects;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.DAL.Repositories
 {
     public class EFUsersRepository : IUsersRepository
     {
 
-        private static readonly EFDbContext context = EFDbContext.GetInstance();
+        private static readonly EFDbContext Context = EFDbContext.GetInstance();
 
 
 
 
-        public UserDto getUser(int userID)
+        public UserDto GetUser(int userID)
         {
-            return context.Users.Single(u => u.UserID == userID);
+            return Context.Users.Single(u => u.UserID == userID);
         }
 
-        public UserDto getUser(string username)
+        public UserDto GetUser(string username)
         {
-            return context.Users.SingleOrDefault(u => u.Username == username);
+            return Context.Users.SingleOrDefault(u => u.Username == username);
         }
 
-        public UserDto getUser(string username, string password)
+        public UserDto GetUser(string username, string password)
         {
-            return context.Users.SingleOrDefault(u => u.Username == username && u.Password == password && u.IsActive == true);
+            return Context.Users.SingleOrDefault(u => u.Username == username && u.Password == password && u.IsActive);
         }
 
-        public UserDto getUserByMail(string mail)
+        public UserDto GetUserByMail(string mail)
         {
-            return context.Users.SingleOrDefault(u => u.Email == mail);
+            return Context.Users.SingleOrDefault(u => u.Email == mail);
         }
 
 
 
 
-        public bool userExists(string username)
+        public bool UserExists(string username)
         {
-            var count = context.Users.Count(u => u.Username == username);
+            var count = Context.Users.Count(u => u.Username == username);
             return (count > 0);
         }
 
-        public bool userExists(string username, string password)
+        public bool UserExists(string username, string password)
         {
-            var count = context.Users.Count(u => u.Username == username && u.Password == password);
+            var count = Context.Users.Count(u => u.Username == username && u.Password == password);
             return (count > 0);
         }
 
-        public bool mailExists(string mail)
+        public bool MailExists(string mail)
         {
-            var records = context.Users.Count(u => u.Email == mail);
-            return (records > 0 ? true : false);
+            var records = Context.Users.Count(u => u.Email == mail);
+            return (records > 0);
         }
 
-        public bool addUser(UserDto user)
+        public bool AddUser(UserDto user)
         {
             try
             {
-                context.Users.Add(user);
-                context.SaveChanges();
+                Context.Users.Add(user);
+                Context.SaveChanges();
                 return true;
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 return false;
             }
         }
 
 
-        public bool verifyMail(int userId)
+        public bool VerifyMail(int userId)
         {
             try
             {
-                var user = getUser(userId);
+                var user = GetUser(userId);
                 user.MailVerified = true;
                 user.VerificationDate = DateTime.Now;
-                context.SaveChanges();
+                Context.SaveChanges();
                 return true;
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 return false;
             }
         }
 
-        public bool resetVerificationCode(int userId, string code)
+        public bool ResetVerificationCode(int userId, string code)
         {
             try
             {
-                var user = getUser(userId);
+                var user = GetUser(userId);
                 user.MailVerified = false;
                 user.VerificationDate = null;
                 user.VerificationCode = code;
-                context.SaveChanges();
+                Context.SaveChanges();
                 return true;
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 return false;
             }
         }
 
-        public bool resetPassword(int userId, string password)
+        public bool ResetPassword(int userId, string password)
         {
             try
             {
-                var user = getUser(userId);
+                var user = GetUser(userId);
                 user.Password = password;
-                context.SaveChanges();
+                Context.SaveChanges();
                 return true;
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 return false;
             }

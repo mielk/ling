@@ -1,4 +1,61 @@
-﻿$(function () {
+﻿my.questions = my.questions || (function () {
+
+    function dbOperation(properties) {
+        $.ajax({
+            url: "/Questions/" + properties.functionName,
+            type: "POST",
+            data: properties.data,
+            datatype: "json",
+            async: false,
+            traditional: properties.traditional || false,
+            success: function (result) {
+                my.notify.display(result ? properties.success : properties.error, result);
+                if (properties.callback) {
+                    properties.callback(result);
+                }
+            },
+            error: function (msg) {
+                my.notify.display(properties.error + ' (' + msg.status + ')', false);
+                if (properties.callback) {
+                    properties.callback(false);
+                }
+            }
+        });
+    }
+
+    return {
+        updateCategory: function (e) {
+
+            var categoriesIds = [];
+            var categoriesNames = '';
+            for (var key in e.items) {
+                if (e.items.hasOwnProperty(key)) {
+                    var category = e.items[key];
+                    categoriesIds.push(category.key);
+                    categoriesNames += (categoriesNames ? ', ' : '') + category.object.path();
+                }
+            }
+
+            dbOperation({
+                functionName: 'UpdateCategories',
+                data: {
+                    'id': e.question.id,
+                    'categories': categoriesIds
+                },
+                traditional: true,
+                success: 'Categories ' + categoriesNames + ' have been assigned to question ' + e.question.name,
+                error: 'Error when trying to assign the given categories to question ' + e.question.name,
+                // ReSharper disable once UnusedParameter
+                callback: e.callback
+            });
+
+        }
+    };
+
+})();
+
+
+$(function () {
 
     $('.edit-item').bind({
         'click': function () {
@@ -107,7 +164,21 @@ function Question(data, properties) {
     this.properties = properties || {};
 
     this.eventHandler = new EventHandler();
-    this.eventHandler.bind({});
+    this.eventHandler.bind({
+        changeCategory: function (e) {
+            e.question = me;
+            e.callback = function (result) {
+                if (result) {
+                    me.categories.length = 0;
+                    for (var i = 0; i < e.items.length; i++) {
+                        me.categories.push(e.items[i].object);
+                    }
+                    me.trigger({ type: 'refreshCategories' });
+                }
+            };
+            my.questions.updateCategory(e);
+        }
+    });
 
     this.validator = new QuestionValidator(this);
 
@@ -151,7 +222,7 @@ Question.prototype.createLanguageCollection = function (languages) {
             id: languageJson.Language.Id,
             name: languageJson.Language.Name,
             flag: languageJson.Language.Flag,
-            words: languageJson.Words
+            options: languageJson.Options
         });
     }
 
@@ -295,7 +366,7 @@ function QuestionMeta(question) {
         label: 'Weight',
         validation: null,
         editable: false,
-        value: (new WeightPanel(10, me.word.weight)).view.container
+        value: (new WeightPanel(10, me.question.weight)).view.container
     });
 
     var categoryPanel = new CategoryPanel(this);
@@ -512,7 +583,7 @@ var nameChecker = (function () {
 
     function nameAlreadyExists(name, id) {
         $.ajax({
-            url: "/Words/CheckName",
+            url: "/Questions/CheckName",
             type: "GET",
             data: {
                 'id': id,
@@ -872,10 +943,10 @@ CategoryPanel.prototype.selectCategories = function () {
         'hidden': true
     });
 
-    tree.reset({ unselect: true, collapse: false });
+    tree.reset({ unselect: false, collapse: false });
     tree.eventHandler.bind({
         confirm: function (e) {
-            me.parent.word.trigger({
+            me.parent.question.trigger({
                 'type': 'changeCategory',
                 'items': e.item
             });
@@ -1095,18 +1166,18 @@ function EditPanel(properties) {
         var name = (function () {
             var timer;
 
-            var _container = jQuery('<div/>', {
+            var container = jQuery('<div/>', {
                 'class': 'line'
             }).appendTo($($frame));
 
             var $label = jQuery('<div/>', {
                 'class': 'label',
                 html: 'Name'
-            }).appendTo($(_container));
+            }).appendTo($(container));
 
             var $error = jQuery('<div/>', {
                 'class': 'error'
-            }).appendTo($(_container));
+            }).appendTo($(container));
 
             var $errorContent = jQuery('<div/>', {
                 'class': 'error-content'
@@ -1114,7 +1185,7 @@ function EditPanel(properties) {
 
             var $statusIcon = jQuery('<span/>', {
                 'class': 'icon'
-            }).appendTo($(_container));
+            }).appendTo($(container));
 
             var $textbox = jQuery('<input/>', {
                 'type': 'text',
@@ -1152,7 +1223,7 @@ function EditPanel(properties) {
                     'click': function () {
                         $textbox.focus();
                     }
-                }).appendTo($(_container)));
+                }).appendTo($(container)));
 
 
             function _valid(){

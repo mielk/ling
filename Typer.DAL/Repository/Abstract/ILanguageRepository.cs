@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using Typer.DAL.TransferObjects;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.DAL.Repositories
 {
     public interface ILanguageRepository
     {
-        IEnumerable<LanguageDto> getLanguages();
-        LanguageDto getLanguage(int id);
-        IEnumerable<LanguageDto> getUserLanguages(int userId);
+        IEnumerable<LanguageDto> GetLanguages();
+        LanguageDto GetLanguage(int id);
+        IEnumerable<LanguageDto> GetUserLanguages(int userId);
     }
 }

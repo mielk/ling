@@ -5,6 +5,7 @@ using Ninject;
 using Ninject.Syntax;
 
 
+// ReSharper disable once CheckNamespace
 namespace Typer.Web
 {
 
@@ -13,29 +14,29 @@ namespace Typer.Web
     public class NinjectDependencyScope : IDependencyScope
     {
 
-        private IResolutionRoot resolver;
+        private IResolutionRoot _resolver;
 
         public NinjectDependencyScope(IResolutionRoot resolver)
         {
-            this.resolver = resolver;
+            _resolver = resolver;
         }
 
         public object GetService(Type serviceType)
         {
-            if (resolver == null)
+            if (_resolver == null)
             {
                 throw new ObjectDisposedException("this", "This scope has been disposed");
             }
 
-            return resolver.TryGet(serviceType);
+            return _resolver.TryGet(serviceType);
         }
 
         public IEnumerable<object> GetServices(Type serviceType)
         {
-            if (resolver == null)
+            if (_resolver == null)
                 throw new ObjectDisposedException("this", "This scope has been disposed");
 
-            return resolver.GetAll(serviceType);
+            return _resolver.GetAll(serviceType);
         }
 
         public void Dispose()
@@ -46,13 +47,13 @@ namespace Typer.Web
 
         protected virtual void Dispose(bool disposing)
         {
-            var disposable = resolver as IDisposable;
+            var disposable = _resolver as IDisposable;
             if (disposable != null)
             {
                 disposable.Dispose();
             }
 
-            resolver = null;
+            _resolver = null;
         }
 
     }

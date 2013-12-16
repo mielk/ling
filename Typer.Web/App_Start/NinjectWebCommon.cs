@@ -5,6 +5,7 @@ using WebActivator;
 [assembly: PreApplicationStartMethod(typeof(NinjectWebCommon), "Start")]
 [assembly: ApplicationShutdownMethod(typeof(NinjectWebCommon), "Stop")]
 
+// ReSharper disable once CheckNamespace
 namespace Typer.Web
 {
     using System;

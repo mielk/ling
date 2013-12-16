@@ -6,23 +6,21 @@ namespace Typer.Web.Binders
 {
     public class UserModelBinder : IModelBinder
     {
-        private const string sessionKey = "User";
+        private const string SessionKey = "User";
 
 
         public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
         {
             // get the Cart from the session
-            var user = (User)controllerContext.HttpContext.Session[sessionKey];
+            if (controllerContext.HttpContext.Session == null) return null;
+            var user = (User)controllerContext.HttpContext.Session[SessionKey];
 
             // create the Cart if there wasn't one in the session data
-            if (user == null)
-            {
-                user = new User();
-                controllerContext.HttpContext.Session[sessionKey] = user;
-            }
+            if (user != null) return user;
+            user = new User();
+            controllerContext.HttpContext.Session[SessionKey] = user;
             // return the cart
             return user;
         }
-
     }
 }

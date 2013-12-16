@@ -6,7 +6,7 @@ namespace Typer.Domain.Entities
     public class User
     {
 
-        public const string SESSION_KEY = "User";
+        public const string SessionKey = "User";
 
         #region Instance properties.
         //
@@ -24,7 +24,7 @@ namespace Typer.Domain.Entities
             }
             set
             {
-                username = (value == null ? value : value.ToLower());
+                username = (value == null ? null : value.ToLower());
             }
         }
 

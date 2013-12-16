@@ -56,7 +56,7 @@ namespace Typer.Domain.Entities
         private IEnumerable<Word> _words;
         public IEnumerable<Word> Words
         {
-            get { return _words ?? (_words = WordServicesFactory.Instance().getService().GetWords(Id)); }
+            get { return _words ?? (_words = WordServicesFactory.Instance().GetService().GetWords(Id)); }
         }
         public IEnumerable<Word> GetWords(int languageId)
         {

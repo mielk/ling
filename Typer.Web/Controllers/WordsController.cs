@@ -10,13 +10,14 @@ namespace Typer.Web.Controllers
 
             private readonly IWordService _service;
             public int PageSize = 10;
-/*
+
+            // ReSharper disable once UnusedMember.Local
             private RedirectResult NavigationPoint
             {
                 get { return Session["EditControllerNavigationPoint"] as RedirectResult; }
                 set { Session["EditControllerNavigationPoint"] = value; }
             }
-*/
+
 
 
 
@@ -125,7 +126,7 @@ namespace Typer.Web.Controllers
             [AllowAnonymous]
             public ActionResult GetMetaword(int id)
             {
-                var user = (User)HttpContext.Session[Domain.Entities.User.SESSION_KEY];
+                var user = (User)HttpContext.Session[Domain.Entities.User.SessionKey];
                 var metaword = _service.GetMetaword(id);
                 var metawordViewModel = new MetawordViewModel(metaword, user.UserID > 0 ? user.UserID : 1);
                 return Json(metawordViewModel, JsonRequestBehavior.AllowGet);

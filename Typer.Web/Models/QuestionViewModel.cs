@@ -8,8 +8,8 @@ namespace Typer.Web.Models
     public class QuestionViewModel
     {
 
-        private readonly ILanguageService _languageService = LanguageServicesFactory.Instance().getService();
-        private readonly IQuestionService _questionService = QuestionServicesFactory.Instance().getService();
+        private readonly ILanguageService _languageService = LanguageServicesFactory.Instance().GetService();
+        private readonly IQuestionService _questionService = QuestionServicesFactory.Instance().GetService();
         public Question Question { get; set; }
         private readonly int _userId;
         public IEnumerable<QuestionLanguageViewModel> UserLanguages { get; set; }
@@ -33,7 +33,7 @@ namespace Typer.Web.Models
         private IEnumerable<QuestionLanguageViewModel> GetLanguages()
         {
             if (_userId <= 0) return null;
-            var languages = _languageService.getUserLanguages(_userId);
+            var languages = _languageService.GetUserLanguages(_userId);
             return languages.Select(language => new QuestionLanguageViewModel(Question, language)).ToList();
         }
 

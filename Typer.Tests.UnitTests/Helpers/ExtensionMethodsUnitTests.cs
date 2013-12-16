@@ -12,7 +12,7 @@ namespace Typer.Tests.UnitTests.Helpers
         public void IsNullOrEmpty_returns_true_for_null_string()
         {
             String s = null;
-            Assert.IsTrue(s.isNullOrEmpty());
+            Assert.IsTrue(s.IsNullOrEmpty());
         }
 
 
@@ -20,15 +20,15 @@ namespace Typer.Tests.UnitTests.Helpers
         public void IsNullOrEmpty_returns_true_for_empty_string()
         {
             var s = string.Empty;
-            Assert.IsTrue(s.isNullOrEmpty());
+            Assert.IsTrue(s.IsNullOrEmpty());
         }
 
 
         [TestMethod]
         public void IsNullOrEmpty_returns_false_for_non_empty_string()
         {
-            var s = "a";
-            Assert.IsFalse(s.isNullOrEmpty());
+            const string s = "a";
+            Assert.IsFalse(s.IsNullOrEmpty());
         }
 
 
@@ -40,7 +40,7 @@ namespace Typer.Tests.UnitTests.Helpers
 
             foreach (var mail in illegalMails)
             {
-                Assert.IsFalse(mail.isLegalMail());
+                Assert.IsFalse(mail.IsLegalMail());
             }
 
         }
@@ -53,7 +53,7 @@ namespace Typer.Tests.UnitTests.Helpers
 
             foreach (var mail in legalMails)
             {
-                Assert.IsTrue(mail.isLegalMail());
+                Assert.IsTrue(mail.IsLegalMail());
             }
 
         }
@@ -62,25 +62,22 @@ namespace Typer.Tests.UnitTests.Helpers
         [TestMethod]
         public void ToRange_number_in_range_returns_the_same_number()
         {
-            var number = 5;
+            const int number = 5;
             Assert.AreEqual(5, number.ToRange(1, 10));
         }
 
         [TestMethod]
         public void ToRange_lower_number_returns_low_bound()
         {
-            var number = -1;
+            const int number = -1;
             Assert.AreEqual(1, number.ToRange(1, 10));
         }
 
         [TestMethod]
         public void ToRange_higher_number_returns_high_bound()
         {
-            var number = 11;
+            const int number = 11;
             Assert.AreEqual(10, number.ToRange(1, 10));
         }
-
-
-
     }
 }

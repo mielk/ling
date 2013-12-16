@@ -5,87 +5,81 @@ using Typer.Common.Helpers;
 using Typer.Domain.Entities;
 using System;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.Domain.Services
 {
 
     public class UserService : IUserService
     {
 
-        private readonly IUsersRepository repository;
+        private readonly IUsersRepository _repository;
 
         public UserService(IUsersRepository repository)
         {
-            if (repository == null)
-            {
-                this.repository = RepositoryFactory.GetUsersRepository();
-            }
-            else
-            {
-                this.repository = repository;
-            }
+            _repository = repository ?? RepositoryFactory.GetUsersRepository();
         }
 
 
-
-        public User getUser(UserLoginData loginData)
+        public User GetUser(UserLoginData loginData)
         {
-            var dto = repository.getUser(loginData.Username, SHA1.Encode(loginData.Password));
-            return userFromDto(dto);
+            var dto = _repository.GetUser(loginData.Username, Sha1.Encode(loginData.Password));
+            return UserFromDto(dto);
         }
 
-        public User getUserByMail(string mail)
+        public User GetUserByMail(string mail)
         {
-            var dto = repository.getUserByMail(mail);
-            return userFromDto(dto);
+            var dto = _repository.GetUserByMail(mail);
+            return UserFromDto(dto);
         }
 
-        public User getUserByName(string username)
+        public User GetUserByName(string username)
         {
-            var dto = repository.getUser(username);
-            return userFromDto(dto);
+            var dto = _repository.GetUser(username);
+            return UserFromDto(dto);
         }
 
         public bool IsAuthenticated(UserLoginData loginData)
         {
-            return repository.userExists(loginData.Username, SHA1.Encode(loginData.Password));
+            return _repository.UserExists(loginData.Username, Sha1.Encode(loginData.Password));
         }
 
-        public bool addUser(User user)
+        public bool AddUser(User user)
         {
-            var dto = userToDto(user);
-            return repository.addUser(dto);
+            var dto = UserToDto(user);
+            return _repository.AddUser(dto);
         }
 
-        public bool userExists(string username)
+        public bool UserExists(string username)
         {
-            return repository.userExists(username);
+            return _repository.UserExists(username);
         }
 
-        public bool mailExists(string mail)
+        public bool MailExists(string mail)
         {
-            return repository.mailExists(mail);
+            return _repository.MailExists(mail);
         }
 
-        public bool verifyMail(int userId)
+        public bool VerifyMail(int userId)
         {
-            return repository.verifyMail(userId);
+            return _repository.VerifyMail(userId);
         }
 
-        public bool resetVerificationCode(int userId)
+        public bool ResetVerificationCode(int userId)
         {
             var code = Guid.NewGuid().ToString().Replace("-", "");
-            return repository.resetVerificationCode(userId, code);
+            return _repository.ResetVerificationCode(userId, code);
         }
 
-        public bool resetPassword(User user, string password)
+        public bool ResetPassword(User user, string password)
         {
-            return repository.resetPassword(user.UserID, password);
+            return _repository.ResetPassword(user.UserID, password);
         }
 
 
 
-        private User userFromDto(UserDto userDto)
+        private static User UserFromDto(UserDto userDto)
         {
+            if (userDto == null) return null;
             return new User
             {
                 CountryId = userDto.CountryId,
@@ -104,7 +98,7 @@ namespace Typer.Domain.Services
             };
         }
 
-        private UserDto userToDto(User user)
+        private static UserDto UserToDto(User user)
         {
             return new UserDto
             {

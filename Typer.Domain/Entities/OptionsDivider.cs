@@ -7,20 +7,20 @@ namespace Typer.Domain.Entities
     public class OptionsDivider
     {
 
-        private string text;
+        private readonly string _text;
 
 
         public OptionsDivider(string text)
         {
-            this.text = text;
+            _text = text;
         }
 
 
-        public List<string> getVariants()
+        public List<string> GetVariants()
         {
 
-            var root = new Part(text);
-            return root.getVariants();
+            var root = new Part(_text);
+            return root.GetVariants();
 
             //List<string> list = new List<string>();
             //if (!hasVariants(text))
@@ -130,8 +130,8 @@ namespace Typer.Domain.Entities
         public Part Parent { get; set; }
         public string Content { get; set; }
         public List<Part> Children { get; set; }
-        private StringBuilder replaced = new StringBuilder();
-        private List<string> variants = new List<string>();
+        private readonly StringBuilder _replaced = new StringBuilder();
+        private List<string> _variants = new List<string>();
 
         public Part(string content, Part parent, int index)
         {
@@ -149,21 +149,21 @@ namespace Typer.Domain.Entities
             Name = "{0}";
         }
 
-        public bool isRoot()
+        public bool IsRoot()
         {
             return (Parent == null);
         }
 
-        public List<string> getVariants()
+        public List<string> GetVariants()
         {
-            extractParts();
-            createVariants();
-            return merge();
+            ExtractParts();
+            CreateVariants();
+            return Merge();
         }
 
 
 
-        private void extractParts()
+        private void ExtractParts()
         {
             var chars = Content.ToCharArray();
             var variant = new StringBuilder();
@@ -177,7 +177,7 @@ namespace Typer.Domain.Entities
                     level++;
                     if (level == 1)
                     {
-                        replaced.Append('{').Append(++counter).Append('}');
+                        _replaced.Append('{').Append(++counter).Append('}');
                     }
                     else
                     {
@@ -203,7 +203,7 @@ namespace Typer.Domain.Entities
                 {
                     if (level == 0)
                     {
-                        replaced.Append(c);
+                        _replaced.Append(c);
                     }
                     else if (level > 0)
                     {
@@ -216,42 +216,27 @@ namespace Typer.Domain.Entities
 
         }
 
-        private void createVariants()
+        private void CreateVariants()
         {
-            variants = replaced.ToString().Split('/').ToList();
-            if (!isRoot() && variants.Count == 1)
+            _variants = _replaced.ToString().Split('/').ToList();
+            if (!IsRoot() && _variants.Count == 1)
             {
-                variants.Add("");
+                _variants.Add("");
             }
         }
 
-        private List<string> merge()
+        private List<string> Merge()
         {
-            var list = variants;
-
-            foreach (var part in Children)
-            {
-                list = crossVariants(list, part.getVariants(), part.Name);
-            }
-
-            return list;
+            return Children.Aggregate(_variants, (current, part) => CrossVariants(current, part.GetVariants(), part.Name));
         }
 
 
-
-        private List<string> crossVariants(List<string> texts, List<string> options, string tag)
+        private static List<string> CrossVariants(IEnumerable<string> texts, IEnumerable<string> options, string tag)
         {
             var list = new List<string>();
-            foreach (var text in texts)
+            foreach (var str in texts.SelectMany(text => options, (text, option) => text.Replace(tag, option)).Where(str => !list.Contains(str)))
             {
-                foreach (var option in options)
-                {
-                    var str = text.Replace(tag, option);
-                    if (!list.Contains(str))
-                    {
-                        list.Add(str);
-                    }
-                }
+                list.Add(str);
             }
 
             return list;

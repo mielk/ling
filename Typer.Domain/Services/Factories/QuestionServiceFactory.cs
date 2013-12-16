@@ -1,35 +1,30 @@
-﻿namespace Typer.Domain.Services
+﻿// ReSharper disable once CheckNamespace
+namespace Typer.Domain.Services
 {
     public class QuestionServicesFactory
     {
 
         private static QuestionServicesFactory _instance;
 
-        private readonly IQuestionService service;
+        private readonly IQuestionService _service;
 
 
 
         private QuestionServicesFactory()
         {
-            service = new QuestionService(null);
+            _service = new QuestionService(null);
         }
 
 
         public static QuestionServicesFactory Instance()
         {
-            if (_instance == null)
-            {
-                _instance = new QuestionServicesFactory();
-            }
-
-            return _instance;
-
+            return _instance ?? (_instance = new QuestionServicesFactory());
         }
 
 
-        public IQuestionService getService()
+        public IQuestionService GetService()
         {
-            return service;
+            return _service;
         }
 
 

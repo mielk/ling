@@ -1,6 +1,7 @@
 ﻿using System.Web.Mvc;
 using System.Web.Routing;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.Web
 {
     public class RouteConfig

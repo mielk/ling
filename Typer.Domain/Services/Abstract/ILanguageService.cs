@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using Typer.Domain.Entities;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.Domain.Services
 {
     public interface ILanguageService
     {
-        IEnumerable<Language> getLanguages();
-        Language getLanguage(int id);
-        IEnumerable<Language> getUserLanguages(int userId);
+        IEnumerable<Language> GetLanguages();
+        Language GetLanguage(int id);
+        IEnumerable<Language> GetUserLanguages(int userId);
     }
 }

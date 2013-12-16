@@ -8,10 +8,9 @@ namespace Typer.Web.Controllers
 {
     public class QuestionsController : Controller
     {
-
-        private ILanguageService _languageService = LanguageServicesFactory.Instance().getService();
         private readonly IQuestionService _service;
         public int PageSize = 10;
+        // ReSharper disable once UnusedMember.Local
         private RedirectResult NavigationPoint
         {
             get { return Session["EditControllerNavigationPoint"] as RedirectResult; }
@@ -26,10 +25,12 @@ namespace Typer.Web.Controllers
         }
 
 
+/*
         private void SetNavigationPoint()
         {
             NavigationPoint = Request.UrlReferrer == null ? null : Redirect(Request.UrlReferrer.ToString());
         }
+*/
 
 
 
@@ -58,17 +59,27 @@ namespace Typer.Web.Controllers
         public ActionResult UpdateWeight(int id, int weight)
         {
             _service.ChangeWeight(id, weight);
-            if (Request.UrlReferrer != null) return Redirect(Request.UrlReferrer.ToString());
-            return null;
+            return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
         }
+
+
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult UpdateCategories(int[] categories, int id)
+        {
+            var result = _service.UpdateCategories(id, categories);
+            return Json(result);
+        }
+
 
 
         [AllowAnonymous]
         public ActionResult Deactivate(int id)
         {
             _service.Deactivate(id);
-            if (Request.UrlReferrer != null) return Redirect(Request.UrlReferrer.ToString());
-            return null;
+            return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
         }
 
 
@@ -76,12 +87,12 @@ namespace Typer.Web.Controllers
         public ActionResult Activate(int id)
         {
             _service.Activate(id);
-            if (Request.UrlReferrer != null) return Redirect(Request.UrlReferrer.ToString());
-            return null;
+            return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
         }
 
         #region Helpers
         //Close current subpage and navigate to start page.
+/*
         private ActionResult NavigateToHomePage()
         {
 
@@ -93,10 +104,11 @@ namespace Typer.Web.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
+*/
 
 
 
-        [HttpPost]
+        [HttpGet]
         [AllowAnonymous]
         public ActionResult CheckName(int id, string name)
         {
@@ -113,9 +125,9 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult GetQuestion(int id)
         {
-            var user = (User) HttpContext.Session[Domain.Entities.User.SESSION_KEY];
+            var user = (User) HttpContext.Session[Domain.Entities.User.SessionKey];
             var question = _service.GetQuestion(id);
-            var questionViewModel = new QuestionViewModel(question, 1);//user.UserID);
+            var questionViewModel = new QuestionViewModel(question, user.UserID > 0 ? user.UserID : 1);
             return Json(questionViewModel, JsonRequestBehavior.AllowGet);
 
         }

@@ -6,14 +6,14 @@ namespace Typer.Common.Helpers
     public static class ExtensionMethods
     {
 
-        public static bool isNullOrEmpty(this string text)
+        public static bool IsNullOrEmpty(this string text)
         {
-            return (text == null || text.Length == 0 ? true : false);
+            return (string.IsNullOrEmpty(text));
         }
 
-        public static bool isLegalMail(this string mail)
+        public static bool IsLegalMail(this string mail)
         {
-            var reg = @"^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$";
+            const string reg = @"^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$";
             return Regex.IsMatch(mail.Trim(), reg);
         }
 
@@ -29,6 +29,7 @@ namespace Typer.Common.Helpers
         /// <returns>The absolute URL.</returns>
         public static string AbsoluteAction(this UrlHelper url, string actionName, string controllerName, object routeValues = null)
         {
+            if (url.RequestContext.HttpContext.Request.Url == null) return null;
             var scheme = url.RequestContext.HttpContext.Request.Url.Scheme;
             return url.Action(actionName, controllerName, routeValues, scheme);
         }
@@ -40,17 +41,7 @@ namespace Typer.Common.Helpers
             {
                 return number;
             }
-            else if (number < low)
-            {
-                return low;
-            }
-            else
-            {
-                return up;
-            }
-
+            return number < low ? low : up;
         }
-
-
     }
 }

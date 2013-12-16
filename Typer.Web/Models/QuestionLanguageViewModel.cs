@@ -3,23 +3,18 @@ using Typer.Domain.Entities;
 
 namespace Typer.Web.Models { 
     public class QuestionLanguageViewModel { 
-        private Question Question; 
+        private readonly Question _question; 
         public Language Language; 
-        private IEnumerable<QuestionOption> options; 
+        private IEnumerable<QuestionOption> _options; 
         public IEnumerable<QuestionOption> Options { 
-            get { 
-                if (options == null) { 
-                    options = Question.getOptions(Language.Id); 
-                } 
-                return options; 
-            } 
+            get { return _options ?? (_options = _question.GetOptions(Language.Id)); }
         } 
 
         public QuestionLanguageViewModel() { 
         } 
         
         public QuestionLanguageViewModel(Question question, Language language) { 
-            Question = question; 
+            _question = question; 
             Language = language; 
         } 
     

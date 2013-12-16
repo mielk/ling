@@ -27,8 +27,8 @@ namespace Typer.Web.Controllers
         public ActionResult Index()
         {
             var question = questionService.GetQuestion(1);
-            var parent = languageService.getLanguage(1);
-            var learn = languageService.getLanguage(2);
+            var parent = languageService.GetLanguage(1);
+            var learn = languageService.GetLanguage(2);
             var viewModel = new TestQuestionViewModel { Question = question, ParentLanguage = parent, LearnLanguage = learn };
 
 

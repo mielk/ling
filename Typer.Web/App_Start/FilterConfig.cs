@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.Web
 {
     public class FilterConfig

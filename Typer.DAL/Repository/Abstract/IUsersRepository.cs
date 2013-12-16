@@ -1,20 +1,21 @@
 ﻿using Typer.DAL.TransferObjects;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.DAL.Repositories
 {
     public interface IUsersRepository
     {
-        UserDto getUser(int userID);
-        UserDto getUser(string username);
-        UserDto getUser(string username, string password);
-        UserDto getUserByMail(string mail);
-        bool userExists(string username);
-        bool userExists(string username, string password);
-        bool mailExists(string mail);
-        bool addUser(UserDto user);
-        bool verifyMail(int userId);
-        bool resetVerificationCode(int userId, string code);
-        bool resetPassword(int userId, string password);
+        UserDto GetUser(int userID);
+        UserDto GetUser(string username);
+        UserDto GetUser(string username, string password);
+        UserDto GetUserByMail(string mail);
+        bool UserExists(string username);
+        bool UserExists(string username, string password);
+        bool MailExists(string mail);
+        bool AddUser(UserDto user);
+        bool VerifyMail(int userId);
+        bool ResetVerificationCode(int userId, string code);
+        bool ResetPassword(int userId, string password);
         
     }
 }

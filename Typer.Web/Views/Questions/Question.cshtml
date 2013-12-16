@@ -6,12 +6,12 @@
     <div class="weight">
         @for (var i = 0; i < Model.Weight; i++)
         {
-            @Html.ActionLink(" ", "UpdateWeight", "Questions", new { id = Model.Id, weight = i + 1 }, new { @class = "weight checked" });
+            @Html.ActionLink(" ", "UpdateWeight", "Questions", new { id = Model.Id, weight = i + 1 }, new { @class = "weight checked" })
         }
 
         @for (var i = Model.Weight; i < 10; i++)
         {
-            @Html.ActionLink(" ", "UpdateWeight", "Questions", new { id = Model.Id, weight = i + 1 }, new { @class = "weight" });
+            @Html.ActionLink(" ", "UpdateWeight", "Questions", new { id = Model.Id, weight = i + 1 }, new { @class = "weight" })
         }
     </div>
 
@@ -20,12 +20,7 @@
 
     <div class="edit-item">@Model.Id</div>
 
-    @if (Model.IsActive)
-    {
-        @Html.ActionLink("Deactivate", "Deactivate", "Questions", new { id = Model.Id }, null);
-    } else {
-        @Html.ActionLink("Activate", "Activate", "Questions", new { id = Model.Id }, null);
-    }
+    @(Model.IsActive ? Html.ActionLink("Deactivate", "Deactivate", "Questions", new {id = Model.Id}, null) : Html.ActionLink("Activate", "Activate", "Questions", new {id = Model.Id}, null))
 
 
 </div>

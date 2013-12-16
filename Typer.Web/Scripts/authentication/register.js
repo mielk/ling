@@ -8,11 +8,11 @@ $(document).ready(function () {
 
 
 function adjustPlaceholder() {
-    var supported = Modernizr.input.placeholder;
     $("#account label").css({ 'display': 'block' });
 }
 
 function setFocusForUsernameControl() {
+    // ReSharper disable once Html.IdNotResolved
     $("#Username").focus();
 }
 
@@ -76,29 +76,29 @@ var modelConstructor = function () {
 
 
     return {
-        getPassword: function () {
+        getPassword: function() {
             var controlGroup = controls.getItem('password');
             return controlGroup ? controlGroup.getValue() : null;
         }
-    }
+    };
 
 };
 
 
 
 
-function ControlGroup(_id, _fn) {
+function ControlGroup(id, fn) {
     var me = this; //To be used in events binding.
 
-    this.id = _id;
-    this.container = $('#' + _id)[0];
+    this.id = id;
+    this.container = $('#' + id)[0];
     this.linked = new HashTable(null);
 
-    this.getControl = function (selector) {
+    this.getControl = function(selector) {
         return $(this.container).find('.' + selector)[0];
-    }
+    };
 
-    this.formatAsValid = function () {
+    this.formatAsValid = function() {
         $(this.getValueControl()).
             removeClass('invalid').
             addClass('valid');
@@ -108,9 +108,9 @@ function ControlGroup(_id, _fn) {
         $(this.getStateIconControl()).
             removeClass('iconInvalid').
             addClass('iconValid');
-    }
+    };
 
-    this.formatAsInvalid = function () {
+    this.formatAsInvalid = function() {
         $(this.getValueControl()).
             removeClass('valid').
             addClass('invalid');
@@ -120,14 +120,14 @@ function ControlGroup(_id, _fn) {
         $(this.getStateIconControl()).
             removeClass('iconValid').
             addClass('iconInvalid');
-    }
+    };
 
-    this._validate = function () {
+    this._validate = function() {
 
         //Verify linked controls.
         verifyLinked();
 
-        var isValid = _fn(me.getValue());
+        var isValid = fn(me.getValue());
         if (isValid === true) {
             me.format(true);
         } else {
@@ -142,16 +142,16 @@ function ControlGroup(_id, _fn) {
             status: (isValid === true ? true : false)
         });
 
-    }
+    };
 
 
-    var verifyLinked = function () {
+    var verifyLinked = function() {
         me.linked.each(
-            function (key, value) {
+            function(key, value) {
                 value.validate();
             }
         );
-    }
+    };
 
 
     //Bind change event to value control.
@@ -174,7 +174,7 @@ function ControlGroup(_id, _fn) {
         }
     });
     valueControl.on({
-        'focus': function (e) {
+        'focus': function () {
             this.select();
         }
     });
@@ -182,40 +182,38 @@ function ControlGroup(_id, _fn) {
 }
 
 
-
-
-ControlGroup.prototype.addLinked = function (key, value) {
+ControlGroup.prototype.addLinked = function(key, value) {
     this.linked.setItem(key, value);
-}
-ControlGroup.prototype.getContainer = function () {
+};
+ControlGroup.prototype.getContainer = function() {
     return this.container;
-}
-ControlGroup.prototype.getValueControl = function () {
+};
+ControlGroup.prototype.getValueControl = function() {
     return this.getControl('default');
-}
-ControlGroup.prototype.getStateIconControl = function () {
+};
+ControlGroup.prototype.getStateIconControl = function() {
     return this.getControl('icon');
-}
-ControlGroup.prototype.getErrorControl = function () {
+};
+ControlGroup.prototype.getErrorControl = function() {
     return this.getControl('error');
-}
-ControlGroup.prototype.getErrorTextField = function () {
+};
+ControlGroup.prototype.getErrorTextField = function() {
     return this.getControl('error_content');
-}
-ControlGroup.prototype.getValue = function () {
+};
+ControlGroup.prototype.getValue = function() {
     var ctrl = $(this.getValueControl());
     return ctrl.val();
-}
-ControlGroup.prototype.format = function (isValid) {
+};
+ControlGroup.prototype.format = function(isValid) {
     if (isValid) {
         this.formatAsValid();
     } else {
         this.formatAsInvalid();
     }
-}
-ControlGroup.prototype.validate = function () {
+};
+ControlGroup.prototype.validate = function() {
     this._validate();
-}
+};
 
 
 
@@ -229,15 +227,15 @@ ControlGroup.prototype.validate = function () {
 var userExists = false;
 
 function checkUsername(username) {
-    var MIN_LENGTH = 5;
-    var MAX_LENGTH = 20;
+    var minLength = 5;
+    var maxLength = 20;
 
     if (!username) {
         return MessageBundle.get(dict.UsernameCannotBeEmpty);
-    } else if (username.length < MIN_LENGTH) {
-        return MessageBundle.get(dict.UsernameMustBeLongerThan, [MIN_LENGTH]);
-    } else if (username.length > MAX_LENGTH) {
-        return MessageBundle.get(dict.UsernameCannotBeLongerThan, [MAX_LENGTH]);
+    } else if (username.length < minLength) {
+        return MessageBundle.get(dict.UsernameMustBeLongerThan, [minLength]);
+    } else if (username.length > maxLength) {
+        return MessageBundle.get(dict.UsernameCannotBeLongerThan, [maxLength]);
     } else if (!my.text.isLetter(username.charAt(0))) {
         return MessageBundle.get(dict.UsernameMustStartWithLetter);
     } else if (!my.text.containLettersNumbersUnderscore(username)) {
@@ -276,11 +274,11 @@ function userAlreadyExists(username) {
 
 
 function checkPassword(password) {
-    var MIN_LENGTH = 6;
+    var minLength = 6;
     if (!password) {
         return MessageBundle.get(dict.PasswordCannotBeEmpty);
-    } else if (password.length < MIN_LENGTH) {
-        return MessageBundle.get(dict.PasswordTooShort, [MIN_LENGTH]);
+    } else if (password.length < minLength) {
+        return MessageBundle.get(dict.PasswordTooShort, [minLength]);
     } else if (!password.match(/^.*(?=.*\d)(?=.*[a-zA-Z]).*$/)) {
         return MessageBundle.get(dict.IllegalPasswordFormat);
     } else {

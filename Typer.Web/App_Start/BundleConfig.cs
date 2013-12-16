@@ -1,5 +1,6 @@
 ﻿using System.Web.Optimization;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.Web
 {
     public class BundleConfig

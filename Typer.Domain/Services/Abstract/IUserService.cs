@@ -1,18 +1,19 @@
 ﻿using Typer.Domain.Entities;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.Domain.Services
 {
     public interface IUserService
     {
-        User getUser(UserLoginData loginData);
-        User getUserByName(string username);
-        User getUserByMail(string mail);
+        User GetUser(UserLoginData loginData);
+        User GetUserByName(string username);
+        User GetUserByMail(string mail);
         bool IsAuthenticated(UserLoginData loginData);
-        bool addUser(User user);
-        bool userExists(string username);
-        bool mailExists(string mail);
-        bool verifyMail(int userId);
-        bool resetVerificationCode(int userId);
-        bool resetPassword(User user, string password);
+        bool AddUser(User user);
+        bool UserExists(string username);
+        bool MailExists(string mail);
+        bool VerifyMail(int userId);
+        bool ResetVerificationCode(int userId);
+        bool ResetPassword(User user, string password);
     }
 }

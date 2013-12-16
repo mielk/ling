@@ -12,7 +12,8 @@ function adjustPlaceholder() {
 }
 
 function setFocusForMailControl() {
-    $("#Email").focus();
+    // ReSharper disable once Html.IdNotResolved
+    $('#Email').focus();
 }
 
 
@@ -31,42 +32,43 @@ var mailValidator = function () {
 
     //Container.
     var container = $('#div_mail')[0];
-    this.getControl = function (selector) {
+    this.getControl = function(selector) {
         return $(container).find('.' + selector)[0];
-    }
+    };
     this.isPassword = function () {
-        var PSWD_RESET_CSS_CLASS = "passwordReset";
-        return $(container).hasClass(PSWD_RESET_CSS_CLASS);
+        var pswdResetCssClass = "passwordReset";
+        return $(container).hasClass(pswdResetCssClass);
     }();
 
     //E-mail text button.
-    var value = $("#Email")[0];
+    // ReSharper disable once Html.IdNotResolved
+    var value = $('#Email')[0];
 
     //Error controls.
     var errorContainer = this.getControl('error');
     var errorContent = this.getControl('error_content');
 
 
-    this.formatAsValid = function () {
+    this.formatAsValid = function() {
         $(value).
             removeClass('invalid').
             addClass('valid');
         $(errorContainer).css({
             'visibility': 'hidden'
         });
-    }
+    };
 
-    this.formatAsInvalid = function () {
+    this.formatAsInvalid = function() {
         $(value).
             removeClass('valid').
             addClass('invalid');
         $(errorContainer).css({
             'visibility': 'visible'
         });
-    }
-    
+    };
 
-    this._validate = function () {
+
+    this._validate = function() {
         var validation = checkMail($(value).val(), this.isPassword);
         if (validation === true) {
             this.formatAsValid();
@@ -80,7 +82,7 @@ var mailValidator = function () {
 
         checkState();
 
-    }
+    };
 
 
     //Bind change event to value control.
@@ -103,7 +105,7 @@ var mailValidator = function () {
         }
     });
     valueControl.on({
-        'focus': function (e) {
+        'focus': function () {
             this.select();
         }
     });

@@ -3,64 +3,44 @@ using System.Linq;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.TransferObjects;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.DAL.Repositories
 {
     public class EFLanguageRepository : ILanguageRepository
     {
 
-        private static readonly EFDbContext context = EFDbContext.GetInstance();
-        private static IDictionary<int, LanguageDto> dict = new Dictionary<int, LanguageDto>();
+        private static readonly EFDbContext Context = EFDbContext.GetInstance();
+        private static readonly IDictionary<int, LanguageDto> Dict = new Dictionary<int, LanguageDto>();
 
 
-        public IEnumerable<LanguageDto> getLanguages()
+        public IEnumerable<LanguageDto> GetLanguages()
         {
-            return context.Languages;
+            return Context.Languages;
         }
 
-        public LanguageDto getLanguage(int id)
+        public LanguageDto GetLanguage(int id)
         {
-            var language = getLanguageFromDictionary(id);
+            var language = GetLanguageFromDictionary(id);
             if (language != null)
             {
                 return language;
             }
-            else
-            {
-                language = context.Languages.SingleOrDefault(l => l.Id == id);
-                if (language != null)
-                {
-                    dict.Add(id, language);
-                    return language;
-                }
-            }
-
-            return null;
-            
+            language = Context.Languages.SingleOrDefault(l => l.Id == id);
+            if (language == null) return null;
+            Dict.Add(id, language);
+            return language;
         }
 
 
-        private LanguageDto getLanguageFromDictionary(int id)
+        private static LanguageDto GetLanguageFromDictionary(int id)
         {
-            if (dict.ContainsKey(id))
-            {
-                return dict[id];
-            }
-
-            return null;
-
+            return Dict.ContainsKey(id) ? Dict[id] : null;
         }
 
 
-        public IEnumerable<LanguageDto> getUserLanguages(int userId)
+        public IEnumerable<LanguageDto> GetUserLanguages(int userId)
         {
-
-            var languages = new List<LanguageDto>();
-            IEnumerable<UserLanguageDto> languageUserObjects = context.UserLanguages.Where(l => l.UserId == userId);
-
-            foreach (var ul in languageUserObjects)
-            {
-                languages.Add(getLanguage(ul.LanguageId));
-            }
+            IEnumerable<UserLanguageDto> languageUserObjects = Context.UserLanguages.Where(l => l.UserId == userId);
 
 
             //IEnumerable<Language> languages = from l in context.Languages
@@ -73,7 +53,7 @@ namespace Typer.DAL.Repositories
             //                                      Name = l.Name
             //                                  };
 
-            return languages;
+            return languageUserObjects.Select(ul => GetLanguage(ul.LanguageId)).ToList();
 
         }
 

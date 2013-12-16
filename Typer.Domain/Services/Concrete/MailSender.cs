@@ -1,25 +1,23 @@
 ﻿using System;
 using System.Net.Mail;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.Domain.Services
 {
     public class MailSender : IMailSender
     {
 
-        private SmtpClient mailer = new SmtpClient();
-        private string defaultSender = "mail@mail.pl";
-        
+        private readonly SmtpClient _mailer = new SmtpClient();
+        private const string DefaultSender = "mail@mail.pl";
+
         public bool Send(string from, string to, string subject, string body){
-            var message = new MailMessage(from, to);
-            message.Subject = subject;
-            message.Body = body;
-            message.IsBodyHtml = true;
+            var message = new MailMessage(from, to) {Subject = subject, Body = body, IsBodyHtml = true};
             try
             {
-                mailer.Send(message);
+                _mailer.Send(message);
                 return true;
             } 
-            catch (Exception exception){
+            catch (Exception){
                 return false;
             }
 
@@ -28,7 +26,7 @@ namespace Typer.Domain.Services
 
         public bool Send(string to, string subject, string body)
         {
-            return Send(defaultSender, to, subject, body);
+            return Send(DefaultSender, to, subject, body);
         }
 
 

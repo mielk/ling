@@ -1,4 +1,5 @@
-﻿namespace Typer.Domain.Services
+﻿// ReSharper disable once CheckNamespace
+namespace Typer.Domain.Services
 {
     public interface IMailSender
     {

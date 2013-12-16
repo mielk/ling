@@ -71,7 +71,7 @@ div.pager a.selected {
     text-transform: uppercase;
     font-weight: bold;
     text-align: center;
-    padding: 18px 0px 6px 0px;
+    padding: 18px 0 6px 0;
 }
 
 .inactive
@@ -99,7 +99,7 @@ div.pager a.selected {
 .word .id
 {
     width: 50px;
-    padding: 0px 12px;
+    padding: 0 12px;
     margin-right: 6px;
     text-align: right;
 }
@@ -107,25 +107,25 @@ div.pager a.selected {
 .word .name
 {
     width: 400px;
-    padding: 0px 12px;
+    padding: 0 12px;
 }
 
 .word .weight
 {
     width: 210px;
-    margin: 0px 18px;
+    margin: 0 18px;
 }
 
 .word .categories
 {
     width: 210px;
-    margin: 0px 36px;
+    margin: 0 36px;
 }
 
 .word .type
 {
     width: 80px;
-    padding: 0px 12px;
+    padding: 0 12px;
     text-align: center;
 }
 
@@ -148,9 +148,9 @@ div.pager a.selected {
     box-sizing: border-box;
     width: 18px;
     height: 18px;
-    margin-left: 0px;
+    margin-left: 0;
     margin-right: 3px;
-    font-size: 0px;
+    font-size: 0;
     border: 1px solid transparent;
     background-image: url('images/gray_star.png');
 }
@@ -163,7 +163,7 @@ div.pager a.selected {
 
 .edit-panel
 {
-    padding: 12px 0px;
+    padding: 12px 0;
 }
 
 .field-line

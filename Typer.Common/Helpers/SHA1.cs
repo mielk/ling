@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Typer.Common.Helpers
 {
-    public class SHA1
+    public class Sha1
     {
         public static string Encode(string value)
         {

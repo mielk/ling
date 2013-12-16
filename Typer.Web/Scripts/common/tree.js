@@ -1396,6 +1396,7 @@ NodeSelector.prototype.checkChildrenStatus = function () {
             this.node.select(true, false, true, false);
         } else {
             this.node.partiallySelected();
+            return;
         }
     } else {
         this.node.select(false, false, true, false);

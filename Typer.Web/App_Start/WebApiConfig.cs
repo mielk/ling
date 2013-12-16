@@ -1,5 +1,6 @@
 ﻿using System.Web.Http;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.Web
 {
     public static class WebApiConfig

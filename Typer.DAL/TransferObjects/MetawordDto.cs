@@ -5,7 +5,7 @@ namespace Typer.DAL.TransferObjects
 {
     public class MetawordDto
     {
-        [Key()]
+        [Key]
         public int Id { get; set; }
         public string Name { get; set; }
         public int Weight { get; set; }

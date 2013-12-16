@@ -176,16 +176,20 @@ function Metaword(data, properties) {
     this.eventHandler.bind({
         changeCategory: function (e) {
             e.word = me;
-            e.callback = function(result){
-                if (result) {
-                    me.categories.length = 0;
-                    for (var i = 0; i < e.items.length; i++) {
-                        me.categories.push(e.items[i].object);
+            
+            if (me.checkIfCategoriesChanged(e.items)){
+                e.callback = function (result) {
+                    if (result) {
+                        me.categories.length = 0;
+                        for (var i = 0; i < e.items.length; i++) {
+                            me.categories.push(e.items[i].object);
+                        }
+                        me.trigger({ type: 'refreshCategories' });
                     }
-                    me.trigger({ type: 'refreshCategories' });
-                }
-            };
-            my.words.updateCategory(e);
+                };
+                my.words.updateCategory(e);
+            }
+            
         }
     });
 
@@ -252,6 +256,16 @@ Metaword.prototype.bind = function (e) {
 };
 Metaword.prototype.trigger = function (e) {
     this.eventHandler.trigger(e);
+};
+Metaword.prototype.checkIfCategoriesChanged = function(items) {
+    var nodes = [];
+    for (var i = 0; i < this.categories.length; i++) {
+        var category = this.categories[i];
+        nodes.push(category.node);
+    }
+
+    return (!my.array.equal(items, nodes));
+    
 };
 
 
@@ -961,7 +975,7 @@ CategoryPanel.prototype.selectCategories = function() {
         'hidden': true
     });
 
-    tree.reset({ unselect: true, collapse: false });
+    tree.reset({ unselect: false, collapse: false });
     tree.eventHandler.bind({
         confirm: function(e) {
             me.parent.word.trigger({

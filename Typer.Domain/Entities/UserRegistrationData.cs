@@ -9,7 +9,7 @@ namespace Typer.Domain.Entities
     public class UserRegistrationData
     {
 
-        private readonly IUserService service;
+        private readonly IUserService _service;
 
         public static readonly int UserNameMinimumLength = 5;
         public static readonly int UserNameMaximumLength = 20;
@@ -18,12 +18,12 @@ namespace Typer.Domain.Entities
 
         public UserRegistrationData()
         {
-            service = UserServicesFactory.Instance().getUserService();
+            _service = UserServicesFactory.Instance().GetUserService();
         }
 
         public UserRegistrationData(IUserService service)
         {
-            this.service = service;
+            _service = service;
         }
 
 
@@ -86,18 +86,18 @@ namespace Typer.Domain.Entities
         #region Validation.
 
 
-        public bool isValid()
+        public bool IsValid()
         {
-            if (!isUserNameValid())
+            if (!IsUserNameValid())
                 return false;
 
-            if (!isPasswordValid())
+            if (!IsPasswordValid())
                 return false;
 
-            if (!arePasswordsMatching())
+            if (!ArePasswordsMatching())
                 return false;
 
-            if (!isMailValid())
+            if (!IsMailValid())
                 return false;
 
             return true;
@@ -105,27 +105,27 @@ namespace Typer.Domain.Entities
         }
 
 
-        private bool isUserNameValid()
+        private bool IsUserNameValid()
         {
             if (Username == null || Username.Length < UserNameMinimumLength || Username.Length > UserNameMaximumLength)
                 return false;
 
-            if (!isUserNameUnique())
+            if (!IsUserNameUnique())
                 return false;
 
             return true;
 
         }
 
-        private bool isUserNameUnique()
+        private bool IsUserNameUnique()
         {
-            return !service.userExists(Username);
+            return !_service.UserExists(Username);
         }
 
-        private bool isPasswordValid()
+        private bool IsPasswordValid()
         {
 
-            var regex = @"^.*(?=.*\d)(?=.*[a-zA-Z]).*$";
+            const string regex = @"^.*(?=.*\d)(?=.*[a-zA-Z]).*$";
 
             if (Password == null || Password.Length < PasswordMinimumLength)
                 return false;
@@ -134,26 +134,22 @@ namespace Typer.Domain.Entities
 
         }
 
-        private bool arePasswordsMatching()
+        private bool ArePasswordsMatching()
         {
 
-            if (ConfirmPassword == null || ConfirmPassword == string.Empty)
+            if (string.IsNullOrEmpty(ConfirmPassword))
                 return false;
 
             return (ConfirmPassword == Password);
 
         }
 
-        private bool isMailValid()
+        private bool IsMailValid()
         {
-            if (!Email.isLegalMail())
+            if (!Email.IsLegalMail())
                 return false;
 
-            if (service.mailExists(Email))
-                return false;
-
-            return true;
-
+            return !_service.MailExists(Email);
         }
 
 
@@ -162,11 +158,11 @@ namespace Typer.Domain.Entities
 
 
 
-        public User toUser()
+        public User ToUser()
         {
             var user = new User { 
                 Username = Username, 
-                Password = SHA1.Encode(Password),
+                Password = Sha1.Encode(Password),
                 Email = Email,
                 FirstName = null,
                 LastName = null,

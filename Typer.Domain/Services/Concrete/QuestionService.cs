@@ -14,7 +14,7 @@ namespace Typer.Domain.Services
 
 
         private readonly IQuestionsRepository _repository;
-        private readonly ICategoryService _categoryService = CategoryServicesFactory.Instance().getService();
+        private readonly ICategoryService _categoryService = CategoryServicesFactory.Instance().GetService();
 
         public QuestionService(IQuestionsRepository repository)
         {
@@ -73,6 +73,12 @@ namespace Typer.Domain.Services
         public bool UpdateQuestion(Question question)
         {
             return _repository.UpdateProperties(question.Id, question.Name, question.Weight);
+        }
+
+
+        public bool UpdateCategories(int id, int[] categoriesId)
+        {
+            return _repository.UpdateCategories(id, categoriesId);
         }
 
         public bool AddQuestion(Question question)

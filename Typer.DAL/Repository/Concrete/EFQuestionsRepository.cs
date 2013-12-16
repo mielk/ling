@@ -55,63 +55,101 @@ namespace Typer.DAL.Repositories
         public bool UpdateName(int id, string name)
         {
             var question = GetQuestion(id);
-            if (question != null)
+            if (question == null) return false;
+            try
             {
-                try
-                {
-                    question.Name = name;
-                    Context.SaveChanges();
-                    return true;
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
+                question.Name = name;
+                Context.SaveChanges();
+                return true;
             }
-
-            return false;
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool UpdateWeight(int id, int weight)
         {
             var question = GetQuestion(id);
-            if (question != null)
+            if (question == null) return false;
+            try
             {
-                try
-                {
-                    question.Weight = weight;
-                    Context.SaveChanges();
-                    return true;
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
+                question.Weight = weight;
+                Context.SaveChanges();
+                return true;
             }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
 
-            return false;
+
+        public bool UpdateCategories(int questionId, int[] categories)
+        {
+
+            try
+            {
+
+                if (!DeleteCategories(questionId)) return false;
+
+                foreach (var categoryId in categories)
+                {
+                    var dto = new QuestionCategoryDto
+                    {
+                        CategoryId = categoryId,
+                        QuestionId = questionId,
+                        CreatorId = 1,
+                        CreateDate = DateTime.Now,
+                        IsActive = true
+                    };
+
+                    Context.MatchQuestionCategory.Add(dto);
+                    Context.SaveChanges();
+                }
+
+                return true;
+
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool DeleteCategories(int wordId)
+        {
+            try
+            {
+                IEnumerable<WordCategoryDto> dtos = Context.MatchWordCategory.Where(c => c.MetawordId == wordId);
+                foreach (var dto in dtos)
+                {
+                    Context.MatchWordCategory.Remove(dto);
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
 
         }
 
         public bool UpdateProperties(int id, string name, int weight)
         {
             var question = GetQuestion(id);
-            if (question != null)
+            if (question == null) return false;
+            try
             {
-                try
-                {
-                    question.Name = name;
-                    question.Weight = weight;
-                    Context.SaveChanges();
-                    return true;
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
+                question.Name = name;
+                question.Weight = weight;
+                Context.SaveChanges();
+                return true;
             }
-
-            return false;
+            catch (Exception)
+            {
+                return false;
+            }
         }
         
         #endregion
@@ -128,52 +166,39 @@ namespace Typer.DAL.Repositories
         public bool Activate(int id)
         {
             var question = GetQuestion(id);
-            if (question != null)
+            if (question == null) return false;
+            if (question.IsActive)
+                return true;
+
+            try
             {
-                if (question.IsActive)
-                    return true;
-
-                try
-                {
-                    question.IsActive = true;
-                    Context.SaveChanges();
-                    return true;
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
-
+                question.IsActive = true;
+                Context.SaveChanges();
+                return true;
             }
-
-            return false;
-
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool Deactivate(int id)
         {
             var question = GetQuestion(id);
-            if (question != null)
+            if (question == null) return false;
+            if (!question.IsActive)
+                return false;
+
+            try
             {
-
-                if (!question.IsActive)
-                    return false;
-
-                try
-                {
-                    question.IsActive = false;
-                    Context.SaveChanges();
-                    return true;
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
-
+                question.IsActive = false;
+                Context.SaveChanges();
+                return true;
             }
-
-            return false;
-
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
 

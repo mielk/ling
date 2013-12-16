@@ -1,69 +1,46 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.Repositories;
 using Typer.DAL.TransferObjects;
 using Typer.Domain.Entities;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.Domain.Services
 {
     public class LanguageService : ILanguageService
     {
 
-        private readonly ILanguageRepository repository;
+        private readonly ILanguageRepository _repository;
 
         public LanguageService(ILanguageRepository repository)
         {
-            if (repository == null)
-            {
-                this.repository = RepositoryFactory.GetLanguageRepository();
-            }
-            else
-            {
-                this.repository = repository;
-            }
+            _repository = repository ?? RepositoryFactory.GetLanguageRepository();
         }
 
 
-
-
-        public IEnumerable<Language> getLanguages()
+        public IEnumerable<Language> GetLanguages()
         {
-            var dataObjects = repository.getLanguages();
-            var languages = new List<Language>();
-
-            foreach (var dto in dataObjects)
-            {
-                languages.Add(languageFromDto(dto));
-            }
-
-            return languages;
-
+            var dataObjects = _repository.GetLanguages();
+            return dataObjects.Select(LanguageFromDto).ToList();
         }
 
 
-        public Language getLanguage(int id)
+        public Language GetLanguage(int id)
         {
-            var dto = repository.getLanguage(id);
-            return languageFromDto(dto);
+            var dto = _repository.GetLanguage(id);
+            return LanguageFromDto(dto);
         }
 
-        public IEnumerable<Language> getUserLanguages(int userId)
+        public IEnumerable<Language> GetUserLanguages(int userId)
         {
-            var dataObjects = repository.getUserLanguages(userId);
-            var languages = new List<Language>();
-
-            foreach (var dto in dataObjects)
-            {
-                languages.Add(languageFromDto(dto));
-            }
-
-            return languages;
-
+            var dataObjects = _repository.GetUserLanguages(userId);
+            return dataObjects.Select(LanguageFromDto).ToList();
         }
 
 
 
-        private Language languageFromDto(LanguageDto dto)
+        private static Language LanguageFromDto(LanguageDto dto)
         {
             return new Language
             {
@@ -72,7 +49,8 @@ namespace Typer.Domain.Services
             };
         }
 
-        private LanguageDto languageToDto(Language language)
+/*
+        private static LanguageDto LanguageToDto(Language language)
         {
             return new LanguageDto
             {
@@ -80,6 +58,7 @@ namespace Typer.Domain.Services
                 Name = language.Name
             };
         }
+*/
 
 
     }

@@ -18,12 +18,12 @@ namespace Typer.Domain.Entities
             this.question = question;
             parentLanguage = parent;
             learnLanguage = learn;
-            selectedOption = selectOption(question.getOptions(parentLanguage.Id));
+            selectedOption = selectOption(question.GetOptions(parentLanguage.Id));
 
         }
 
 
-        public string getQuestionText()
+        public string GetQuestionText()
         {
             return "";
         }

@@ -18,15 +18,14 @@ namespace Typer.Tests.UnitTests.Controllers
         public void Can_Paginate()
         {
             var mock = new Mock<IQuestionService>();
-            mock.Setup(m => m.GetQuestions()).Returns(new Question[] {
+            mock.Setup(m => m.GetQuestions()).Returns(new[] {
                 new Question { Name = "test1", Weight = 1 },
                 new Question { Name = "test2", Weight = 2 },
                 new Question { Name = "test3", Weight = 3 },
                 new Question { Name = "test4", Weight = 4 },
                 new Question { Name = "test5", Weight = 5 }
             }.AsQueryable());
-            var controller = new QuestionsController(mock.Object);
-            controller.PageSize = 3;
+            var controller = new QuestionsController(mock.Object) {PageSize = 3};
 
             var result = (QuestionsListViewModel)controller.List(2).Model;
 
@@ -74,7 +73,7 @@ namespace Typer.Tests.UnitTests.Controllers
         {
             // Arrange
             var mock = new Mock<IQuestionService>();
-            mock.Setup(m => m.GetQuestions()).Returns(new Question[] {
+            mock.Setup(m => m.GetQuestions()).Returns(new[] {
                 new Question { Name = "test1", Weight = 1 },
                 new Question { Name = "test2", Weight = 2 },
                 new Question { Name = "test3", Weight = 3 },
@@ -83,9 +82,8 @@ namespace Typer.Tests.UnitTests.Controllers
             }.AsQueryable());
 
             // Arrange
-            var controller = new QuestionsController(mock.Object);
-            controller.PageSize = 3;
-            
+            var controller = new QuestionsController(mock.Object) {PageSize = 3};
+
             // Act
             var result = (QuestionsListViewModel)controller.List(2).Model;
             

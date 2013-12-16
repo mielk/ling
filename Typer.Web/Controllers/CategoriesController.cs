@@ -66,7 +66,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult AddCategory(string name, int parentId)
         {
-            var user = (User) HttpContext.Session[Domain.Entities.User.SESSION_KEY];
+            var user = (User) HttpContext.Session[Domain.Entities.User.SessionKey];
             var result = _service.AddCategory(name, parentId, user.UserID);
             return Json(result);
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text;
 using System.Web.Mvc;
 using Typer.Web.Models;
@@ -14,12 +15,12 @@ namespace Typer.Web.HtmlHelpers
             for (var i = 1; i <= pagingInfo.TotalPages; i++) {
                 var tag = new TagBuilder("a"); // Construct an <a> tag
                 tag.MergeAttribute("href", pageUrl(i));
-                tag.InnerHtml = i.ToString();
+                tag.InnerHtml = i.ToString(CultureInfo.InvariantCulture);
 
                 if (i == pagingInfo.CurrentPage)
                     tag.AddCssClass("selected");
 
-                result.Append(tag.ToString());
+                result.Append(tag);
 
             }
 

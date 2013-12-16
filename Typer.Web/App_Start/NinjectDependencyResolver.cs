@@ -2,28 +2,23 @@
 using Ninject;
 
 
+// ReSharper disable once CheckNamespace
 namespace Typer.Web
 {
    // This class is the resolver, but it is also the global scope
    // so we derive from NinjectScope.
    public class NinjectDependencyResolver : NinjectDependencyScope, IDependencyResolver
    {
-      private IKernel kernel;
+      private readonly IKernel _kernel;
 
       public NinjectDependencyResolver(IKernel kernel) : base(kernel)
       {
-         this.kernel = kernel;
+         _kernel = kernel;
       }
 
       public IDependencyScope BeginScope()
       {
-         return new NinjectDependencyScope(kernel.BeginBlock());
+         return new NinjectDependencyScope(_kernel.BeginBlock());
       }
-
-      protected override void Dispose(bool disposing)
-      {
-          base.Dispose(disposing);
-      }
-
    }
 }

@@ -52,19 +52,12 @@ namespace Typer.Domain.Entities
         }
 
 
-        private IEnumerable<QuestionOption> options;
+        private IEnumerable<QuestionOption> _options;
         public IEnumerable<QuestionOption> Options
         {
-            get
-            {
-                if (options == null)
-                    options = QuestionServicesFactory.Instance().getService().GetOptions(Id);
-
-                return options;
-
-            }
+            get { return _options ?? (_options = QuestionServicesFactory.Instance().GetService().GetOptions(Id)); }
         }
-        public IEnumerable<QuestionOption> getOptions(int languageId)
+        public IEnumerable<QuestionOption> GetOptions(int languageId)
         {
             return Options.Where(o => o.LanguageId == languageId);
         }

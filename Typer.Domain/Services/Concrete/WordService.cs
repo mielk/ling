@@ -13,7 +13,7 @@ namespace Typer.Domain.Services
     {
 
         private readonly IWordsRepository _repository;
-        private readonly ICategoryService _categoryService = CategoryServicesFactory.Instance().getService();
+        private readonly ICategoryService _categoryService = CategoryServicesFactory.Instance().GetService();
 
         public WordService(IWordsRepository repository)
         {

@@ -43,7 +43,7 @@ function DropDown(properties) {
     this.render.display(false);
 
     this.eventHandler.bind({        
-       select: function(e) {
+       select: function() {
            //my.notify.display('Option ' + e.object.name + ' selected', true);
        } 
     });
@@ -601,9 +601,9 @@ DropDownOptionsManager.prototype.filterFromScratch = function(filter) {
     }
 
 };
-DropDownOptionsManager.prototype.clear = function () {
+DropDownOptionsManager.prototype.clear = function() {
     this.filtered = this.sorted;
-}
+};
 
 function DropDownOption(manager, properties) {
     // ReSharper disable once UnusedLocals

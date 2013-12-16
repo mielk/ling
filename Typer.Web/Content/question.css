@@ -3,7 +3,7 @@
     -moz-box-sizing: border-box !important;
     -webkit-box-sizing: border-box !important;
     box-sizing: border-box !important;
-    outline-width: 0px !important;
+    outline-width: 0 !important;
     outline-style: none !important;
     outline-color: invert !important;
 }
@@ -17,11 +17,12 @@
 
 
 *.unselectable {
-    user-select: none;
+    -ms-user-select: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
     -moz-user-select: none;
     -o-user-select: none;
+    user-select: none;
     user-select: none;
 }
 
@@ -47,14 +48,14 @@ div
     font-weight: bold !important;
 }
 
-.question-background
-{
+.question-background {
     position: fixed;
     display: block;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    background-color: #646464;
     background-color: rgba(100, 100, 100, 0.85);
     z-index: 1;
     overflow-y: auto;
@@ -96,8 +97,8 @@ div
 {
     position: absolute !important;
     display: block !important;
-    right: 0px !important;
-    top: 0px !important;
+    right: 0 !important;
+    top: 0 !important;
     width: 36px !important;
     height: 36px !important;
     background-color: green !important;
@@ -289,7 +290,7 @@ input.question-button
     line-height: 16px !important;
     font-weight: bold !important;
     border: 1px solid #777 !important;
-    margin: 0px 2% !important;
+    margin: 0 2% !important;
     background-color: #ddd !important;
     color: #444 !important;
 }
@@ -310,7 +311,7 @@ input.question-button:focus
 {
     display: table-cell;
     width: 210px;
-    margin: 0px 18px;
+    margin: 0 18px;
     vertical-align: middle;
     cursor: pointer;
 }
@@ -325,7 +326,7 @@ input.question-button:focus
     box-sizing: border-box;
     width: 18px;
     height: 18px;
-    margin-left: 0px;
+    margin-left: 0;
     margin-right: 3px;
     color: transparent;
     border: 1px solid transparent;
@@ -350,7 +351,7 @@ input.question-button:focus
     background-color: #ccc;
     border: 1px solid #666;
     margin-left: 12px;
-    margin-top: 0px !important;
+    margin-top: 0 !important;
     color: #444 !important;
     cursor: pointer;
 }
@@ -368,7 +369,7 @@ input.question-button:focus
     float: left;
     height: auto;
     width: 100%;
-    margin: 12px 0px;
+    margin: 12px 0;
     padding: 0;
     background-color: transparent;
     border: none;
@@ -431,7 +432,7 @@ input.question-button:focus
     box-sizing: border-box;
     width: auto;
     height: 34px;
-    padding: 10px 0px;
+    padding: 10px 0;
     line-height: 14px;
     font-size: 14px;
     background-color: transparent;
@@ -463,8 +464,7 @@ input.question-button:focus
     height: 40px;
 }
 
-.language .add
-{
+.language .add {
     display: block;
     float: left;
     -moz-box-sizing: border-box;
@@ -476,8 +476,14 @@ input.question-button:focus
     font-size: 14px;
     line-height: 14px;
     padding: 8px 18px;
-    margin: 0px;
-    box-shadow: 1px 1px 0px 0px rgba(255,255,255,0.25);
+    margin: 0;
+    -webkit-box-shadow: 1px 1px 0 0 #ffffff;
+    -webkit-box-shadow: 1px 1px 0 0 rgba(255,255,255,0.25);
+    -ms-box-shadow: 1px 1px 0 0 #ffffff;
+    /* ReSharper disable once RequiresFallbackColor */
+    -ms-box-shadow: 1px 1px 0 0 rgba(255,255,255,0.25);
+    box-shadow: 1px 1px 0 0 #ffffff;
+    box-shadow: 1px 1px 0 0 rgba(255,255,255,0.25);
     background-color: rgb(121, 173, 131);
     color: white;
     font-weight: bold;
@@ -584,7 +590,7 @@ span.complex
 {
     border: 1px solid rgb(161, 144, 0);
     padding: 5px 3px;
-    margin: 0px 2px;
+    margin: 0 2px;
     line-height: 12px;
     font-size: 12px;
     background-color: rgb(255, 240, 182);
@@ -619,7 +625,7 @@ span.complex
     float: left;
     width: 100%;
     height: auto;
-    padding: 6px 0px;
+    padding: 6px 0;
     background-color: transparent;
 }
 
@@ -631,8 +637,8 @@ span.complex
     right: -41px !important;
     width: 32px !important;
     height: 32px !important;
-    padding: 0px !important;
-    margin: 0px !important;
+    padding: 0 !important;
+    margin: 0 !important;
     background-image: url('images/close.png') !important;
     background-position: center;
     background-color: transparent !important;
@@ -710,11 +716,16 @@ span.complex
 }
 
 
-.edit-container input[type=text]
-{
+.edit-container input[type=text] {
     font-size: 17px;
     font-weight: bold;
-    box-shadow: 1px 1px 0px 0px rgba(255,255,255,0.25);
+    -webkit-box-shadow: 1px 1px 0 0 #ffffff;
+    -webkit-box-shadow: 1px 1px 0 0 rgba(255,255,255,0.25);
+    -ms-box-shadow: 1px 1px 0 0 #ffffff;
+    /* ReSharper disable once RequiresFallbackColor */
+    -ms-box-shadow: 1px 1px 0 0 rgba(255,255,255,0.25);
+    box-shadow: 1px 1px 0 0 #ffffff;
+    box-shadow: 1px 1px 0 0 rgba(255,255,255,0.25);
 }
 
 
