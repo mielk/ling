@@ -713,7 +713,8 @@ Language.prototype.createOptionsSet = function (options) {
 
 };
 Language.prototype.addOption = function (option) {
-    alert('to be implemented');
+    this.options.setItem(option.key, option);
+    this.view.addOption(option.view.container);
 };
 Language.prototype.removeOption = function (option) {
     this.options.removeItem(option.id);
@@ -790,25 +791,21 @@ function LanguageView(language) {
         'value': 'Add'
     }).bind({
         'click': function () {
-            //var option = new Option({
-            //    'language': me
-            //});
-            //var editPanel = new EditPanel({
-            //    'option': option
-            //});
-            //editPanel.bind({
-            //    'confirm': function (e) {
-            //        var option = e.option;
-            //        option.id = e.name;
-            //        option.update(e.name, e.weight);
-            //        me.options.setItem(option.id, option);
-            //        option.draw();
-            //    }
-            //});
-            //editPanel.display();
-            //Tworzenie nowej opcji
-            //var option = new PreOption(me, ++me.optionNum);
-            //Edit panel.
+            var option = new Option({
+                language: me.language
+            });
+            var editPanel = new EditPanel({
+                option: option
+            });
+            editPanel.bind({                
+               confirm: function(e) {
+                    var $option = e.option;
+                    $option.id = e.name;
+                    $option.update(e.name, e.weight);
+                    me.language.addOption($option);
+               }
+            });
+            editPanel.display();
         }
     }).appendTo($(this.buttons));
 
@@ -1138,365 +1135,460 @@ OptionView.prototype.update = function () {
 
 
 
-
 function EditPanel(properties) {
-    this.MIN_WEIGHT = 1;
-    this.MAX_WEIGHT = 10;
     var me = this;
     this.option = properties.option;
+    this.minWeight = 1;
+    this.maxWeight = 10;
+    this.invalid = new HashTable(null);
+    this.eventHandler = new EventHandler();
 
-    this.gui = (function () {
-        var $background = jQuery('<div/>', {
-                id: 'edit-option-background',
-                'class': 'question-background'
-            }).
-            css({
-                'display': 'none',
-                'z-index': my.ui.addTopLayer()
-            }).appendTo($(document.body));
+    this.view = new EditPanelView(this);
 
-        var $events = jQuery('<div/>', {
-            'class': 'events-container'
-        }).bind({
-            'confirm': function () {
-                me.destroy();
-            }
-        }).appendTo($background);
-
-        var $container = jQuery('<div/>', {
-                'class': 'edit-container'
-            }).
-            css({
-                'z-index': my.ui.addTopLayer()
-            }).appendTo($($background));
-
-        var $frame = jQuery('<div/>', {
-            'class': 'relative'
-        }).appendTo($($container));
+    this.meta = new EditPanelMeta(this);
 
 
-        var $close = jQuery('<div/>', {
-            'class': 'edit-close'
-        })
-        .bind({
-            'click': function () {
-                me.destroy();
-            }
-        })
-        .appendTo($($frame));
+
+    this.buttons = new EditPanelButtons(this);
+
+    //this.gui = (function () {
+
+    //    var weight = (function () {
+    //        var CHECKED_CSS_CLASS = "weight-checked";
+    //        var _value = me.option.weight;
+
+    //        var _container = jQuery('<div/>', {
+    //            'class': 'line'
+    //        }).appendTo($($frame));
+
+    //        var $label = jQuery('<div/>', {
+    //            'class': 'label',
+    //            html: 'Weight'
+    //        }).appendTo($(_container));
+
+    //        var iconsContainer = jQuery('<div/>', {
+    //            'class': 'weight-icons-container'
+    //        }).bind({
+    //            'clickIcon': function (e) {
+    //                $($textbox).val(e.weight);
+    //            }
+    //        }).appendTo($(_container));
+
+    //        var icons = jQuery('<div/>', {
+    //            'class': 'weight-icons'
+    //        }).bind({
+    //            'changeValue': function (e) {
+    //                if (e.weight !== me.value) {
+    //                    _setValue(e.weight);
+    //                }
+    //            },
+    //            'clickIcon': function (e) {
+    //                _setValue(e.weight);
+    //            }
+    //        }).appendTo($(iconsContainer));
+
+    //        for (var i = me.MIN_WEIGHT - 1; i < me.MAX_WEIGHT; i++){
+    //            var icon = jQuery('<div/>', {
+    //                'id': i,
+    //                'class': 'weight-icon',
+    //                html: i + 1
+    //            }).bind({
+    //                'click': function (e) {
+    //                    $(icons).trigger({
+    //                        'type': 'clickIcon',
+    //                        'weight': (this.id * 1 + 1)
+    //                    });
+    //                }
+    //            }).appendTo($(icons));
+    //        }
 
 
-        var name = (function () {
-            var timer;
+    //        function _setValue(value) {
+    //            _value = value;
+    //            var cls = CHECKED_CSS_CLASS;
+    //            $('.weight-icon').each(function () {
+    //                var $value = $(this).html() * 1;
+    //                if ($value <= value * 1) {
+    //                    $(this).addClass(cls);
+    //                } else {
+    //                    $(this).removeClass(cls);
+    //                }
+    //            });
+    //        }
 
-            var container = jQuery('<div/>', {
-                'class': 'line'
-            }).appendTo($($frame));
+    //        var $textbox = jQuery('<input/>', {
+    //            'type': 'text',
+    //            'class': 'default centered'
+    //        }).bind({
+    //            'change': function () {
+    //                var value = Math.min(Math.max(me.MIN_WEIGHT, $(this).val() * 1), me.MAX_WEIGHT);
+    //                $(this).val(value);
+    //                $(icons).trigger({
+    //                    'type': 'changeValue',
+    //                    'weight': value
+    //                });
+    //            }
+    //        }).on({
+    //            'focus': function (e) {
+    //                this.select();
+    //            }
+    //        })
+    //        .val(me.option.weight)
+    //        .appendTo(jQuery('<span/>').
+    //            bind({
+    //                'click': function () {
+    //                    $($textbox).focus();
+    //                }
+    //            }).appendTo($(_container)));
 
-            var $label = jQuery('<div/>', {
-                'class': 'label',
-                html: 'Name'
-            }).appendTo($(container));
-
-            var $error = jQuery('<div/>', {
-                'class': 'error'
-            }).appendTo($(container));
-
-            var $errorContent = jQuery('<div/>', {
-                'class': 'error-content'
-            }).appendTo($($error));
-
-            var $statusIcon = jQuery('<span/>', {
-                'class': 'icon'
-            }).appendTo($(container));
-
-            var $textbox = jQuery('<input/>', {
-                'type': 'text',
-                'class': 'default'
-            }).bind({
-                'keyup': function () {
-                    if (timer) {
-                        clearTimeout(timer);
-                    }
-                    timer = setTimeout(function () {
-                        me.validateName();
-                    }, 150);
-                },
-                'keydown': function(e){
-                    if (e.which === 27) { //Escape.
-                        me.destroy();
-                    }
-                },
-                'change': function () {
-                    me.validateName();
-                },
-                'mouseup': function (e) {
-                    e.preventDefault();
-                }
-            }).
-            on({
-                'focus': function (e) {
-                    this.select();
-                }
-            })
-            .val(me.option.content)
-            .focus()
-            .appendTo(jQuery('<span/>').
-                bind({
-                    'click': function () {
-                        $textbox.focus();
-                    }
-                }).appendTo($(container)));
+    //        _setValue(me.option.weight);
 
 
-            function _valid(){
-                $($error).css({ 'visibility': 'hidden' });
-                $($statusIcon).removeClass('iconInvalid').addClass('iconValid');
-                $($textbox).removeClass('invalid').addClass('valid');
-                buttons.enable();
-                
-            }
+    //        return {
+    //            value: function () {
+    //                return $($textbox).val();
+    //            }
+    //        }
 
-            function _invalid(msg) {
-                $($errorContent).text(msg);
-                $($error).css({ 'visibility': 'visible' });
-                $($statusIcon).removeClass('iconValid').addClass('iconInvalid');
-                $($textbox).removeClass('valid').addClass('invalid');
-                buttons.disable();
-            }
-
-            return {
-                value: function () {
-                    return $($textbox).val();
-                },
-                valid: function () {
-                    _valid();
-                },
-                invalid: function (msg) {
-                    _invalid(msg);
-                },
-                focus: function () {
-                    $($textbox).focus();
-                }
-            }
-
-        })();
-
-        var weight = (function () {
-            var CHECKED_CSS_CLASS = "weight-checked";
-            var _value = me.option.weight;
-
-            var _container = jQuery('<div/>', {
-                'class': 'line'
-            }).appendTo($($frame));
-
-            var $label = jQuery('<div/>', {
-                'class': 'label',
-                html: 'Weight'
-            }).appendTo($(_container));
-
-            var iconsContainer = jQuery('<div/>', {
-                'class': 'weight-icons-container'
-            }).bind({
-                'clickIcon': function (e) {
-                    $($textbox).val(e.weight);
-                }
-            }).appendTo($(_container));
-
-            var icons = jQuery('<div/>', {
-                'class': 'weight-icons'
-            }).bind({
-                'changeValue': function (e) {
-                    if (e.weight !== me.value) {
-                        _setValue(e.weight);
-                    }
-                },
-                'clickIcon': function (e) {
-                    _setValue(e.weight);
-                }
-            }).appendTo($(iconsContainer));
-
-            for (var i = me.MIN_WEIGHT - 1; i < me.MAX_WEIGHT; i++){
-                var icon = jQuery('<div/>', {
-                    'id': i,
-                    'class': 'weight-icon',
-                    html: i + 1
-                }).bind({
-                    'click': function (e) {
-                        $(icons).trigger({
-                            'type': 'clickIcon',
-                            'weight': (this.id * 1 + 1)
-                        });
-                    }
-                }).appendTo($(icons));
-            }
+    //    })();
 
 
-            function _setValue(value) {
-                _value = value;
-                var cls = CHECKED_CSS_CLASS;
-                $('.weight-icon').each(function () {
-                    var $value = $(this).html() * 1;
-                    if ($value <= value * 1) {
-                        $(this).addClass(cls);
-                    } else {
-                        $(this).removeClass(cls);
-                    }
-                });
-            }
-
-            var $textbox = jQuery('<input/>', {
-                'type': 'text',
-                'class': 'default centered'
-            }).bind({
-                'change': function () {
-                    var value = Math.min(Math.max(me.MIN_WEIGHT, $(this).val() * 1), me.MAX_WEIGHT);
-                    $(this).val(value);
-                    $(icons).trigger({
-                        'type': 'changeValue',
-                        'weight': value
-                    });
-                }
-            }).on({
-                'focus': function (e) {
-                    this.select();
-                }
-            })
-            .val(me.option.weight)
-            .appendTo(jQuery('<span/>').
-                bind({
-                    'click': function () {
-                        $($textbox).focus();
-                    }
-                }).appendTo($(_container)));
-
-            _setValue(me.option.weight);
+    //})();
 
 
-            return {
-                value: function () {
-                    return $($textbox).val();
-                }
-            }
-
-        })();
-
-        var buttons = (function (){
-            var _container = jQuery('<div/>', {
-                'class': 'line'
-            }).appendTo($($frame));
-
-            var _frame = jQuery('<div/>', {
-                'class': 'edit-buttons'
-            }).appendTo($(_container));
-
-            var _ok = jQuery('<input/>', {
-                'type': 'submit',
-                'value': 'Confirm',
-                'class': 'question-button'
-            }).bind({
-                'click': function () {
-                    $events.trigger({
-                        'type' : 'confirm',
-                        'name': name.value(),
-                        'weight': weight.value(),
-                        'option': me.option
-                    });
-                }
-            }).appendTo($(_frame));
-
-            var _cancel = jQuery('<input/>', {
-                'type': 'submit',
-                'value': 'Cancel',
-                'class': 'question-button'
-            }).bind({
-                'click': function () {
-                    me.destroy();
-                }
-            }).appendTo($(_frame));
-
-            function _enable() {
-                $(_ok).removeAttr('disabled');
-            }
-
-            function _disable() {
-                $(_ok).attr('disabled', 'disabled');
-            }
-
-            return {
-                enable: function () {
-                    _enable();
-                },
-                disable: function () {
-                    _disable();
-                }
-            }
-
-        })();
-
-        return {
-            destroy: function () {
-                $($background).remove();
-            },
-            display: function () {
-                $($background).css({
-                    'display' : 'block'
-                });
-                name.focus();
-            },
-            name: function () {
-                return name;
-            },
-            weight: function () {
-                return weight;
-            },
-            trigger: function (e) {
-                $events.trigger(e);
-            },
-            bind: function(a){
-                $events.bind(a);
-            }
-        }
-
-    })();
-
-    this.validateName = function () {
-        var name = me.gui.name().value();
-        var isValid = isValidName(name);
-
-        if (isValid === true) {
-            me.gui.name().valid();
-        } else {
-            me.gui.name().invalid(isValid);
-        }
-
-    }
-
-    function isValidName(name) {
-        if (name.trim().length === 0) {
-            return MessageBundle.get(dict.NameCannotBeEmpty);
-        } else if (!me.option.isUniqueContent(name)) {
-            return MessageBundle.get(dict.NameAlreadyExists);
-        } else {
-            return true;
-        }
-    }
-
-    this.getName = function () {
-        return me.gui.name().value();
-    }
-    this.getWeight = function () {
-        return me.gui.weight().value();
-    }
+    //this.getName = function () {
+    //    return me.gui.name().value();
+    //}
+    //this.getWeight = function () {
+    //    return me.gui.weight().value();
+    //}
 
 }
 EditPanel.prototype.display = function () {
-    this.validateName();
-    this.gui.display();
+    this.meta.validate();
+    this.view.display();
+};
+EditPanel.prototype.destroy = function() {
+    this.view.destroy();
+};
+EditPanel.prototype.bind = function (e) {
+    this.eventHandler.bind(e);
+};
+EditPanel.prototype.trigger = function (e) {
+    this.eventHandler.trigger(e);
+};
+EditPanel.prototype.confirm = function(e) {
+    //Confirm.
+};
+EditPanel.prototype.validation = function(validation) {
+    if (validation.status) {
+        this.invalid.removeItem(validation.id);
+    } else {
+        this.invalid.setItem(validation.id, validation.id);
+    }
+    this.checkState();
+};
+EditPanel.prototype.checkState = function() {
+    if (this.buttons) {
+        this.buttons.enable(this.invalid.size() === 0);
+    }
+};
+
+
+
+function EditPanelView(panel) {
+    var me = this;
+    this.panel = panel;
+
+    this.background = jQuery('<div/>', {
+        id: 'edit-option-background',
+        'class': 'question-background'
+    }).css({
+        'display': 'none',
+        'z-index': my.ui.addTopLayer()
+    }).appendTo($(document.body));
+
+    this.container = jQuery('<div/>', {
+        'class': 'edit-container'
+    }).css({
+        'z-index': my.ui.addTopLayer()
+    }).appendTo($(this.background));
+
+    this.frame = jQuery('<div/>', {
+        'class': 'relative'
+    }).appendTo($(this.container));
+
+    this.close = jQuery('<div/>', {
+        'class': 'edit-close'
+    }).bind({
+        'click': function () {
+            me.panel.destroy();
+        }
+    }).appendTo($(this.frame));
+
 }
-EditPanel.prototype.destroy = function () {
-    this.gui.destroy();
+EditPanelView.prototype.destroy = function() {
+    $(this.background).remove();
+};
+EditPanelView.prototype.display = function () {
+    $(this.background).css({
+        'display': 'block'
+    });
+    //name.focus();
+};
+EditPanelView.prototype.append = function(element) {
+    $(element).appendTo($(this.container));
+};
+
+
+function EditPanelMeta(panel) {
+    var me = this;
+    this.panel = panel;
+
+    this.container = jQuery('<div/>');
+    this.panel.view.append(this.container);
+
+    this.name = new EditLine(this, {
+        property: 'name',
+        label: 'Name',
+        validation: me.isValidName,
+        editable: true,
+        object: me.panel.option
+    });
+
 }
-EditPanel.prototype.bind = function(e){
-    this.gui.bind(e);
+EditPanelMeta.prototype.append = function(element) {
+    $(element).appendTo($(this.container));
+};
+EditPanelMeta.prototype.isValidName = function (e) {
+    var name = e.value;
+    if (name.trim().length === 0) {
+        return MessageBundle.get(dict.NameCannotBeEmpty);
+    } else if (!this.panel.option.isUniqueContent(name)) {
+        return MessageBundle.get(dict.NameAlreadyExists);
+    } else {
+        return true;
+    }
+
+};
+EditPanelMeta.prototype.validate = function() {
+    this.name.validate();
+};
+
+function EditPanelButtons(panel) {
+    var me = this;
+    this.panel = panel;
+
+    this.container = jQuery('<div/>', {
+        'class': 'line'
+    });
+    
+    this.frame = jQuery('<div/>', {
+        'class': 'edit-buttons'
+    }).appendTo($(this.container));
+
+    this.ok = jQuery('<input/>', {
+        'type': 'submit',
+        'value': 'Confirm',
+        'class': 'question-button'
+    }).bind({
+        'click': function () {
+            me.panel.confirm();
+        }
+    }).appendTo($(this.frame));
+
+    this.cancel = jQuery('<input/>', {
+        'type': 'submit',
+        'value': 'Cancel',
+        'class': 'question-button'
+    }).bind({
+        'click': function () {
+            me.panel.destroy();
+        }
+    }).appendTo($(this.frame));
+
+
+    this.panel.view.append(this.container);
+
 }
+EditPanelButtons.prototype.enable = function(value) {
+    if (value) {
+        $(this.ok).removeAttr('disabled');
+    } else {
+        $(this.ok).attr('disabled', 'disabled');
+    }
+};
+
+
+
+
+function EditLine(parent, properties) {
+    this.parent = parent;
+    this.object = properties.object;
+    this.property = properties.property;
+    this.linked = new HashTable(null);
+    this.validation = properties.validation;
+
+    this.view = new EditLineView(this, properties);
+
+    this.parent.append(this.view.container);
+
+    if (this.validation) {
+        this.validate();
+    }
+
+}
+EditLine.prototype.validate = function () {
+    var me = this;
+    this.verifyLinked();
+
+    var isValid = this.validation({
+        value: me.getValue(),
+        property: me.property,
+        id: me.object.id
+    });
+
+    this.format(isValid === true);
+    if (isValid !== true) {
+        $(this.view.error).text(isValid);
+    }
+
+    this.parent.panel.validation({
+        id: me.property,
+        status: (isValid === true ? true : false)
+    });
+
+};
+EditLine.prototype.verifyLinked = function () {
+    this.linked.each(
+        function (key, value) {
+            value.validate();
+        }
+    );
+};
+EditLine.prototype.getValue = function () {
+    return this.view.getValue();
+};
+EditLine.prototype.addLinked = function (line) {
+    this.linked.setItem(line.property, line);
+};
+EditLine.prototype.format = function (value) {
+    this.view.format(value);
+};
+EditLine.prototype.focus = function () {
+    this.view.focus();
+};
+
+
+
+function EditLineView(editLine, properties) {
+    var me = this;
+    this.editLine = editLine;
+
+    this.container = jQuery('<div/>', {
+        'class': 'line'
+    });
+
+    this.label = jQuery('<div/>', {
+        'class': 'label',
+        html: properties.label
+    }).appendTo(jQuery('<span/>').css({
+        'display': 'block',
+        'float': 'left'
+    }).appendTo($(this.container)));
+
+
+    if (this.editLine.validation) {
+        this.errorContainer = jQuery('<div/>').addClass('error').appendTo($(this.container));
+        this.error = jQuery('<div/>', { 'class': 'error_content' }).appendTo(this.errorContainer);
+        this.errorIcon = jQuery('<span/>', { 'class': 'icon' }).appendTo($(this.container));
+    }
+
+
+    if (properties.right) {
+        $(properties.right).appendTo(this.container);
+    }
+
+    var $timer;
+    if (properties.value) {
+        this.value = $(properties.value);
+        $(this.value).appendTo($(this.container));
+    } else if (properties.editable) {
+        this.value = jQuery('<input/>', {
+            'class': 'default',
+            'type': 'text'
+        }).bind({
+            'keydown': function (e) {
+                if (e.which === 13) {
+                    /* Jeżeli to nie jest ustawione, w IE 9 focus przeskakuje od razu
+                        * na przycisk [Select categories] i wywołuje jego kliknięcie. */
+                    e.preventDefault();
+                    e.stopPropagation();
+                } else if (e.which == 27) { //Escape.
+                    //Destroy
+                }
+            },
+            'keyup': function () {
+                if ($timer) {
+                    clearTimeout($timer);
+                }
+                $timer = setTimeout(function () {
+                    me.editLine.validate();
+                }, 150);
+            },
+            'change': function () {
+                me.editLine.validate();
+            },
+            'mouseup': function (e) {
+                e.preventDefault();
+            },
+            'blur': function () {
+                me.editLine.validate();
+            }
+        })
+        .on({
+            'focus': function () {
+                this.select();
+            }
+        }).val(me.editLine.object[properties.property]);
+
+        var span = jQuery('<span/>').
+            bind({
+                'click': function () {
+                    me.value.focus();
+                }
+            }).
+            appendTo($(this.container));
+
+        this.value.appendTo($(span));
+
+    } else {
+        this.value = jQuery('<label/>', {
+            'class': 'value',
+            html: me.editLine.question[properties.property]
+        }).appendTo($(this.container));
+    }
+
+    if (properties.inputCss) {
+        $(this.value).css(properties.inputCss);
+    }
+
+}
+EditLineView.prototype.format = function (isValid) {
+    if (isValid) {
+        $(this.value).removeClass('invalid').addClass('valid');
+        $(this.errorContainer).css({ 'display': 'none' });
+        $(this.errorIcon).removeClass('iconInvalid').addClass('iconValid');
+    } else {
+        $(this.value).removeClass('valid').addClass('invalid');
+        $(this.errorContainer).css({ 'display': 'table' });
+        $(this.errorIcon).removeClass('iconValid').addClass('iconInvalid');
+    }
+
+};
+EditLineView.prototype.focus = function () {
+    $(this.value).focus();
+};
+EditLineView.prototype.getValue = function () {
+    return $(this.value).val();
+};
