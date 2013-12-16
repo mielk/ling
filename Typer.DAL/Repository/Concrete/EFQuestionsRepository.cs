@@ -105,9 +105,10 @@ namespace Typer.DAL.Repositories
                     };
 
                     Context.MatchQuestionCategory.Add(dto);
-                    Context.SaveChanges();
+                    
                 }
 
+                Context.SaveChanges();
                 return true;
 
             }
@@ -117,15 +118,16 @@ namespace Typer.DAL.Repositories
             }
         }
 
-        public bool DeleteCategories(int wordId)
+        public bool DeleteCategories(int questionId)
         {
             try
             {
-                IEnumerable<WordCategoryDto> dtos = Context.MatchWordCategory.Where(c => c.MetawordId == wordId);
+                IEnumerable<QuestionCategoryDto> dtos = Context.MatchQuestionCategory.Where(c => c.QuestionId == questionId);
                 foreach (var dto in dtos)
                 {
-                    Context.MatchWordCategory.Remove(dto);
+                    Context.MatchQuestionCategory.Remove(dto);
                 }
+                Context.SaveChanges();
                 return true;
             }
             catch (Exception)

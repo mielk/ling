@@ -54,6 +54,7 @@ namespace Typer.Domain.Services
             {
                 Category parent;
                 if (!CategoriesMap.TryGetValue(category.ParentId, out parent)) continue;
+                category.SetParent(parent);
                 parent.AddChild(category);
             }
         }

@@ -60,8 +60,9 @@ $(function () {
     $('.edit-item').bind({
         'click': function () {
             var id = Number(this.innerHTML);
+            var listLine = $(this).parent();
             if ($.isNumeric(id)) {
-                editQuestion(id);
+                editQuestion(id, listLine);
             }
         }
     });
@@ -92,11 +93,12 @@ $(function () {
 });
 
 
-function editQuestion(id) {
+function editQuestion(id, listLine) {
     var questionJson = getQuestion(id);
     var question = new Question(questionJson, {
-                        blockOtherElements: true
-                    });
+        blockOtherElements: true,
+        listLine: listLine
+    });
     question.displayEditForm();
 }
 
@@ -109,6 +111,7 @@ function getQuestion(questionId) {
         data: { 'id': questionId },
         datatype: "json",
         async: false,
+        cache: false,
         success: function (result) {
             question = result;
         },
@@ -162,21 +165,32 @@ function Question(data, properties) {
     this.weight = this.object.Weight || 1;
     this.categories = this.initialCategoryCollection(data.Categories);
     this.properties = properties || {};
+    this.listLine = properties.listLine;
 
     this.eventHandler = new EventHandler();
     this.eventHandler.bind({
         changeCategory: function (e) {
             e.question = me;
-            e.callback = function (result) {
-                if (result) {
-                    me.categories.length = 0;
-                    for (var i = 0; i < e.items.length; i++) {
-                        me.categories.push(e.items[i].object);
+
+            if (me.checkIfCategoriesChanged(e.items)) {
+                e.callback = function (result) {
+                    if (result) {
+                        me.categories.length = 0;
+                        for (var i = 0; i < e.items.length; i++) {
+                            me.categories.push(e.items[i].object);
+                        }
+                        me.trigger({ type: 'refreshCategories' });
                     }
-                    me.trigger({ type: 'refreshCategories' });
-                }
-            };
-            my.questions.updateCategory(e);
+                };
+                my.questions.updateCategory(e);
+            }
+
+        },
+        refreshCategories: function (e) {
+            me.updateCategoriesString();
+            if (me.listLine) {
+                $(me.listLine).find('.categories').html(me.categoriesString);
+            }
         }
     });
 
@@ -197,13 +211,13 @@ function Question(data, properties) {
     })();
 
 }
-Question.prototype.categoriesString = function () {
+Question.prototype.updateCategoriesString = function () {
     var s = '';
     for (var i = 0; i < this.categories.length; i++) {
         var category = this.categories[i];
         s = s + (s ? ' | ' : '') + category.path();
     }
-    return s;
+    this.categoriesString = s;
 };
 Question.prototype.initialCategoryCollection = function (collection) {
     var array = [];
@@ -244,7 +258,16 @@ Question.prototype.bind = function (e) {
 Question.prototype.trigger = function (e) {
     this.eventHandler.trigger(e);
 };
+Question.prototype.checkIfCategoriesChanged = function (items) {
+    var nodes = [];
+    for (var i = 0; i < this.categories.length; i++) {
+        var category = this.categories[i];
+        nodes.push(category.node);
+    }
 
+    return (!my.array.equal(items, nodes));
+
+};
 
 
 function QuestionValidator(question) {
@@ -998,7 +1021,7 @@ function CategoryPanelView(parent) {
     });
 }
 CategoryPanelView.prototype.refresh = function () {
-    $(this.value).html(this.parent.question.categoriesString());
+    $(this.value).html(this.parent.question.categoriesString);
 };
 
 

@@ -274,26 +274,33 @@ my.array = (function () {
             return array;
         },
         equal: function (arr1, arr2) {
-            if (arr1 && arr2 && arr1.length === arr2.length) {
-                for (var i = 0; i < arr1.length; i++) {
-                    var object = arr1[i];
-                    var found = false;
-                    for (var j = 0; j < arr2.length; j++) {
-                        // ReSharper disable once ExpressionIsAlwaysConst
-                        var obj2 = arr2[j];
-                        if (!found && obj2 === object) {
-                            found = true;
+            if (arr1 && arr2) {
+                if (arr1.length === arr2.length) {
+                    for (var i = 0; i < arr1.length; i++) {
+                        var object = arr1[i];
+                        var found = false;
+                        for (var j = 0; j < arr2.length; j++) {
+                            // ReSharper disable once ExpressionIsAlwaysConst
+                            var obj2 = arr2[j];
+                            if (!found && obj2 === object) {
+                                found = true;
+                            }
                         }
-                    }
-                    
-                    if (!found) {
-                        return false;
+
+                        if (!found) {
+                            return false;
+                        }
+
                     }
 
+                    return true;
+
                 }
-                
+                return false;
             }
-            return true;
+
+            return false;
+            
         }
     };
 })();

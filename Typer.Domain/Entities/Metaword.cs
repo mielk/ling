@@ -45,7 +45,17 @@ namespace Typer.Domain.Entities
         public int Negative { get; set; }
 
         //[Display(Name = "Categories")]
-
+        public string CategoriesString
+        {
+            get
+            {
+                var categoriesString = string.Empty;
+                var categories = QuestionServicesFactory.Instance().GetService().GetCategories(Id);
+                categoriesString = categories.Aggregate(categoriesString, (current, category) => current + ((current.Length > 0 ? " | " : string.Empty) + category.FullPath()));
+                return (categoriesString.Length == 0 ? "not assigned" : categoriesString);
+            }
+        }
+    
 
         public Metaword()
         {

@@ -137,9 +137,10 @@ namespace Typer.DAL.Repositories
                     };
 
                     Context.MatchWordCategory.Add(dto);
-                    Context.SaveChanges();
+                    
                 }
 
+                Context.SaveChanges();
                 return true;
 
             } catch (Exception){
@@ -156,6 +157,7 @@ namespace Typer.DAL.Repositories
                 {
                     Context.MatchWordCategory.Remove(dto);
                 }
+                Context.SaveChanges();
                 return true;
             }
             catch (Exception)

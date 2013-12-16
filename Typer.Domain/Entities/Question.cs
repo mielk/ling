@@ -44,7 +44,17 @@ namespace Typer.Domain.Entities
         public bool IsComplex { get; set; }
 
         //[Display(Name = "Categories")]
-
+        public string CategoriesString
+        {
+            get
+            {
+                var categoriesString = string.Empty;
+                var categories = QuestionServicesFactory.Instance().GetService().GetCategories(Id);
+                categoriesString = categories.Aggregate(categoriesString, (current, category) => current + ((current.Length > 0 ? " | " : string.Empty) + category.FullPath()));
+                return (categoriesString.Length == 0 ? "not assigned" : categoriesString);
+            }
+        }
+    
 
         public Question()
         {
@@ -61,9 +71,6 @@ namespace Typer.Domain.Entities
         {
             return Options.Where(o => o.LanguageId == languageId);
         }
-
-        
-
 
     }
 }
