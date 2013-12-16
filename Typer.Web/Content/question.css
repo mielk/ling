@@ -98,11 +98,11 @@ div
 {
     position: absolute !important;
     display: block !important;
-    right: 0 !important;
-    top: 0 !important;
+    right: 2px !important;
+    top: 2px !important;
     width: 36px !important;
     height: 36px !important;
-    background-color: green !important;
+    background-image: url('images/close-image-36.png') !important;
 }
 
 .question-meta-container

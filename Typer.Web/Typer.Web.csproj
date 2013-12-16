@@ -170,7 +170,10 @@
     <Content Include="Content\categories.css" />
     <Content Include="Content\dropdown.css" />
     <Content Include="Content\edit.css" />
+    <Content Include="Content\images\close-image-36.png" />
+    <Content Include="Content\images\close-image-24.png" />
     <Content Include="Content\images\close.png" />
+    <Content Include="Content\images\delete-node.png" />
     <Content Include="Content\images\delete.png" />
     <Content Include="Content\images\edit.png" />
     <Content Include="Content\images\gold_star.png" />
