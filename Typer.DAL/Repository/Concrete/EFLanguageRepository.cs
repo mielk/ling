@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.TransferObjects;
 
@@ -11,7 +8,7 @@ namespace Typer.DAL.Repositories
     public class EFLanguageRepository : ILanguageRepository
     {
 
-        private static readonly EFDbContext context = EFDbContext.getInstance();
+        private static readonly EFDbContext context = EFDbContext.GetInstance();
         private static IDictionary<int, LanguageDto> dict = new Dictionary<int, LanguageDto>();
 
 
@@ -22,7 +19,7 @@ namespace Typer.DAL.Repositories
 
         public LanguageDto getLanguage(int id)
         {
-            LanguageDto language = getLanguageFromDictionary(id);
+            var language = getLanguageFromDictionary(id);
             if (language != null)
             {
                 return language;
@@ -57,10 +54,10 @@ namespace Typer.DAL.Repositories
         public IEnumerable<LanguageDto> getUserLanguages(int userId)
         {
 
-            List<LanguageDto> languages = new List<LanguageDto>();
+            var languages = new List<LanguageDto>();
             IEnumerable<UserLanguageDto> languageUserObjects = context.UserLanguages.Where(l => l.UserId == userId);
 
-            foreach (UserLanguageDto ul in languageUserObjects)
+            foreach (var ul in languageUserObjects)
             {
                 languages.Add(getLanguage(ul.LanguageId));
             }

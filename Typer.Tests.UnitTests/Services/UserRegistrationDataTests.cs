@@ -23,7 +23,7 @@ namespace Typer.Tests.UnitTests.Domain
 
         public UserRegistrationDataTests()
         {
-            Mock<IUserService> mockService = new Mock<IUserService>();
+            var mockService = new Mock<IUserService>();
             mockService.Setup(m => m.userExists(existingUsername)).Returns(true);
             mockService.Setup(m => m.userExists(It.IsNotIn<string>(existingUsername))).Returns(false);
             mockService.Setup(m => m.mailExists(existingMail)).Returns(true);
@@ -156,7 +156,7 @@ namespace Typer.Tests.UnitTests.Domain
             assignValidDataSet(urd);
             string[] illegalMails = { "mail.o2.pl", "mail@o2", "@o2.pl", "mail mail@o2.pl", "mail@o2.pl.", "mail@o2..pl" };
 
-            foreach (string mail in illegalMails)
+            foreach (var mail in illegalMails)
             {
                 urd.Email = mail;
                 Assert.IsFalse(urd.isValid());
@@ -178,7 +178,7 @@ namespace Typer.Tests.UnitTests.Domain
         public void convertion_to_user_returns_proper_object()
         {
             assignValidDataSet(urd);
-            User user = urd.toUser();
+            var user = urd.toUser();
 
             Assert.AreEqual(username, user.Username);
             Assert.AreEqual(SHA1.Encode(password), user.Password);
@@ -190,7 +190,7 @@ namespace Typer.Tests.UnitTests.Domain
             Assert.IsNull(user.DateOfBirth);
             Assert.IsNull(user.CountryId);
 
-            DateTime today = DateTime.Today;
+            var today = DateTime.Today;
             Assert.AreEqual(today.Date, user.RegistrationDate.Value.Date);
 
         }

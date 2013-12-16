@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Typer.DAL.Repositories;
 using Typer.Domain.Entities;
 using Typer.Domain.Services;
@@ -28,7 +27,7 @@ namespace Typer.Tests.UnitTests.Domain
         }
         private Mock<IUsersRepository> createMockRepository()
         {
-            Mock<IUsersRepository> mock = new Mock<IUsersRepository>();
+            var mock = new Mock<IUsersRepository>();
             mock.Setup(m => m.userExists(loginData.Username, passwordEncrypted)).Returns(true);
             return mock;
         }

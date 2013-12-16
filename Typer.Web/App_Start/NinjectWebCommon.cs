@@ -1,7 +1,9 @@
 using System.Web.Http;
+using Typer.Web;
+using WebActivator;
 
-[assembly: WebActivator.PreApplicationStartMethod(typeof(Typer.Web.NinjectWebCommon), "Start")]
-[assembly: WebActivator.ApplicationShutdownMethodAttribute(typeof(Typer.Web.NinjectWebCommon), "Stop")]
+[assembly: PreApplicationStartMethod(typeof(NinjectWebCommon), "Start")]
+[assembly: ApplicationShutdownMethod(typeof(NinjectWebCommon), "Stop")]
 
 namespace Typer.Web
 {

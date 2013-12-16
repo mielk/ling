@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.Repositories;
 using Typer.DAL.TransferObjects;
@@ -19,7 +15,7 @@ namespace Typer.Domain.Services
         {
             if (repository == null)
             {
-                this.repository = RepositoryFactory.getLanguageRepository();
+                this.repository = RepositoryFactory.GetLanguageRepository();
             }
             else
             {
@@ -32,10 +28,10 @@ namespace Typer.Domain.Services
 
         public IEnumerable<Language> getLanguages()
         {
-            IEnumerable<LanguageDto> dataObjects = repository.getLanguages();
-            List<Language> languages = new List<Language>();
+            var dataObjects = repository.getLanguages();
+            var languages = new List<Language>();
 
-            foreach (LanguageDto dto in dataObjects)
+            foreach (var dto in dataObjects)
             {
                 languages.Add(languageFromDto(dto));
             }
@@ -47,16 +43,16 @@ namespace Typer.Domain.Services
 
         public Language getLanguage(int id)
         {
-            LanguageDto dto = repository.getLanguage(id);
+            var dto = repository.getLanguage(id);
             return languageFromDto(dto);
         }
 
         public IEnumerable<Language> getUserLanguages(int userId)
         {
-            IEnumerable<LanguageDto> dataObjects = repository.getUserLanguages(userId);
-            List<Language> languages = new List<Language>();
+            var dataObjects = repository.getUserLanguages(userId);
+            var languages = new List<Language>();
 
-            foreach (LanguageDto dto in dataObjects)
+            foreach (var dto in dataObjects)
             {
                 languages.Add(languageFromDto(dto));
             }

@@ -4,12 +4,12 @@
     <div class="id">@Model.Id</div>
     <div class="name">@Model.Name</div>
     <div class="weight">
-        @for (int i = 0; i < Model.Weight; i++)
+        @for (var i = 0; i < Model.Weight; i++)
         {
             @Html.ActionLink(" ", "UpdateWeight", "Questions", new { id = Model.Id, weight = i + 1 }, new { @class = "weight checked" });
         }
 
-        @for (int i = Model.Weight; i < 10; i++)
+        @for (var i = Model.Weight; i < 10; i++)
         {
             @Html.ActionLink(" ", "UpdateWeight", "Questions", new { id = Model.Id, weight = i + 1 }, new { @class = "weight" });
         }

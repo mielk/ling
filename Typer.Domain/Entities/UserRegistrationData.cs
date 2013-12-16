@@ -18,7 +18,7 @@ namespace Typer.Domain.Entities
 
         public UserRegistrationData()
         {
-            this.service = UserServicesFactory.Instance().getUserService();
+            service = UserServicesFactory.Instance().getUserService();
         }
 
         public UserRegistrationData(IUserService service)
@@ -125,7 +125,7 @@ namespace Typer.Domain.Entities
         private bool isPasswordValid()
         {
 
-            string regex = @"^.*(?=.*\d)(?=.*[a-zA-Z]).*$";
+            var regex = @"^.*(?=.*\d)(?=.*[a-zA-Z]).*$";
 
             if (Password == null || Password.Length < PasswordMinimumLength)
                 return false;
@@ -164,7 +164,7 @@ namespace Typer.Domain.Entities
 
         public User toUser()
         {
-            User user = new User { 
+            var user = new User { 
                 Username = Username, 
                 Password = SHA1.Encode(Password),
                 Email = Email,

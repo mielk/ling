@@ -1,9 +1,4 @@
 ﻿using System.Web.Mvc;
-using System.Net;
-using System.Net.Mail;
-using Typesafe.Mailgun;
-using System;
-using Typer.Domain.Entities;
 
 namespace Typer.Web.Controllers
 {

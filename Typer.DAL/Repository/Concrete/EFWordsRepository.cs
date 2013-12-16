@@ -1,48 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.TransferObjects;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.DAL.Repositories
 {
-    public class EFWordsRepository : IWordsRepository
+    public class EfWordsRepository : IWordsRepository
     {
 
-        private static readonly EFDbContext context = EFDbContext.getInstance();
+        private static readonly EFDbContext Context = EFDbContext.GetInstance();
 
 
 
-        public IEnumerable<MetawordDto> getMetawords()
+        public IEnumerable<MetawordDto> GetMetawords()
         {
-            return context.Metawords;
+            return Context.Metawords;
         }
 
-        public MetawordDto getMetaword(int id)
+        public MetawordDto GetMetaword(int id)
         {
-            return context.Metawords.SingleOrDefault(q => q.Id == id);
+            return Context.Metawords.SingleOrDefault(q => q.Id == id);
         }
 
-        public MetawordDto getMetaword(string name)
+        public MetawordDto GetMetaword(string name)
         {
-            return context.Metawords.SingleOrDefault(q => q.Name == name);
+            return Context.Metawords.SingleOrDefault(q => q.Name == name);
         }
 
 
 
 
 
-        public bool addMetaword(MetawordDto metaword)
+        public bool AddMetaword(MetawordDto metaword)
         {
             try
             {
-                context.Metawords.Add(metaword);
-                context.SaveChanges();
+                Context.Metawords.Add(metaword);
+                Context.SaveChanges();
                 return true;
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 return false;
             }
@@ -53,18 +52,18 @@ namespace Typer.DAL.Repositories
 
         #region Update methods.
 
-        public bool updateName(int id, string name)
+        public bool UpdateName(int id, string name)
         {
-            MetawordDto metaword = getMetaword(id);
+            var metaword = GetMetaword(id);
             if (metaword != null)
             {
                 try
                 {
                     metaword.Name = name;
-                    context.SaveChanges();
+                    Context.SaveChanges();
                     return true;
                 }
-                catch (Exception exception)
+                catch (Exception)
                 {
                     return false;
                 }
@@ -73,18 +72,18 @@ namespace Typer.DAL.Repositories
             return false;
         }
 
-        public bool updateWeight(int id, int weight)
+        public bool UpdateWeight(int id, int weight)
         {
-            MetawordDto metaword = getMetaword(id);
+            var metaword = GetMetaword(id);
             if (metaword != null)
             {
                 try
                 {
                     metaword.Weight = weight;
-                    context.SaveChanges();
+                    Context.SaveChanges();
                     return true;
                 }
-                catch (Exception exception)
+                catch (Exception)
                 {
                     return false;
                 }
@@ -94,19 +93,19 @@ namespace Typer.DAL.Repositories
 
         }
 
-        public bool updateProperties(int id, string name, int weight)
+        public bool UpdateProperties(int id, string name, int weight)
         {
-            MetawordDto metaword = getMetaword(id);
+            var metaword = GetMetaword(id);
             if (metaword != null)
             {
                 try
                 {
                     metaword.Name = name;
                     metaword.Weight = weight;
-                    context.SaveChanges();
+                    Context.SaveChanges();
                     return true;
                 }
-                catch (Exception exception)
+                catch (Exception)
                 {
                     return false;
                 }
@@ -120,16 +119,15 @@ namespace Typer.DAL.Repositories
 
 
 
-        public bool updateCategories(int wordId, int[] categories){
+        public bool UpdateCategories(int wordId, int[] categories){
 
             try{
 
-                if (!deleteCategories(wordId)) return false;
+                if (!DeleteCategories(wordId)) return false;
 
-                for (int i = 0; i < categories.Length; i++){
-                    var categoryId = categories[i];
-
-                    WordCategoryDto dto = new WordCategoryDto
+                foreach (var categoryId in categories)
+                {
+                    var dto = new WordCategoryDto
                     {
                         CategoryId = categoryId,
                         MetawordId = wordId,
@@ -138,115 +136,99 @@ namespace Typer.DAL.Repositories
                         IsActive = true
                     };
 
-                    context.MatchWordCategory.Add(dto);
-                    context.SaveChanges();
-
+                    Context.MatchWordCategory.Add(dto);
+                    Context.SaveChanges();
                 }
 
                 return true;
 
-            } catch (Exception exception){
+            } catch (Exception){
                 return false;
             }
         }
 
-        public bool deleteCategories(int wordId)
+        public bool DeleteCategories(int wordId)
         {
             try
             {
-
-                IEnumerable<WordCategoryDto> dtos = context.MatchWordCategory.Where(c => c.MetawordId == wordId);
-                foreach (WordCategoryDto dto in dtos)
+                IEnumerable<WordCategoryDto> dtos = Context.MatchWordCategory.Where(c => c.MetawordId == wordId);
+                foreach (var dto in dtos)
                 {
-                    context.MatchWordCategory.Remove(dto);
+                    Context.MatchWordCategory.Remove(dto);
                 }
                 return true;
             }
             catch (Exception)
             {
+                return false;
             }
 
-            return false;
-
         }
 
 
-        public IEnumerable<WordCategoryDto> getCategories(int metawordId)
+        public IEnumerable<WordCategoryDto> GetCategories(int metawordId)
         {
-            return context.MatchWordCategory.Where(m => m.MetawordId == metawordId);
+            return Context.MatchWordCategory.Where(m => m.MetawordId == metawordId);
         }
 
 
-        public bool activate(int id)
+        public bool Activate(int id)
         {
-            MetawordDto metaword = getMetaword(id);
-            if (metaword != null)
+            var metaword = GetMetaword(id);
+            if (metaword == null) return false;
+            if (metaword.IsActive)
+                return true;
+
+            try
             {
-                if (metaword.IsActive)
-                    return true;
-
-                try
-                {
-                    metaword.IsActive = true;
-                    context.SaveChanges();
-                    return true;
-                }
-                catch (Exception exception)
-                {
-                    return false;
-                }
-
+                metaword.IsActive = true;
+                Context.SaveChanges();
+                return true;
             }
-
-            return false;
-
-        }
-
-        public bool deactivate(int id)
-        {
-            MetawordDto metaword = getMetaword(id);
-            if (metaword != null)
+            catch (Exception)
             {
-
-                if (!metaword.IsActive)
-                    return false;
-
-                try
-                {
-                    metaword.IsActive = false;
-                    context.SaveChanges();
-                    return true;
-                }
-                catch (Exception exception)
-                {
-                    return false;
-                }
-
+                return false;
             }
+        }
 
-            return false;
+        public bool Deactivate(int id)
+        {
+            var metaword = GetMetaword(id);
+            if (metaword == null) return false;
+            if (!metaword.IsActive)
+                return false;
 
+            try
+            {
+                metaword.IsActive = false;
+                Context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
 
-        public bool nameExists(string name)
+        public bool NameExists(string name)
         {
-            int counter = context.Metawords.Count(q => q.Name == name);
+            var counter = Context.Metawords.Count(q => q.Name == name);
             return (counter > 0);
         }
 
 
-        public bool nameExists(int id, string name)
+        public bool NameExists(int id, string name)
         {
-            int counter = context.Metawords.Count(q => q.Id == id && q.Name == name);
+            var counter = Context.Metawords.Count(q => q.Id == id && q.Name == name);
             return (counter > 0);
         }
 
 
 
-        public IEnumerable<WordDto> getWords(int wordId)
+        public IEnumerable<WordDto> GetWords(int wordId)
         {
-            return context.Words.Where(o => o.MetawordId == wordId && o.IsActive == true);
+            return Context.Words.Where(o => o.MetawordId == wordId && o.IsActive);
         }
 
 

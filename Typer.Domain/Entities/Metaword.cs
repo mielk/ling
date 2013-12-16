@@ -53,21 +53,14 @@ namespace Typer.Domain.Entities
         }
 
 
-        private IEnumerable<Word> words;
+        private IEnumerable<Word> _words;
         public IEnumerable<Word> Words
         {
-            get
-            {
-                if (words == null)
-                    words = WordServicesFactory.Instance().getService().getWords(Id);
-
-                return words;
-
-            }
+            get { return _words ?? (_words = WordServicesFactory.Instance().getService().GetWords(Id)); }
         }
-        public IEnumerable<Word> getWords(int languageId)
+        public IEnumerable<Word> GetWords(int languageId)
         {
-            return words.Where(o => o.LanguageId == languageId);
+            return _words.Where(o => o.LanguageId == languageId);
         }
 
         

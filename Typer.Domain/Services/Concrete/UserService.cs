@@ -17,7 +17,7 @@ namespace Typer.Domain.Services
         {
             if (repository == null)
             {
-                this.repository = RepositoryFactory.getUsersRepository();
+                this.repository = RepositoryFactory.GetUsersRepository();
             }
             else
             {
@@ -29,19 +29,19 @@ namespace Typer.Domain.Services
 
         public User getUser(UserLoginData loginData)
         {
-            UserDto dto = repository.getUser(loginData.Username, SHA1.Encode(loginData.Password));
+            var dto = repository.getUser(loginData.Username, SHA1.Encode(loginData.Password));
             return userFromDto(dto);
         }
 
         public User getUserByMail(string mail)
         {
-            UserDto dto = repository.getUserByMail(mail);
+            var dto = repository.getUserByMail(mail);
             return userFromDto(dto);
         }
 
         public User getUserByName(string username)
         {
-            UserDto dto = repository.getUser(username);
+            var dto = repository.getUser(username);
             return userFromDto(dto);
         }
 
@@ -52,7 +52,7 @@ namespace Typer.Domain.Services
 
         public bool addUser(User user)
         {
-            UserDto dto = userToDto(user);
+            var dto = userToDto(user);
             return repository.addUser(dto);
         }
 
@@ -73,7 +73,7 @@ namespace Typer.Domain.Services
 
         public bool resetVerificationCode(int userId)
         {
-            string code = Guid.NewGuid().ToString().Replace("-", "");
+            var code = Guid.NewGuid().ToString().Replace("-", "");
             return repository.resetVerificationCode(userId, code);
         }
 

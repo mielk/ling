@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using Typer.Domain.Services;
-using Typer.DAL.Repositories;
-using Typer.Domain.Entities;
 using Typer.Web.Models;
 
 namespace Typer.Web.Controllers
@@ -32,10 +26,10 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult Index()
         {
-            Question question = questionService.getQuestion(1);
-            Language parent = languageService.getLanguage(1);
-            Language learn = languageService.getLanguage(2);
-            TestQuestionViewModel viewModel = new TestQuestionViewModel { Question = question, ParentLanguage = parent, LearnLanguage = learn };
+            var question = questionService.GetQuestion(1);
+            var parent = languageService.getLanguage(1);
+            var learn = languageService.getLanguage(2);
+            var viewModel = new TestQuestionViewModel { Question = question, ParentLanguage = parent, LearnLanguage = learn };
 
 
 

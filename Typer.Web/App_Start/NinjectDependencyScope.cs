@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.Http.Dependencies;
 using Ninject;
 using Ninject.Syntax;
@@ -29,7 +30,7 @@ namespace Typer.Web
             return resolver.TryGet(serviceType);
         }
 
-        public System.Collections.Generic.IEnumerable<object> GetServices(Type serviceType)
+        public IEnumerable<object> GetServices(Type serviceType)
         {
             if (resolver == null)
                 throw new ObjectDisposedException("this", "This scope has been disposed");
@@ -45,7 +46,7 @@ namespace Typer.Web
 
         protected virtual void Dispose(bool disposing)
         {
-            IDisposable disposable = resolver as IDisposable;
+            var disposable = resolver as IDisposable;
             if (disposable != null)
             {
                 disposable.Dispose();

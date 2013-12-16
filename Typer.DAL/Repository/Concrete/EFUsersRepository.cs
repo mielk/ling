@@ -8,7 +8,7 @@ namespace Typer.DAL.Repositories
     public class EFUsersRepository : IUsersRepository
     {
 
-        private static readonly EFDbContext context = EFDbContext.getInstance();
+        private static readonly EFDbContext context = EFDbContext.GetInstance();
 
 
 
@@ -38,19 +38,19 @@ namespace Typer.DAL.Repositories
 
         public bool userExists(string username)
         {
-            int count = context.Users.Count(u => u.Username == username);
+            var count = context.Users.Count(u => u.Username == username);
             return (count > 0);
         }
 
         public bool userExists(string username, string password)
         {
-            int count = context.Users.Count(u => u.Username == username && u.Password == password);
+            var count = context.Users.Count(u => u.Username == username && u.Password == password);
             return (count > 0);
         }
 
         public bool mailExists(string mail)
         {
-            int records = context.Users.Count(u => u.Email == mail);
+            var records = context.Users.Count(u => u.Email == mail);
             return (records > 0 ? true : false);
         }
 
@@ -73,7 +73,7 @@ namespace Typer.DAL.Repositories
         {
             try
             {
-                UserDto user = getUser(userId);
+                var user = getUser(userId);
                 user.MailVerified = true;
                 user.VerificationDate = DateTime.Now;
                 context.SaveChanges();
@@ -89,7 +89,7 @@ namespace Typer.DAL.Repositories
         {
             try
             {
-                UserDto user = getUser(userId);
+                var user = getUser(userId);
                 user.MailVerified = false;
                 user.VerificationDate = null;
                 user.VerificationCode = code;
@@ -106,7 +106,7 @@ namespace Typer.DAL.Repositories
         {
             try
             {
-                UserDto user = getUser(userId);
+                var user = getUser(userId);
                 user.Password = password;
                 context.SaveChanges();
                 return true;

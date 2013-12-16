@@ -1,26 +1,28 @@
 ﻿using System.Collections.Generic;
 using Typer.DAL.TransferObjects;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.DAL.Repositories
 {
     public interface IQuestionsRepository
     {
-        IEnumerable<QuestionDto> getQuestions();
-        QuestionDto getQuestion(int id);
-        QuestionDto getQuestion(string name);
+        IEnumerable<QuestionDto> GetQuestions();
+        QuestionDto GetQuestion(int id);
+        QuestionDto GetQuestion(string name);
 
-        bool addQuestion(QuestionDto question);
+        bool AddQuestion(QuestionDto question);
 
-        bool updateName(int id, string name);
-        bool updateWeight(int id, int weight);
-        bool updateProperties(int id, string name, int weight);
+        bool UpdateName(int id, string name);
+        bool UpdateWeight(int id, int weight);
+        bool UpdateProperties(int id, string name, int weight);
 
-        bool activate(int id);
-        bool deactivate(int id);
-        bool nameExists(string name);
-        bool nameExists(int id, string name);
+        bool Activate(int id);
+        bool Deactivate(int id);
+        bool NameExists(string name);
+        bool NameExists(int id, string name);
 
-        IEnumerable<QuestionOptionDto> getOptions(int questionId);
+        IEnumerable<QuestionOptionDto> GetOptions(int questionId);
+        IEnumerable<QuestionCategoryDto> GetCategories(int metawordId);
         
     }
 }

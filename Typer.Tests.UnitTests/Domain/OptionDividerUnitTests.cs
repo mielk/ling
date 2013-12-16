@@ -1,7 +1,5 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Typer.Domain.Entities;
-using System.Collections.Generic;
 
 namespace Typer.Tests.UnitTests.Domain
 {
@@ -11,7 +9,7 @@ namespace Typer.Tests.UnitTests.Domain
         [TestMethod]
         public void if_no_options_single_variant_is_returned()
         {
-            List<string> variants = new OptionsDivider("abc").getVariants();
+            var variants = new OptionsDivider("abc").getVariants();
             Assert.AreEqual(1, variants.Count);
             Assert.AreEqual("abc", variants[0]);
         }
@@ -19,7 +17,7 @@ namespace Typer.Tests.UnitTests.Domain
         [TestMethod]
         public void if_single_option_two_variants_are_returned()
         {
-            List<string> variants = new OptionsDivider("abc(d)ef").getVariants();
+            var variants = new OptionsDivider("abc(d)ef").getVariants();
             Assert.AreEqual(2, variants.Count);
             Assert.IsTrue(variants.Contains("abcdef"));
             Assert.IsTrue(variants.Contains("abcef"));
@@ -28,7 +26,7 @@ namespace Typer.Tests.UnitTests.Domain
         [TestMethod]
         public void if_double_option_two_variants_are_returned()
         {
-            List<string> variants = new OptionsDivider("abc(d/e)fg").getVariants();
+            var variants = new OptionsDivider("abc(d/e)fg").getVariants();
             Assert.AreEqual(2, variants.Count);
             Assert.IsTrue(variants.Contains("abcdfg"));
             Assert.IsTrue(variants.Contains("abcefg"));
@@ -37,7 +35,7 @@ namespace Typer.Tests.UnitTests.Domain
         [TestMethod]
         public void if_triple_option_three_variants_are_returned()
         {
-            List<string> variants = new OptionsDivider("abc(d/e/f)g").getVariants();
+            var variants = new OptionsDivider("abc(d/e/f)g").getVariants();
             Assert.AreEqual(3, variants.Count);
             Assert.IsTrue(variants.Contains("abcdg"));
             Assert.IsTrue(variants.Contains("abceg"));
@@ -47,7 +45,7 @@ namespace Typer.Tests.UnitTests.Domain
         [TestMethod]
         public void if_two_single_options_four_variants_are_returned()
         {
-            List<string> variants = new OptionsDivider("abc(d)e(f)").getVariants();
+            var variants = new OptionsDivider("abc(d)e(f)").getVariants();
             Assert.AreEqual(4, variants.Count);
             Assert.IsTrue(variants.Contains("abcdef"));
             Assert.IsTrue(variants.Contains("abcef"));
@@ -58,7 +56,7 @@ namespace Typer.Tests.UnitTests.Domain
         [TestMethod]
         public void if_two_double_options_four_variants_are_returned()
         {
-            List<string> variants = new OptionsDivider("abc(d/e)f(g/h)").getVariants();
+            var variants = new OptionsDivider("abc(d/e)f(g/h)").getVariants();
             Assert.AreEqual(4, variants.Count);
             Assert.IsTrue(variants.Contains("abcdfg"));
             Assert.IsTrue(variants.Contains("abcdfh"));
@@ -69,7 +67,7 @@ namespace Typer.Tests.UnitTests.Domain
         [TestMethod]
         public void if_two_triple_options_nine_variants_are_returned()
         {
-            List<string> variants = new OptionsDivider("abc(d/e/f)g(h/i/j)").getVariants();
+            var variants = new OptionsDivider("abc(d/e/f)g(h/i/j)").getVariants();
             Assert.AreEqual(9, variants.Count);
             Assert.IsTrue(variants.Contains("abcdgh"));
             Assert.IsTrue(variants.Contains("abcdgi"));
@@ -85,7 +83,7 @@ namespace Typer.Tests.UnitTests.Domain
         [TestMethod]
         public void if_single_and_triple_options_six_variants_are_returned()
         {
-            List<string> variants = new OptionsDivider("abc(d)g(h/i/j)").getVariants();
+            var variants = new OptionsDivider("abc(d)g(h/i/j)").getVariants();
             Assert.AreEqual(6, variants.Count);
             Assert.IsTrue(variants.Contains("abcdgh"));
             Assert.IsTrue(variants.Contains("abcdgi"));
@@ -98,7 +96,7 @@ namespace Typer.Tests.UnitTests.Domain
         [TestMethod]
         public void if_single_option_nested_in_other_single_option_three_variants_are_returned()
         {
-            List<string> variants = new OptionsDivider("abc(de(f))").getVariants();
+            var variants = new OptionsDivider("abc(de(f))").getVariants();
             Assert.AreEqual(3, variants.Count);
             Assert.IsTrue(variants.Contains("abc"));
             Assert.IsTrue(variants.Contains("abcde"));
@@ -108,7 +106,7 @@ namespace Typer.Tests.UnitTests.Domain
         [TestMethod]
         public void if_double_option_nested_in_other_single_option_three_variants_are_returned()
         {
-            List<string> variants = new OptionsDivider("abc(de(f/g))").getVariants();
+            var variants = new OptionsDivider("abc(de(f/g))").getVariants();
             Assert.AreEqual(3, variants.Count);
             Assert.IsTrue(variants.Contains("abc"));
             Assert.IsTrue(variants.Contains("abcdeg"));

@@ -12,7 +12,7 @@ namespace Typer.Web.Binders
         public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
         {
             // get the Cart from the session
-            User user = (User)controllerContext.HttpContext.Session[sessionKey];
+            var user = (User)controllerContext.HttpContext.Session[sessionKey];
 
             // create the Cart if there wasn't one in the session data
             if (user == null)

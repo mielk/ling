@@ -28,11 +28,11 @@ Category.prototype.loadChildren = function(children) {
         this.addChild(category);
     }
 };
-Category.prototype.path = function () {
+Category.prototype.path = function() {
     if (!this.parent) return '';
     var parentPath = this.parent.path();
     return parentPath + (parentPath ? ' > ' : '') + this.name;
-}
+};
 
 function categoryProperties(properties) {
     return {        

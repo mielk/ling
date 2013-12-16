@@ -118,7 +118,7 @@ TYPE = {
     VERB: { id: 2, name: 'verb' },
     ADJECTIVE: { id: 3, name: ' adjective' },
     OTHER: { id: 4, name: 'other' },
-    getItem: function (value) {
+    getItem: function(value) {
         for (var key in TYPE) {
             if (TYPE.hasOwnProperty(key)) {
                 var object = TYPE[key];
@@ -127,8 +127,9 @@ TYPE = {
                 }
             }
         }
+        return null;
     }
-}
+};
 
 function getLanguages() {
     var $languages;
@@ -153,7 +154,7 @@ function getLanguages() {
         languages[i] = {
             Language: language,
             Options: []
-        }
+        };
     }
 
     return languages;
@@ -167,7 +168,6 @@ function Metaword(data, properties) {
     this.name = this.object.Name || '';
     this.weight = this.object.Weight || 1;
     this.categories = this.initialCategoryCollection(data.Categories);
-    this.blockOtherElements = properties.blockOtherElements;
     
     this.properties = properties || {};
     this.type = TYPE.getItem(this.object.Type);
@@ -191,7 +191,7 @@ function Metaword(data, properties) {
 
     this.validator = new MetawordValidator(this);
 
-    this.view = new MetawordView(this, properties.container, properties.x, properties.y);
+    this.view = new MetawordView(this, properties);
 
     this.meta = new MetawordMeta(this);
 
@@ -255,12 +255,12 @@ Metaword.prototype.trigger = function (e) {
 };
 
 
-function MetawordView(metaword, container, x, y) {
+function MetawordView(metaword, properties) {
     var me = this;
     this.word = metaword;
-    this.blockOtherElements = this.word.blockOtherElements;
+    this.blockOtherElements = properties.blockOtherElements;
 
-    this.background = container || jQuery('<div/>', {
+    this.background = properties.container || jQuery('<div/>', {
                             id: 'question-background',
                             'class': 'question-background'
                         }).
@@ -295,21 +295,21 @@ function MetawordView(metaword, container, x, y) {
 
 
     //Place container inside the screen.
-    if (x !== undefined) {
-        $(container).css('left', x);
+    if (properties.x !== undefined) {
+        $(this.container).css('left', properties.x);
     }
-    if (y !== undefined) {
-        $(container).css('top', y);
+    if (properties.y !== undefined) {
+        $(this.container).css('top', properties.y);
     }
 
 }
-MetawordView.prototype.destroy = function () {
+MetawordView.prototype.destroy = function() {
     $(this.background).empty();
     if (this.blockOtherElements) {
         $(this.background).remove();
     }
-}
-MetawordView.prototype.display = function () {
+};
+MetawordView.prototype.display = function() {
     $(this.background).css({
         'display': 'block'
     });
@@ -319,32 +319,29 @@ MetawordView.prototype.display = function () {
 
     this.word.meta.name.focus();
 
-}
-MetawordView.prototype.append = function (element) {
+};
+MetawordView.prototype.append = function(element) {
     $(element).appendTo(this.container);
-}
+};
 
 
 function MetawordValidator(metaword) {
-    var me = this;
     this.word = metaword;
-
     this.invalid = new HashTable(null);
-
 }
-MetawordValidator.prototype.validation = function (validation) {
+MetawordValidator.prototype.validation = function(validation) {
     if (validation.status) {
         this.invalid.removeItem(validation.id);
     } else {
         this.invalid.setItem(validation.id, validation.id);
     }
     this.checkState();
-}
-MetawordValidator.prototype.checkState = function () {
+};
+MetawordValidator.prototype.checkState = function() {
     if (this.word.buttons) {
         this.word.buttons.enable(this.invalid.size() === 0);
     }
-}
+};
 
 
 
@@ -406,12 +403,12 @@ function MetawordMeta(metaword) {
     this.contrary = 'to be added';
 
 }
-MetawordMeta.prototype.append = function (element) {
+MetawordMeta.prototype.append = function(element) {
     $(element).appendTo($(this.container));
-}
+};
+
 
 function DataLine(parent, properties) {
-    var me = this;
     this.parent = parent;
     this.word = this.parent.word;
     this.property = properties.property;
@@ -427,7 +424,7 @@ function DataLine(parent, properties) {
     }
 
 }
-DataLine.prototype.validate = function () {
+DataLine.prototype.validate = function() {
     var me = this;
     this.verifyLinked();
 
@@ -447,26 +444,26 @@ DataLine.prototype.validate = function () {
         status: (isValid === true ? true : false)
     });
 
-}
-DataLine.prototype.verifyLinked = function () {
+};
+DataLine.prototype.verifyLinked = function() {
     this.linked.each(
-        function(key, value){
+        function(key, value) {
             value.validate();
         }
     );
-}
-DataLine.prototype.getValue = function () {
+};
+DataLine.prototype.getValue = function() {
     return this.view.getValue();
-}
-DataLine.prototype.addLinked = function (line) {
+};
+DataLine.prototype.addLinked = function(line) {
     this.linked.setItem(line.property, line);
-}
-DataLine.prototype.format = function (value) {
+};
+DataLine.prototype.format = function(value) {
     this.view.format(value);
-}
-DataLine.prototype.focus = function () {
+};
+DataLine.prototype.focus = function() {
     this.view.focus();
-}
+};
 
 
 
@@ -527,23 +524,23 @@ function DataLineView(dataLine, properties) {
             'mouseup': function (e) {
                 e.preventDefault();
             },
-            'blur': function (e) {
+            'blur': function () {
                 me.dataLine.validate();
             }
         })
         .on({
-            'focus': function (e) {
+            'focus': function () {
                 this.select();
             }
         }).val(me.dataLine.word[properties.property]);
 
         var span = jQuery('<span/>').
-        bind({
-            'click': function () {
-                me.value.focus();
-            }
-        }).
-        appendTo($(this.container))
+            bind({
+                'click': function() {
+                    me.value.focus();
+                }
+            }).
+            appendTo($(this.container));
 
         this.value.appendTo($(span));
 
@@ -570,25 +567,26 @@ DataLineView.prototype.format = function (isValid) {
         $(this.errorIcon).removeClass('iconValid').addClass('iconInvalid');
     }
 
-}
-DataLineView.prototype.focus = function () {
+};
+DataLineView.prototype.focus = function() {
     $(this.value).focus();
-}
-DataLineView.prototype.getValue = function () {
+};
+DataLineView.prototype.getValue = function() {
     return $(this.value).val();
-}
+};
+
 
 var nameChecker = (function(){
     var nameExists = false;
     function check(params) {
-        var MAX_LENGTH = 255;
+        var maxLength = 255;
         var name = params.value;
         var id = params.id;
 
         if (!name.trim()) {
             return MessageBundle.get(dict.NameCannotBeEmpty);
-        } else if (name.length > MAX_LENGTH) {
-            return MessageBundle.get(dict.NameCannotBeLongerThan, [MAX_LENGTH]);
+        } else if (name.length > maxLength) {
+            return MessageBundle.get(dict.NameCannotBeLongerThan, [maxLength]);
         } else {
             nameAlreadyExists(name, id);
 
@@ -624,10 +622,10 @@ var nameChecker = (function(){
     }
 
     return {
-        check: function (params) {
+        check: function(params) {
             return check(params);
         }
-    }
+    };
 })();
 
 function MetawordButtons(metaword) {
@@ -670,17 +668,16 @@ function MetawordButtons(metaword) {
 
 
 }
-MetawordButtons.prototype.enable = function (value) {
+MetawordButtons.prototype.enable = function(value) {
     if (value) {
         $(this.ok).removeAttr('disabled');
     } else {
         $(this.ok).attr('disabled', 'disabled');
     }
-}
+};
 
 
 function Language(parent, properties) {
-    var me = this;
     this.parent = parent;
     this.id = properties.id;
     this.name = properties.name;
@@ -693,7 +690,7 @@ function Language(parent, properties) {
     this.view.refreshOptionsPanel();
 
 }
-Language.prototype.createOptionsSet = function (options) {
+Language.prototype.createOptionsSet = function(options) {
     var me = this;
     var array = new HashTable(null);
     for (var i = 0; i < options.length; i++) {
@@ -710,17 +707,17 @@ Language.prototype.createOptionsSet = function (options) {
 
     return array;
 
-}
-Language.prototype.addOption = function (option) {
+};
+Language.prototype.addOption = function(option) {
     alert('to be implemented');
-}
-Language.prototype.removeOption = function (option) {
+};
+Language.prototype.removeOption = function(option) {
     this.options.removeItem(option.id);
     this.view.refreshOptionsPanel();
-}
-Language.prototype.isUnique = function (content, optionId) {
+};
+Language.prototype.isUnique = function(content, optionId) {
     var unique = true;
-    this.options.each(function (key, option) {
+    this.options.each(function(key, option) {
         if (option.content === content) {
             if (option.id !== optionId) {
                 unique = false;
@@ -728,7 +725,7 @@ Language.prototype.isUnique = function (content, optionId) {
         }
     });
     return unique;
-}
+};
 
 
 function LanguageView(language) {
@@ -838,14 +835,13 @@ LanguageView.prototype.refreshOptionsPanel = function () {
         'display': (me.language.options && me.language.options.size() ? 'block' : 'none')
     });
 };
-LanguageView.prototype.addOption = function(element){
+LanguageView.prototype.addOption = function(element) {
     $(element).appendTo($(this.options));
-}
+};
 
 
 
 function WeightPanel(maxWeight, weight) {
-    var me = this;
     this.minWeight = 1;
     this.maxWeight = maxWeight;
     this.value = weight;
@@ -866,7 +862,7 @@ function WeightPanelView(panel) {
         'class': 'weight-icons-container'
     }).bind({
         'clickIcon': function (e) {
-            $(this.textbox).val(e.weight);
+            $(me.textbox).val(e.weight);
         }
     }).appendTo($(this.container));
 
@@ -885,12 +881,13 @@ function WeightPanelView(panel) {
 
 
     for (var i = this.panel.minWeight - 1; i < this.panel.maxWeight; i++) {
+    // ReSharper disable once UnusedLocals
         var icon = jQuery('<div/>', {
             'id': i,
             'class': 'weight-icon',
             html: i + 1
         }).bind({
-            'click': function (e) {
+            'click': function () {
                 $(me.icons).trigger({
                     'type': 'clickIcon',
                     'weight': (this.id * 1 + 1)
@@ -912,7 +909,7 @@ function WeightPanelView(panel) {
             });
         }
     }).on({
-        'focus': function (e) {
+        'focus': function () {
             this.select();
         }
     })
@@ -928,10 +925,10 @@ function WeightPanelView(panel) {
     this.setValue(this.panel.value);
 
 }
-WeightPanelView.prototype.setValue = function (value) {
+WeightPanelView.prototype.setValue = function(value) {
     var me = this;
     this.panel.value = value;
-    $(this.icons).find('.weight-icon').each(function () {
+    $(this.icons).find('.weight-icon').each(function() {
         var $value = $(this).html() * 1;
         if ($value <= value * 1) {
             $(this).addClass(me.checkedCssClass);
@@ -941,20 +938,19 @@ WeightPanelView.prototype.setValue = function (value) {
     });
     $(this.textbox).val(value);
     this.panel.weight = value;
-}
+};
 
 //panel
 //editButton
 function CategoryPanel(parent) {
-    var me = this;
     this.parent = parent;
     this.word = this.parent.word;
     this.view = new CategoryPanelView(this);
 }
-CategoryPanel.prototype.panel = function () {
+CategoryPanel.prototype.panel = function() {
     return this.view.span;
-}
-CategoryPanel.prototype.selectCategories = function () {
+};
+CategoryPanel.prototype.selectCategories = function() {
     var me = this;
     var tree = new Tree({
         'mode': MODE.MULTI,
@@ -967,33 +963,33 @@ CategoryPanel.prototype.selectCategories = function () {
 
     tree.reset({ unselect: true, collapse: false });
     tree.eventHandler.bind({
-        confirm: function (e) {
+        confirm: function(e) {
             me.parent.word.trigger({
                 'type': 'changeCategory',
                 'items': e.item
             });
             tree.destroy();
         },
-        add: function (e) {
+        add: function(e) {
             my.categories.addNew(e);
         },
-        remove: function (e) {
+        remove: function(e) {
             my.categories.remove(e);
         },
-        rename: function (e) {
+        rename: function(e) {
             my.categories.updateName(e);
         },
-        transfer: function (e) {
+        transfer: function(e) {
             my.categories.updateParent(e);
         }
     });
     tree.show();
-}
+};
 
 function CategoryPanelView(parent) {
     var me = this;
     this.parent = parent;
-    this.panel = jQuery('<span/>')
+    this.panel = jQuery('<span/>');
     this.value = jQuery('<div/>', {
         'class': 'categories'
     }).appendTo(this.panel);
@@ -1014,20 +1010,19 @@ function CategoryPanelView(parent) {
         'type': 'submit',
         'value': '...'
     }).on({
-        'click': function (e) {
+        'click': function () {
             me.parent.selectCategories();
         }
     });
 }
-CategoryPanelView.prototype.refresh = function () {
+CategoryPanelView.prototype.refresh = function() {
     $(this.value).html(this.parent.word.categoriesString());
-}
+};
 
 
 
 
 function Word(properties) {
-    var me = this;
     this.language = properties.language;
     this.id = properties.id;
     this.content = properties.content || '';
@@ -1038,7 +1033,7 @@ function Word(properties) {
     this.language.view.addOption($(this.view.container));
 
 }
-Word.prototype.toHtml = function () {
+Word.prototype.toHtml = function() {
     var html = '<div class="button delete" title="Delete this option"></div>';
     html += '<div class="button edit" title="Edit this option"></div>';
     html += '<div class="content" data-value="' + this.content + '">';
@@ -1048,8 +1043,8 @@ Word.prototype.toHtml = function () {
 
     return html;
 
-}
-Word.prototype.contentToHtml = function () {
+};
+Word.prototype.contentToHtml = function() {
     var replaced = this.content.replace(/\[/g, '|$').replace(/\]/g, '|');
     var parts = replaced.split("|");
 
@@ -1066,19 +1061,19 @@ Word.prototype.contentToHtml = function () {
     }
 
     return result;
-}
-Word.prototype.isUniqueContent = function (content) {
+};
+Word.prototype.isUniqueContent = function(content) {
     return this.language.isUnique(content.trim(), this.id);
-}
-Word.prototype.update = function (content, weight) {
+};
+Word.prototype.update = function(content, weight) {
     this.content = content;
     this.weight = weight;
     this.view.update();
-}
-Word.prototype.remove = function () {
+};
+Word.prototype.remove = function() {
     this.language.removeOption(this);
     this.view.destroy();
-}
+};
 
 
 function WordView(word) {
@@ -1091,7 +1086,7 @@ function WordView(word) {
         'class': 'button delete',
         'title': 'Delete this option'
     }).bind({
-        click: function (e) {
+        click: function () {
             me.word.remove();
         }
     }).appendTo($(this.container));
@@ -1100,7 +1095,7 @@ function WordView(word) {
         'class': 'button edit',
         'title': 'Edit this option'
     }).bind({
-        click: function (e) {
+        click: function () {
             var editPanel = new EditPanel({
                 'option': me
             });
@@ -1125,16 +1120,16 @@ function WordView(word) {
     }).appendTo($(this.container));
 
 }
-WordView.prototype.destroy = function () {
+WordView.prototype.destroy = function() {
     $(this.container).remove();
-}
-WordView.prototype.appendTo = function (parent) {
+};
+WordView.prototype.appendTo = function(parent) {
     $(this.container).appendTo($(parent));
-}
-WordView.prototype.update = function () {
+};
+WordView.prototype.update = function() {
     $(this.content).html(this.word.contentToHtml());
     $(this.weight).html(this.word.weight);
-}
+};
 
 
 

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Typer.Domain.Entities
 {
@@ -21,7 +19,7 @@ namespace Typer.Domain.Entities
         public List<string> getVariants()
         {
 
-            Part root = new Part(text);
+            var root = new Part(text);
             return root.getVariants();
 
             //List<string> list = new List<string>();
@@ -137,18 +135,18 @@ namespace Typer.Domain.Entities
 
         public Part(string content, Part parent, int index)
         {
-            this.Parent = parent;
-            this.Content = content;
-            this.Name = "{" + index + "}";
-            this.Children = new List<Part>();
+            Parent = parent;
+            Content = content;
+            Name = "{" + index + "}";
+            Children = new List<Part>();
         }
 
         public Part(string content)
         {
-            this.Parent = null;
-            this.Content = content;
-            this.Children = new List<Part>();
-            this.Name = "{0}";
+            Parent = null;
+            Content = content;
+            Children = new List<Part>();
+            Name = "{0}";
         }
 
         public bool isRoot()
@@ -167,12 +165,12 @@ namespace Typer.Domain.Entities
 
         private void extractParts()
         {
-            char[] chars = Content.ToCharArray();
-            StringBuilder variant = new StringBuilder();
-            int level = 0;
-            int counter = 0;
+            var chars = Content.ToCharArray();
+            var variant = new StringBuilder();
+            var level = 0;
+            var counter = 0;
 
-            foreach (char c in chars)
+            foreach (var c in chars)
             {
                 if (c == 40)
                 {
@@ -191,8 +189,8 @@ namespace Typer.Domain.Entities
                     level--;
                     if (level == 0)
                     {
-                        Part part = new Part(variant.ToString(), this, counter);
-                        this.Children.Add(part);
+                        var part = new Part(variant.ToString(), this, counter);
+                        Children.Add(part);
                         variant.Clear();
                     }
                     else
@@ -229,9 +227,9 @@ namespace Typer.Domain.Entities
 
         private List<string> merge()
         {
-            List<string> list = this.variants;
+            var list = variants;
 
-            foreach (Part part in Children)
+            foreach (var part in Children)
             {
                 list = crossVariants(list, part.getVariants(), part.Name);
             }
@@ -243,10 +241,10 @@ namespace Typer.Domain.Entities
 
         private List<string> crossVariants(List<string> texts, List<string> options, string tag)
         {
-            List<string> list = new List<string>();
-            foreach (string text in texts)
+            var list = new List<string>();
+            foreach (var text in texts)
             {
-                foreach (string option in options)
+                foreach (var option in options)
                 {
                     var str = text.Replace(tag, option);
                     if (!list.Contains(str))

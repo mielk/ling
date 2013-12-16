@@ -1,125 +1,102 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.Repositories;
 using Typer.Domain.Entities;
 using Typer.Common.Helpers;
 using Typer.DAL.TransferObjects;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.Domain.Services
 {
     public class QuestionService : IQuestionService
     {
 
 
-        private readonly IQuestionsRepository repository;
+        private readonly IQuestionsRepository _repository;
+        private readonly ICategoryService _categoryService = CategoryServicesFactory.Instance().getService();
 
         public QuestionService(IQuestionsRepository repository)
         {
-            if (repository == null)
-            {
-                this.repository = RepositoryFactory.getQuestionsRepository();
-            }
-            else
-            {
-                this.repository = repository;
-            }
+            _repository = repository ?? RepositoryFactory.GetQuestionsRepository();
+        }
+
+
+        public IEnumerable<Question> GetQuestions()
+        {
+            var dataObjects = _repository.GetQuestions();
+            return dataObjects.Select(QuestionFromDto).ToList();
+        }
+
+        public Question GetQuestion(int id)
+        {
+            var dto = _repository.GetQuestion(id);
+            return QuestionFromDto(dto);
         }
 
 
 
-        public IEnumerable<Question> getQuestions()
+        public bool ChangeWeight(int id, int weight)
         {
-            IEnumerable<QuestionDto> dataObjects = repository.getQuestions();
-            List<Question> questions = new List<Question>();
-
-            foreach (QuestionDto dto in dataObjects)
-            {
-                questions.Add(questionFromDto(dto));
-            }
-
-            return questions;            
-
-        }
-
-        public Question getQuestion(int id)
-        {
-            QuestionDto dto = repository.getQuestion(id);
-            return questionFromDto(dto);
+            return _repository.UpdateWeight(id, weight.ToRange(Question.MinWeight, Question.MaxWeight));
         }
 
 
-
-        public bool changeWeight(int id, int weight)
+        public bool Activate(int id)
         {
-            return repository.updateWeight(id, weight.ToRange(Question.MinWeight, Question.MaxWeight));
+            return _repository.Activate(id);
         }
 
 
-        public bool activate(int id)
+        public bool Deactivate(int id)
         {
-            return repository.activate(id);
+            return _repository.Deactivate(id);
         }
 
-
-        public bool deactivate(int id)
+        public bool NameExists(string name)
         {
-            return repository.deactivate(id);
+            return _repository.NameExists(name);
         }
 
-        public bool nameExists(string name)
+        public bool NameExists(int id, string name)
         {
-            return repository.nameExists(name);
-        }
-
-        public bool nameExists(int id, string name)
-        {
-            QuestionDto question = repository.getQuestion(name);
+            var question = _repository.GetQuestion(name);
 
             if (question != null)
             {
-                return (question.Id == id ? false : true);
+                return (question.Id != id);
             }
-            else
-            {
-                return false;
-            }
-
+            return false;
         }
 
 
-        public bool updateQuestion(Question question)
+        public bool UpdateQuestion(Question question)
         {
-            return repository.updateProperties(question.Id, question.Name, question.Weight);
+            return _repository.UpdateProperties(question.Id, question.Name, question.Weight);
         }
 
-        public bool addQuestion(Question question)
+        public bool AddQuestion(Question question)
         {
-            QuestionDto dto = questionToDto(question);
-            return repository.addQuestion(dto);
+            var dto = QuestionToDto(question);
+            return _repository.AddQuestion(dto);
         }
 
-        public IEnumerable<QuestionOption> getOptions(int questionId)
+        public IEnumerable<QuestionOption> GetOptions(int questionId)
         {
-            List<QuestionOption> options = new List<QuestionOption>();
-            IEnumerable<QuestionOptionDto> dataObjects = repository.getOptions(questionId);
+            var dataObjects = _repository.GetOptions(questionId);
+            return dataObjects.Select(OptionFromDto).ToList();
+        }
 
-            foreach (QuestionOptionDto dto in dataObjects)
-            {
-                options.Add(optionFromDto(dto));
-            }
 
-            return options;
-
+        public IEnumerable<Category> GetCategories(int questionId)
+        {
+            var dtos = _repository.GetCategories(questionId);
+            return dtos.Select(dto => _categoryService.GetCategory(dto.CategoryId)).ToList();
         }
 
 
 
-
-        private Question questionFromDto(QuestionDto dto)
+        private static Question QuestionFromDto(QuestionDto dto)
         {
             return new Question
             {
@@ -136,7 +113,7 @@ namespace Typer.Domain.Services
             };
         }
 
-        private QuestionDto questionToDto(Question question)
+        private static QuestionDto QuestionToDto(Question question)
         {
             return new QuestionDto
             {
@@ -154,7 +131,7 @@ namespace Typer.Domain.Services
         }
 
 
-        private QuestionOption optionFromDto(QuestionOptionDto dto)
+        private static QuestionOption OptionFromDto(QuestionOptionDto dto)
         {
             return new QuestionOption
             {
@@ -173,7 +150,8 @@ namespace Typer.Domain.Services
             };
         }
 
-        private QuestionOptionDto optionToDto(QuestionOption option)
+/*
+        private static QuestionOptionDto OptionToDto(QuestionOption option)
         {
             return new QuestionOptionDto
             {
@@ -191,6 +169,7 @@ namespace Typer.Domain.Services
                 Weight = option.Weight
             };
         }
+*/
 
 
     }

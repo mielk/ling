@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Typer.Domain.Entities
 {
@@ -18,9 +16,9 @@ namespace Typer.Domain.Entities
         public TestEnquiry(Question question, Language parent, Language learn)
         {
             this.question = question;
-            this.parentLanguage = parent;
-            this.learnLanguage = learn;
-            this.selectedOption = selectOption(question.getOptions(parentLanguage.Id));
+            parentLanguage = parent;
+            learnLanguage = learn;
+            selectedOption = selectOption(question.getOptions(parentLanguage.Id));
 
         }
 
@@ -39,11 +37,11 @@ namespace Typer.Domain.Entities
             }
             else
             {
-                int weights = options.Sum(q => q.Weight);
-                int randomWeight = new Random().Next(1, weights + 1);
-                int current = 0;
+                var weights = options.Sum(q => q.Weight);
+                var randomWeight = new Random().Next(1, weights + 1);
+                var current = 0;
 
-                foreach (QuestionOption option in options)
+                foreach (var option in options)
                 {
                     current += option.Weight;
                     if (randomWeight <= current)

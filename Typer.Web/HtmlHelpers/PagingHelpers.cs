@@ -9,10 +9,10 @@ namespace Typer.Web.HtmlHelpers
     {
 
         public static MvcHtmlString PageLinks(this HtmlHelper html, PagingInfo pagingInfo, Func<int, string> pageUrl) {
-            StringBuilder result = new StringBuilder();
+            var result = new StringBuilder();
 
-            for (int i = 1; i <= pagingInfo.TotalPages; i++) {
-                TagBuilder tag = new TagBuilder("a"); // Construct an <a> tag
+            for (var i = 1; i <= pagingInfo.TotalPages; i++) {
+                var tag = new TagBuilder("a"); // Construct an <a> tag
                 tag.MergeAttribute("href", pageUrl(i));
                 tag.InnerHtml = i.ToString();
 
@@ -29,10 +29,10 @@ namespace Typer.Web.HtmlHelpers
 
 
         public static MvcHtmlString QuestionDisplayer(this HtmlHelper html, string content){
-            StringBuilder result = new StringBuilder();
-            string[] parts = content.Replace("[", "|$").Replace("]", "|").Split('|');
+            var result = new StringBuilder();
+            var parts = content.Replace("[", "|$").Replace("]", "|").Split('|');
 
-            foreach (string s in parts)
+            foreach (var s in parts)
             {
                 if (s.Length > 0)
                 {

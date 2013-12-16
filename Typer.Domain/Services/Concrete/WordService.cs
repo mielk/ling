@@ -1,148 +1,105 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.Repositories;
 using Typer.Domain.Entities;
 using Typer.Common.Helpers;
 using Typer.DAL.TransferObjects;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.Domain.Services
 {
     public class WordService : IWordService
     {
 
-
-        private readonly IWordsRepository repository;
-        private readonly ICategoryService categoryService = CategoryServicesFactory.Instance().getService();
+        private readonly IWordsRepository _repository;
+        private readonly ICategoryService _categoryService = CategoryServicesFactory.Instance().getService();
 
         public WordService(IWordsRepository repository)
         {
-            if (repository == null)
-            {
-                this.repository = RepositoryFactory.getWordsRepository();
-            }
-            else
-            {
-                this.repository = repository;
-            }
+            _repository = repository ?? RepositoryFactory.GetWordsRepository();
+        }
+
+
+        public IEnumerable<Metaword> GetMetawords()
+        {
+            var dataObjects = _repository.GetMetawords();
+            return dataObjects.Select(MetawordFromDto).ToList();
+        }
+
+        public Metaword GetMetaword(int id)
+        {
+            var dto = _repository.GetMetaword(id);
+            return MetawordFromDto(dto);
         }
 
 
 
-        public IEnumerable<Metaword> getMetawords()
+        public bool ChangeWeight(int id, int weight)
         {
-            IEnumerable<MetawordDto> dataObjects = repository.getMetawords();
-            List<Metaword> metawords = new List<Metaword>();
-
-            foreach (MetawordDto dto in dataObjects)
-            {
-                metawords.Add(metawordFromDto(dto));
-            }
-
-            return metawords;
-
-        }
-
-        public Metaword getMetaword(int id)
-        {
-            MetawordDto dto = repository.getMetaword(id);
-            return metawordFromDto(dto);
+            return _repository.UpdateWeight(id, weight.ToRange(Metaword.MinWeight, Metaword.MaxWeight));
         }
 
 
-
-        public bool changeWeight(int id, int weight)
+        public bool Activate(int id)
         {
-            return repository.updateWeight(id, weight.ToRange(Metaword.MinWeight, Metaword.MaxWeight));
+            return _repository.Activate(id);
         }
 
 
-        public bool activate(int id)
+        public bool Deactivate(int id)
         {
-            return repository.activate(id);
+            return _repository.Deactivate(id);
         }
 
-
-        public bool deactivate(int id)
+        public bool NameExists(string name)
         {
-            return repository.deactivate(id);
+            return _repository.NameExists(name);
         }
 
-        public bool nameExists(string name)
+        public bool NameExists(int id, string name)
         {
-            return repository.nameExists(name);
-        }
-
-        public bool nameExists(int id, string name)
-        {
-            MetawordDto metaword = repository.getMetaword(name);
+            var metaword = _repository.GetMetaword(name);
 
             if (metaword != null)
             {
-                return (metaword.Id == id ? false : true);
+                return (metaword.Id != id);
             }
-            else
-            {
-                return false;
-            }
-
+            return false;
         }
 
 
-        public bool updateMetaword(Metaword metaword)
+        public bool UpdateMetaword(Metaword metaword)
         {
-            return repository.updateProperties(metaword.Id, metaword.Name, metaword.Weight);
+            return _repository.UpdateProperties(metaword.Id, metaword.Name, metaword.Weight);
         }
 
-        public bool addMetaword(Metaword metaword)
+        public bool AddMetaword(Metaword metaword)
         {
-            MetawordDto dto = metawordToDto(metaword);
-            return repository.addMetaword(dto);
+            var dto = MetawordToDto(metaword);
+            return _repository.AddMetaword(dto);
         }
 
-        public IEnumerable<Word> getWords(int metawordId)
+        public IEnumerable<Word> GetWords(int metawordId)
         {
-            List<Word> words = new List<Word>();
-            IEnumerable<WordDto> dataObjects = repository.getWords(metawordId);
-
-            foreach (WordDto dto in dataObjects)
-            {
-                words.Add(wordFromDto(dto));
-            }
-
-            return words;
-
+            var dataObjects = _repository.GetWords(metawordId);
+            return dataObjects.Select(WordFromDto).ToList();
         }
 
 
-        public bool updateCategories(int id, int[] categoriesId)
+        public bool UpdateCategories(int id, int[] categoriesId)
         {
-            return repository.updateCategories(id, categoriesId);
+            return _repository.UpdateCategories(id, categoriesId);
         }
 
-        public IEnumerable<Category> getCategories(int metawordId)
+        public IEnumerable<Category> GetCategories(int metawordId)
         {
-
-            List<Category> categories = new List<Category>();
-            IEnumerable<WordCategoryDto> dtos = repository.getCategories(metawordId);
-
-            foreach (WordCategoryDto dto in dtos)
-            {
-                Category category = categoryService.GetCategory(dto.CategoryId);
-                categories.Add(category);
-            }
-
-            return categories;
-
-            
-
+            var dtos = _repository.GetCategories(metawordId);
+            return dtos.Select(dto => _categoryService.GetCategory(dto.CategoryId)).ToList();
         }
 
 
-        private Metaword metawordFromDto(MetawordDto dto)
+        private static Metaword MetawordFromDto(MetawordDto dto)
         {
             return new Metaword
             {
@@ -159,7 +116,7 @@ namespace Typer.Domain.Services
             };
         }
 
-        private MetawordDto metawordToDto(Metaword metaword)
+        private static MetawordDto MetawordToDto(Metaword metaword)
         {
             return new MetawordDto
             {
@@ -176,7 +133,7 @@ namespace Typer.Domain.Services
             };
         }
 
-        private Word wordFromDto(WordDto dto)
+        private static Word WordFromDto(WordDto dto)
         {
             return new Word
             {
@@ -194,7 +151,8 @@ namespace Typer.Domain.Services
             };
         }
 
-        private WordDto wordToDto(Word word)
+/*
+        private static WordDto WordToDto(Word word)
         {
             return new WordDto
             {
@@ -211,6 +169,7 @@ namespace Typer.Domain.Services
                 Weight = word.Weight
             };
         }
+*/
 
 
     }

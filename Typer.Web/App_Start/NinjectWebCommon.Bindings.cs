@@ -1,11 +1,9 @@
-﻿using Ninject;
+﻿using System.Diagnostics.CodeAnalysis;
+using Ninject;
 using Typer.DAL.Repositories;
-using Typer.DAL.TransferObjects;
 using Typer.Domain.Services;
-using Moq;
-using Typer.Domain.Entities;
-using System.Collections.Generic;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.Web
 {
     // registration code moved here for better separation of concerns
@@ -15,7 +13,7 @@ namespace Typer.Web
         /// Load your modules or register your services here!
         /// </summary>
         /// <param name="kernel">The kernel.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "IOC registration method")]
+        [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "IOC registration method")]
         private static void RegisterServices(IKernel kernel)
         {
             kernel.Bind<IUserService>().To<UserService>();
@@ -25,7 +23,7 @@ namespace Typer.Web
             kernel.Bind<ILanguageService>().To<LanguageService>();
             kernel.Bind<ILanguageRepository>().To<EFLanguageRepository>();
             kernel.Bind<IWordService>().To<WordService>();
-            kernel.Bind<IWordsRepository>().To<EFWordsRepository>();
+            kernel.Bind<IWordsRepository>().To<EfWordsRepository>();
             kernel.Bind<ICategoryRepository>().To<EfCategoriesRepository>();
             kernel.Bind<ICategoryService>().To<CategoryService>();
             kernel.Bind<IMailSender>().To<MailSender>();

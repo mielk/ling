@@ -1,48 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.TransferObjects;
 
+// ReSharper disable once CheckNamespace
 namespace Typer.DAL.Repositories
 {
     public class EFQuestionsRepository : IQuestionsRepository
     {
 
-        private static readonly EFDbContext context = EFDbContext.getInstance();
+        private static readonly EFDbContext Context = EFDbContext.GetInstance();
 
 
 
-        public IEnumerable<QuestionDto> getQuestions()
+        public IEnumerable<QuestionDto> GetQuestions()
         {
-            return context.Questions;
+            return Context.Questions;
         }
 
-        public QuestionDto getQuestion(int id)
+        public QuestionDto GetQuestion(int id)
         {
-            return context.Questions.SingleOrDefault(q => q.Id == id);
+            return Context.Questions.SingleOrDefault(q => q.Id == id);
         }
 
-        public QuestionDto getQuestion(string name)
+        public QuestionDto GetQuestion(string name)
         {
-            return context.Questions.SingleOrDefault(q => q.Name == name);
+            return Context.Questions.SingleOrDefault(q => q.Name == name);
         }
 
 
 
 
 
-        public bool addQuestion(QuestionDto question)
+        public bool AddQuestion(QuestionDto question)
         {
             try
             {
-                context.Questions.Add(question);
-                context.SaveChanges();
+                Context.Questions.Add(question);
+                Context.SaveChanges();
                 return true;
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 return false;
             }
@@ -53,18 +52,18 @@ namespace Typer.DAL.Repositories
 
         #region Update methods.
 
-        public bool updateName(int id, string name)
+        public bool UpdateName(int id, string name)
         {
-            QuestionDto question = getQuestion(id);
+            var question = GetQuestion(id);
             if (question != null)
             {
                 try
                 {
                     question.Name = name;
-                    context.SaveChanges();
+                    Context.SaveChanges();
                     return true;
                 }
-                catch (Exception exception)
+                catch (Exception)
                 {
                     return false;
                 }
@@ -73,18 +72,18 @@ namespace Typer.DAL.Repositories
             return false;
         }
 
-        public bool updateWeight(int id, int weight)
+        public bool UpdateWeight(int id, int weight)
         {
-            QuestionDto question = getQuestion(id);
+            var question = GetQuestion(id);
             if (question != null)
             {
                 try
                 {
                     question.Weight = weight;
-                    context.SaveChanges();
+                    Context.SaveChanges();
                     return true;
                 }
-                catch (Exception exception)
+                catch (Exception)
                 {
                     return false;
                 }
@@ -94,19 +93,19 @@ namespace Typer.DAL.Repositories
 
         }
 
-        public bool updateProperties(int id, string name, int weight)
+        public bool UpdateProperties(int id, string name, int weight)
         {
-            QuestionDto question = getQuestion(id);
+            var question = GetQuestion(id);
             if (question != null)
             {
                 try
                 {
                     question.Name = name;
                     question.Weight = weight;
-                    context.SaveChanges();
+                    Context.SaveChanges();
                     return true;
                 }
-                catch (Exception exception)
+                catch (Exception)
                 {
                     return false;
                 }
@@ -126,9 +125,9 @@ namespace Typer.DAL.Repositories
 
 
 
-        public bool activate(int id)
+        public bool Activate(int id)
         {
-            QuestionDto question = getQuestion(id);
+            var question = GetQuestion(id);
             if (question != null)
             {
                 if (question.IsActive)
@@ -137,10 +136,10 @@ namespace Typer.DAL.Repositories
                 try
                 {
                     question.IsActive = true;
-                    context.SaveChanges();
+                    Context.SaveChanges();
                     return true;
                 }
-                catch (Exception exception)
+                catch (Exception)
                 {
                     return false;
                 }
@@ -151,9 +150,9 @@ namespace Typer.DAL.Repositories
 
         }
 
-        public bool deactivate(int id)
+        public bool Deactivate(int id)
         {
-            QuestionDto question = getQuestion(id);
+            var question = GetQuestion(id);
             if (question != null)
             {
 
@@ -163,10 +162,10 @@ namespace Typer.DAL.Repositories
                 try
                 {
                     question.IsActive = false;
-                    context.SaveChanges();
+                    Context.SaveChanges();
                     return true;
                 }
-                catch (Exception exception)
+                catch (Exception)
                 {
                     return false;
                 }
@@ -178,26 +177,29 @@ namespace Typer.DAL.Repositories
         }
 
 
-        public bool nameExists(string name)
+        public bool NameExists(string name)
         {
-            int counter = context.Questions.Count(q => q.Name == name);
+            var counter = Context.Questions.Count(q => q.Name == name);
             return (counter > 0);
         }
 
 
-        public bool nameExists(int id, string name)
+        public bool NameExists(int id, string name)
         {
-            int counter = context.Questions.Count(q => q.Id == id && q.Name == name);
+            var counter = Context.Questions.Count(q => q.Id == id && q.Name == name);
             return (counter > 0);
         }
 
 
 
-        public IEnumerable<QuestionOptionDto> getOptions(int questionId)
+        public IEnumerable<QuestionOptionDto> GetOptions(int questionId)
         {
-            return context.QuestionOptions.Where(o => o.QuestionId == questionId && o.IsActive == true);
+            return Context.QuestionOptions.Where(o => o.QuestionId == questionId && o.IsActive);
         }
 
-
+        public IEnumerable<QuestionCategoryDto> GetCategories(int questionId)
+        {
+            return Context.MatchQuestionCategory.Where(m => m.QuestionId == questionId);
+        }
     }
 }

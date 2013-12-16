@@ -13,7 +13,7 @@ namespace Typer.Common.Helpers
 
         public static bool isLegalMail(this string mail)
         {
-            string reg = @"^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$";
+            var reg = @"^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$";
             return Regex.IsMatch(mail.Trim(), reg);
         }
 
@@ -29,7 +29,7 @@ namespace Typer.Common.Helpers
         /// <returns>The absolute URL.</returns>
         public static string AbsoluteAction(this UrlHelper url, string actionName, string controllerName, object routeValues = null)
         {
-            string scheme = url.RequestContext.HttpContext.Request.Url.Scheme;
+            var scheme = url.RequestContext.HttpContext.Request.Url.Scheme;
             return url.Action(actionName, controllerName, routeValues, scheme);
         }
 

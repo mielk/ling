@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Typer.Domain.Entities;
 using Typer.Domain.Services;
 
@@ -11,54 +8,40 @@ namespace Typer.Web.Models
     public class QuestionViewModel
     {
 
-        private ILanguageService languageService = LanguageServicesFactory.Instance().getService();
+        private readonly ILanguageService _languageService = LanguageServicesFactory.Instance().getService();
+        private readonly IQuestionService _questionService = QuestionServicesFactory.Instance().getService();
         public Question Question { get; set; }
-        private int UserId;
+        private readonly int _userId;
         public IEnumerable<QuestionLanguageViewModel> UserLanguages { get; set; }
+        public IEnumerable<Category> Categories { get; set; }
 
 
         public QuestionViewModel(Question question, int userId)
         {
             Question = question;
-            UserId = userId;
-            UserLanguages = getLanguages();
+            _userId = userId;
+            UserLanguages = GetLanguages();
+            Categories = GetCategories(Question.Id);
         }
 
-
-
-        private IEnumerable<QuestionLanguageViewModel> getLanguages()
+        private IEnumerable<Category> GetCategories(int questionId)
         {
-            if (UserId > 0)
-            {
-                IEnumerable<Language> languages = languageService.getUserLanguages(UserId);
-                List<QuestionLanguageViewModel> questionLanguages = new List<QuestionLanguageViewModel>();
-
-                foreach (Language language in languages)
-                {
-                    questionLanguages.Add(new QuestionLanguageViewModel(Question, language));
-                }
-
-                return questionLanguages;
-
-            }
-
-            return null;
-
+            return _questionService.GetCategories(questionId);
         }
 
 
-
-        public bool isValid()
+        private IEnumerable<QuestionLanguageViewModel> GetLanguages()
         {
-            if (Question != null && UserId > 0)
-                return true;
-
-            return false;
-
+            if (_userId <= 0) return null;
+            var languages = _languageService.getUserLanguages(_userId);
+            return languages.Select(language => new QuestionLanguageViewModel(Question, language)).ToList();
         }
 
 
 
-
+        public bool IsValid()
+        {
+            return Question != null && _userId > 0;
+        }
     }
 }

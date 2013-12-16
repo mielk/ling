@@ -19,7 +19,7 @@ namespace Typer.Domain.Services
 
         public CategoryService(ICategoryRepository repository)
         {
-            _repository = _repository == null ? RepositoryFactory.getCategoryRepository() : repository;
+            _repository = _repository == null ? RepositoryFactory.GetCategoryRepository() : repository;
         }
 
         public IEnumerable<Category> GetCategories()

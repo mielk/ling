@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Typer.Domain.Entities;
 using Typer.Domain.Services;
 
@@ -11,10 +8,10 @@ namespace Typer.Web.Models
     public class MetawordViewModel
     {
 
-        private ILanguageService languageService = LanguageServicesFactory.Instance().getService();
-        private IWordService wordService = WordServicesFactory.Instance().getService();
+        private readonly ILanguageService _languageService = LanguageServicesFactory.Instance().getService();
+        private readonly IWordService _wordService = WordServicesFactory.Instance().getService();
         public Metaword Metaword { get; set; }
-        private int UserId;
+        private readonly int _userId;
         public IEnumerable<MetawordLanguageViewModel> UserLanguages { get; set; }
         public IEnumerable<Category> Categories { get; set; }
 
@@ -23,51 +20,31 @@ namespace Typer.Web.Models
         public MetawordViewModel(Metaword metaword, int userId)
         {
             Metaword = metaword;
-            UserId = userId;
-            UserLanguages = getLanguages();
-            Categories = getCategories(metaword.Id);
+            _userId = userId;
+            UserLanguages = GetLanguages();
+            Categories = GetCategories(metaword.Id);
         }
 
 
 
-        private IEnumerable<Category> getCategories(int metawordId)
+        private IEnumerable<Category> GetCategories(int metawordId)
         {
-            return wordService.getCategories(metawordId);
+            return _wordService.GetCategories(metawordId);
         }
 
-        private IEnumerable<MetawordLanguageViewModel> getLanguages()
+        private IEnumerable<MetawordLanguageViewModel> GetLanguages()
         {
-            if (UserId > 0)
-            {
-                IEnumerable<Language> languages = languageService.getUserLanguages(UserId);
-                List<MetawordLanguageViewModel> metawordLanguages = new List<MetawordLanguageViewModel>();
+            if (_userId <= 0) return null;
+            var languages = _languageService.getUserLanguages(_userId);
 
-                foreach (Language language in languages)
-                {
-                    metawordLanguages.Add(new MetawordLanguageViewModel(Metaword, language));
-                }
-
-                return metawordLanguages;
-
-            }
-
-            return null;
-
+            return languages.Select(language => new MetawordLanguageViewModel(Metaword, language)).ToList();
         }
 
 
 
-        public bool isValid()
+        public bool IsValid()
         {
-            if (Metaword != null && UserId > 0)
-                return true;
-
-            return false;
-
+            return Metaword != null && _userId > 0;
         }
-
-
-
-
     }
 }

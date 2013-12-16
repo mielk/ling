@@ -4,7 +4,6 @@ using System.Web.Security;
 using Typer.Domain.Services;
 using Typer.Domain.Entities;
 using Typer.Common.Helpers;
-using System.Collections.Generic;
 
 namespace Typer.Web.Controllers
 {
@@ -57,7 +56,7 @@ namespace Typer.Web.Controllers
             if (ModelState.IsValid)
             {
 
-                User user = userService.getUser(data);
+                var user = userService.getUser(data);
 
                 if (user == null)
                 {
@@ -69,7 +68,7 @@ namespace Typer.Web.Controllers
                     if (user.MailVerified)
                     {
                         FormsAuthentication.SetAuthCookie(data.Username, false);
-                        HttpContext.Session[Typer.Domain.Entities.User.SESSION_KEY] = user;
+                        HttpContext.Session[Domain.Entities.User.SESSION_KEY] = user;
                         if (navigationPoint != null)
                         {
                             return navigationPoint;
@@ -94,7 +93,7 @@ namespace Typer.Web.Controllers
         public ActionResult Logout()
         {
             FormsAuthentication.SignOut();
-            HttpContext.Session[Typer.Domain.Entities.User.SESSION_KEY] = null;
+            HttpContext.Session[Domain.Entities.User.SESSION_KEY] = null;
             return RedirectToAction("Index", "Home");
         }
 
@@ -124,7 +123,7 @@ namespace Typer.Web.Controllers
                 if (data.isValid())
                 {
 
-                    User user = data.toUser();
+                    var user = data.toUser();
 
                     if (userService.addUser(user))
                     {
@@ -154,7 +153,7 @@ namespace Typer.Web.Controllers
         public ActionResult NavigateToHomePage()
         {
 
-            RedirectResult url = navigationPoint;
+            var url = navigationPoint;
 
             if (url != null)
             {
@@ -172,7 +171,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult CheckUsername(string username)
         {
-            bool isExisting = userService.userExists(username);
+            var isExisting = userService.userExists(username);
             return Json(new { IsExisting = isExisting }, JsonRequestBehavior.AllowGet);
         }
 
@@ -180,9 +179,9 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult CheckMail(string mail)
         {
-            User user = userService.getUserByMail(mail);
-            bool isExisting = (user == null ? false : true);
-            bool isVerified = (user == null ? false : user.MailVerified);
+            var user = userService.getUserByMail(mail);
+            var isExisting = (user == null ? false : true);
+            var isVerified = (user == null ? false : user.MailVerified);
             return Json(new
             {
                 IsExisting = isExisting,
@@ -199,16 +198,16 @@ namespace Typer.Web.Controllers
 
         private string createVerificationMailContent(User user)
         {
-            string url = this.Url.Action("Verify", "Login", new { username = user.Username, token = user.VerificationCode }, "https");
-            string content = string.Format(@"We have received the request for account at Typer.com for username {0}<br /><a href=""{1}"">Please click here to activate your account.</a>", user.Username, url);
+            var url = Url.Action("Verify", "Login", new { username = user.Username, token = user.VerificationCode }, "https");
+            var content = string.Format(@"We have received the request for account at Typer.com for username {0}<br /><a href=""{1}"">Please click here to activate your account.</a>", user.Username, url);
             return content;
         }
 
 
         private bool sendNewPassword(User user)
         {
-            string pswd = generatePassword(12);
-            string encryptedPassword = SHA1.Encode(pswd);
+            var pswd = generatePassword(12);
+            var encryptedPassword = SHA1.Encode(pswd);
 
             if (!userService.resetPassword(user, encryptedPassword))
                 return false;
@@ -256,7 +255,7 @@ namespace Typer.Web.Controllers
         public ActionResult InactiveMail(UserRegistrationData data)
         {
 
-            User user = userService.getUserByMail(data.Email);
+            var user = userService.getUserByMail(data.Email);
             var emailSent = sendConfirmationMail(user);
             
             if (emailSent){
@@ -272,7 +271,7 @@ namespace Typer.Web.Controllers
         public ViewResult Verify(string username, string token)
         {
 
-            User user = userService.getUserByName(username);
+            var user = userService.getUserByName(username);
 
             if (user == null)
                 //User prawdopodobnie został skasowany, bo za długo zwlekał z aktywacją konta.
@@ -317,7 +316,7 @@ namespace Typer.Web.Controllers
         public ActionResult ResetPassword(UserRegistrationData data)
         {
 
-            User user = userService.getUserByMail(data.Email);
+            var user = userService.getUserByMail(data.Email);
             if (user == null || user.Email != data.Email)
             {
                 ViewBag.Message = "User name or password are incorrect";
@@ -353,8 +352,8 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult GetLanguages()
         {
-            User user = (User)HttpContext.Session[Typer.Domain.Entities.User.SESSION_KEY];
-            IEnumerable<Language> languages = languageService.getUserLanguages(user.UserID > 0 ? user.UserID : 1);
+            var user = (User)HttpContext.Session[Domain.Entities.User.SESSION_KEY];
+            var languages = languageService.getUserLanguages(user.UserID > 0 ? user.UserID : 1);
             return Json(languages, JsonRequestBehavior.AllowGet);
 
         }

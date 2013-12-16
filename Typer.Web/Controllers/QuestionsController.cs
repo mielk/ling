@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Linq;
 using System.Web.Mvc;
 using Typer.Domain.Services;
-using Typer.DAL.Repositories;
 using Typer.Domain.Entities;
 using Typer.Web.Models;
 
@@ -13,10 +9,10 @@ namespace Typer.Web.Controllers
     public class QuestionsController : Controller
     {
 
-        private ILanguageService languageService = LanguageServicesFactory.Instance().getService();
-        private readonly IQuestionService service;
+        private ILanguageService _languageService = LanguageServicesFactory.Instance().getService();
+        private readonly IQuestionService _service;
         public int PageSize = 10;
-        private RedirectResult navigationPoint
+        private RedirectResult NavigationPoint
         {
             get { return Session["EditControllerNavigationPoint"] as RedirectResult; }
             set { Session["EditControllerNavigationPoint"] = value; }
@@ -26,13 +22,13 @@ namespace Typer.Web.Controllers
 
         public QuestionsController(IQuestionService service)
         {
-            this.service = service;
+            _service = service;
         }
 
 
-        private void setNavigationPoint()
+        private void SetNavigationPoint()
         {
-            navigationPoint = Request.UrlReferrer == null ? null : Redirect(Request.UrlReferrer.ToString());
+            NavigationPoint = Request.UrlReferrer == null ? null : Redirect(Request.UrlReferrer.ToString());
         }
 
 
@@ -41,15 +37,15 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ViewResult List(int page = 1)
         {
-            QuestionsListViewModel model = new QuestionsListViewModel {
-                Questions = service.getQuestions().
+            var model = new QuestionsListViewModel {
+                Questions = _service.GetQuestions().
                 OrderBy(q => q.Id).
                 Skip((page - 1) * PageSize).
                 Take(PageSize),
                 PagingInfo = new PagingInfo {
                     CurrentPage = page,
                     ItemsPerPage = PageSize,
-                    TotalItems = service.getQuestions().Count()
+                    TotalItems = _service.GetQuestions().Count()
                 }
             };
             return View(model);
@@ -61,45 +57,41 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult UpdateWeight(int id, int weight)
         {
-            service.changeWeight(id, weight);
-            return Redirect(Request.UrlReferrer.ToString());
+            _service.ChangeWeight(id, weight);
+            if (Request.UrlReferrer != null) return Redirect(Request.UrlReferrer.ToString());
+            return null;
         }
-
-
 
 
         [AllowAnonymous]
         public ActionResult Deactivate(int id)
         {
-            service.deactivate(id);
-            return Redirect(Request.UrlReferrer.ToString());
+            _service.Deactivate(id);
+            if (Request.UrlReferrer != null) return Redirect(Request.UrlReferrer.ToString());
+            return null;
         }
 
 
         [AllowAnonymous]
         public ActionResult Activate(int id)
         {
-            service.activate(id);
-            return Redirect(Request.UrlReferrer.ToString());
+            _service.Activate(id);
+            if (Request.UrlReferrer != null) return Redirect(Request.UrlReferrer.ToString());
+            return null;
         }
-
 
         #region Helpers
         //Close current subpage and navigate to start page.
         private ActionResult NavigateToHomePage()
         {
 
-            RedirectResult url = navigationPoint;
+            var url = NavigationPoint;
 
             if (url != null)
             {
                 return url;
             }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
+            return RedirectToAction("Index", "Home");
         }
 
 
@@ -108,7 +100,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult CheckName(int id, string name)
         {
-            bool isExisting = service.nameExists(id, name);
+            var isExisting = _service.NameExists(id, name);
             return Json(new { IsExisting = isExisting }, JsonRequestBehavior.AllowGet);
         }
 
@@ -121,9 +113,9 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult GetQuestion(int id)
         {
-            User user = (User) HttpContext.Session[Typer.Domain.Entities.User.SESSION_KEY];
-            Question question = service.getQuestion(id);
-            QuestionViewModel questionViewModel = new QuestionViewModel(question, 1);//user.UserID);
+            var user = (User) HttpContext.Session[Domain.Entities.User.SESSION_KEY];
+            var question = _service.GetQuestion(id);
+            var questionViewModel = new QuestionViewModel(question, 1);//user.UserID);
             return Json(questionViewModel, JsonRequestBehavior.AllowGet);
 
         }

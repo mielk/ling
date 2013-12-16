@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using Typer.Common.Helpers;
 
 namespace Typer.Domain.Entities
 {

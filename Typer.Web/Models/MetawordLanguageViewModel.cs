@@ -1,23 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using Typer.Domain.Entities;
 
 namespace Typer.Web.Models { 
 
     public class MetawordLanguageViewModel { 
 
-        private Metaword Metaword; 
+        private readonly Metaword _metaword; 
         public Language Language; 
-        private IEnumerable<Word> words; 
+        private IEnumerable<Word> _words; 
         public IEnumerable<Word> Words { 
-            get { 
-                if (words == null) { 
-                    words = Metaword.getWords(Language.Id); 
-                } 
-                return words;
-            } 
+            get { return _words ?? (_words = _metaword.GetWords(Language.Id)); }
         } 
 
         public MetawordLanguageViewModel() { 
@@ -26,7 +18,7 @@ namespace Typer.Web.Models {
 
         public MetawordLanguageViewModel(Metaword metaword, Language language)
         {
-            Metaword = metaword; 
+            _metaword = metaword; 
             Language = language; 
         } 
     

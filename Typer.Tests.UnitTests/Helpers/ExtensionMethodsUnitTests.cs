@@ -19,7 +19,7 @@ namespace Typer.Tests.UnitTests.Helpers
         [TestMethod]
         public void IsNullOrEmpty_returns_true_for_empty_string()
         {
-            String s = string.Empty;
+            var s = string.Empty;
             Assert.IsTrue(s.isNullOrEmpty());
         }
 
@@ -27,7 +27,7 @@ namespace Typer.Tests.UnitTests.Helpers
         [TestMethod]
         public void IsNullOrEmpty_returns_false_for_non_empty_string()
         {
-            String s = "a";
+            var s = "a";
             Assert.IsFalse(s.isNullOrEmpty());
         }
 
@@ -38,7 +38,7 @@ namespace Typer.Tests.UnitTests.Helpers
 
             string[] illegalMails = { "mail.o2.pl", "mail@o2", "@o2.pl", "mail mail@o2.pl", "mail@o2.pl.", "mail@o2..pl" };
 
-            foreach (string mail in illegalMails)
+            foreach (var mail in illegalMails)
             {
                 Assert.IsFalse(mail.isLegalMail());
             }
@@ -51,7 +51,7 @@ namespace Typer.Tests.UnitTests.Helpers
 
             string[] legalMails = { "mail@o2.pl", "mail@gmail.com", "imie.nazwisko@firma.com", " mail@o2.pl " };
 
-            foreach (string mail in legalMails)
+            foreach (var mail in legalMails)
             {
                 Assert.IsTrue(mail.isLegalMail());
             }
@@ -62,21 +62,21 @@ namespace Typer.Tests.UnitTests.Helpers
         [TestMethod]
         public void ToRange_number_in_range_returns_the_same_number()
         {
-            int number = 5;
+            var number = 5;
             Assert.AreEqual(5, number.ToRange(1, 10));
         }
 
         [TestMethod]
         public void ToRange_lower_number_returns_low_bound()
         {
-            int number = -1;
+            var number = -1;
             Assert.AreEqual(1, number.ToRange(1, 10));
         }
 
         [TestMethod]
         public void ToRange_higher_number_returns_high_bound()
         {
-            int number = 11;
+            var number = 11;
             Assert.AreEqual(10, number.ToRange(1, 10));
         }
 

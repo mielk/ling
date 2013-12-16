@@ -36,11 +36,11 @@ namespace Typer.Tests.UnitTests
         public void for_given_input_always_returns_the_same_SHA1()
         {
 
-            int tests = 10;
-            string text = "s&gH1F_y7*kE@9pL%zQW1p";
-            string expected = "e3ecd756028cb197fd4b13a70ef42eddc0a39180";
+            var tests = 10;
+            var text = "s&gH1F_y7*kE@9pL%zQW1p";
+            var expected = "e3ecd756028cb197fd4b13a70ef42eddc0a39180";
 
-            for (int i = 0; i < tests; i++){
+            for (var i = 0; i < tests; i++){
                 Assert.IsTrue(compare(text, expected));
             }
 
@@ -49,7 +49,7 @@ namespace Typer.Tests.UnitTests
 
         private bool compare(string input, string expectedOutput)
         {
-            string encrypted = SHA1.Encode(input);
+            var encrypted = SHA1.Encode(input);
             return (encrypted.Equals(expectedOutput));
         }
 

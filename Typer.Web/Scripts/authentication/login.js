@@ -10,5 +10,6 @@ function adjustPlaceholder() {
 }
 
 function setFocusForUsernameControl() {
+    // ReSharper disable once Html.IdNotResolved
     $("#Username").focus();
 }

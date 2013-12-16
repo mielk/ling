@@ -5,45 +5,45 @@ namespace Typer.DAL.Infrastructure
     public class RepositoryFactory
     {
 
-        private static readonly IUsersRepository usersRepository;
-        private static readonly IQuestionsRepository questionsRepository;
-        private static readonly ILanguageRepository languageRepository;
-        private static readonly IWordsRepository wordsRepository;
-        private static readonly ICategoryRepository categoryRepository;
+        private static readonly IUsersRepository UsersRepository;
+        private static readonly IQuestionsRepository QuestionsRepository;
+        private static readonly ILanguageRepository LanguageRepository;
+        private static readonly IWordsRepository WordsRepository;
+        private static readonly ICategoryRepository CategoryRepository;
 
         static RepositoryFactory()
         {
-            usersRepository = new EFUsersRepository();
-            questionsRepository = new EFQuestionsRepository();
-            languageRepository = new EFLanguageRepository();
-            wordsRepository = new EFWordsRepository();
-            categoryRepository = new EfCategoriesRepository();
+            UsersRepository = new EFUsersRepository();
+            QuestionsRepository = new EFQuestionsRepository();
+            LanguageRepository = new EFLanguageRepository();
+            WordsRepository = new EfWordsRepository();
+            CategoryRepository = new EfCategoriesRepository();
         }
 
 
-        public static IUsersRepository getUsersRepository()
+        public static IUsersRepository GetUsersRepository()
         {
-            return usersRepository;
+            return UsersRepository;
         }
 
-        public static IQuestionsRepository getQuestionsRepository()
+        public static IQuestionsRepository GetQuestionsRepository()
         {
-            return questionsRepository;
+            return QuestionsRepository;
         }
 
-        public static ILanguageRepository getLanguageRepository()
+        public static ILanguageRepository GetLanguageRepository()
         {
-            return languageRepository;
+            return LanguageRepository;
         }
 
-        public static IWordsRepository getWordsRepository()
+        public static IWordsRepository GetWordsRepository()
         {
-            return wordsRepository;
+            return WordsRepository;
         }
 
-        public static ICategoryRepository getCategoryRepository()
+        public static ICategoryRepository GetCategoryRepository()
         {
-            return categoryRepository;
+            return CategoryRepository;
         }
 
     }

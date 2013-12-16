@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Data.Entity;
 using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Typer.DAL.Infrastructure;
-using Typer.DAL.Repositories;
-using Ninject;
 using Typer.Domain.Entities;
 using Typer.Web.Binders;
 

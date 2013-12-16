@@ -6,7 +6,7 @@ namespace Typer.DAL.Infrastructure
     public class EFDbContext : DbContext
     {
 
-        private static EFDbContext instance;
+        private static EFDbContext _instance;
 
         public DbSet<UserDto> Users { get; set; }
         public DbSet<QuestionDto> Questions { get; set; }
@@ -17,6 +17,7 @@ namespace Typer.DAL.Infrastructure
         public DbSet<WordDto> Words { get; set; }
         public DbSet<CategoryDto> Categories { get; set; }
         public DbSet<WordCategoryDto> MatchWordCategory { get; set; }
+        public DbSet<QuestionCategoryDto> MatchQuestionCategory { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -29,26 +30,20 @@ namespace Typer.DAL.Infrastructure
             modelBuilder.Entity<WordDto>().ToTable("Words");
             modelBuilder.Entity<CategoryDto>().ToTable("Categories");
             modelBuilder.Entity<WordCategoryDto>().ToTable("MatchWordCategory");
+            modelBuilder.Entity<QuestionCategoryDto>().ToTable("MatchQuestionCategory");
         }
 
 
 
         private EFDbContext()
         {
-            this.Database.Initialize(false);
+            Database.Initialize(false);
         }
 
 
-        public static EFDbContext getInstance()
+        public static EFDbContext GetInstance()
         {
-            if (instance == null)
-            {
-                instance = new EFDbContext();
-            }
-
-            return instance;
-
+            return _instance ?? (_instance = new EFDbContext());
         }
-
     }
 }

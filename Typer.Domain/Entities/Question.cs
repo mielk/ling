@@ -58,7 +58,7 @@ namespace Typer.Domain.Entities
             get
             {
                 if (options == null)
-                    options = QuestionServicesFactory.Instance().getService().getOptions(Id);
+                    options = QuestionServicesFactory.Instance().getService().GetOptions(Id);
 
                 return options;
 

@@ -10,7 +10,7 @@ namespace Typer.DAL.Repositories
     public class EfCategoriesRepository : ICategoryRepository
     {
 
-        private static readonly EFDbContext Context = EFDbContext.getInstance();
+        private static readonly EFDbContext Context = EFDbContext.GetInstance();
 
 
 
