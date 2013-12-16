@@ -795,11 +795,11 @@ function LanguageView(language) {
                 language: me.language
             });
             var editPanel = new EditPanel({
-                option: option
+                object: option
             });
             editPanel.bind({                
                confirm: function(e) {
-                    var $option = e.option;
+                    var $option = e.object;
                     $option.id = e.name;
                     $option.update(e.name, e.weight);
                     me.language.addOption($option);
@@ -1136,8 +1136,7 @@ OptionView.prototype.update = function () {
 
 
 function EditPanel(properties) {
-    var me = this;
-    this.option = properties.option;
+    this.object = properties.object;
     this.minWeight = 1;
     this.maxWeight = 10;
     this.invalid = new HashTable(null);
@@ -1150,110 +1149,6 @@ function EditPanel(properties) {
 
 
     this.buttons = new EditPanelButtons(this);
-
-    //this.gui = (function () {
-
-    //    var weight = (function () {
-    //        var CHECKED_CSS_CLASS = "weight-checked";
-    //        var _value = me.option.weight;
-
-    //        var _container = jQuery('<div/>', {
-    //            'class': 'line'
-    //        }).appendTo($($frame));
-
-    //        var $label = jQuery('<div/>', {
-    //            'class': 'label',
-    //            html: 'Weight'
-    //        }).appendTo($(_container));
-
-    //        var iconsContainer = jQuery('<div/>', {
-    //            'class': 'weight-icons-container'
-    //        }).bind({
-    //            'clickIcon': function (e) {
-    //                $($textbox).val(e.weight);
-    //            }
-    //        }).appendTo($(_container));
-
-    //        var icons = jQuery('<div/>', {
-    //            'class': 'weight-icons'
-    //        }).bind({
-    //            'changeValue': function (e) {
-    //                if (e.weight !== me.value) {
-    //                    _setValue(e.weight);
-    //                }
-    //            },
-    //            'clickIcon': function (e) {
-    //                _setValue(e.weight);
-    //            }
-    //        }).appendTo($(iconsContainer));
-
-    //        for (var i = me.MIN_WEIGHT - 1; i < me.MAX_WEIGHT; i++){
-    //            var icon = jQuery('<div/>', {
-    //                'id': i,
-    //                'class': 'weight-icon',
-    //                html: i + 1
-    //            }).bind({
-    //                'click': function (e) {
-    //                    $(icons).trigger({
-    //                        'type': 'clickIcon',
-    //                        'weight': (this.id * 1 + 1)
-    //                    });
-    //                }
-    //            }).appendTo($(icons));
-    //        }
-
-
-    //        function _setValue(value) {
-    //            _value = value;
-    //            var cls = CHECKED_CSS_CLASS;
-    //            $('.weight-icon').each(function () {
-    //                var $value = $(this).html() * 1;
-    //                if ($value <= value * 1) {
-    //                    $(this).addClass(cls);
-    //                } else {
-    //                    $(this).removeClass(cls);
-    //                }
-    //            });
-    //        }
-
-    //        var $textbox = jQuery('<input/>', {
-    //            'type': 'text',
-    //            'class': 'default centered'
-    //        }).bind({
-    //            'change': function () {
-    //                var value = Math.min(Math.max(me.MIN_WEIGHT, $(this).val() * 1), me.MAX_WEIGHT);
-    //                $(this).val(value);
-    //                $(icons).trigger({
-    //                    'type': 'changeValue',
-    //                    'weight': value
-    //                });
-    //            }
-    //        }).on({
-    //            'focus': function (e) {
-    //                this.select();
-    //            }
-    //        })
-    //        .val(me.option.weight)
-    //        .appendTo(jQuery('<span/>').
-    //            bind({
-    //                'click': function () {
-    //                    $($textbox).focus();
-    //                }
-    //            }).appendTo($(_container)));
-
-    //        _setValue(me.option.weight);
-
-
-    //        return {
-    //            value: function () {
-    //                return $($textbox).val();
-    //            }
-    //        }
-
-    //    })();
-
-
-    //})();
 
 
     //this.getName = function () {
@@ -1353,7 +1248,16 @@ function EditPanelMeta(panel) {
         label: 'Name',
         validation: me.isValidName,
         editable: true,
-        object: me.panel.option
+        object: me.panel.object
+    });
+    
+    this.weight = new EditLine(this, {
+        property: 'weight',
+        label: 'Weight',
+        validation: null,
+        editable: false,
+        value: (new WeightPanel(10, me.panel.object.weight)).view.container,
+        object: me.panel.object
     });
 
 }

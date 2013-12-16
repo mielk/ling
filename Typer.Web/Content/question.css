@@ -44,6 +44,7 @@ div
     width: 60px !important;
     padding: 9px !important;
     height: 34px !important;
+    line-height: 14px !important;
     text-align: center !important;
     font-weight: bold !important;
 }
@@ -747,7 +748,7 @@ span.complex
     position: relative;
     float: right;
     width: 440px;
-    height: 32px;
+    height: 34px;
     margin: 0;
     margin-right: 35px;
     margin-left: 9px;
