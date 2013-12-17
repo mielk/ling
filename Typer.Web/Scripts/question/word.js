@@ -118,7 +118,7 @@ function getItem(methodUrl, itemId) {
 TYPE = {
     NOUN: { id: 1, name: 'noun' },
     VERB: { id: 2, name: 'verb' },
-    ADJECTIVE: { id: 3, name: ' adjective' },
+    ADJECTIVE: { id: 3, name: 'adjective' },
     OTHER: { id: 4, name: 'other' },
     getItem: function(value) {
         for (var key in TYPE) {

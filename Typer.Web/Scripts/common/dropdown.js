@@ -65,9 +65,6 @@ DropDown.prototype.activate = function () {
     this.filter.activate();
 };
 DropDown.prototype.deactivate = function () {
-    this.render.clear();
-    this.render.activate(false);
-    this.filter.clear();
     this.trigger({
         type: 'deactivate'
     });
@@ -77,6 +74,7 @@ DropDown.prototype.select = function(object) {
         type: 'select',
         object: object
     });
+    this.filter.activate(object.name);
     //this.deactivate();
 };
 
@@ -163,12 +161,22 @@ function DropDownFilter(dropdown) {
                 me.filter = text;
                 me.runFilter(append);
             }
+        },
+        click: function() {
+            me.dropdown.render.activate();
+        }
+    });
+
+    $(this.dropdown).bind({
+        deactivate: function() {
+            me.clear();
         }
     });
 
 }
-DropDownFilter.prototype.activate = function () {
+DropDownFilter.prototype.activate = function (selected) {
     var me = this;
+    if (selected) me.filter = selected;
     $(this.textbox).val(me.filter);
     this.dropdown.render.activate(false);
     $(this.textbox).select();
@@ -220,6 +228,7 @@ function DropDownNavigator(dropdown) {
                 case 27: //Escape
                     if (filterActive) return;
                     preventDefault();
+                    me.dropdown.render.activate(false);
                     me.dropdown.filter.activate();
                     break;
                 case 38: //Arrow up
@@ -291,6 +300,10 @@ function DropDownRenderManager(dropdown) {
     this.dropdown.bind({
         select: function () {
             display(me.container, false);
+        },
+        deactivate: function() {
+            me.clear();
+            me.activate(false);
         }
     });
     
@@ -398,6 +411,12 @@ DropDownRenderManager.prototype.clear = function() {
 DropDownRenderManager.prototype.activate = function (value) {
     var state = (this.slots[0].option !== null && value !== false);
     this.display(state);
+    
+    if (!state) {
+        this.activeIndex = -1;
+        this.startCounter = 0;
+    }
+
     this.dropdown.filter.active = !state;
 };
 DropDownRenderManager.prototype.display = function(value) {
