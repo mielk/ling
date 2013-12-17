@@ -1,39 +1,39 @@
-﻿$(function () {
+﻿//$(function () {
 
-    //Switching off selecting text.
-    $(document).
-        bind({
-            'mousedown': function (e) {
-                var $this = $(this);
-                e.preventDefault();
+//    //Switching off selecting text.
+//    $(document).
+//        bind({
+//            'mousedown': function (e) {
+//                var $this = $(this);
+//                e.preventDefault();
 
-                // Make every element on page unselectable
-                //$('*').addClass('unselectable');
-                $(document.body).addClass('unselectable');
+//                // Make every element on page unselectable
+//                //$('*').addClass('unselectable');
+//                $(document.body).addClass('unselectable');
 
-                // Some setup here, like remembering the original location, etc
-                $(window).on('mousemove', function () {
-                    // Do the thing!
-                    $this.on('mouseup', function () {
-                        $(document.body).removeClass('unselectable');
-                        //$('*').removeClass('unselectable');
-                        // Other clean-up tasks here
-                    });
-                });
-            }
-        });
+//                // Some setup here, like remembering the original location, etc
+//                $(window).on('mousemove', function () {
+//                    // Do the thing!
+//                    $this.on('mouseup', function () {
+//                        $(document.body).removeClass('unselectable');
+//                        //$('*').removeClass('unselectable');
+//                        // Other clean-up tasks here
+//                    });
+//                });
+//            }
+//        });
 
-});
+//});
 
 
 function DropDown(properties) {
+    this.eventHandler = new EventHandler();
     this.view = new DropDownView(this, properties);
     this.options = {
         slots: properties.slots || 10,
         caseSensitive: properties.caseSensitive || false,
         confirmWithFirstClick: properties.confirmWithFirstClick || false
     };
-    this.eventHandler = new EventHandler();
     this.filter = new DropDownFilter(this);
     this.navigator = new DropDownNavigator(this);
     this.render = new DropDownRenderManager(this);
@@ -77,7 +77,7 @@ DropDown.prototype.select = function(object) {
         type: 'select',
         object: object
     });
-    this.deactivate();
+    //this.deactivate();
 };
 
 
@@ -90,7 +90,7 @@ function DropDownView(dropdown, properties) {
     //Parental container.
     var parent = properties.container;
     $(parent).css({
-        'overflow': 'visible',
+        'overflow-y': 'visible',
         'z-index': 2
     });
     
@@ -118,6 +118,12 @@ function DropDownView(dropdown, properties) {
         'class': 'dropdown-textbox'
     }).appendTo($(textspan));
 
+    this.dropdown.bind({
+        select: function(e) {
+            me.textbox.val(e.object.name);
+        }
+    });
+
 }
 DropDownView.prototype.clear = function() {
 
@@ -143,6 +149,8 @@ function DropDownFilter(dropdown) {
         },
         keydown: function(e) {
             if (me.active && e.which === 27) {
+                e.preventDefault();
+                e.stopPropagation();
                 me.dropdown.clear();
                 me.dropdown.deactivate();
             }
@@ -279,6 +287,12 @@ function DropDownRenderManager(dropdown) {
 
     this.scrollbar = new DropDownScrollbar(this);
 
+    
+    this.dropdown.bind({
+        select: function () {
+            display(me.container, false);
+        }
+    });
     
     this.createSlots();
 

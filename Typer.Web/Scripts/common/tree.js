@@ -299,6 +299,7 @@ SearchPanel.prototype.activate = function () {
         },
         'select': function (e) {
             me.select(e.object);
+            me.dropdown.deactivate();
         }
     });
 
@@ -1643,18 +1644,18 @@ NodeDragMover.prototype.move = function (x, y) {
 };
 
 
-    function hide(div) {
-        $(div).css({
-            'visibility': 'hidden'
-        });
-    }
-    function show(div) {
-        $(div).css({
-            'visibility': 'visible'
-        });
-    }
-    function display(div, value) {
-        $(div).css({
-            'display' : (value ? 'block' : 'none')
-        });
-    }
+function hide(div) {
+    $(div).css({
+        'visibility': 'hidden'
+    });
+}
+function show(div) {
+    $(div).css({
+        'visibility': 'visible'
+    });
+}
+function display(div, value) {
+    $(div).css({
+        'display' : (value ? 'block' : 'none')
+    });
+}

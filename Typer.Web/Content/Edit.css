@@ -533,6 +533,7 @@ div.pager a.selected {
     float: left;
     height: 50%;
     width: 100%;
+    overflow-y: visible;
 }
 
 .filter-panel .button {
