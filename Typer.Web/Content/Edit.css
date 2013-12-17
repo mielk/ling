@@ -3,6 +3,11 @@
     display: block;
 }
 
+
+div {
+    outline-style: none !important;
+}
+
 label
 {
     display: table-cell;
@@ -457,8 +462,6 @@ div.pager a.selected {
     background-image: url('images/gold_star.png');
 }
 
-
-
 .edit-item
 {
     display: block !important;
@@ -483,8 +486,15 @@ div.pager a.selected {
     border: 1px solid rgb(189, 133, 0);
 }
 
-
-
+.filter-container {
+    display: block;
+    position: relative;
+    float: left;
+    height: auto;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
 
 .filter-panel {
     display: block;
@@ -499,6 +509,18 @@ div.pager a.selected {
     height: 80px;
     padding: 0;
     margin: 0;
+    border-bottom: 1px solid #777;
+}
+
+.search-collapser {
+    display: block;
+    position: relative;
+    float: left;
+    width: 100%;
+    height: 9px;
+    border-bottom: 1px solid #777;
+    background-color: #ddd;
+    cursor: pointer;
 }
 
 .filter-panel div {
@@ -556,6 +578,7 @@ div.pager a.selected {
     font-size: 13px;
     border: 1px solid #555;
     margin: 20px 0;
+    cursor: pointer;
 }
 
 .full-height {

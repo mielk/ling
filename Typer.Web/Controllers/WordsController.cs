@@ -1,5 +1,10 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Configuration;
 using System.Web.Mvc;
+using System.Web.Services.Description;
+using Microsoft.Ajax.Utilities;
 using Typer.Domain.Services;
 using Typer.Domain.Entities;
 using Typer.Web.Models;
@@ -9,7 +14,9 @@ namespace Typer.Web.Controllers
         {
 
             private readonly IWordService _service;
+            private readonly ICategoryService _categoryService = CategoryServicesFactory.Instance().GetService();
             public int PageSize = 10;
+            private IEnumerable<Metaword> list;
 
             // ReSharper disable once UnusedMember.Local
             private RedirectResult NavigationPoint
@@ -40,9 +47,38 @@ namespace Typer.Web.Controllers
             [AllowAnonymous]
             public ViewResult List(int page = 1)
             {
+
+                if (list == null)
+                {
+                    list = _service.GetMetawords();
+                }
+
+                var model = CreateViewModel(page, new SearchModel{
+                        LWeight = 0,
+                        UWeight = 0,
+                        Contain =  "",
+                        WordType = 0,
+                        Categories = new List<Category>()
+                    });
+                return View(model);
+
+            }
+
+
+            [AllowAnonymous]
+            public ViewResult List(SearchModel searchModel, int page = 1)
+            {
+                if (list == null) list = _service.GetMetawords();
+                var model = CreateViewModel(page, searchModel);
+                return View(model);                
+            }
+
+
+            private MetawordsListViewModel CreateViewModel(int page, SearchModel searchModel)
+            {
                 var model = new MetawordsListViewModel
                 {
-                    Metawords = _service.GetMetawords().
+                    Metawords = list.
                     OrderBy(q => q.Id).
                     Skip((page - 1) * PageSize).
                     Take(PageSize),
@@ -51,11 +87,34 @@ namespace Typer.Web.Controllers
                         CurrentPage = page,
                         ItemsPerPage = PageSize,
                         TotalItems = _service.GetMetawords().Count()
-                    }
+                    },
+                    SearchInfo = searchModel
                 };
-                return View(model);
+
+                return model;
 
             }
+
+
+            [HttpPost]
+            [AllowAnonymous]
+            public void Filter(int wordType, int lowWeight, int upWeight, int[] categories, string text)
+            {
+
+                list = _service.Filter(wordType, lowWeight, upWeight, categories, text);
+                SearchModel searchModel = new SearchModel
+                {
+                    WordType = wordType,
+                    LWeight = lowWeight,
+                    UWeight = upWeight,
+                    Categories = categories.Select(t => _categoryService.GetCategory(t)).ToList(),
+                    Contain = text
+                };
+
+                var view = List(searchModel, 1);
+
+            }
+
 
 
             [AllowAnonymous]

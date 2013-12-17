@@ -33,6 +33,22 @@ Category.prototype.path = function() {
     var parentPath = this.parent.path();
     return parentPath + (parentPath ? ' > ' : '') + this.name;
 };
+Category.prototype.getDescendants = function () {
+    var array = [];
+    var counter = 0;
+    for (var key in this.children) {
+        if (this.children.hasOwnProperty(key)) {
+            var child = this.children[key];
+            var descendants = child.getDescendants();
+            for (var i = 0; i < descendants.length; i++) {
+                array[counter++] = descendants[i];
+            }
+        }
+    }
+    array[counter++] = this;
+    return array;
+};
+
 
 function categoryProperties(properties) {
     return {        

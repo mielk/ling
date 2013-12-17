@@ -82,8 +82,54 @@ $(function () {
         }
     });
 
+    var searchManager = new SearchManager();
+    searchManager.bind({        
+        filter: function(e) {
+            filter(e);
+        }
+    });
+
+
 });
 
+
+function filter(e) {
+    
+    //Convert array of selected categories to int array.
+    var categories = [];
+    for (var i = 0; i < e.categories.length; i++) {
+        var category = e.categories[i];
+        var descendants = category.getDescendants();
+        for (var j = 0; j < descendants.length; j++) {
+            var item = descendants[j];
+            categories.push(item.key);
+        }
+    }
+
+    $.ajax({
+        url: '/Words/Filter',
+        type: "POST",
+        data: {
+            'wordType' : e.wordtype ? e.wordtype.id : -1,
+            'lowWeight' : e.weight.from,
+            'upWeight' : e.weight.to,
+            'categories' : categories,
+            'text' : e.text
+        },
+        traditional: true,
+        datatype: "json",
+        async: false,
+        cache: false,
+        success: function (result) {
+            my.notify.display('Success', true);
+        },
+        error: function (msg) {
+            alert(msg.status + " | " + msg.statusText);
+        }
+    });    
+
+
+}
 
 function editMetaword(id, listLine) {
     var metawordJson = getItem('/Words/GetMetaword', id);

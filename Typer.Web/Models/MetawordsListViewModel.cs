@@ -6,6 +6,7 @@ namespace Typer.Web.Models {
 
         public IEnumerable<Metaword> Metawords { get; set; }
         public PagingInfo PagingInfo { get; set; }
+        public SearchModel SearchInfo { get; set; }
 
     }
 }

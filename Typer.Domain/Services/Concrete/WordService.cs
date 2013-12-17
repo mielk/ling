@@ -98,6 +98,19 @@ namespace Typer.Domain.Services
             return dtos.Select(dto => _categoryService.GetCategory(dto.CategoryId)).ToList();
         }
 
+        public IEnumerable<Metaword> Filter(int wordType, int lowWeight, int upWeight, int[] categories, string text)
+        {
+            var dtos = _repository.GetMetawords();
+
+            if (wordType > 0) dtos = dtos.Where(w => w.Type == wordType);
+            if (lowWeight > 0) dtos = dtos.Where(w => w.Weight >= lowWeight);
+            if (upWeight > 0) dtos = dtos.Where(w => w.Weight >= upWeight);
+            if (text.Length > 0) dtos = dtos.Where(w => w.Name.Contains(text));
+            //if (categories.Length > 0) dtos = dtos.Where(w => categories.Contains(w.))
+            
+            return dtos.Select(MetawordFromDto).ToList();
+
+        }
 
         private static Metaword MetawordFromDto(MetawordDto dto)
         {

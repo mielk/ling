@@ -1,78 +1,77 @@
-﻿@using (Html.BeginForm())
+﻿@model Typer.Web.Models.SearchModel
+
+@using (Html.BeginForm())
 {
-    <div class="filter-panel">
-        <div class="left">
-            <div class="single-panel">
-                <div class="label-container">
-                    <div class="label-table">
-                        <div class="label">A</div>
+    <div class="filter-container">
+        <div class="filter-panel">
+
+            <div class="left">
+                <div class="single-panel">
+                    <div class="label-container">
+                        <div class="label-table">
+                            <div class="label">A</div>
+                        </div>
                     </div>
-                </div>
-                <div id="word-type" class="word-type content-container">
+                    <div id="word-type" class="word-type content-container">
                     
-                </div>
-            </div>
-            <div class="single-panel">
-                <div class="label-container">
-                    <div class="label-table">
-                        <div class="label">B</div>
-                    </div>
-                </div>
-                <div class="content-container">
-                    <div class="lbl">
-                        <div class="label-table">
-                            <div class="label">from</div>
-                        </div>
-                    </div>
-                    <input id="fromWeight" type="text"/>
-                    <div class="lbl">
-                        <div class="label-table">
-                            <div class="label">to</div>
-                        </div>                        
-                    </div>
-                    <input id="toWeight" type="text"/>
-                </div>
-            </div>
-        </div>
-
-        <div class="button">
-            <div class="label-table">
-                <div class="search-button">Search</div>
-            </div>
-        </div>
-
-        <span class="full-height">
-            <div class="right">
-                <div class="single-panel">
-                    <div class="label-container">
-                        <div class="label-table">
-                            <div class="label">C</div>
-                        </div>
-                    </div>
-                    <div class="content-container">                        
-                        <div id="select-categories" class="select-categories-button"></div>
-                        <div class="category">
-                            <div class="remove-category"></div>
-                            <div class="category-name">asdfsag</div>
-                        </div>
-                        <div class="category">
-                            <div class="remove-category"></div>
-                            <div class="category-name">ertewrlhj</div>
-                        </div>
                     </div>
                 </div>
                 <div class="single-panel">
                     <div class="label-container">
                         <div class="label-table">
-                            <div class="label">D</div>
+                            <div class="label">B</div>
                         </div>
-                        
                     </div>
                     <div class="content-container">
-                        <input class="contain"/>
+                        <div class="lbl">
+                            <div class="label-table">
+                                <div class="label">from</div>
+                            </div>
+                        </div>
+                        <input id="fromWeight" type="text"/>
+                        <div class="lbl">
+                            <div class="label-table">
+                                <div class="label">to</div>
+                            </div>                        
+                        </div>
+                        <input id="toWeight" type="text"/>
                     </div>
                 </div>
             </div>
-        </span>
+
+            <div class="button">
+                <div class="label-table">
+                    <div id="search-button" class="search-button">Search</div>
+                </div>
+            </div>
+
+            <span class="full-height">
+                <div class="right">
+                    <div class="single-panel">
+                        <div class="label-container">
+                            <div class="label-table">
+                                <div class="label">C</div>
+                            </div>
+                        </div>
+                        <div id="categories" class="content-container">                        
+                            <div id="select-categories" class="select-categories-button"></div>
+                        </div>
+                    </div>
+                    <div class="single-panel">
+                        <div class="label-container">
+                            <div class="label-table">
+                                <div class="label">D</div>
+                            </div>
+                        
+                        </div>
+                        <div class="content-container">
+                            <input id="text-contain" class="contain"/>
+                        </div>
+                    </div>
+                </div>
+            </span>            
+
+        </div>
+        <div class="search-collapser"></div>
     </div>
 }
