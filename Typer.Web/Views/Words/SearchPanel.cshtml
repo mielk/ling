@@ -1,0 +1,41 @@
+﻿
+@using (Html.BeginForm())
+{
+    <div class="filter-panel">
+        <div class="left">
+            <div class="word-type">
+                <div class="label">Word type</div>
+                <span class="block full-height">
+                    <input type="text" class="word-type-box" value="a"/>
+                </span>
+            </div>
+            <div class="weight">
+                <div class="label">Weight</div>
+                <input type="text" class="weight-box" value="s" />
+                <input type="text" class="weight-box" value="t" />
+
+                    
+@*                    <span class="block full-height">
+                    <span>from</span>
+                    <div class="weight-box"></div>
+                    <span>to</span>
+                    <div class="weight-box"></div>
+                </span>*@
+            </div>
+        </div>
+        <div class="button">
+            Search
+        </div>
+
+        <span class="block full-height">
+            <div class="right">
+                <div class="categories">
+                    <div class="label">Categories</div>
+                </div>
+                <div class="text">
+                    <div class="label">Text</div>
+                </div>
+            </div>
+        </span>
+    </div>
+}

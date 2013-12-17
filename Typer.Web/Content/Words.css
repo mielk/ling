@@ -205,10 +205,11 @@ div.pager a.selected {
 
 
 
-#filter-panel {
+.filter-panel {
     display: block;
     position: relative;
     float: left;
     width: 100%;
+    height: 80px;
     background-color: red;
 }

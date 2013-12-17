@@ -482,3 +482,88 @@ div.pager a.selected {
     background-color: rgb(253, 235, 191);
     border: 1px solid rgb(189, 133, 0);
 }
+
+
+
+
+.filter-panel div {
+    display: block;
+    position: relative;
+    box-sizing: border-box;
+    height: 100%;
+    padding: 1px 6px;
+}
+
+.block {
+    display: block;
+    float: left;
+}
+
+.full-height {
+    height: 100%;
+}
+
+.filter-panel .left {
+    float: left;
+    width: 20%;
+    margin: 0;
+}
+.filter-panel .right {
+    width: 100%;
+}
+
+.filter-panel .left > div {
+    height: 50%;
+}
+
+.filter-panel .right > div {
+    height: 50%;
+}
+
+.filter-panel .button {
+    float: right;
+    width: 56px;
+    height: 100%;
+    background-color: green;
+}
+
+.word-type-box {
+    float: left;
+    width: 160px;
+    border: 1px solid black;
+    height: 100%;
+    padding: 3px;
+}
+
+.table {
+    display: table !important;
+    vertical-align: middle !important;
+}
+
+.table-cell {
+    display: table-cell !important;
+    vertical-align: middle !important;
+}
+
+.filter-panel .label {
+    float: left;
+    width: 100px;
+    height: 100% !important;
+    padding: 3px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.weight-box {
+    width: 70px;
+    height: 100%;
+    margin: 0;
+    padding: 3px;
+    border: 1px solid #444;
+}
+
+.weight .weight-box:last-child {
+    margin-left: 12px;
+}

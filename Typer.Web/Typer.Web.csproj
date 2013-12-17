@@ -319,6 +319,7 @@
     <Content Include="Views\Categories\Index.cshtml" />
     <Content Include="Views\Words\List.cshtml" />
     <Content Include="Views\Words\Metaword.cshtml" />
+    <Content Include="Views\Words\SearchPanel.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
