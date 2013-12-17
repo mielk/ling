@@ -589,6 +589,9 @@ div.pager a.selected {
     float: left;
     width: 100px;
     height: 100%;
+    background-color: #EEE;
+    font-weight: bold;
+    text-transform: capitalize;
 }
 
 .label-table {
@@ -682,35 +685,8 @@ div.pager a.selected {
 .category-name {
     float: left;
     width: auto;
+    margin: 3px 0;
+    margin-right: 3px;
+    line-height: 13px;
+    font-size: 11px;
 }
-
-/*.word-type-box {
-    float: left;
-    width: 160px;
-    border: 1px solid black;
-    height: 100%;
-    padding: 3px;
-}*/
-
-/*.filter-panel .label {
-    float: left;
-    width: 100px;
-    height: 100% !important;
-    padding: 3px;
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 12px;
-    vertical-align: middle;
-}
-
-.weight-box {
-    width: 70px;
-    height: 100%;
-    margin: 0;
-    padding: 3px;
-    border: 1px solid #444;
-}
-
-.weight .weight-box:last-child {
-    margin-left: 12px;
-}*/

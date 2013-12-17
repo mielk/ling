@@ -1,68 +1,133 @@
-﻿function SearchManager() {
+﻿function FilterManager(properties) {
     var me = this;
-    this.wordType = new WordType(this);
-    this.weight = new Weight(this);
-    this.categories = new Categories(this);
-    this.text = new TextSearch(this);
-    //UI components.
-    this.container = $('.filter-panel')[0];
-    this.button = $('#search-button')[0];
-    this.active = false;
-
-    this.collapser = $('.search-collapser')[0];
-    $(this.collapser).bind({
-        click: function () {
-            if (me.active) {
-                me.active = false;
-                $(me.container).css({                    
-                   'display' : 'none' 
-                });
-            } else {
-                me.active = true;
-                $(me.container).css({
-                    'display': 'block'
-                });
-            }
-       }
-    });
+    this.filters = new HashTable(null);
 
     this.eventHandler = new EventHandler();
-    $(this.button).bind({
-        click: function () {
-            me.eventHandler.trigger({                
-                type: 'filter',
-                wordtype: me.wordType.value,
-                weight: {
-                    from: me.weight.values.from,
-                    to: me.weight.values.to
-                },
-                categories: me.categories.selected,
-                text: me.text.value
-            });
-        } 
+
+    //UI components.
+    this.container = jQuery('<div/>', { 'class': 'filter-container' });
+    this.panel = jQuery('<div/>', { 'class': 'filter-panel' }).appendTo($(this.container));
+
+    var left = jQuery('<div/>', { 'class': 'left' }).appendTo($(this.panel));
+    var buttons = jQuery('<div/>', { 'class': 'button' }).appendTo($(this.panel));
+    var right = jQuery('<div/>', { 'class': 'right' }).appendTo(jQuery('<span/>', { 'class': 'full-height' }).appendTo($(this.panel)));
+
+    if (properties.wordtype) this.addFilter('wordtype', new WordTypeFilter(this), left);
+    if (properties.weight) this.addFilter('weight', new WeightFilter(this), left);
+    if (properties.categories) this.addFilter('categories', new CategoryFilter(this), right);
+    if (properties.text) this.addFilter('text', new TextFilter(this), right);
+
+    this.button = new FilterButton(this).appendTo($(buttons));
+
+    this.collapser = new FilterCollapser(this, properties.visible ? true : false).appendTo($(this.container));
+
+    $(this.container).appendTo($(properties.container));
+
+}
+FilterManager.prototype.bind = function (e) {
+    this.eventHandler.bind(e);
+    return this;
+};
+FilterManager.prototype.trigger = function (e) {
+    this.eventHandler.trigger(e);
+    return this;
+};
+FilterManager.prototype.collapse = function(){
+    $(this.panel).css({
+        'display' : 'none'
+    });
+}
+FilterManager.prototype.expand = function(){
+    $(this.panel).css({
+        'display' : 'block'
+    });
+}
+FilterManager.prototype.filter = function () {
+    var e = {};
+
+    this.filters.each(function (key, filter) {
+        e[filter.name] = filter.value;
     });
 
-    (function ini() {
-        $(me.container).css({
-            'display': me.active ? 'block' : 'none'
-        });
+
+    e.type = 'filter';
+    this.eventHandler.trigger(e);
+
+}
+FilterManager.prototype.addFilter = function(name, filter, panel){
+    this.filters.setItem(name, filter);
+    $(filter.panel.container).appendTo($(panel));
+}
+
+
+
+function FilterButton(manager){
+    var me = this;
+    this.manager = manager;
+
+    this.button = jQuery('<div/>', { 
+        'class': 'search-button', html: 'Search' 
+    }).bind({
+        click: function () {
+            me.manager.filter();
+        } 
+    }).appendTo(jQuery('<div/>', { 'class': 'label-table' }));
+}
+FilterButton.prototype.appendTo = function(parent){
+    $(this.button).appendTo($(parent));
+    return this;
+}
+
+function FilterCollapser(manager, visibility){
+    var me = this;
+    this.manager = manager;
+    this.visible = visibility;
+    this.container = jQuery('<div/>', { 
+        'class': 'search-collapser'
+    }).bind({
+        click: function () {
+            me.changeStatus();
+        }
+    });
+
+    (function ini(){
+        me.changeStatus(me.visible);
     })();
 
 }
-SearchManager.prototype.bind = function(e) {
-    this.eventHandler.bind(e);
-};
-SearchManager.prototype.trigger = function (e) {
-    this.eventHandler.trigger(e);
-};
+FilterCollapser.prototype.appendTo = function(parent){
+    $(this.container).appendTo($(parent));
+    return this;
+}
+FilterCollapser.prototype.changeStatus = function(value){
+    var $value = (value !== undefined ? value : !this.visible);
+    if ($value){
+        this.manager.expand();
+    } else {
+        this.manager.collapse();
+    }
+}
 
-function WordType(manager) {
+
+function FilterPanel(filter, properties){
+    var me = this;
+    this.filter = filter;
+
+    this.container = jQuery('<div/>', {'class': 'single-panel'});
+    this.labelContainer = jQuery('<div/>', {'class': 'label-container'}).appendTo($(this.container));
+    this.label = jQuery('<div/>', {'class': 'label', html: properties.name}).appendTo(jQuery('<div/>', {'class': 'label-table'}).appendTo($(this.labelContainer)));
+    
+    this.content = properties.content;
+    $(this.content).appendTo($(this.container));
+
+}
+
+
+function WordTypeFilter(manager) {
     var me = this;
     this.manager = manager;
-    this.container = $('#word-type')[0];
+    this.name = 'wordtype';
     this.value = null;
-
-    if (!this.container) return;
 
     var dropdownData = [];
     for (var key in TYPE) {
@@ -79,15 +144,17 @@ function WordType(manager) {
         }
     }
 
-    if (this.container) {
-        this.dropdown = this.dropdown || new DropDown({            
-            container: me.container,
-            data: dropdownData,
-            slots: 4,
-            caseSensitive: false,
-            confirmWithFirstClick: true
-        });
-    }
+    this.container = jQuery('<div/>', {
+        id: 'word-type',
+        'class': 'word-type content-container'
+    });
+    this.dropdown = new DropDown({            
+        container: me.container,
+        data: dropdownData,
+        slots: 4,
+        caseSensitive: false,
+        confirmWithFirstClick: true
+    });
 
     this.dropdown.bind({
         select: function(e) {
@@ -96,60 +163,92 @@ function WordType(manager) {
     });
 
 
+    this.panel = new FilterPanel(this, {
+        name: me.name,
+        content: me.container
+    });
+
 }
 
-function Weight(manager) {
+function WeightFilter(manager) {
     var me = this;
     this.minWeight = 1;
     this.maxWeight = 10;
     this.manager = manager;
-    this.values = {
+    this.name = 'weight';
+    this.value = {
         from: 0,
         to: 0
     };
-    this.fromWeight = $('#fromWeight')[0];
-    this.toWeight = $('#toWeight')[0];
-
-    $(this.fromWeight).bind({        
-        click: function () {
-            this.select();
-            this.focus();
-        },
-        blur: function () {
-            me.values.from = getProperValue($(this).val());
-            $(this).val(me.values.from ? me.values.from : '');
-        }
-    });
-
-    $(this.toWeight).bind({        
-        click: function () {
-            this.select();
-            this.focus();
-        },
-        blur: function () {
-            me.values.to = getProperValue($(this).val());
-            $(this).val(me.values.to ? me.values.to : '');
-        }
-    });
     
+
+    this.container = jQuery('<div/>', {
+        'class': 'content-container'
+    });
+    var fromLabel = jQuery('<div/>', { 'class' : 'label', html: 'from' }).
+        appendTo(jQuery('<div/>', { 'class' : 'label-table' }).
+        appendTo(jQuery('<div/>', { 'class' : 'lbl' }).appendTo($(this.container))));
+
+    this.fromInput = jQuery('<input/>', { type: 'text' }).
+        bind({        
+            click: function () {
+                this.select(); this.focus();
+            },
+            blur: function () {
+                me.value.from = getProperValue($(this).val());
+                $(this).val(me.value.from ? me.value.from : '');
+            }
+        });
+    $(this.fromInput).appendTo($(this.container));
+
+    var toLabel = jQuery('<div/>', { 'class' : 'label', html: 'to' }).
+        appendTo(jQuery('<div/>', { 'class' : 'label-table' }).
+        appendTo(jQuery('<div/>', { 'class' : 'lbl' }).appendTo($(this.container))));
+
+    this.toInput = jQuery('<input/>', { type: 'text' }).
+        bind({        
+            click: function () {
+                this.select(); this.focus();
+            },
+            blur: function () {
+                me.value.to = getProperValue($(this).val());
+                $(this).val(me.value.to ? me.value.to : '');
+            }
+        });
+    $(this.toInput).appendTo($(this.container));
+
     function getProperValue(value) {
         var $value = Number(value);
         if (!$.isNumeric($value) || $value === 0) return 0;
         return Math.max(Math.min(me.maxWeight, $value), me.minWeight);
     }
 
+    this.panel = new FilterPanel(this, {
+        name: 'weight',
+        content: me.container
+    });
+
 }
 
-function Categories(manager) {
+function CategoryFilter(manager) {
     var me = this;
     this.manager = manager;
-    this.addButton = $('#select-categories')[0];
-    this.container = $('#categories')[0];
-    this.selected = [];
+    this.name = 'categories';
+    this.value = [];
+
+    this.container = jQuery('<div/>', {
+        'class': 'content-container'
+    });
+
+    this.addButton = jQuery('<div/>', {
+        'class': 'select-categories-button'
+    });
+    $(this.addButton).appendTo($(this.container));
+    
     this.tree = new Tree({
         'mode': MODE.MULTI,
         'root': my.categories.getRoot(),
-        'selected': me.selected,
+        'selected': me.value,
         'blockOtherElements': true,
         'showSelection': true,
         'hidden': true
@@ -182,9 +281,14 @@ function Categories(manager) {
         } 
     });
 
+    this.panel = new FilterPanel(this, {
+        name: 'categories',
+        content: me.container
+    });
+
 }
-Categories.prototype.changeCategories = function (items) {
-    this.selected = [];
+CategoryFilter.prototype.changeCategories = function (items) {
+    this.value = [];
     $(this.container).find('.category').remove();
     
     for (var i = 0; i < items.length; i++) {
@@ -192,22 +296,21 @@ Categories.prototype.changeCategories = function (items) {
         var category = node.object;
         var selected = new SelectedCategory(this, node);
         selected.container.appendTo($(this.container));
-        this.selected.push(category);
+        this.value.push(category);
     }
 };
-Categories.prototype.remove = function (category) {
+CategoryFilter.prototype.remove = function (category) {
     var array = [];
-    for (var i = 0; i < this.selected.length; i++) {
-        var item = this.selected[i];
+    for (var i = 0; i < this.value.length; i++) {
+        var item = this.value[i];
         if (item !== category) {
             array.push(item);
         }
     }
     
-    this.selected = array;
+    this.value = array;
     
 };
-
 
 function SelectedCategory(parent, node) {
     var me = this;
@@ -237,13 +340,19 @@ function SelectedCategory(parent, node) {
 }
 
 
-function TextSearch(manager) {
+function TextFilter(manager) {
     var me = this;
     this.manager = manager;
-    this.textbox = $('#text-contain')[0];
+    this.name = 'text';
     this.value = '';
-
-    $(this.textbox).bind({        
+    this.container = jQuery('<div/>', {
+        'class': 'content-container'
+    });
+    this.textbox = jQuery('<input/>', {
+        id: 'text-contain',
+        'class': 'contain',
+        type: 'text'
+    }).bind({        
        click: function() {
            this.select();
            this.focus();
@@ -253,9 +362,14 @@ function TextSearch(manager) {
            setTimeout(function () {
                var value = $($me).val();
                me.value = value;
-           }, 50);
-           
+           }, 50);   
        }
+    });
+    $(this.textbox).appendTo($(this.container));
+
+    this.panel = new FilterPanel(this, {
+        name: 'text',
+        content: me.container
     });
 
 }

@@ -82,18 +82,55 @@ $(function () {
         }
     });
 
-    var searchManager = new SearchManager();
-    searchManager.bind({        
-        filter: function(e) {
-            filter(e);
-        }
+    var controller = new WordViewController({
+        pageItems: 10,
+        currentPage: 1
     });
-
 
 });
 
 
-function filter(e) {
+//<div class="word active">
+//    <div class="id">1</div>
+//    <div class="name">Polska</div>
+//    <div class="weight">
+//<a class="weight checked" href="/Words/UpdateWeight/1?weight=1"> </a><a class="weight checked" href="/Words/UpdateWeight/1?weight=2"> </a><a class="weight checked" href="/Words/UpdateWeight/1?weight=3"> </a><a class="weight checked" href="/Words/UpdateWeight/1?weight=4"> </a><a class="weight checked" href="/Words/UpdateWeight/1?weight=5"> </a><a class="weight checked" href="/Words/UpdateWeight/1?weight=6"> </a><a class="weight checked" href="/Words/UpdateWeight/1?weight=7"> </a><a class="weight checked" href="/Words/UpdateWeight/1?weight=8"> </a><a class="weight checked" href="/Words/UpdateWeight/1?weight=9"> </a><a class="weight checked" href="/Words/UpdateWeight/1?weight=10"> </a>
+//    </div>
+//    <div class="type">N</div>
+
+
+//    <div class="categories">Geografia &gt; Państwa &gt; Europa</div>
+
+//    <div class="edit-item">1</div>
+
+//    <a href="/Words/Deactivate/1">Deactivate</a>
+
+
+//</div>
+
+
+function WordViewController(properties) {
+    var me = this;
+    this.pageItems = properties.pageItems || 10;
+    this.currentPage = properties.currentPage || 1;
+    this.container = $(document.body);
+
+    this.filterManager = new FilterManager({
+        container: me.container,
+        wordtype: true,
+        weight: true,
+        categories: true,
+        text: true
+    }).bind({
+        filter: function (e) {
+            me.filter(e);
+        }
+    });
+
+
+}
+WordViewController.prototype.filter = function (e) {
+    var me = this;
     
     //Convert array of selected categories to int array.
     var categories = [];
@@ -108,14 +145,16 @@ function filter(e) {
 
     $.ajax({
         url: '/Words/Filter',
-        type: "POST",
+        type: "GET",
         data: {
             'wordType' : e.wordtype ? e.wordtype.id : -1,
             'lowWeight' : e.weight.from,
             'upWeight' : e.weight.to,
             'categories' : categories,
-            'text' : e.text
-        },
+            'text': e.text,
+            'page': me.currentPage,
+            'pageSize': me.pageItems
+            },
         traditional: true,
         datatype: "json",
         async: false,
@@ -128,8 +167,9 @@ function filter(e) {
         }
     });    
 
-
 }
+
+
 
 function editMetaword(id, listLine) {
     var metawordJson = getItem('/Words/GetMetaword', id);

@@ -65,15 +65,6 @@ namespace Typer.Web.Controllers
             }
 
 
-            [AllowAnonymous]
-            public ViewResult List(SearchModel searchModel, int page = 1)
-            {
-                if (list == null) list = _service.GetMetawords();
-                var model = CreateViewModel(page, searchModel);
-                return View(model);                
-            }
-
-
             private MetawordsListViewModel CreateViewModel(int page, SearchModel searchModel)
             {
                 var model = new MetawordsListViewModel
@@ -96,25 +87,20 @@ namespace Typer.Web.Controllers
             }
 
 
-            [HttpPost]
+
+
+
+            [HttpGet]
             [AllowAnonymous]
-            public void Filter(int wordType, int lowWeight, int upWeight, int[] categories, string text)
+            public ActionResult Filter(int wordType, int lowWeight, int upWeight, int[] categories, string text, int pageSize, int page)
             {
+                var words = _service.Filter(wordType, lowWeight, upWeight, categories, text).
+                    OrderBy(w => w.Id).
+                    Skip((page - 1) * pageSize).
+                    Take(pageSize);
 
-                list = _service.Filter(wordType, lowWeight, upWeight, categories, text);
-                SearchModel searchModel = new SearchModel
-                {
-                    WordType = wordType,
-                    LWeight = lowWeight,
-                    UWeight = upWeight,
-                    Categories = categories.Select(t => _categoryService.GetCategory(t)).ToList(),
-                    Contain = text
-                };
-
-                var view = List(searchModel, 1);
-
+                return Json(words, JsonRequestBehavior.AllowGet);
             }
-
 
 
             [AllowAnonymous]

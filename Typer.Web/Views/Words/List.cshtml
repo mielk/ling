@@ -11,7 +11,7 @@
     @Scripts.Render("~/bundles/search")
 }
 
-@Html.Partial("SearchPanel", Model.SearchInfo)
+@*@Html.Partial("SearchPanel", Model.SearchInfo)
 
 <div class="word header">
     <div class="id">Id</div>
@@ -35,4 +35,4 @@
 
 <div class="pager">
     @Html.PageLinks(Model.PagingInfo, x => Url.Action("List", new {page = x}))
-</div>
+</div>*@
