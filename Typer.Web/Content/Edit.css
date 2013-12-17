@@ -486,66 +486,178 @@ div.pager a.selected {
 
 
 
+.filter-panel {
+    display: block;
+    position: relative;
+    float: left;
+    width: 100%;
+    -moz-min-width: 1040px;
+    -ms-min-width: 1040px;
+    -o-min-width: 1040px;
+    -webkit-min-width: 1040px;
+    min-width: 1040px;
+    height: 80px;
+    padding: 0;
+    margin: 0;
+}
+
 .filter-panel div {
     display: block;
     position: relative;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
     box-sizing: border-box;
-    height: 100%;
-    padding: 1px 6px;
 }
 
-.block {
-    display: block;
+.filter-panel > div {
     float: left;
+    height: 100%;
+    margin: 0;
+}
+
+.filter-panel .left {
+    width: 350px;
+}
+
+.filter-panel .right {
+    width: 100%;
+    -moz-min-width: 500px;
+    -ms-min-width: 500px;
+    -o-min-width: 500px;
+    -webkit-min-width: 500px;
+    min-width: 500px;
+    height: 100%;
+}
+
+.single-panel {
+    float: left;
+    height: 50%;
+    width: 100%;
+}
+
+.filter-panel .button {
+    float: right;
+    width: 75px;
+    height: 100%;
+    background-color: rgb(238, 238, 238);
+    padding: 6px;
+}
+
+.search-button {
+    display: table-cell;
+    vertical-align: middle;
+    width: 100%;
+    height: 36px;
+    padding: 9px;
+    text-align: center;
+    line-height: 18px;
+    font-size: 13px;
+    border: 1px solid #555;
+    margin: 20px 0;
 }
 
 .full-height {
     height: 100%;
 }
 
-.filter-panel .left {
+.label-container {
     float: left;
-    width: 20%;
-    margin: 0;
+    width: 100px;
+    height: 100%;
 }
-.filter-panel .right {
+
+.label-table {
+    display: table !important;
+    height: 100%;
     width: 100%;
 }
 
-.filter-panel .left > div {
-    height: 50%;
+.label-table .label {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
 }
 
-.filter-panel .right > div {
-    height: 50%;
-}
-
-.filter-panel .button {
-    float: right;
-    width: 56px;
+.content-container {
     height: 100%;
-    background-color: green;
+    background-color: #EEE;
+    overflow-x: hidden;
+    overflow-y: visible;
+    padding: 6px;
 }
 
-.word-type-box {
+.content-container input {
+    float: left;
+    width: 30%;
+    height: 100%;
+    border: 1px solid #555;
+    text-align: center;
+}
+
+.content-container .contain {
+    float: left;
+    width: 100%;
+    height: 100%;
+    border: 1px solid #555;
+    text-align: left;
+    font-size: 14px;
+    padding: 3px;
+}
+
+.content-container .lbl
+{
+    float: left;
+    width: 20%;
+    height: 100%;
+    text-align: center;
+    font-size: 9px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.content-container .select-categories-button {
+    float: left;
+    width: 28px;
+    height: 28px;
+    border: 1px solid #555;
+    background-color: #ccc;
+    margin-right: 15px;
+}
+
+.content-container .category {
+    display: block;
+    float: left;
+    width: auto;
+    height: 100%;
+    margin-right: 12px;
+    border: 1px solid #999;
+    background-color: #fff5ee;
+    padding: 3px;
+}
+
+.remove-category {
+    float: left;
+    width: 16px;
+    height: 16px;
+    margin: 3px 6px;
+    margin-left: 0;
+    background-image: url('images/delete-node.png') !important;
+}
+
+.category-name {
+    float: left;
+    width: auto;
+}
+
+/*.word-type-box {
     float: left;
     width: 160px;
     border: 1px solid black;
     height: 100%;
     padding: 3px;
-}
+}*/
 
-.table {
-    display: table !important;
-    vertical-align: middle !important;
-}
-
-.table-cell {
-    display: table-cell !important;
-    vertical-align: middle !important;
-}
-
-.filter-panel .label {
+/*.filter-panel .label {
     float: left;
     width: 100px;
     height: 100% !important;
@@ -566,4 +678,4 @@ div.pager a.selected {
 
 .weight .weight-box:last-child {
     margin-left: 12px;
-}
+}*/

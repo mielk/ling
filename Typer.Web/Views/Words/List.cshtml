@@ -10,9 +10,9 @@
     @Scripts.Render("~/bundles/categories")
 }
 
-@Html.Partial("SearchPanel");
+@Html.Partial("SearchPanel")
 
-<div class="word header">
+@*<div class="word header">
     <div class="id">Id</div>
     <div class="name">Name</div>
     <div class="weight">Weight</div>
@@ -34,4 +34,4 @@
 
 <div class="pager">
     @Html.PageLinks(Model.PagingInfo, x => Url.Action("List", new {page = x}))
-</div>
+</div>*@
