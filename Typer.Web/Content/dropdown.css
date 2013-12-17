@@ -78,6 +78,11 @@
     color: #6d7c99;
     font-weight: bold;
     background-color: #FFF;
+    cursor: pointer;
+}
+
+.dropdown-option:hover {
+    background-color: #c7d8f0 !important;
 }
 
 .dropdown-selected{

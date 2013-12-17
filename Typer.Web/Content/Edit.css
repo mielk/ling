@@ -588,6 +588,10 @@ div.pager a.selected {
     padding: 6px;
 }
 
+.content-container .valid {
+    background-color: white;
+}
+
 .word-type {
     float: left;
     width: 250px !important;
