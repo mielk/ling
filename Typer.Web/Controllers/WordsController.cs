@@ -1,10 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web.Configuration;
 using System.Web.Mvc;
-using System.Web.Services.Description;
-using Microsoft.Ajax.Utilities;
 using Typer.Domain.Services;
 using Typer.Domain.Entities;
 using Typer.Web.Models;
@@ -14,9 +10,8 @@ namespace Typer.Web.Controllers
         {
 
             private readonly IWordService _service;
-            private readonly ICategoryService _categoryService = CategoryServicesFactory.Instance().GetService();
             public int PageSize = 10;
-            private IEnumerable<Metaword> list;
+            private IEnumerable<Metaword> _list;
 
             // ReSharper disable once UnusedMember.Local
             private RedirectResult NavigationPoint
@@ -48,9 +43,9 @@ namespace Typer.Web.Controllers
             public ViewResult List(int page = 1)
             {
 
-                if (list == null)
+                if (_list == null)
                 {
-                    list = _service.GetMetawords();
+                    _list = _service.GetMetawords();
                 }
 
                 var model = CreateViewModel(page, new SearchModel{
@@ -69,7 +64,7 @@ namespace Typer.Web.Controllers
             {
                 var model = new MetawordsListViewModel
                 {
-                    Metawords = list.
+                    Metawords = _list.
                     OrderBy(q => q.Id).
                     Skip((page - 1) * PageSize).
                     Take(PageSize),
@@ -94,21 +89,25 @@ namespace Typer.Web.Controllers
             [AllowAnonymous]
             public ActionResult Filter(int wordType, int lowWeight, int upWeight, int[] categories, string text, int pageSize, int page)
             {
-                
-                var words = _service.Filter(wordType, lowWeight, upWeight, categories, text).
+
+                var allWords = _service.Filter(wordType, lowWeight, upWeight, categories, text).ToArray();
+                var words = allWords.
                     OrderBy(w => w.Id).
                     Skip((page - 1) * pageSize).
                     Take(pageSize);
+                var totalItems = allWords.Length;
 
-                return Json(words, JsonRequestBehavior.AllowGet);
+                return Json(new { Words = words, Total = totalItems}, JsonRequestBehavior.AllowGet);
             }
 
 
+            [HttpPost]
             [AllowAnonymous]
             public ActionResult UpdateWeight(int id, int weight)
             {
-                _service.ChangeWeight(id, weight);
-                return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
+                var result = _service.ChangeWeight(id, weight);
+                return Json(result);
+                //return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
             }
 
 
@@ -121,20 +120,23 @@ namespace Typer.Web.Controllers
             }
 
 
-
+            [HttpPost]
             [AllowAnonymous]
             public ActionResult Deactivate(int id)
             {
-                _service.Deactivate(id);
-                return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
+                var value = _service.Deactivate(id);
+                return Json(value, JsonRequestBehavior.AllowGet);
+                //return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
             }
 
 
+            [HttpPost]
             [AllowAnonymous]
             public ActionResult Activate(int id)
             {
-                _service.Activate(id);
-                return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
+                var value = _service.Activate(id);
+                return Json(value, JsonRequestBehavior.AllowGet);
+                //return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
             }
 
             #region Helpers

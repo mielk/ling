@@ -55,14 +55,30 @@ namespace Typer.Web.Controllers
 
 
 
+
+
+        [HttpGet]
         [AllowAnonymous]
-        public ActionResult UpdateWeight(int id, int weight)
+        public ActionResult Filter(int lowWeight, int upWeight, int[] categories, string text, int pageSize, int page)
         {
-            _service.ChangeWeight(id, weight);
-            return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
+
+            var questions = _service.Filter(lowWeight, upWeight, categories, text).
+                OrderBy(q => q.Id).
+                Skip((page - 1) * pageSize).
+                Take(pageSize);
+
+            return Json(questions, JsonRequestBehavior.AllowGet);
         }
 
 
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult UpdateWeight(int id, int weight)
+        {
+            var result = _service.ChangeWeight(id, weight);
+            return Json(result);
+            //return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
+        }
 
 
         [HttpPost]
@@ -74,21 +90,25 @@ namespace Typer.Web.Controllers
         }
 
 
-
+        [HttpPost]
         [AllowAnonymous]
         public ActionResult Deactivate(int id)
         {
-            _service.Deactivate(id);
-            return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
+            var value = _service.Deactivate(id);
+            return Json(value, JsonRequestBehavior.AllowGet);
+            //return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
         }
 
 
+        [HttpPost]
         [AllowAnonymous]
         public ActionResult Activate(int id)
         {
-            _service.Activate(id);
-            return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
+            var value = _service.Activate(id);
+            return Json(value, JsonRequestBehavior.AllowGet);
+            //return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
         }
+
 
         #region Helpers
         //Close current subpage and navigate to start page.

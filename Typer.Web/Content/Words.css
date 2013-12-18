@@ -137,6 +137,7 @@ div.pager a.selected {
     float: left;
     margin-right: 21px;
     margin-left: 21px;
+    cursor: pointer;
 }
 
 .word a.weight

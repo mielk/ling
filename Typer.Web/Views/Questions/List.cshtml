@@ -7,12 +7,13 @@
     //@Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/search")
     @Scripts.Render("~/bundles/question")
     @Scripts.Render("~/bundles/categories")
 
 }
 
-
+@*
 <div class="question header">
     <div class="id">Id</div>
     <div class="name">Name</div>
@@ -35,4 +36,4 @@
 
 <div class="pager">
     @Html.PageLinks(Model.PagingInfo, x => Url.Action("List", new {page = x}))
-</div>
+</div>*@

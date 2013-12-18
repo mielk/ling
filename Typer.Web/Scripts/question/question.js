@@ -56,20 +56,109 @@
 
 
 $(function () {
+    var controller = new QuestionViewController({
+        pageItems: 10,
+        currentPage: 1
+    });
+    controller.start();
+});
 
-    $('.edit-item').bind({
-        'click': function () {
-            var id = Number(this.innerHTML);
-            var listLine = $(this).parent();
-            if ($.isNumeric(id)) {
-                editQuestion(id, listLine);
-            }
+
+function QuestionViewController(properties) {
+    var me = this;
+    this.pageItems = properties.pageItems || 10;
+    this.currentPage = properties.currentPage || 1;
+    this.container = $(document.body);
+
+    this.filterManager = new FilterManager({
+        container: me.container,
+        weight: true,
+        categories: true,
+        text: true
+    }).bind({
+        filter: function (e) {
+            var items = me.filter(e);
+            me.load(items);
         }
     });
 
-    $('#add-item').bind({
-        'click': function () {
+    this.header = (new QuestionViewHeader(this)).appendTo(this.container);
+    this.questions = jQuery('<div/>').appendTo($(this.container));
+    this.addButton = (new QuestionViewAddButton(this)).appendTo(this.container);
+    this.pager = (new QuestionViewPager(this)).appendTo(this.container);
 
+}
+QuestionViewController.prototype.start = function () {
+    var items = this.filter({ page: 1, pageSize: 10 });
+    if (items) {
+        this.load(items);
+    }
+};
+QuestionViewController.prototype.filter = function (e) {
+    var me = this;
+    var items;
+
+    $.ajax({
+        url: '/Questions/Filter',
+        type: "GET",
+        data: {
+            'lowWeight': e.weight ? e.weight.from : 0,
+            'upWeight': e.weight ? e.weight.to : 0,
+            'categories': e.categories ? e.categories : [],
+            'text': e.text ? e.text : '',
+            'page': me.currentPage,
+            'pageSize': me.pageItems
+        },
+        traditional: true,
+        datatype: "json",
+        async: false,
+        cache: false,
+        success: function (result) {
+            items = result;
+        },
+        error: function (msg) {
+            alert(msg.status + " | " + msg.statusText);
+            return null;
+        }
+    });
+
+    return items;
+
+};
+QuestionViewController.prototype.load = function (items) {
+    this.questions.empty();
+
+    for (var i = 0; i < this.pageItems && i < items.length; i++) {
+        var question = items[i];
+        var questionLine = new QuestionLine(question);
+        questionLine.appendTo(this.questions);
+    }
+
+    this.pager.refresh();
+
+};
+QuestionViewController.prototype.totalPages = function () {
+    var totalPages = Math.floor(this.totalItems / this.pageItems) + (this.totalItems % this.pageItems ? 1 : 0);
+    return totalPages;
+};
+QuestionViewController.prototype.moveToPage = function (page) {
+    var $page = Math.max(Math.min(this.totalPages(), page), 1);
+    if ($page !== this.currentPage) {
+
+    };
+};
+
+
+function QuestionViewAddButton() {
+    this.container = jQuery('<div/>', {
+        'id': 'add-button-container'
+    });
+    this.button = jQuery('<a/>', {
+        id: 'add-item',
+        'class': 'add',
+        html: 'Add'
+    }).bind({
+        click: function () {
             var question = new Question({
                 Question: {},
                 Categories: [],
@@ -77,27 +166,271 @@ $(function () {
             }, {
                 blockOtherElements: true
             });
+            question.displayEditForm();
+        }
+    }).appendTo($(this.container));
 
-            question.ui.display();
+}
+QuestionViewAddButton.prototype.appendTo = function (parent) {
+    $(this.container).appendTo($(parent));
+    return this;
+};
 
+
+
+function QuestionViewPager(controller) {
+    var me = this;
+    this.controller = controller;
+    this.container = jQuery('<div/>', {
+        'class': 'pager'
+    });
+
+    this.first = jQuery('<div/>', {
+        'class': 'pager-item first',
+        html: 'First'
+    }).bind({
+        click: function () {
+            me.controller.moveToPage(1);
+        }
+    }).appendTo($(this.container));
+
+    this.previous = jQuery('<div/>', {
+        'class': 'pager-item previous',
+        html: 'Previous'
+    }).bind({
+        click: function () {
+            me.controller.moveToPage(me.controller.currentPage - 1);
+        }
+    }).appendTo($(this.container));
+
+    this.current = jQuery('<div/>', { 'class': 'pager-item current', html: 'First' }).appendTo($(this.container));
+
+    this.next = jQuery('<div/>', {
+        'class': 'pager-item next',
+        html: 'Next'
+    }).bind({
+        click: function () {
+            me.controller.moveToPage(me.controller.currentPage + 1);
+        }
+    }).appendTo($(this.container));
+
+    this.last = jQuery('<div/>', {
+        'class': 'pager-item last',
+        html: 'Last'
+    }).bind({
+        click: function () {
+            me.controller.moveToPage(me.controller.totalPages());
+        }
+    }).appendTo($(this.container));
+
+}
+QuestionViewPager.prototype.appendTo = function(parent) {
+    $(this.container).appendTo($(parent));
+    return this;
+};
+QuestionViewPager.prototype.refresh = function () {
+    var current = this.controller.currentPage;
+    var total = this.controller.totalPages();
+    $(this.current).html(current + ' / ' + total);
+
+    display(this.first, current !== 1);
+    display(this.previous, current !== 1);
+    display(this.next, current !== total);
+    display(this.last, current !== total);
+
+};
+
+
+
+function QuestionViewHeader() {
+    this.container = jQuery('<div/>', { 'class': 'question header' });
+    this.id = jQuery('<div/>', { 'class': 'id', html: 'id' }).appendTo($(this.container));
+    this.name = jQuery('<div/>', { 'class': 'name', html: 'name' }).appendTo($(this.container));
+    this.weight = jQuery('<div/>', { 'class': 'weight', html: 'weight' }).appendTo($(this.container));
+    this.categories = jQuery('<div/>', { 'class': 'categories', html: 'categories' }).appendTo($(this.container));
+}
+QuestionViewHeader.prototype.appendTo = function (parent) {
+    $(this.container).appendTo($(parent));
+};
+
+
+function QuestionLine(question) {
+    this.question = question;
+    this.id = question.Id;
+    this.name = question.Name;
+    this.weight = question.Weight;
+    this.active = question.IsActive;
+    this.categories = question.CategoriesString;
+    this.eventHandler = new EventHandler();
+    this.view = new QuestionLineView(this);
+}
+QuestionLine.prototype.bind = function (e) {
+    this.eventHandler.bind(e);
+};
+QuestionLine.prototype.trigger = function (e) {
+    this.eventHandler.trigger(e);
+};
+QuestionLine.prototype.appendTo = function (parent) {
+    $(this.view.container).appendTo($(parent));
+};
+QuestionLine.prototype.setWeight = function (value) {
+    var me = this;
+    var callback = function (result) {
+        if (result) {
+            me.weight = value;
+            me.trigger({
+                type: 'setWeight',
+                weight: value
+            });
+        }
+    };
+
+    var e = {
+        id: me.id,
+        name: me.name,
+        weight: value,
+        callback: callback
+    };
+
+    my.questions.updateWeight(e);
+
+};
+QuestionLine.prototype.updateCategories = function (categories) {
+    this.view.updateCategories(categories);
+};
+QuestionLine.prototype.activate = function (result) {
+    var me = this;
+    var state = (result !== undefined ? result : !this.active);
+
+
+    var callback = function (value) {
+        if (value) {
+            me.active = state;
+            me.view.activate(me.active);
+        }
+    };
+
+    var e = {
+        id: me.id,
+        name: me.name,
+        callback: callback
+    };
+
+    if (state) {
+        my.questions.activate(e);
+    } else {
+        my.questions.deactivate(e);
+    }
+
+};
+
+
+function QuestionLineView(line) {
+    var me = this;
+    this.line = line;
+
+    this.container = jQuery('<div/>', {
+        'class': 'question '
+    });
+    this.activate(this.line.active);
+
+    this.id = jQuery('<div/>', { 'class': 'id', html: me.line.id }).appendTo($(this.container));
+    this.name = jQuery('<div/>', { 'class': 'name', html: me.line.name }).appendTo($(this.container));
+    this.weight = (new QuestionLineWeightPanel(this.line)).appendTo($(this.container));
+
+    this.categories = jQuery('<div/>', { 'class': 'categories', html: me.line.categories }).appendTo($(this.container));
+
+    this.edit = jQuery('<div/>', {
+        'class': 'edit-item',
+        html: me.line.id
+    }).bind({
+        click: function () {
+            var id = me.line.id;
+            editQuestion(id, me.line);
+        }
+    }).appendTo($(this.container));
+
+    this.deactivate = jQuery('<a/>', {
+        html: me.line.active ? 'Deactivate' : 'Activate'
+    }).bind({
+        click: function () {
+            me.line.activate();
+        }
+    }).appendTo($(this.container));
+
+}
+QuestionLineView.prototype.activate = function (value) {
+    if (value) {
+        this.container.removeClass('inactive');
+        this.container.addClass('active');
+        $(this.deactivate).html('Deactivate');
+    } else {
+        this.container.removeClass('active');
+        this.container.addClass('inactive');
+        $(this.deactivate).html('Activate');
+    }
+};
+QuestionLineView.prototype.updateCategories = function (categories) {
+    $(this.categories).html(categories);
+};
+
+
+function QuestionLineWeightPanel(line) {
+    var me = this;
+    this.line = line;
+    this.question = this.line.question;
+
+    this.container = jQuery('<div/>', { 'class': 'weight' });
+    this.icons = [];
+    for (var i = 0; i < 10; i++) {
+        this.icons[i] = jQuery('<a/>', {
+            'class': 'weight',
+            html: i + 1
+        }).bind({
+            click: function () {
+                var value = Number(this.innerHTML);
+                if ($.isNumeric(value)) {
+                    value = Math.max(Math.min(10, value), 1);
+                    me.line.setWeight(value);
+                }
+            }
+        }).appendTo($(this.container));
+    }
+
+    this.line.bind({
+        setWeight: function (e) {
+            me.setValue(e.weight);
         }
     });
 
+    (function ini() {
+        me.setValue(me.line.weight);
+    })();
 
-    //var questionJSON = getQuestion(1);
-    //var question = new Question(questionJSON, {
-    //                        blockOtherElements: true
-    //                    });
-    //question.displayEditForm();
+}
+QuestionLineWeightPanel.prototype.setValue = function (value) {
+    var i;
+    for (i = 0; i < value; i++) {
+        this.icons[i].addClass('checked');
+    }
+    for (i = value; i < 10; i++) {
+        this.icons[i].removeClass('checked');
+    }
+};
+QuestionLineWeightPanel.prototype.appendTo = function (parent) {
+    $(this.container).appendTo($(parent));
+    return this;
+};
 
-});
 
 
-function editQuestion(id, listLine) {
+
+
+function editQuestion(id, questionLine) {
     var questionJson = getQuestion(id);
     var question = new Question(questionJson, {
         blockOtherElements: true,
-        listLine: listLine
+        questionLine: questionLine
     });
     question.displayEditForm();
 }
@@ -165,7 +498,7 @@ function Question(data, properties) {
     this.weight = this.object.Weight || 1;
     this.categories = this.initialCategoryCollection(data.Categories);
     this.properties = properties || {};
-    this.listLine = properties.listLine;
+    this.questionLine = properties.questionLine;
 
     this.eventHandler = new EventHandler();
     this.eventHandler.bind({
@@ -188,8 +521,8 @@ function Question(data, properties) {
         },
         refreshCategories: function () {
             me.updateCategoriesString();
-            if (me.listLine) {
-                $(me.listLine).find('.categories').html(me.categoriesString);
+            if (me.questionLine) {
+                $(me.questionLine).updateCategories(me.categoriesString);
             }
         }
     });
@@ -1496,3 +1829,10 @@ EditLineView.prototype.focus = function () {
 EditLineView.prototype.getValue = function () {
     return $(this.value).val();
 };
+
+
+function display(div, value) {
+    $(div).css({
+        'display': (value ? 'block' : 'none')
+    });
+}

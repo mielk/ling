@@ -100,6 +100,18 @@ namespace Typer.Domain.Services
             return dtos.Select(dto => _categoryService.GetCategory(dto.CategoryId)).ToList();
         }
 
+        public IEnumerable<Question> Filter(int lowWeight, int upWeight, int[] categories, string text)
+        {
+            var dtos = _repository.GetQuestions();
+
+            if (lowWeight > 0) dtos = dtos.Where(q => q.Weight >= lowWeight);
+            if (upWeight > 0) dtos = dtos.Where(q => q.Weight <= upWeight);
+            if (text.Length > 0) dtos = dtos.Where(q => q.Name.ToLower().Contains(text.ToLower()));
+            //if (categories.Length > 0) dtos = dtos.Where(w => categories.Contains(w.))
+
+            return dtos.Select(QuestionFromDto).ToList();
+
+        }
 
 
         private static Question QuestionFromDto(QuestionDto dto)

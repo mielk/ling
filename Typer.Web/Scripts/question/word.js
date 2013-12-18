@@ -25,7 +25,6 @@
 
     return {
         updateCategory: function (e) {
-
             var categoriesIds = [];
             var categoriesNames = '';
             for (var key in e.items) {
@@ -49,35 +48,47 @@
                 callback: e.callback
             });
 
+        },
+        activate: function(e) {
+            dbOperation({                
+                functionName: 'Activate',
+                data: { 'id': e.id },
+                success: 'Word ' + e.name + ' has been activated',
+                error: 'Error when trying to activate word ' + e.name,
+                callback: e.callback
+            });
+        },
+        deactivate: function(e) {
+            dbOperation({
+                functionName: 'Deactivate',
+                data: { 'id': e.id },
+                success: 'Word ' + e.name + ' has been deactivated',
+                error: 'Error when trying to deactivate word ' + e.name,
+                callback: e.callback
+            });
+        },
+        updateWeight: function(e) {
+            dbOperation({
+                functionName: 'UpdateWeight',
+                data: {
+                    'id': e.id,
+                    'weight': e.weight
+                },
+                success: 'Word ' + e.name + ' has changed its weight to ' + e.weight,
+                error: 'Error when trying to change the weight of the word ' + e.name,
+                callback: e.callback
+            });
         }
     };
 
 })();
 
 $(function () {
-
-    $('#add-item').bind({
-        'click': function () {
-
-            var metaword = new Metaword({
-                    Object: {},
-                    Categories: [],
-                    UserLanguages: getLanguages()
-                }, {
-                    blockOtherElements: true
-                });
-
-            metaword.ui.display();
-
-        }
-    });
-
     var controller = new WordViewController({
         pageItems: 10,
         currentPage: 1
     });
     controller.start();
-
 });
 
 
@@ -86,6 +97,7 @@ function WordViewController(properties) {
     this.pageItems = properties.pageItems || 10;
     this.currentPage = properties.currentPage || 1;
     this.container = $(document.body);
+    this.totalItems = 0;
 
     this.filterManager = new FilterManager({
         container: me.container,
@@ -102,7 +114,9 @@ function WordViewController(properties) {
 
     this.header = (new WordViewHeader(this)).appendTo(this.container);
     this.words = jQuery('<div/>').appendTo($(this.container));
-   
+    this.addButton = (new WordViewAddButton(this)).appendTo(this.container);
+    this.pager = (new WordViewPager(this)).appendTo(this.container);
+
 }
 WordViewController.prototype.start = function() {
     var items = this.filter({ page: 1, pageSize: 10 });
@@ -130,8 +144,9 @@ WordViewController.prototype.filter = function(e) {
         datatype: "json",
         async: false,
         cache: false,
-        success: function(result) {
-            items = result;
+        success: function (result) {
+            me.totalItems = result.Total;
+            items = result.Words;
         },
         error: function(msg) {
             alert(msg.status + " | " + msg.statusText);
@@ -151,6 +166,114 @@ WordViewController.prototype.load = function(items) {
         wordLine.appendTo(this.words);
     }
 
+    this.pager.refresh();
+
+};
+WordViewController.prototype.totalPages = function () {
+    var totalPages = Math.floor(this.totalItems / this.pageItems) + (this.totalItems % this.pageItems ? 1 : 0);
+    return totalPages;
+};
+WordViewController.prototype.moveToPage = function (page) {
+    var $page = Math.max(Math.min(this.totalPages(), page), 1);
+    if ($page !== this.currentPage) {
+        
+    };
+};
+
+function WordViewAddButton() {
+    this.container = jQuery('<div/>', {
+        'id': 'add-button-container'
+    });
+    this.button = jQuery('<a/>', {
+        id: 'add-item',
+        'class': 'add',
+        html: 'Add'
+    }).bind({
+       click: function() {
+           var metaword = new Metaword({
+               Object: {},
+               Categories: [],
+               UserLanguages: getLanguages()
+           }, {
+               blockOtherElements: true
+           });
+           metaword.displayEditForm();
+       } 
+    }).appendTo($(this.container));
+
+}
+WordViewAddButton.prototype.appendTo = function(parent) {
+    $(this.container).appendTo($(parent));
+    return this;
+};
+
+
+function WordViewPager(controller) {
+    var me = this;
+    this.controller = controller;
+    this.container = jQuery('<div/>', {        
+       'class': 'pager' 
+    });
+
+    this.first = jQuery('<div/>', {
+        'class': 'pager-item first',
+        html: 'First'
+    }).bind({
+        click: function() {
+            me.controller.moveToPage(1);
+        }
+    }).appendTo($(this.container));
+    
+    this.previous = jQuery('<div/>', {
+        'class': 'pager-item previous',
+        html: 'Previous'
+    }).bind({
+        click: function () {
+            me.controller.moveToPage(me.controller.currentPage - 1);
+        }
+    }).appendTo($(this.container));
+    
+    this.current = jQuery('<div/>', { 'class': 'pager-item current', html: 'First' }).appendTo($(this.container));
+    
+    this.next = jQuery('<div/>', {
+        'class': 'pager-item next',
+        html: 'Next'
+    }).bind({
+        click: function () {
+            me.controller.moveToPage(me.controller.currentPage + 1);
+        }
+    }).appendTo($(this.container));
+    
+    this.last = jQuery('<div/>', {
+        'class': 'pager-item last',
+        html: 'Last'
+    }).bind({
+        click: function () {
+            me.controller.moveToPage(me.controller.totalPages());
+        }
+    }).appendTo($(this.container));
+
+    //<div class="pager">
+    //    <a href="/Questions/List?page=1">1</a><a class="selected" href="/Questions/List?page=2">2</a>
+    //</div>        
+
+    //    @Html.PageLinks(Model.PagingInfo, x => Url.Action("List", new {page = x}))
+
+}
+WordViewPager.prototype.appendTo = function(parent) {
+    $(this.container).appendTo($(parent));
+    return this;
+};
+WordViewPager.prototype.refresh = function () {
+    var current = this.controller.currentPage;
+    var total = this.controller.totalPages();
+    $(this.current).html(current + ' / ' + total);
+    
+    display(this.first, current !== 1);
+    display(this.previous, current !== 1);
+    display(this.next, current !== total);
+    display(this.last, current !== total);
+
 };
 
 
@@ -162,7 +285,6 @@ function WordViewHeader() {
     this.type = jQuery('<div/>', { 'class': 'type', html: 'type' }).appendTo($(this.container));
     this.categories = jQuery('<div/>', { 'class': 'categories', html: 'categories' }).appendTo($(this.container));
 }
-
 WordViewHeader.prototype.appendTo = function(parent) {
     $(this.container).appendTo($(parent));
 };
@@ -179,7 +301,6 @@ function WordLine(word) {
     this.eventHandler = new EventHandler();
     this.view = new WordLineView(this);
 }
-
 WordLine.prototype.bind = function(e) {
     this.eventHandler.bind(e);
 };
@@ -189,16 +310,57 @@ WordLine.prototype.trigger = function(e) {
 WordLine.prototype.appendTo = function(parent) {
     $(this.view.container).appendTo($(parent));
 };
-WordLine.prototype.setWeight = function(value) {
-    this.weight = value;
-    this.trigger({
-        type: 'setValue',
-        weight: value
-    });
+WordLine.prototype.setWeight = function (value) {
+    var me = this;
+    var callback = function(result) {
+        if (result) {
+            me.weight = value;
+            me.trigger({
+                type: 'setWeight',
+                weight: value
+            });
+        }
+    };
+
+    var e = {        
+        id: me.id,
+        name: me.name,
+        weight: value,
+        callback: callback
+    };
+
+    my.words.updateWeight(e);
+
 };
 WordLine.prototype.updateCategories = function(categories) {
-    //
+    this.view.updateCategories(categories);
 };
+WordLine.prototype.activate = function (result) {
+    var me = this;
+    var state = (result !== undefined ? result : !this.active);
+    
+
+    var callback = function(value) {
+        if (value) {
+            me.active = state;
+            me.view.activate(me.active);
+        }
+    };
+
+    var e = {
+        id: me.id,
+        name: me.name,
+        callback: callback
+    };
+
+    if (state) {
+        my.words.activate(e);
+    } else {
+        my.words.deactivate(e);
+    }
+
+};
+
 
 function WordLineView(line) {
     var me = this;
@@ -222,29 +384,32 @@ function WordLineView(line) {
     }).bind({
         click: function () {
             var id = me.line.id;
-            editMetaword(id, me);
+            editMetaword(id, me.line);
         }
     }).appendTo($(this.container));
 
     this.deactivate = jQuery('<a/>', {
-        html: 'Deactivate'
+        html: me.line.active ?  'Deactivate' : 'Activate'
     }).bind({
         click: function () {
-            var id = me.line.id;
-            //Deactivate.
+            me.line.activate();
         }
     }).appendTo($(this.container));
 
 }
-
 WordLineView.prototype.activate = function(value) {
     if (value) {
         this.container.removeClass('inactive');
         this.container.addClass('active');
+        $(this.deactivate).html('Deactivate');
     } else {
         this.container.removeClass('active');
         this.container.addClass('inactive');
+        $(this.deactivate).html('Activate');
     }
+};
+WordLineView.prototype.updateCategories = function(categories) {
+    $(this.categories).html(categories);
 };
 
 
@@ -258,9 +423,14 @@ function WordLineWeightPanel(line) {
     for (var i = 0; i < 10; i++) {
         this.icons[i] = jQuery('<a/>', {
             'class': 'weight',
+            html: i + 1
         }).bind({
             click: function () {
-                me.word.setWeight(i + 1);
+                var value = Number(this.innerHTML);
+                if ($.isNumeric(value)) {
+                    value = Math.max(Math.min(10, value), 1);
+                    me.line.setWeight(value);
+                }
             }
         }).appendTo($(this.container));
     }
@@ -276,7 +446,6 @@ function WordLineWeightPanel(line) {
     })();
 
 }
-
 WordLineWeightPanel.prototype.setValue = function (value) {
     var i;
     for (i = 0; i < value; i++) {
@@ -1716,3 +1885,9 @@ EditLineView.prototype.focus = function () {
 EditLineView.prototype.getValue = function () {
     return $(this.value).val();
 };
+
+function display(div, value) {
+    $(div).css({
+        'display': (value ? 'block' : 'none')
+    });
+}

@@ -340,9 +340,7 @@ CategoryFilter.prototype.refresh = function () {
             array.push(item.key);
         }
     }
-
-    return array;
-
+    this.items = array;
 };
 
 function SelectedCategory(parent, node) {

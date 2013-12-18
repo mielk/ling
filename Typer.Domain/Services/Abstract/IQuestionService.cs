@@ -18,5 +18,6 @@ namespace Typer.Domain.Services
         bool AddQuestion(Question question);
         IEnumerable<QuestionOption> GetOptions(int questionId);
         IEnumerable<Category> GetCategories(int questionId);
+        IEnumerable<Question> Filter(int lowWeight, int upWeight, int[] categories, string text);
     }
 }

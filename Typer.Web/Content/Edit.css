@@ -244,11 +244,7 @@ input.id
 
 
 
-div.pager { 
-    text-align:right; 
-    padding: .5em 0 0 0; 
-    margin-top: 1em; 
-}
+
 
 div.pager a {
     font-size: 1.1em; 
@@ -689,4 +685,20 @@ div.pager a.selected {
     margin-right: 3px;
     line-height: 13px;
     font-size: 11px;
+}
+
+.pager-item {
+    display: block;
+    float: left;
+    width: auto;
+    margin: 3px;
+    border: 1px solid black;
+}
+
+div.pager {
+    display: block;
+    float: right;
+    width: auto;
+    height: 32px;
+    margin: 12px 0;
 }
