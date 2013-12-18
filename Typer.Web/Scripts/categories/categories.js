@@ -260,12 +260,11 @@ function CategoryFilterPanel(controler) {
     this.filterManager = new FilterManager({
         container: me.container,
         visible: true,
-        collapser: false,
+        collapser: true,
         weight: true,
         text: true,
         type: true,
-        wordtype: true,
-        minWidth: false
+        wordtype: true
     }).bind({
         filter: function (e) {
             alert(e);

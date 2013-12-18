@@ -54,3 +54,10 @@
     border-bottom: 1px solid rgb(180, 180, 180);
     text-transform: uppercase;
 }
+
+.categories-container {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: auto;
+}

@@ -717,3 +717,11 @@ div.pager {
     height: 32px;
     margin: 12px 0;
 }
+
+.relative {
+    position: relative;
+}
+
+.float-left {
+    float: left;
+}

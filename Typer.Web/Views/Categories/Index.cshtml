@@ -14,11 +14,12 @@
     @Scripts.Render("~/bundles/categories")
 }
 
-<div id="categories-tree" class="col scroll-y"></div>
-<div id="category-details" class="col">
-    <div id="selected-category">Selected category</div>
-    <div id="category-options" class="options row">
-        
+
+<div id="category-options" class="relative float-left"></div>
+<div class="categories-container">
+    <div id="categories-tree" class="col scroll-y"></div>
+    <div id="category-details" class="col">
+        <div id="selected-category" class="options row">Selected category</div>
+        <div id="category-items" class="items row scroll-y"></div>
     </div>
-    <div id="category-items" class="items row scroll-y"></div>
 </div>
