@@ -30,6 +30,11 @@ namespace Typer.DAL.Repositories
         }
 
 
+        public IEnumerable<int> GetQuestionsIdsByCategories(int[] categories)
+        {
+            IEnumerable<QuestionCategoryDto> dtos = Context.MatchQuestionCategory.Where(q => categories.Contains(q.CategoryId));
+            return dtos.Select(dto => dto.QuestionId).ToList();
+        }
 
 
 

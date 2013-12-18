@@ -107,11 +107,14 @@ namespace Typer.Domain.Services
             if (lowWeight > 0) dtos = dtos.Where(q => q.Weight >= lowWeight);
             if (upWeight > 0) dtos = dtos.Where(q => q.Weight <= upWeight);
             if (text.Length > 0) dtos = dtos.Where(q => q.Name.ToLower().Contains(text.ToLower()));
-            //if (categories.Length > 0) dtos = dtos.Where(w => categories.Contains(w.))
+            if (categories == null || categories.Length <= 0) return dtos.Select(QuestionFromDto).ToList();
+            var byCategories = _repository.GetQuestionsIdsByCategories(categories);
+            dtos = dtos.Where(q => byCategories.Contains(q.Id));
 
             return dtos.Select(QuestionFromDto).ToList();
 
         }
+
 
 
         private static Question QuestionFromDto(QuestionDto dto)

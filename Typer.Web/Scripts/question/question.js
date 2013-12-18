@@ -1480,17 +1480,7 @@ function EditPanel(properties) {
 
     this.meta = new EditPanelMeta(this);
 
-
-
     this.buttons = new EditPanelButtons(this);
-
-
-    //this.getName = function () {
-    //    return me.gui.name().value();
-    //}
-    //this.getWeight = function () {
-    //    return me.gui.weight().value();
-    //}
 
 }
 EditPanel.prototype.display = function () {

@@ -24,6 +24,7 @@ namespace Typer.DAL.Repositories
 
         IEnumerable<QuestionOptionDto> GetOptions(int questionId);
         IEnumerable<QuestionCategoryDto> GetCategories(int metawordId);
-        
+        IEnumerable<int> GetQuestionsIdsByCategories(int[] categories);
+
     }
 }

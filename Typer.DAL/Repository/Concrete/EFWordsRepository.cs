@@ -30,6 +30,12 @@ namespace Typer.DAL.Repositories
         }
 
 
+        public IEnumerable<int> GetMetawordsIdsByCategories(int[] categories)
+        {
+            IEnumerable<WordCategoryDto> dtos = Context.MatchWordCategory.Where(q => categories.Contains(q.CategoryId));
+            return dtos.Select(dto => dto.MetawordId).ToList();
+        }
+
 
 
 

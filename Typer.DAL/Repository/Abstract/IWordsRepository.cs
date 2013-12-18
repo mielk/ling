@@ -24,6 +24,7 @@ namespace Typer.DAL.Repositories
 
         IEnumerable<WordDto> GetWords(int metawordId);
         IEnumerable<WordCategoryDto> GetCategories(int metawordId);
-        
+        IEnumerable<int> GetMetawordsIdsByCategories(int[] categories);
+
     }
 }

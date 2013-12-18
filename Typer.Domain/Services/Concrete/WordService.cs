@@ -106,8 +106,11 @@ namespace Typer.Domain.Services
             if (lowWeight > 0) dtos = dtos.Where(w => w.Weight >= lowWeight);
             if (upWeight > 0) dtos = dtos.Where(w => w.Weight <= upWeight);
             if (text.Length > 0) dtos = dtos.Where(w => w.Name.ToLower().Contains(text.ToLower()));
-            //if (categories.Length > 0) dtos = dtos.Where(w => categories.Contains(w.))
-            
+
+            if (categories == null || categories.Length <= 0) return dtos.Select(MetawordFromDto).ToList();
+            var byCategories = _repository.GetMetawordsIdsByCategories(categories);
+            dtos = dtos.Where(q => byCategories.Contains(q.Id));
+
             return dtos.Select(MetawordFromDto).ToList();
 
         }
