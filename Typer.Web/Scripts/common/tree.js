@@ -246,9 +246,11 @@ TreeView.prototype.show = function () {
     this.tree.visible = true;
     show(this.background);
     show(this.container);
-    $(this.background).css({        
-       'z-index': my.ui.addTopLayer() 
-    });
+    if (!this.embedded) {
+        $(this.background).css({
+            'z-index': my.ui.addTopLayer()
+        });
+    }
 };
 TreeView.prototype.append = function (element) {
     $(element).appendTo(this.$container);

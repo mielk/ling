@@ -49,6 +49,36 @@
                 callback: e.callback
             });
 
+        },
+        activate: function (e) {
+            dbOperation({
+                functionName: 'Activate',
+                data: { 'id': e.id },
+                success: 'Question ' + e.name + ' has been activated',
+                error: 'Error when trying to activate question ' + e.name,
+                callback: e.callback
+            });
+        },
+        deactivate: function (e) {
+            dbOperation({
+                functionName: 'Deactivate',
+                data: { 'id': e.id },
+                success: 'Question ' + e.name + ' has been deactivated',
+                error: 'Error when trying to deactivate question ' + e.name,
+                callback: e.callback
+            });
+        },
+        updateWeight: function (e) {
+            dbOperation({
+                functionName: 'UpdateWeight',
+                data: {
+                    'id': e.id,
+                    'weight': e.weight
+                },
+                success: 'Question ' + e.name + ' has changed its weight to ' + e.weight,
+                error: 'Error when trying to change the weight of the question ' + e.name,
+                callback: e.callback
+            });
         }
     };
 
@@ -523,7 +553,7 @@ function Question(data, properties) {
         refreshCategories: function () {
             me.updateCategoriesString();
             if (me.questionLine) {
-                $(me.questionLine).updateCategories(me.categoriesString);
+                me.questionLine.updateCategories(me.categoriesString);
             }
         }
     });

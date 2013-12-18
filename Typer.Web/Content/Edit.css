@@ -718,10 +718,11 @@ div.pager {
     margin: 12px 0;
 }
 
-.relative {
-    position: relative;
-}
 
-.float-left {
+.category-options {
+    display: block;
+    position: relative;
     float: left;
+    width: 100%;
+    height: auto;
 }
