@@ -289,7 +289,7 @@ function WordLine(word) {
     this.id = word.Id;
     this.name = word.Name;
     this.weight = word.Weight;
-    this.type = TYPE.getItem(word.Type);
+    this.type = WORDTYPE.getItem(word.Type);
     this.active = word.IsActive;
     this.categories = word.CategoriesString;
     this.eventHandler = new EventHandler();
@@ -486,23 +486,6 @@ function getItem(methodUrl, itemId) {
     return item;
 }
 
-TYPE = {
-    NOUN: { id: 1, name: 'noun', symbol: 'N' },
-    VERB: { id: 2, name: 'verb', symbol: 'V' },
-    ADJECTIVE: { id: 3, name: 'adjective', symbol: 'A' },
-    OTHER: { id: 4, name: 'other', symbol: 'O' },
-    getItem: function(value) {
-        for (var key in TYPE) {
-            if (TYPE.hasOwnProperty(key)) {
-                var object = TYPE[key];
-                if (object.id === value) {
-                    return object;
-                }
-            }
-        }
-        return null;
-    }
-};
 
 function getLanguages() {
     var $languages;
@@ -544,7 +527,7 @@ function Metaword(data, properties) {
     this.wordLine = properties.wordLine;
     
     this.properties = properties || {};
-    this.type = TYPE.getItem(this.object.Type);
+    this.type = WORDTYPE.getItem(this.object.Type);
 
     this.eventHandler = new EventHandler();
     this.eventHandler.bind({

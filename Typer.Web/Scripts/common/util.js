@@ -1,6 +1,25 @@
 ﻿var my = my || {};
 
 
+WORDTYPE = {
+    NOUN: { id: 1, name: 'noun', symbol: 'N' },
+    VERB: { id: 2, name: 'verb', symbol: 'V' },
+    ADJECTIVE: { id: 3, name: 'adjective', symbol: 'A' },
+    OTHER: { id: 4, name: 'other', symbol: 'O' },
+    getItem: function (value) {
+        for (var key in WORDTYPE) {
+            if (WORDTYPE.hasOwnProperty(key)) {
+                var object = WORDTYPE[key];
+                if (object.id === value) {
+                    return object;
+                }
+            }
+        }
+        return null;
+    }
+};
+
+
 //HashTable
 function HashTable(obj) {
     this.length = 0;

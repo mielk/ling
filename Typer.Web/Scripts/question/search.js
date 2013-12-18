@@ -6,19 +6,44 @@
     //UI components.
     this.container = jQuery('<div/>', { 'class': 'filter-container' });
     this.panel = jQuery('<div/>', { 'class': 'filter-panel' }).appendTo($(this.container));
+    if (properties.minWidth === false) {
+        $(this.panel).css({
+            '-moz-min-width': 'auto',
+            '-ms-min-width': 'auto',
+            '-o-min-width': 'auto',
+            '-webkit-min-width': 'auto',
+            'min-width': 'auto'
+        });
+        
+    }
 
-    var left = jQuery('<div/>', { 'class': 'left' }).appendTo($(this.panel));
-    var buttons = jQuery('<div/>', { 'class': 'button' }).appendTo($(this.panel));
-    var right = jQuery('<div/>', { 'class': 'right' }).appendTo(jQuery('<span/>', { 'class': 'full-height' }).appendTo($(this.panel)));
+    this.left = jQuery('<div/>', { 'class': 'left' }).appendTo($(this.panel));
+    this.buttons = jQuery('<div/>', { 'class': 'button' }).appendTo($(this.panel));
+    this.right = jQuery('<div/>', { 'class': 'right' }).appendTo(jQuery('<span/>', { 'class': 'full-height' }).appendTo($(this.panel)));
 
-    if (properties.wordtype) this.addFilter('wordtype', new WordTypeFilter(this), left);
-    if (properties.weight) this.addFilter('weight', new WeightFilter(this), left);
-    if (properties.categories) this.addFilter('categories', new CategoryFilter(this), right);
-    if (properties.text) this.addFilter('text', new TextFilter(this), right);
+    var criteria = ['wordtype', 'weight', 'categories', 'text', 'type'];
+    this.total = (function() {
+        var result = 0;
+        for (var i = 0; i < criteria.length; i++) {
+            var key = criteria[i];
+            if (properties.hasOwnProperty(key) && properties[key]) {
+                result++;
+            }
+        }
+        return result;
+    })();
+    this.added = 0;
 
-    this.button = new FilterButton(this).appendTo($(buttons));
+    if (properties.wordtype) this.addFilter('wordtype', new WordTypeFilter(this));
+    if (properties.weight) this.addFilter('weight', new WeightFilter(this));
+    if (properties.text) this.addFilter('text', new TextFilter(this));
+    if (properties.categories) this.addFilter('categories', new CategoryFilter(this));
 
-    this.collapser = new FilterCollapser(this, properties.visible ? true : false).appendTo($(this.container));
+    this.button = new FilterButton(this).appendTo($(this.buttons));
+
+    if (properties.collapser !== false) {
+        this.collapser = new FilterCollapser(this, properties.visible ? true : false).appendTo($(this.container));
+    }
 
     $(this.container).appendTo($(properties.container));
 
@@ -61,7 +86,8 @@ FilterManager.prototype.refreshFilterValues = function() {
         }
     });
 };
-FilterManager.prototype.addFilter = function(name, filter, panel) {
+FilterManager.prototype.addFilter = function (name, filter) {
+    var panel = (this.added++ < this.total / 2 ? this.left : this.right);
     this.filters.setItem(name, filter);
     $(filter.panel.container).appendTo($(panel));
 };
@@ -139,9 +165,9 @@ function WordTypeFilter(manager) {
     this.value = null;
 
     var dropdownData = [];
-    for (var key in TYPE) {
-        if (TYPE.hasOwnProperty(key)) {
-            var type = TYPE[key];
+    for (var key in WORDTYPE) {
+        if (WORDTYPE.hasOwnProperty(key)) {
+            var type = WORDTYPE[key];
             if (type.id) {
                 var object = {
                     key: type.id,
