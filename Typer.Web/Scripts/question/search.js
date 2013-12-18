@@ -1,5 +1,4 @@
 ﻿function FilterManager(properties) {
-    var me = this;
     this.filters = new HashTable(null);
 
     this.eventHandler = new EventHandler();
@@ -32,32 +31,40 @@ FilterManager.prototype.trigger = function (e) {
     this.eventHandler.trigger(e);
     return this;
 };
-FilterManager.prototype.collapse = function(){
+FilterManager.prototype.collapse = function() {
     $(this.panel).css({
-        'display' : 'none'
+        'display': 'none'
     });
-}
-FilterManager.prototype.expand = function(){
+};
+FilterManager.prototype.expand = function() {
     $(this.panel).css({
-        'display' : 'block'
+        'display': 'block'
     });
-}
-FilterManager.prototype.filter = function () {
+};
+FilterManager.prototype.filter = function() {
     var e = {};
 
-    this.filters.each(function (key, filter) {
+    this.refreshFilterValues();
+
+    this.filters.each(function(key, filter) {
         e[filter.name] = filter.value;
     });
-
 
     e.type = 'filter';
     this.eventHandler.trigger(e);
 
-}
-FilterManager.prototype.addFilter = function(name, filter, panel){
+};
+FilterManager.prototype.refreshFilterValues = function() {
+    this.filters.each(function (key, filter) {
+        if (filter.refresh && typeof(filter.refresh) === 'function') {
+            filter.refresh();
+        }
+    });
+};
+FilterManager.prototype.addFilter = function(name, filter, panel) {
     this.filters.setItem(name, filter);
     $(filter.panel.container).appendTo($(panel));
-}
+};
 
 
 
@@ -73,10 +80,12 @@ function FilterButton(manager){
         } 
     }).appendTo(jQuery('<div/>', { 'class': 'label-table' }));
 }
-FilterButton.prototype.appendTo = function(parent){
+FilterButton.prototype.appendTo = function(parent) {
     $(this.button).appendTo($(parent));
     return this;
-}
+};
+
+
 
 function FilterCollapser(manager, visibility){
     var me = this;
@@ -95,23 +104,22 @@ function FilterCollapser(manager, visibility){
     })();
 
 }
-FilterCollapser.prototype.appendTo = function(parent){
+FilterCollapser.prototype.appendTo = function(parent) {
     $(this.container).appendTo($(parent));
     return this;
-}
-FilterCollapser.prototype.changeStatus = function(value){
+};
+FilterCollapser.prototype.changeStatus = function(value) {
     var $value = (value !== undefined ? value : !this.visible);
     this.visible = $value;
-    if ($value){
+    if ($value) {
         this.manager.expand();
     } else {
         this.manager.collapse();
     }
-}
+};
 
 
 function FilterPanel(filter, properties){
-    var me = this;
     this.filter = filter;
 
     this.container = jQuery('<div/>', {'class': 'single-panel'});
@@ -170,6 +178,9 @@ function WordTypeFilter(manager) {
     });
 
 }
+WordTypeFilter.prototype.refresh = function() {
+    
+};
 
 function WeightFilter(manager) {
     var me = this;
@@ -186,6 +197,8 @@ function WeightFilter(manager) {
     this.container = jQuery('<div/>', {
         'class': 'content-container'
     });
+    
+    // ReSharper disable once UnusedLocals
     var fromLabel = jQuery('<div/>', { 'class' : 'label', html: 'from' }).
         appendTo(jQuery('<div/>', { 'class' : 'label-table' }).
         appendTo(jQuery('<div/>', { 'class' : 'lbl' }).appendTo($(this.container))));
@@ -196,12 +209,13 @@ function WeightFilter(manager) {
                 this.select(); this.focus();
             },
             blur: function () {
-                me.value.from = getProperValue($(this).val());
+                me.value.from = me.getProperValue($(this).val());
                 $(this).val(me.value.from ? me.value.from : '');
             }
         });
     $(this.fromInput).appendTo($(this.container));
 
+    // ReSharper disable once UnusedLocals
     var toLabel = jQuery('<div/>', { 'class' : 'label', html: 'to' }).
         appendTo(jQuery('<div/>', { 'class' : 'label-table' }).
         appendTo(jQuery('<div/>', { 'class' : 'lbl' }).appendTo($(this.container))));
@@ -212,17 +226,11 @@ function WeightFilter(manager) {
                 this.select(); this.focus();
             },
             blur: function () {
-                me.value.to = getProperValue($(this).val());
+                me.value.to = me.getProperValue($(this).val());
                 $(this).val(me.value.to ? me.value.to : '');
             }
         });
     $(this.toInput).appendTo($(this.container));
-
-    function getProperValue(value) {
-        var $value = Number(value);
-        if (!$.isNumeric($value) || $value === 0) return 0;
-        return Math.max(Math.min(me.maxWeight, $value), me.minWeight);
-    }
 
     this.panel = new FilterPanel(this, {
         name: 'weight',
@@ -230,11 +238,21 @@ function WeightFilter(manager) {
     });
 
 }
+WeightFilter.prototype.refresh = function() {
+    this.value.from = this.getProperValue($(this.fromInput).val());
+    this.value.to = this.getProperValue($(this.toInput).val());
+};
+WeightFilter.prototype.getProperValue = function(value) {
+    var $value = Number(value);
+    if (!$.isNumeric($value) || $value === 0) return 0;
+    return Math.max(Math.min(this.maxWeight, $value), this.minWeight);
+};
 
 function CategoryFilter(manager) {
     var me = this;
     this.manager = manager;
     this.name = 'categories';
+    this.categories = [];
     this.value = [];
 
     this.container = jQuery('<div/>', {
@@ -297,20 +315,34 @@ CategoryFilter.prototype.changeCategories = function (items) {
         var category = node.object;
         var selected = new SelectedCategory(this, node);
         selected.container.appendTo($(this.container));
-        this.value.push(category);
+        this.categories.push(category);
     }
 };
 CategoryFilter.prototype.remove = function (category) {
     var array = [];
-    for (var i = 0; i < this.value.length; i++) {
-        var item = this.value[i];
+    for (var i = 0; i < this.categories.length; i++) {
+        var item = this.categories[i];
         if (item !== category) {
             array.push(item);
         }
     }
     
-    this.value = array;
+    this.categories = array;
     
+};
+CategoryFilter.prototype.refresh = function () {
+    var array = [];
+    for (var i = 0; i < this.categories.length; i++) {
+        var category = this.categories[i];
+        var descendants = category.getDescendants();
+        for (var j = 0; j < descendants.length; j++) {
+            var item = descendants[j];
+            array.push(item.key);
+        }
+    }
+
+    return array;
+
 };
 
 function SelectedCategory(parent, node) {
@@ -354,17 +386,15 @@ function TextFilter(manager) {
         'class': 'contain',
         type: 'text'
     }).bind({        
-       click: function() {
-           this.select();
-           this.focus();
-       },
-       keyup: function () {
-           var $me = this;
-           setTimeout(function () {
-               var value = $($me).val();
-               me.value = value;
-           }, 50);   
-       }
+        click: function() {
+            this.select();
+            this.focus();
+        },
+        keyup: function () {
+            setTimeout(function () {
+                me.refresh();
+            }, 50);   
+        }
     });
     $(this.textbox).appendTo($(this.container));
 
@@ -374,3 +404,6 @@ function TextFilter(manager) {
     });
 
 }
+TextFilter.prototype.refresh = function() {
+    this.value = $(this.textbox).val();
+};

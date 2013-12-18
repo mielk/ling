@@ -120,6 +120,7 @@ div.pager a.selected {
 {
     width: 210px;
     margin: 0 36px;
+    padding: 3px;
 }
 
 .word .type
