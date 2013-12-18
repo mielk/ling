@@ -1470,7 +1470,7 @@ function WordView(word) {
     }).bind({
         click: function () {
             var editPanel = new EditPanel({
-                'option': me
+                'object': me.word
             });
             editPanel.bind({
                 'confirm': function (e) {
