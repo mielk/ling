@@ -253,12 +253,6 @@ function WordViewPager(controller) {
         }
     }).appendTo($(this.container));
 
-    //<div class="pager">
-    //    <a href="/Questions/List?page=1">1</a><a class="selected" href="/Questions/List?page=2">2</a>
-    //</div>        
-
-    //    @Html.PageLinks(Model.PagingInfo, x => Url.Action("List", new {page = x}))
-
 }
 WordViewPager.prototype.appendTo = function(parent) {
     $(this.container).appendTo($(parent));

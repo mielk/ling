@@ -114,7 +114,8 @@ QuestionViewController.prototype.filter = function (e) {
         async: false,
         cache: false,
         success: function (result) {
-            items = result;
+            me.totalItems = result.Total;
+            items = result.Questions;
         },
         error: function (msg) {
             alert(msg.status + " | " + msg.statusText);

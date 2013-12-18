@@ -262,11 +262,15 @@ div.pager a.selected {
     color: white;
 }
 
-.question
-{
+.question {
     display: table;
     position: relative;
     width: 100%;
+    -moz-min-width: 1250px;
+    -ms-min-width: 1250px;
+    -o-min-width: 1250px;
+    -webkit-min-width: 1250px;
+    min-width: 1250px;
     border-bottom: 1px solid #ccc;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
@@ -691,8 +695,18 @@ div.pager a.selected {
     display: block;
     float: left;
     width: auto;
+    height: 26px;
     margin: 3px;
-    border: 1px solid black;
+    padding: 3px 6px;
+    font-weight: bold;
+    line-height: 20px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.current {
+    cursor: default;
+    text-decoration: none;
 }
 
 div.pager {

@@ -62,12 +62,15 @@ namespace Typer.Web.Controllers
         public ActionResult Filter(int lowWeight, int upWeight, int[] categories, string text, int pageSize, int page)
         {
 
-            var questions = _service.Filter(lowWeight, upWeight, categories, text).
+            var allQuestions = _service.Filter(lowWeight, upWeight, categories, text).ToArray();
+            var questions = allQuestions.
                 OrderBy(q => q.Id).
                 Skip((page - 1) * pageSize).
                 Take(pageSize);
+            var totalItems = allQuestions.Length;
 
-            return Json(questions, JsonRequestBehavior.AllowGet);
+            return Json(new { Questions = questions, Total = totalItems}, JsonRequestBehavior.AllowGet);
+
         }
 
 

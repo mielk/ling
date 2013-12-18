@@ -52,11 +52,15 @@ div.pager a.selected {
     color: white;
 }
 
-.word
-{
+.word {
     display: table;
     position: relative;
     width: 100%;
+    -moz-min-width: 1330px;
+    -ms-min-width: 1330px;
+    -o-min-width: 1330px;
+    -webkit-min-width: 1330px;
+    min-width: 1330px;
     border-bottom: 1px solid #ccc;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
