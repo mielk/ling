@@ -101,6 +101,7 @@ FilterCollapser.prototype.appendTo = function(parent){
 }
 FilterCollapser.prototype.changeStatus = function(value){
     var $value = (value !== undefined ? value : !this.visible);
+    this.visible = $value;
     if ($value){
         this.manager.expand();
     } else {

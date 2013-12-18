@@ -56,16 +56,6 @@
 
 $(function () {
 
-    $('.edit-item').bind({
-        'click': function () {
-            var id = Number(this.innerHTML);
-            var listLine = $(this).parent();
-            if ($.isNumeric(id)) {
-                editMetaword(id, listLine);
-            }
-        }
-    });
-
     $('#add-item').bind({
         'click': function () {
 
@@ -90,25 +80,6 @@ $(function () {
 });
 
 
-//<div class="word active">
-//    <div class="id">1</div>
-//    <div class="name">Polska</div>
-//    <div class="weight">
-//<a class="weight checked" href="/Words/UpdateWeight/1?weight=1"> </a><a class="weight checked" href="/Words/UpdateWeight/1?weight=2"> </a><a class="weight checked" href="/Words/UpdateWeight/1?weight=3"> </a><a class="weight checked" href="/Words/UpdateWeight/1?weight=4"> </a><a class="weight checked" href="/Words/UpdateWeight/1?weight=5"> </a><a class="weight checked" href="/Words/UpdateWeight/1?weight=6"> </a><a class="weight checked" href="/Words/UpdateWeight/1?weight=7"> </a><a class="weight checked" href="/Words/UpdateWeight/1?weight=8"> </a><a class="weight checked" href="/Words/UpdateWeight/1?weight=9"> </a><a class="weight checked" href="/Words/UpdateWeight/1?weight=10"> </a>
-//    </div>
-//    <div class="type">N</div>
-
-
-//    <div class="categories">Geografia &gt; Państwa &gt; Europa</div>
-
-//    <div class="edit-item">1</div>
-
-//    <a href="/Words/Deactivate/1">Deactivate</a>
-
-
-//</div>
-
-
 function WordViewController(properties) {
     var me = this;
     this.pageItems = properties.pageItems || 10;
@@ -123,35 +94,53 @@ function WordViewController(properties) {
         text: true
     }).bind({
         filter: function (e) {
-            me.filter(e);
+            var items = me.filter(e);
+            me.load(items);
         }
     });
 
+    this.header = (new WordViewHeader(this)).appendTo(this.container);
+    this.words = jQuery('<div/>').appendTo($(this.container));
+    
+    (function ini() {
+        var items = me.filter({ page: 1, pageSize: 10 });
+        if (items) {
+            me.load(items);
+        }
+    })();
+
+
+}
+WordViewController.prototype.getDescendants = function (categories) {
+    var array = [];
+    for (var i = 0; i < categories.length; i++) {
+        var category = categories[i];
+        var descendants = category.getDescendants();
+        for (var j = 0; j < descendants.length; j++) {
+            var item = descendants[j];
+            array.push(item.key);
+        }
+    }
+
+    return array;
 
 }
 WordViewController.prototype.filter = function (e) {
     var me = this;
-    
+    var items;
+
     //Convert array of selected categories to int array.
-    var categories = [];
-    for (var i = 0; i < e.categories.length; i++) {
-        var category = e.categories[i];
-        var descendants = category.getDescendants();
-        for (var j = 0; j < descendants.length; j++) {
-            var item = descendants[j];
-            categories.push(item.key);
-        }
-    }
+    var categories = (e.categories ? this.getDescendants(e.categories) : []);
 
     $.ajax({
         url: '/Words/Filter',
         type: "GET",
         data: {
             'wordType' : e.wordtype ? e.wordtype.id : -1,
-            'lowWeight' : e.weight.from,
-            'upWeight' : e.weight.to,
+            'lowWeight' : e.weight ? e.weight.from : 0,
+            'upWeight' : e.weight ? e.weight.to : 0,
             'categories' : categories,
-            'text': e.text,
+            'text': e.text ? e.text : '',
             'page': me.currentPage,
             'pageSize': me.pageItems
             },
@@ -160,22 +149,169 @@ WordViewController.prototype.filter = function (e) {
         async: false,
         cache: false,
         success: function (result) {
-            my.notify.display('Success', true);
+            items = result;
         },
         error: function (msg) {
             alert(msg.status + " | " + msg.statusText);
+            return null;
         }
     });    
+
+    return items;
+
+}
+WordViewController.prototype.load = function (items) {
+    this.words.empty();
+
+    for (var i = 0; i < this.pageItems && i < items.length; i++) {
+        var word = items[i];
+        var wordLine = new WordLine(word);
+        wordLine.appendTo(this.words);
+    }
 
 }
 
 
+function WordViewHeader(controller) {
+    this.container = jQuery('<div/>', { 'class': 'word header' });
+    this.id = jQuery('<div/>', { 'class': 'id', html: 'id' }).appendTo($(this.container));
+    this.name = jQuery('<div/>', { 'class': 'name', html: 'name' }).appendTo($(this.container));
+    this.weight = jQuery('<div/>', { 'class': 'weight', html: 'weight' }).appendTo($(this.container));
+    this.type = jQuery('<div/>', { 'class': 'type', html: 'type' }).appendTo($(this.container));
+    this.categories = jQuery('<div/>', { 'class': 'categories', html: 'categories' }).appendTo($(this.container));
+}
+WordViewHeader.prototype.appendTo = function (parent) {
+    $(this.container).appendTo($(parent));
+}
 
-function editMetaword(id, listLine) {
+
+function WordLine(word) {
+    var me = this;
+    this.word = word;
+    this.id = word.Id;
+    this.name = word.Name;
+    this.weight = word.Weight;
+    this.type = TYPE.getItem(word.Type);
+    this.active = word.IsActive;
+    this.categories = word.CategoriesString;
+    this.eventHandler = new EventHandler();
+    this.view = new WordLineView(this);
+}
+WordLine.prototype.bind = function (e) {
+    this.eventHandler.bind(e);
+}
+WordLine.prototype.trigger = function (e) {
+    this.eventHandler.trigger(e);
+}
+WordLine.prototype.appendTo = function (parent) {
+    $(this.view.container).appendTo($(parent));
+}
+WordLine.prototype.setWeight = function (value) {
+    this.weight = value;
+    this.trigger({
+        type: 'setValue',
+        weight: value
+    });
+}
+WordLine.prototype.updateCategories = function (categories) {
+    //
+}
+
+function WordLineView(line) {
+    var me = this;
+    this.line = line;
+
+    this.container = jQuery('<div/>', {
+        'class': 'word '
+    });
+    this.activate(this.line.active);
+
+    this.id = jQuery('<div/>', { 'class': 'id', html: me.line.id }).appendTo($(this.container));
+    this.name = jQuery('<div/>', { 'class': 'name', html: me.line.name }).appendTo($(this.container));
+    this.weight = (new WordLineWeightPanel(this.line)).appendTo($(this.container));
+
+    this.type = jQuery('<div/>', { 'class': 'type', html: me.line.type.symbol }).appendTo($(this.container));
+    this.categories = jQuery('<div/>', { 'class': 'categories', html: me.line.categories }).appendTo($(this.container));
+
+    this.edit = jQuery('<div/>', {
+        'class': 'edit-item',
+        html: me.line.id
+    }).bind({
+        click: function () {
+            var id = me.line.id;
+            editMetaword(id, me);
+        }
+    }).appendTo($(this.container));
+
+    this.deactivate = jQuery('<a/>', {
+        html: 'Deactivate'
+    }).bind({
+        click: function () {
+            var id = me.line.id;
+            //Deactivate.
+        }
+    }).appendTo($(this.container));
+
+}
+WordLineView.prototype.activate = function(value){
+    if (value){
+        this.container.removeClass('inactive');
+        this.container.addClass('active');
+    } else {
+        this.container.removeClass('active');
+        this.container.addClass('inactive');
+    }
+}
+
+
+function WordLineWeightPanel(line) {
+    var me = this;
+    this.line = line;
+    this.word = this.line.word;
+
+    this.container = jQuery('<div/>', { 'class': 'weight' });
+    this.icons = [];
+    for (var i = 0; i < 10; i++) {
+        this.icons[i] = jQuery('<a/>', {
+            'class': 'weight',
+        }).bind({
+            click: function () {
+                me.word.setWeight(i + 1);
+            }
+        }).appendTo($(this.container));
+    }
+
+    this.line.bind({
+        setWeight: function (e) {
+            me.setValue(e.weight);
+        }
+    });
+
+    (function ini() {
+        me.setValue(me.line.weight);
+    })();
+
+}
+WordLineWeightPanel.prototype.setValue = function (value) {
+    for (var i = 0; i < value; i++) {
+        this.icons[i].addClass('checked');
+    }
+    for (var i = value; i < 10; i++) {
+        this.icons[i].removeClass('checked');
+    }
+}
+WordLineWeightPanel.prototype.appendTo = function (parent) {
+    $(this.container).appendTo($(parent));
+    return this;
+}
+
+
+
+function editMetaword(id, wordLine) {
     var metawordJson = getItem('/Words/GetMetaword', id);
     var metaword = new Metaword(metawordJson, {
         blockOtherElements: true,
-        listLine: listLine
+        wordLine: wordLine
     });
     metaword.displayEditForm();
 }
@@ -202,10 +338,10 @@ function getItem(methodUrl, itemId) {
 }
 
 TYPE = {
-    NOUN: { id: 1, name: 'noun' },
-    VERB: { id: 2, name: 'verb' },
-    ADJECTIVE: { id: 3, name: 'adjective' },
-    OTHER: { id: 4, name: 'other' },
+    NOUN: { id: 1, name: 'noun', symbol: 'N' },
+    VERB: { id: 2, name: 'verb', symbol: 'V' },
+    ADJECTIVE: { id: 3, name: 'adjective', symbol: 'A' },
+    OTHER: { id: 4, name: 'other', symbol: 'O' },
     getItem: function(value) {
         for (var key in TYPE) {
             if (TYPE.hasOwnProperty(key)) {
@@ -256,7 +392,7 @@ function Metaword(data, properties) {
     this.name = this.object.Name || '';
     this.weight = this.object.Weight || 1;
     this.categories = this.initialCategoryCollection(data.Categories);
-    this.listLine = properties.listLine;
+    this.wordLine = properties.wordLine;
     
     this.properties = properties || {};
     this.type = TYPE.getItem(this.object.Type);
@@ -282,8 +418,8 @@ function Metaword(data, properties) {
         },
         refreshCategories: function () {
             me.updateCategoriesString();
-            if (me.listLine) {
-                $(me.listLine).find('.categories').html(me.categoriesString);
+            if (me.wordLine) {
+                me.wordLine.updateCategories(me.categoriesString);
             }
         }
     });

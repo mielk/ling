@@ -94,6 +94,7 @@ namespace Typer.Web.Controllers
             [AllowAnonymous]
             public ActionResult Filter(int wordType, int lowWeight, int upWeight, int[] categories, string text, int pageSize, int page)
             {
+                
                 var words = _service.Filter(wordType, lowWeight, upWeight, categories, text).
                     OrderBy(w => w.Id).
                     Skip((page - 1) * pageSize).
