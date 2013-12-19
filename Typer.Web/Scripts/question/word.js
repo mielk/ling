@@ -98,6 +98,7 @@ function WordViewController(properties) {
     this.currentPage = properties.currentPage || 1;
     this.container = $(document.body);
     this.totalItems = 0;
+    this.wordtype = null;
 
     this.filterManager = new FilterManager({
         container: me.container,
@@ -127,6 +128,10 @@ WordViewController.prototype.start = function() {
 WordViewController.prototype.filter = function(e) {
     var me = this;
     var items;
+
+    //Set wordtype value of this controller. It is used when
+    //creating new words - they have this wordtype by default.
+    this.wordtype = e.wordtype;
 
     $.ajax({
         url: '/Words/Filter',
@@ -180,7 +185,9 @@ WordViewController.prototype.moveToPage = function (page) {
     };
 };
 
-function WordViewAddButton() {
+function WordViewAddButton(controller) {
+    var me = this;
+    this.controller = controller;
     this.container = jQuery('<div/>', {
         'id': 'add-button-container'
     });
@@ -191,12 +198,15 @@ function WordViewAddButton() {
     }).bind({
        click: function() {
            var metaword = new Metaword({
-               Object: {},
+               Object: {
+                   Type: me.controller.wordtype ? me.controller.wordtype.id : 0
+               },
                Categories: [],
                UserLanguages: getLanguages()
            }, {
                blockOtherElements: true
            });
+           metaword.wordtype = me.controller.wordtype;
            metaword.displayEditForm();
        } 
     }).appendTo($(this.container));
@@ -527,7 +537,7 @@ function Metaword(data, properties) {
     this.wordLine = properties.wordLine;
     
     this.properties = properties || {};
-    this.type = WORDTYPE.getItem(this.object.Type);
+    this.wordtype = WORDTYPE.getItem(this.object.Type);
 
     this.eventHandler = new EventHandler();
     this.eventHandler.bind({
@@ -742,12 +752,19 @@ function MetawordMeta(metaword) {
         inputCss: { 'width': '60px', 'text-align': 'center', 'border': '1px solid #777' }
     });
 
+    var wordtypePanel = new WordtypePanel(this);
     this.type = new DataLine(this, {
         property: 'type',
         label: 'Type',
         validation: null,
-        editable: false,
-        inputCss: { 'width': '60px', 'text-align': 'center', 'border': '1px solid #777' }
+        editable: true,
+        panel: wordtypePanel.container,
+        value: function () {
+            return wordtypePanel.value;
+        },
+        setValue: function () {
+            wordtypePanel.setValue(me.word.wordtype);
+        }
     });
 
     this.name = new DataLine(this, {
@@ -762,7 +779,7 @@ function MetawordMeta(metaword) {
         label: 'Weight',
         validation: null,
         editable: false,
-        value: (new WeightPanel(10, me.word.weight)).view.container
+        panel: (new WeightPanel(10, me.word.weight)).view.container
     });
 
     var categoryPanel = new CategoryPanel(this);
@@ -771,7 +788,7 @@ function MetawordMeta(metaword) {
         label: 'Categories',
         validation: null,
         editable: false,
-        value: categoryPanel.view.panel,
+        panel: categoryPanel.view.panel,
         right: categoryPanel.view.editButton
     });
 
@@ -785,12 +802,70 @@ MetawordMeta.prototype.append = function(element) {
 };
 
 
+function WordtypePanel(parent) {
+    var me = this;
+    this.parent = parent;
+    this.value = null;
+    this.container = jQuery('<div/>').css({
+        'width': '200px',
+        'height': '32px',
+        'position': 'relative',
+        'float': 'left'
+    });
+
+    var dropdownData = [];
+    for (var key in WORDTYPE) {
+        if (WORDTYPE.hasOwnProperty(key)) {
+            var type = WORDTYPE[key];
+            if (type.id) {
+                var object = {
+                    key: type.id,
+                    name: type.name,
+                    object: type
+                };
+                dropdownData.push(object);                
+            }
+        }
+    }
+
+    this.dropdown = new DropDown({            
+        container: me.container,
+        data: dropdownData,
+        slots: 4,
+        caseSensitive: false,
+        confirmWithFirstClick: true
+    });
+
+    var wordtype = me.parent.word.wordtype;
+    if (wordtype) {
+        this.dropdown.trigger({
+            type: 'select',
+            object: me.parent.word.wordtype
+        });
+    }
+
+    this.dropdown.bind({
+        select: function(e) {
+            me.value = e.object;
+        }
+    });
+
+}
+WordtypePanel.prototype.setValue = function (value) {
+    this.dropdown.trigger({
+        type: 'select',
+        option: value
+    });
+}
+
+
 function DataLine(parent, properties) {
     this.parent = parent;
     this.word = this.parent.word;
     this.property = properties.property;
     this.linked = new HashTable(null);
     this.validation = properties.validation;
+    this.valueFunction = (properties.value && typeof(properties.value) === 'function' ? properties.value : null);
 
     this.view = new DataLineView(this, properties);
 
@@ -829,8 +904,12 @@ DataLine.prototype.verifyLinked = function() {
         }
     );
 };
-DataLine.prototype.getValue = function() {
-    return this.view.getValue();
+DataLine.prototype.getValue = function () {
+    if (this.valueFunction) {
+        return this.valueFunction();
+    } else {
+        return this.view.getValue();
+    }
 };
 DataLine.prototype.addLinked = function(line) {
     this.linked.setItem(line.property, line);
@@ -871,11 +950,11 @@ function DataLineView(dataLine, properties) {
     }
 
     var $timer;
-    if (properties.value) {
-        this.value = $(properties.value);
-        $(this.value).appendTo($(this.container));
+    if (properties.panel) {
+        this.panel = $(properties.panel);
+        $(this.panel).appendTo($(this.container));
     } else if (properties.editable) {
-        this.value = jQuery('<input/>', {
+        this.panel = jQuery('<input/>', {
             'class': 'field default',
             'type': 'text'
         }).bind({
@@ -909,47 +988,54 @@ function DataLineView(dataLine, properties) {
             'focus': function () {
                 this.select();
             }
-        }).val(me.dataLine.word[properties.property]);
+        });
+        
+        if (properties.setValue) {
+            properties.setValue();
+        } else {
+            $(this.panel).val(me.dataLine.word[properties.property]);
+        }
+        
 
         var span = jQuery('<span/>').
             bind({
                 'click': function() {
-                    me.value.focus();
+                    me.panel.focus();
                 }
             }).
             appendTo($(this.container));
 
-        this.value.appendTo($(span));
+        this.panel.appendTo($(span));
 
     } else {
-        this.value = jQuery('<label/>', {
+        this.panel = jQuery('<label/>', {
             'class': 'value',
             html: me.dataLine.word[properties.property]
         }).appendTo($(this.container));
     }
 
     if (properties.inputCss) {
-        $(this.value).css(properties.inputCss);
+        $(this.panel).css(properties.inputCss);
     }
 
 }
 DataLineView.prototype.format = function (isValid) {
     if (isValid) {
-        $(this.value).removeClass('invalid').addClass('valid');
+        $(this.panel).removeClass('invalid').addClass('valid');
         $(this.errorContainer).css({ 'display': 'none' });
         $(this.errorIcon).removeClass('iconInvalid').addClass('iconValid');
     } else {
-        $(this.value).removeClass('valid').addClass('invalid');
+        $(this.panel).removeClass('valid').addClass('invalid');
         $(this.errorContainer).css({ 'display': 'table' });
         $(this.errorIcon).removeClass('iconValid').addClass('iconInvalid');
     }
 
 };
 DataLineView.prototype.focus = function() {
-    $(this.value).focus();
+    $(this.panel).focus();
 };
 DataLineView.prototype.getValue = function() {
-    return $(this.value).val();
+    return $(this.panel).val();
 };
 
 
