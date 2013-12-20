@@ -1,7 +1,9 @@
 ﻿function ListManager(properties) {
+    this.ListManager = true;
     var self = this;
     this.controller = properties.controller;
     this.creator = properties.creator;
+    
     
     this.filterManager = new FilterManager({
         wordtype: true,
@@ -10,8 +12,8 @@
         text: true
     }).bind({
         filter: function (e) {
-            var items = me.filter(e);
-            me.load(items);
+            var items = self.filter(e);
+            self.load(items);
         }
     });
     this.filterValues = {
@@ -114,17 +116,17 @@ ListManager.prototype.newItem = function () {
 };
 
 
-var metaword = new Metaword({
-    Object: {
-        Type: me.controller.wordtype ? me.controller.wordtype.id : 0
-    },
-    Categories: [],
-    UserLanguages: getLanguages()
-}, {
-    blockOtherElements: true
-});
-metaword.wordtype = me.controller.wordtype;
-metaword.displayEditForm();s
+//var metaword = new Metaword({
+//    Object: {
+//        Type: me.controller.wordtype ? me.controller.wordtype.id : 0
+//    },
+//    Categories: [],
+//    UserLanguages: getLanguages()
+//}, {
+//    blockOtherElements: true
+//});
+//metaword.wordtype = me.controller.wordtype;
+//metaword.displayEditForm();
 
 
 

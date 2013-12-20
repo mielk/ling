@@ -52,6 +52,10 @@ namespace Typer.Web
             bundles.Add(new ScriptBundle("~/bundles/categories").Include(
                                     "~/Scripts/categories/categories.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/unittests").Include(
+                                    "~/Scripts/unittests/qunit-1.12.0.js", 
+                                    "~/Scripts/unittests/tests.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/search").Include(
                                                 "~/Scripts/question/search.js"));
 
@@ -87,6 +91,9 @@ namespace Typer.Web
 
             bundles.Add(new StyleBundle("~/Content/user").Include(
                                     "~/Content/userPanel.css"));
+
+            bundles.Add(new StyleBundle("~/Content/unittests").Include(
+                                    "~/Content/unittests/qunit-1.12.0.css"));
 
             bundles.Add(new StyleBundle("~/Content/login").Include(
                         "~/Content/login.css"));

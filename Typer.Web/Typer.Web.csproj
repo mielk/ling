@@ -190,6 +190,7 @@
     <Content Include="Content\login.css" />
     <Content Include="Content\normalize.css" />
     <Content Include="Content\question.css" />
+    <Content Include="Content\unittests\qunit-1.12.0.css" />
     <Content Include="Content\words.css" />
     <Content Include="Content\test.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
@@ -282,6 +283,9 @@
     <Content Include="Scripts\knockout-2.1.0.js" />
     <Content Include="Scripts\authentication\login.js" />
     <Content Include="Scripts\modernizr-2.5.3.js" />
+    <Content Include="Scripts\unittests\import_test.js" />
+    <Content Include="Scripts\unittests\qunit-1.12.0.js" />
+    <Content Include="Scripts\unittests\tests.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -324,6 +328,7 @@
     <Content Include="Views\Words\List.cshtml" />
     <Content Include="Views\Words\Metaword.cshtml" />
     <Content Include="Views\Words\SearchPanel.cshtml" />
+    <Content Include="Views\Home\UnitTests.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

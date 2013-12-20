@@ -17,6 +17,12 @@ namespace Typer.Web.Controllers
             return View();
         }
 
+        [AllowAnonymous]
+        public ActionResult UnitTests()
+        {
+            return View();
+        }
+
 
     }
 }
