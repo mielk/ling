@@ -790,3 +790,13 @@ input[type="submit"]:disabled
     border: 1px solid #555 !important;
     background-color: rgb(245, 245, 245) !important;
 }
+
+
+/*.header
+{
+    border-bottom: 1px solid #ccc;
+    text-transform: uppercase;
+    font-weight: bold;
+    text-align: center;
+    padding: 18px 0 6px 0;
+}*/

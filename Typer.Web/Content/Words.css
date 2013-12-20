@@ -52,7 +52,7 @@ div.pager a.selected {
     color: white;
 }
 
-.word {
+/*.word {
     display: table;
     position: relative;
     width: 100%;
@@ -67,16 +67,16 @@ div.pager a.selected {
     box-sizing: border-box;
     padding-top: 12px;
     padding-bottom: 12px;
-}
+}*/
 
-.header
+/*.header
 {
     border-bottom: 1px solid #ccc;
     text-transform: uppercase;
     font-weight: bold;
     text-align: center;
     padding: 18px 0 6px 0;
-}
+}*/
 
 .inactive
 {
@@ -89,7 +89,7 @@ div.pager a.selected {
     visibility: hidden;
 }
 
-.word div
+/*.word div
 {
     display: table-cell;
     position: relative;
@@ -164,7 +164,7 @@ div.pager a.selected {
 .word a.checked
 {
     background-image: url('images/gold_star.png');
-}
+}*/
 
 
 .edit-panel

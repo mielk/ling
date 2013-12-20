@@ -241,11 +241,6 @@ input.id
 
 
 
-
-
-
-
-
 div.pager a {
     font-size: 1.1em; 
     color: #666; 
@@ -262,30 +257,14 @@ div.pager a.selected {
     color: white;
 }
 
-.question {
-    display: table;
-    position: relative;
-    width: 100%;
-    -moz-min-width: 1250px;
-    -ms-min-width: 1250px;
-    -o-min-width: 1250px;
-    -webkit-min-width: 1250px;
-    min-width: 1250px;
-    border-bottom: 1px solid #ccc;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    padding-top: 12px;
-    padding-bottom: 12px;
-}
 
 .header
 {
-    border-bottom: 1px solid #ccc;
-    text-transform: uppercase;
-    font-weight: bold;
-    text-align: center;
-    padding: 18px 0 6px 0;
+    border-bottom: 1px solid #ccc !important;
+    text-transform: uppercase !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    padding: 18px 0 6px 0 !important;
 
 }
 
@@ -300,7 +279,7 @@ div.pager a.selected {
     visibility: hidden;
 }
 
-.question div
+/*.question div
 {
     display: table-cell;
     position: relative;
@@ -368,7 +347,7 @@ div.pager a.selected {
 .question a.checked
 {
     background-image: url('images/gold_star.png');
-}
+}*/
 
 
 .edit-panel
@@ -725,4 +704,102 @@ div.pager {
     float: left;
     width: 100%;
     height: auto;
+}
+
+
+
+
+.item {
+    display: table;
+    position: relative;
+    width: 100%;
+    -moz-min-width: 1330px;
+    -ms-min-width: 1330px;
+    -o-min-width: 1330px;
+    -webkit-min-width: 1330px;
+    min-width: 1330px;
+    border-bottom: 1px solid #ccc;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+
+.item div
+{
+    display: table-cell;
+    position: relative;
+    height: 100%;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.item .id
+{
+    width: 50px;
+    padding: 0 12px;
+    margin-right: 6px;
+    text-align: right;
+}
+
+.item .name
+{
+    width: 400px;
+    padding: 0 12px;
+}
+
+.item .weight
+{
+    width: 210px;
+    margin: 0 18px;
+}
+
+.item .categories
+{
+    width: 210px;
+    margin: 0 36px;
+    padding: 3px;
+}
+
+.item .type
+{
+    width: 80px;
+    padding: 0 12px;
+    text-align: center;
+}
+
+
+
+.item a
+{
+    float: left;
+    margin-right: 21px;
+    margin-left: 21px;
+    cursor: pointer;
+}
+
+.item a.weight
+{
+    display: table-cell;
+    position: relative;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 18px;
+    height: 18px;
+    margin-left: 0;
+    margin-right: 3px;
+    font-size: 0;
+    border: 1px solid transparent;
+    background-image: url('images/gray_star.png');
+}
+
+.item a.checked
+{
+    background-image: url('images/gold_star.png');
 }

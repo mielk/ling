@@ -69,7 +69,7 @@ namespace Typer.Web.Controllers
                 Take(pageSize);
             var totalItems = allQuestions.Length;
 
-            return Json(new { Questions = questions, Total = totalItems}, JsonRequestBehavior.AllowGet);
+            return Json(new { items = questions, total = totalItems}, JsonRequestBehavior.AllowGet);
 
         }
 

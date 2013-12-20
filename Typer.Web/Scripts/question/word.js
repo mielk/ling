@@ -85,219 +85,215 @@
 
 $(function () {
     //var controller = new WordViewController({
-    var manager = new ListManager({
-        name: 'Words',
+    var manager = new WordListManager({
         pageItems: 10,
         currentPage: 1,
-        columns: ['id', 'name', 'weight', 'categories'],
-        creator: function (item, properties) {
-            return new WordLine(item, properties);
-        }
+        columns: ['id', 'name', 'weight','type', 'categories']
     });
     manager.start();
 });
 
 
-function WordViewController(properties) {
-    var me = this;
-    this.pageItems = properties.pageItems || 10;
-    this.currentPage = properties.currentPage || 1;
-    this.container = $(document.body);
-    this.totalItems = 0;
-    this.wordtype = null;
+//function WordViewController(properties) {
+//    var me = this;
+//    this.pageItems = properties.pageItems || 10;
+//    this.currentPage = properties.currentPage || 1;
+//    this.container = $(document.body);
+//    this.totalItems = 0;
+//    this.wordtype = null;
 
-    this.filterManager = new FilterManager({
-        container: me.container,
-        wordtype: true,
-        weight: true,
-        categories: true,
-        text: true
-    }).bind({
-        filter: function (e) {
-            var items = me.filter(e);
-            me.load(items);
-        }
-    });
+//    this.filterManager = new FilterManager({
+//        container: me.container,
+//        wordtype: true,
+//        weight: true,
+//        categories: true,
+//        text: true
+//    }).bind({
+//        filter: function (e) {
+//            var items = me.filter(e);
+//            me.load(items);
+//        }
+//    });
 
-    this.header = (new WordViewHeader(this)).appendTo(this.container);
-    this.words = jQuery('<div/>').appendTo($(this.container));
-    this.addButton = (new WordViewAddButton(this)).appendTo(this.container);
-    this.pager = (new WordViewPager(this)).appendTo(this.container);
+//    this.header = (new WordViewHeader(this)).appendTo(this.container);
+//    this.words = jQuery('<div/>').appendTo($(this.container));
+//    this.addButton = (new WordViewAddButton(this)).appendTo(this.container);
+//    this.pager = (new WordViewPager(this)).appendTo(this.container);
 
-}
-WordViewController.prototype.start = function() {
-    var items = this.filter({ page: 1, pageSize: 10 });
-    if (items) {
-        this.load(items);
-    }
-};
-WordViewController.prototype.filter = function(e) {
-    var me = this;
-    var items;
+//}
+//WordViewController.prototype.start = function() {
+//    var items = this.filter({ page: 1, pageSize: 10 });
+//    if (items) {
+//        this.load(items);
+//    }
+//};
+//WordViewController.prototype.filter = function(e) {
+//    var me = this;
+//    var items;
 
-    //Set wordtype value of this controller. It is used when
-    //creating new words - they have this wordtype by default.
-    this.wordtype = e.wordtype;
+//    //Set wordtype value of this controller. It is used when
+//    //creating new words - they have this wordtype by default.
+//    this.wordtype = e.wordtype;
 
-    $.ajax({
-        url: '/Words/Filter',
-        type: "GET",
-        data: {
-            'wordType': e.wordtype ? e.wordtype.id : -1,
-            'lowWeight': e.weight ? e.weight.from : 0,
-            'upWeight': e.weight ? e.weight.to : 0,
-            'categories': e.categories ? e.categories : [],
-            'text': e.text ? e.text : '',
-            'page': me.currentPage,
-            'pageSize': me.pageItems
-        },
-        traditional: true,
-        datatype: "json",
-        async: false,
-        cache: false,
-        success: function (result) {
-            me.totalItems = result.Total;
-            items = result.Words;
-        },
-        error: function(msg) {
-            alert(msg.status + " | " + msg.statusText);
-            return null;
-        }
-    });
+//    $.ajax({
+//        url: '/Words/Filter',
+//        type: "GET",
+//        data: {
+//            'wordType': e.wordtype ? e.wordtype.id : -1,
+//            'lowWeight': e.weight ? e.weight.from : 0,
+//            'upWeight': e.weight ? e.weight.to : 0,
+//            'categories': e.categories ? e.categories : [],
+//            'text': e.text ? e.text : '',
+//            'page': me.currentPage,
+//            'pageSize': me.pageItems
+//        },
+//        traditional: true,
+//        datatype: "json",
+//        async: false,
+//        cache: false,
+//        success: function (result) {
+//            me.totalItems = result.Total;
+//            items = result.Words;
+//        },
+//        error: function(msg) {
+//            alert(msg.status + " | " + msg.statusText);
+//            return null;
+//        }
+//    });
 
-    return items;
+//    return items;
 
-};
-WordViewController.prototype.load = function(items) {
-    this.words.empty();
+//};
+//WordViewController.prototype.load = function(items) {
+//    this.words.empty();
 
-    for (var i = 0; i < this.pageItems && i < items.length; i++) {
-        var word = items[i];
-        var wordLine = new WordLine(word);
-        wordLine.appendTo(this.words);
-    }
+//    for (var i = 0; i < this.pageItems && i < items.length; i++) {
+//        var word = items[i];
+//        var wordLine = new WordLine(word);
+//        wordLine.appendTo(this.words);
+//    }
 
-    this.pager.refresh();
+//    this.pager.refresh();
 
-};
-WordViewController.prototype.totalPages = function () {
-    var totalPages = Math.floor(this.totalItems / this.pageItems) + (this.totalItems % this.pageItems ? 1 : 0);
-    return totalPages;
-};
-WordViewController.prototype.moveToPage = function (page) {
-    var $page = Math.max(Math.min(this.totalPages(), page), 1);
-    if ($page !== this.currentPage) {
+//};
+//WordViewController.prototype.totalPages = function () {
+//    var totalPages = Math.floor(this.totalItems / this.pageItems) + (this.totalItems % this.pageItems ? 1 : 0);
+//    return totalPages;
+//};
+//WordViewController.prototype.moveToPage = function (page) {
+//    var $page = Math.max(Math.min(this.totalPages(), page), 1);
+//    if ($page !== this.currentPage) {
         
-    };
-};
+//    };
+//};
 
-function WordViewAddButton(controller) {
-    var me = this;
-    this.controller = controller;
-    this.container = jQuery('<div/>', {
-        'id': 'add-button-container'
-    });
-    this.button = jQuery('<a/>', {
-        id: 'add-item',
-        'class': 'add',
-        html: 'Add'
-    }).bind({
-       click: function() {
-           var metaword = new Metaword({
-               Object: {
-                   Type: me.controller.wordtype ? me.controller.wordtype.id : 0
-               },
-               Categories: [],
-               UserLanguages: getLanguages()
-           }, {
-               blockOtherElements: true
-           });
-           metaword.wordtype = me.controller.wordtype;
-           metaword.displayEditForm();
-       } 
-    }).appendTo($(this.container));
+//function WordViewAddButton(controller) {
+//    var me = this;
+//    this.controller = controller;
+//    this.container = jQuery('<div/>', {
+//        'id': 'add-button-container'
+//    });
+//    this.button = jQuery('<a/>', {
+//        id: 'add-item',
+//        'class': 'add',
+//        html: 'Add'
+//    }).bind({
+//       click: function() {
+//           var metaword = new Metaword({
+//               Object: {
+//                   Type: me.controller.wordtype ? me.controller.wordtype.id : 0
+//               },
+//               Categories: [],
+//               UserLanguages: getLanguages()
+//           }, {
+//               blockOtherElements: true
+//           });
+//           metaword.wordtype = me.controller.wordtype;
+//           metaword.displayEditForm();
+//       } 
+//    }).appendTo($(this.container));
 
-}
-WordViewAddButton.prototype.appendTo = function(parent) {
-    $(this.container).appendTo($(parent));
-    return this;
-};
+//}
+//WordViewAddButton.prototype.appendTo = function(parent) {
+//    $(this.container).appendTo($(parent));
+//    return this;
+//};
 
 
-function WordViewPager(controller) {
-    var me = this;
-    this.controller = controller;
-    this.container = jQuery('<div/>', {        
-       'class': 'pager' 
-    });
+//function WordViewPager(controller) {
+//    var me = this;
+//    this.controller = controller;
+//    this.container = jQuery('<div/>', {        
+//       'class': 'pager' 
+//    });
 
-    this.first = jQuery('<div/>', {
-        'class': 'pager-item first',
-        html: 'First'
-    }).bind({
-        click: function() {
-            me.controller.moveToPage(1);
-        }
-    }).appendTo($(this.container));
+//    this.first = jQuery('<div/>', {
+//        'class': 'pager-item first',
+//        html: 'First'
+//    }).bind({
+//        click: function() {
+//            me.controller.moveToPage(1);
+//        }
+//    }).appendTo($(this.container));
     
-    this.previous = jQuery('<div/>', {
-        'class': 'pager-item previous',
-        html: 'Previous'
-    }).bind({
-        click: function () {
-            me.controller.moveToPage(me.controller.currentPage - 1);
-        }
-    }).appendTo($(this.container));
+//    this.previous = jQuery('<div/>', {
+//        'class': 'pager-item previous',
+//        html: 'Previous'
+//    }).bind({
+//        click: function () {
+//            me.controller.moveToPage(me.controller.currentPage - 1);
+//        }
+//    }).appendTo($(this.container));
     
-    this.current = jQuery('<div/>', { 'class': 'pager-item current', html: 'First' }).appendTo($(this.container));
+//    this.current = jQuery('<div/>', { 'class': 'pager-item current', html: 'First' }).appendTo($(this.container));
     
-    this.next = jQuery('<div/>', {
-        'class': 'pager-item next',
-        html: 'Next'
-    }).bind({
-        click: function () {
-            me.controller.moveToPage(me.controller.currentPage + 1);
-        }
-    }).appendTo($(this.container));
+//    this.next = jQuery('<div/>', {
+//        'class': 'pager-item next',
+//        html: 'Next'
+//    }).bind({
+//        click: function () {
+//            me.controller.moveToPage(me.controller.currentPage + 1);
+//        }
+//    }).appendTo($(this.container));
     
-    this.last = jQuery('<div/>', {
-        'class': 'pager-item last',
-        html: 'Last'
-    }).bind({
-        click: function () {
-            me.controller.moveToPage(me.controller.totalPages());
-        }
-    }).appendTo($(this.container));
+//    this.last = jQuery('<div/>', {
+//        'class': 'pager-item last',
+//        html: 'Last'
+//    }).bind({
+//        click: function () {
+//            me.controller.moveToPage(me.controller.totalPages());
+//        }
+//    }).appendTo($(this.container));
 
-}
-WordViewPager.prototype.appendTo = function(parent) {
-    $(this.container).appendTo($(parent));
-    return this;
-};
-WordViewPager.prototype.refresh = function () {
-    var current = this.controller.currentPage;
-    var total = this.controller.totalPages();
-    $(this.current).html(current + ' / ' + total);
+//}
+//WordViewPager.prototype.appendTo = function(parent) {
+//    $(this.container).appendTo($(parent));
+//    return this;
+//};
+//WordViewPager.prototype.refresh = function () {
+//    var current = this.controller.currentPage;
+//    var total = this.controller.totalPages();
+//    $(this.current).html(current + ' / ' + total);
     
-    display(this.first, current !== 1);
-    display(this.previous, current !== 1);
-    display(this.next, current !== total);
-    display(this.last, current !== total);
+//    display(this.first, current !== 1);
+//    display(this.previous, current !== 1);
+//    display(this.next, current !== total);
+//    display(this.last, current !== total);
 
-};
+//};
 
 
-function WordViewHeader() {
-    this.container = jQuery('<div/>', { 'class': 'word header' });
-    this.id = jQuery('<div/>', { 'class': 'id', html: 'id' }).appendTo($(this.container));
-    this.name = jQuery('<div/>', { 'class': 'name', html: 'name' }).appendTo($(this.container));
-    this.weight = jQuery('<div/>', { 'class': 'weight', html: 'weight' }).appendTo($(this.container));
-    this.type = jQuery('<div/>', { 'class': 'type', html: 'type' }).appendTo($(this.container));
-    this.categories = jQuery('<div/>', { 'class': 'categories', html: 'categories' }).appendTo($(this.container));
-}
-WordViewHeader.prototype.appendTo = function(parent) {
-    $(this.container).appendTo($(parent));
-};
+//function WordViewHeader() {
+//    this.container = jQuery('<div/>', { 'class': 'word header' });
+//    this.id = jQuery('<div/>', { 'class': 'id', html: 'id' }).appendTo($(this.container));
+//    this.name = jQuery('<div/>', { 'class': 'name', html: 'name' }).appendTo($(this.container));
+//    this.weight = jQuery('<div/>', { 'class': 'weight', html: 'weight' }).appendTo($(this.container));
+//    this.type = jQuery('<div/>', { 'class': 'type', html: 'type' }).appendTo($(this.container));
+//    this.categories = jQuery('<div/>', { 'class': 'categories', html: 'categories' }).appendTo($(this.container));
+//}
+//WordViewHeader.prototype.appendTo = function(parent) {
+//    $(this.container).appendTo($(parent));
+//};
 
 
 function WordLine(word) {
@@ -533,7 +529,7 @@ function getLanguages() {
 
 }
 
-function Metaword(data, properties) {
+function Metaword$(data, properties) {
     var me = this;
     this.object = data.Object || data.Metaword || data.Word;
     this.id = this.object.Id || 0;
@@ -589,7 +585,7 @@ function Metaword(data, properties) {
     })();
 
 }
-Metaword.prototype.updateCategoriesString = function () {
+Metaword$.prototype.updateCategoriesString = function () {
     var s = '';
     for (var i = 0; i < this.categories.length; i++) {
         var category = this.categories[i];
@@ -597,7 +593,7 @@ Metaword.prototype.updateCategoriesString = function () {
     }
     this.categoriesString = s;
 };
-Metaword.prototype.initialCategoryCollection = function (collection) {
+Metaword$.prototype.initialCategoryCollection = function (collection) {
     var array = [];
     for (var i = 0; i < collection.length; i++) {
         var id = collection[i].Id;
@@ -606,7 +602,7 @@ Metaword.prototype.initialCategoryCollection = function (collection) {
     }
     return array;
 };
-Metaword.prototype.createLanguageCollection = function (languages) {
+Metaword$.prototype.createLanguageCollection = function (languages) {
     var arr = [];
     for (var i = 0; i < languages.length; i++) {
         var languageJson = languages[i];
@@ -620,23 +616,23 @@ Metaword.prototype.createLanguageCollection = function (languages) {
 
     return arr;
 };
-Metaword.prototype.cancel = function () {
+Metaword$.prototype.cancel = function () {
     this.view.destroy();
 };
-Metaword.prototype.confirm = function () {
+Metaword$.prototype.confirm = function () {
     alert('Confirmed');
     this.view.destroy();
 };
-Metaword.prototype.displayEditForm = function () {
+Metaword$.prototype.displayEditForm = function () {
     this.view.display();
 };
-Metaword.prototype.bind = function (e) {
+Metaword$.prototype.bind = function (e) {
     this.eventHandler.bind(e);
 };
-Metaword.prototype.trigger = function (e) {
+Metaword$.prototype.trigger = function (e) {
     this.eventHandler.trigger(e);
 };
-Metaword.prototype.checkIfCategoriesChanged = function(items) {
+Metaword$.prototype.checkIfCategoriesChanged = function (items) {
     var nodes = [];
     for (var i = 0; i < this.categories.length; i++) {
         var category = this.categories[i];
@@ -1306,7 +1302,7 @@ LanguageView.prototype.addOption = function(element) {
 
 
 
-function WeightPanel(maxWeight, weight) {
+function WeightPanel$(maxWeight, weight) {
     this.minWeight = 1;
     this.maxWeight = maxWeight;
     this.value = weight;
