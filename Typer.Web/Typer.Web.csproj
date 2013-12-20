@@ -261,7 +261,9 @@
     <Content Include="Scripts\app\global.js" />
     <Content Include="Scripts\authentication\register.js" />
     <Content Include="Scripts\authentication\mailValidation.js" />
+    <Content Include="Scripts\lists\ListController.js" />
     <Content Include="Scripts\question\search.js" />
+    <Content Include="Scripts\question\test.js" />
     <Content Include="Scripts\question\word.js" />
     <Content Include="Scripts\question\question.js" />
     <Content Include="Scripts\test\test.js" />

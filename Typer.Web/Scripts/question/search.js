@@ -4,7 +4,7 @@
     this.eventHandler = new EventHandler();
 
     //UI components.
-    this.container = jQuery('<div/>', { 'class': 'filter-container' });
+    this.view = jQuery('<div/>', { 'class': 'filter-container' });
     this.panel = jQuery('<div/>', { 'class': 'filter-panel' }).appendTo($(this.container));
     if (properties.minWidth === false) {
         $(this.panel).css({
@@ -45,7 +45,7 @@
         this.collapser = new FilterCollapser(this, properties.visible ? true : false).appendTo($(this.container));
     }
 
-    $(this.container).appendTo($(properties.container));
+    //$(this.container).appendTo($(properties.container));
 
 }
 FilterManager.prototype.bind = function (e) {

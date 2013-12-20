@@ -84,11 +84,17 @@
 })();
 
 $(function () {
-    var controller = new WordViewController({
+    //var controller = new WordViewController({
+    var manager = new ListManager({
+        controller: 'Words',
         pageItems: 10,
-        currentPage: 1
+        currentPage: 1,
+        columns: ['id', 'name', 'weight', 'categories'],
+        creator: function (item, properties) {
+            return new WordLine(item, properties);
+        }
     });
-    controller.start();
+    manager.start();
 });
 
 
@@ -1720,7 +1726,7 @@ EditPanelMeta.prototype.isValidName = function (e) {
     var name = e.value;
     if (name.trim().length === 0) {
         return MessageBundle.get(dict.NameCannotBeEmpty);
-    } else if (!this.panel.option.isUniqueContent(name)) {
+    } else if (!this.parent.option.isUniqueContent(name)) {
         return MessageBundle.get(dict.NameAlreadyExists);
     } else {
         return true;

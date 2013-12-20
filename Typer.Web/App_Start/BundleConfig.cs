@@ -35,13 +35,16 @@ namespace Typer.Web
                         "~/Scripts/authentication/register.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/test").Include(
-                                    "~/Scripts/test/test.js"));
+                                    "~/Scripts/question/test.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/resend").Include(
                         "~/Scripts/authentication/mailValidation.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/question").Include(
                                     "~/Scripts/question/question.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/lists").Include(
+                                "~/Scripts/lists/ListController.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/words").Include(
                                     "~/Scripts/question/word.js"));

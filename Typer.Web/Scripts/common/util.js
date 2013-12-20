@@ -469,3 +469,11 @@ my.dates = (function () {
     };
 
 })();
+
+my.values = (function () {
+    return {
+        coalesce: function (value, ifFalse) {
+            return (value ? value : ifFalse);
+        }
+    };
+})();
