@@ -1,90 +1,36 @@
 ﻿function ListManager(properties) {
     this.ListManager = true;
     var self = this;
-    this.controller = properties.controller;
+    this.name = properties.name;
     this.creator = properties.creator;
-    
-    
-    this.filterManager = new FilterManager({
-        wordtype: true,
-        weight: true,
-        categories: true,
-        text: true
-    }).bind({
-        filter: function (e) {
-            var items = self.filter(e);
-            self.load(items);
-        }
-    });
-    this.filterValues = {
-        wordtype: 0,
-        categories: [],
-        text: '',
-        weight: { from: 0, to: 0 }
-    };
+    this.eventHandler = new EventHandler();
 
+    this.filterManager = new ListFilterManager(this, properties.filters);
 
-    this.pager = new ListPager(this, properties);
+    this.itemsManager = new ListItemsManager(this);
+
+    this.pagerManager = new ListPager(this, properties);
 
     this.view = new ListView(this, properties);
     this.view.render({
         columns: properties.columns,
-        filter: self.filterManager.view,
-        pager: self.pager.view
+        filter: self.filterManager.view(),
+        items: self.itemsManager.view(),
+        pager: self.pagerManager.view()
     });
     
 }
+ListManager.prototype.bind = function(e) {
+    this.eventHandler.bind(e);
+};
+ListManager.prototype.trigger = function (e) {
+    this.eventHandler.trigger(e);
+};
 ListManager.prototype.start = function () {
-    var items = this.filter({ page: 1, pageSize: 10 });
-    if (items) {
-        this.load(items);
-    }
+    this.filter({ page: 1, pageSize: 10 });
 };
 ListManager.prototype.filter = function (e) {
-    var self = this;
-    var values = this.filterValues;
-    var items;
-
-    for (var key in e.parameters) {
-        if (e.parameters.hasOwnProperty(key)) {
-            var value = e.parameters[key];
-            values[key] = value;
-        }
-    }
-
-    //Set page properties.
-    if (e.currentPage) this.pager.currentPage = e.currentPage;
-    if (e.pageItems) this.pager.pageItems = e.pageItems;
-
-    
-    $.ajax({
-        url: '/' + self.controller + '/Filter',
-        type: "GET",
-        data: {
-            'wordtype': values.wordtype,
-            'lowWeight': values.weight.from,
-            'upWeight': values.weight.to,
-            'categories': values.categories,
-            'text': values.text,
-            'page': self.pager.currentPage,
-            'pageSize': self.pager.pageItems
-        },
-        traditional: true,
-        datatype: "json",
-        async: false,
-        cache: false,
-        success: function (result) {
-            self.pager.setTotalItems(result.total);
-            items = result.items;
-        },
-        error: function (msg) {
-            alert(msg.status + " | " + msg.statusText);
-            return null;
-        }
-    });
-
-    return items;
-
+    this.filterManager.filter(e);
 };
 ListManager.prototype.load = function (items) {
     this.view.clear();
@@ -114,6 +60,135 @@ ListManager.prototype.newItem = function () {
     return this.creator(e);
 
 };
+ListManager.prototype.pageItems = function () {
+    return this.pagerManager.pageItems;
+};
+
+
+function ListView(controller) {
+    this.controller = controller;
+    this.container = $(document.body);
+}
+ListView.prototype.clear = function () {
+    $(this.items).empty();
+};
+ListView.prototype.append = function (element) {
+    $(element).appendTo($(this.container));
+};
+ListView.prototype.addHeaderRow = function (columns) {
+    var headerContainer = jQuery('<div/>', { 'class': 'word header' }).appendTo($(this.container));
+    for (var i = 0; i < columns.length; i++) {
+        var name = columns[i];
+        jQuery('<div/>', { 'class': name, html: name }).appendTo($(headerContainer));
+    }
+    return headerContainer;
+};
+ListView.prototype.createAddButton = function() {
+    this.addButton = jQuery('<a/>', {
+        id: 'add-item', 'class': 'add', html: 'Add'
+    }).bind({
+        click: function () {
+            //var item = createNewItem();
+            //item.displayEditForm();
+        }
+    }).appendTo(jQuery('<div/>', { 'id': 'add-button-container' }).appendTo($(this.container)));
+};
+ListView.prototype.render = function (properties) {
+    this.append(properties.filter);
+    this.addHeaderRow(properties.columns);
+    this.append(properties.items);
+    this.createAddButton();
+    this.append(properties.pager);
+};
+
+
+function ListManagerPanel(controller) {
+    this.controller = controller;
+}
+ListManagerPanel.prototype.view = function() {
+    return this.container;
+};
+
+
+function ListFilterManager(controller, filters) {
+    ListManagerPanel.call(this, controller);
+    var self = this;
+
+    this.manager = new FilterManager(this.filterManagerCreatingObject(filters));
+    this.manager.bind({        
+        filter: function (e) {
+            self.controller.filter(e);
+        }
+    });
+
+    this.filters = {
+        wordtype: 0,
+        categories: [],
+        text: '',
+        weight: { from: 0, to: 0 }
+    };
+
+}
+extend(ListManagerPanel, ListFilterManager);
+ListFilterManager.prototype.filterManagerCreatingObject = function(filters) {
+    var array = filters ? filters : [];
+    var result = {};
+    for (var i = 0; i < array.length; i++) {
+        var filter = array[i];
+        result[filter] = true;
+    }
+    return result;
+};
+ListFilterManager.prototype.changeFilterValue = function(key, value) {
+    if (value !== null && value !== undefined) {
+        this.filters[key] = value;
+    }
+};
+ListFilterManager.prototype.view = function () {
+    return this.manager.view();
+};
+ListFilterManager.prototype.filter = function (e) {
+    var self = this;
+    
+    //Update filters values array.
+    for (var key in this.filters) {
+        if (e.hasOwnProperty(key)) {
+            var value = e[key];
+            this.filters[key] = value;
+        }
+    }
+
+    $.ajax({
+        url: '/' + self.controller.name + '/Filter',
+        type: "GET",
+        data: {
+            'wordtype': this.filters.wordtype,
+            'lowWeight': this.filters.weight.from,
+            'upWeight': this.filters.weight.to,
+            'categories': this.filters.categories,
+            'text': this.filters.text,
+            'page': e.currentPage || 1,
+            'pageSize': e.pageItems || self.controller.pageItems()
+        },
+        traditional: true,
+        datatype: "json",
+        async: false,
+        cache: false,
+        success: function (result) {
+            self.controller.trigger({
+                type: 'filter',
+                items: result.items,
+                total: result.total,
+                currentPage: e.currentPage
+            });
+        },
+        error: function (msg) {
+            alert(msg.status + " | " + msg.statusText);
+            return null;
+        }
+    });
+
+};
 
 
 //var metaword = new Metaword({
@@ -131,57 +206,96 @@ ListManager.prototype.newItem = function () {
 
 
 function ListPager(controller, properties) {
+    ListManagerPanel.call(this, controller);
     var self = this;
-    this.controller = controller;
     this.pageItems = properties.pageItems || 10;
     this.currentPage = properties.currentPage || 1;
     this.totalItems = properties.totalItems || 0;
+    this.totalPages = 1;
+    
+    this.controller.bind({
+        filter: function (e) {
+            self.currentPage = e.currentPage;
+            self.setTotalItems(e.total);
+            self.refresh();
+        }
+    });
+
+    this.ui = (function() {
+        var container = jQuery('<div/>', {
+            'class': 'pager'
+        });
+
+        // ReSharper disable UnusedLocals
+        var first = element('first', 'First', function () { self.controller.moveToPage(1); });
+        var previous = element('previous', 'Previous', function () { self.controller.moveToPage(self.currentPage - 1); });
+        var current = element('current', '', function () { });
+        var next = element('next', 'Next', function () { self.controller.moveToPage(self.currentPage + 1); });
+        var last = element('last', 'Last', function () { self.controller.moveToPage(self.totalPages); });
+        // ReSharper restore UnusedLocals
+
+        function element(cssClass, caption, clickCallback) {
+            return  jQuery('<div/>', {
+                        'class': 'pager-item ' + cssClass,
+                        html: caption
+                    }).bind({
+                        click: clickCallback
+                    }).appendTo($(container));
+        }
+
+        return {
+            view: function() {
+                return container;
+            },
+            currentHtml: function(value) {
+                if (value === undefined) {
+                    return current.innerHTML;
+                } else {
+                    $(current).html(value);
+                }
+                return true;
+            },
+            enablePrevious: function(value) {
+                display(first, value);
+                display(previous, value);
+            },
+            enableNext: function(value) {
+                display(next, value);
+                display(last, value);
+            }
+        };
+
+    })();
+
 }
+extend(ListManagerPanel, ListPager);
 ListPager.prototype.setTotalItems = function (items) {
     this.totalItems = items;
-    this.totalPages = Math.floor(this.totalItems / this.pageItems) + (this.totalItems % this.pageItems ? 1 : 0); 
+    this.totalPages = Math.max(Math.floor(this.totalItems / this.pageItems) + (this.totalItems % this.pageItems ? 1 : 0), 1);
+};
+ListPager.prototype.view = function() {
+    return this.ui.view();
+};
+ListPager.prototype.refresh = function () {
+    this.ui.currentHtml(this.currentPage + '/' + this.totalPages);
+    this.ui.enablePrevious(this.current !== 1);
+    this.ui.enableNext(this.currentPage !== this.totalPages);
 };
 
 
-
-
-function ListView(controller) {
+function ListItemsManager(controller) {
+    ListManagerPanel.call(this, controller);
     var self = this;
-    this.controller = controller;
-    this.container = $(document.body);
-    this.items = jQuery('<div/>');
-    this.addButton = jQuery('<a/>', {
-        id: 'add-item', 'class': 'add', html: 'Add'
-    }).bind({
-        click: function () {
-            var item = createNewItem();
-            item.displayEditForm();
-        }
-    }).appendTo(jQuery('<div/>', { 'id': 'add-button-container' }));
+    this.container = jQuery('<div/>');
 
+    this.controller.bind({        
+        filter: function(e) {
+            alert('filter');
+        }
+    });
 
 }
-ListView.prototype.clear = function () {
-    $(this.items).empty();
-};
-ListView.prototype.append = function (element) {
-    $(element).appendTo($(this.container));
-};
-ListView.prototype.addHeaderRow = function (columns) {
-    var headerContainer = jQuery('<div/>', { 'class': 'word header' });
-    for (var i = 0; i < columns.length; i++) {
-        var name = columns[i];
-        var columns = jQuery('<div/>', { 'class': name, html: name }).appendTo($(headerContainer));
-    }
-    return headerContainer;
-};
-ListView.prototype.render = function (properties) {
-    this.append(properties.filter);
-    this.addHeaderRow(properties.columns);
-    this.append(this.items);
-    this.append(this.addButton);
-    this.append(properties.pager);
-};
+extend(ListManagerPanel, ListItemsManager);
 
 
 
@@ -229,64 +343,3 @@ WordViewAddButton.prototype.appendTo = function (parent) {
 };
 
 
-function WordViewPager(controller) {
-    var me = this;
-    this.controller = controller;
-    this.container = jQuery('<div/>', {
-        'class': 'pager'
-    });
-
-    this.first = jQuery('<div/>', {
-        'class': 'pager-item first',
-        html: 'First'
-    }).bind({
-        click: function () {
-            me.controller.moveToPage(1);
-        }
-    }).appendTo($(this.container));
-
-    this.previous = jQuery('<div/>', {
-        'class': 'pager-item previous',
-        html: 'Previous'
-    }).bind({
-        click: function () {
-            me.controller.moveToPage(me.controller.currentPage - 1);
-        }
-    }).appendTo($(this.container));
-
-    this.current = jQuery('<div/>', { 'class': 'pager-item current', html: 'First' }).appendTo($(this.container));
-
-    this.next = jQuery('<div/>', {
-        'class': 'pager-item next',
-        html: 'Next'
-    }).bind({
-        click: function () {
-            me.controller.moveToPage(me.controller.currentPage + 1);
-        }
-    }).appendTo($(this.container));
-
-    this.last = jQuery('<div/>', {
-        'class': 'pager-item last',
-        html: 'Last'
-    }).bind({
-        click: function () {
-            me.controller.moveToPage(me.controller.totalPages());
-        }
-    }).appendTo($(this.container));
-
-}
-WordViewPager.prototype.appendTo = function (parent) {
-    $(this.container).appendTo($(parent));
-    return this;
-};
-WordViewPager.prototype.refresh = function () {
-        var current = this.controller.currentPage;
-        var total = this.controller.totalPages();
-        $(this.current).html(current + ' / ' + total);
-
-        display(this.first, current !== 1);
-        display(this.previous, current !== 1);
-        display(this.next, current !== total);
-        display(this.last, current !== total);
-
-    };

@@ -4,7 +4,7 @@
     this.eventHandler = new EventHandler();
 
     //UI components.
-    this.view = jQuery('<div/>', { 'class': 'filter-container' });
+    this.container = jQuery('<div/>', { 'class': 'filter-container' });
     this.panel = jQuery('<div/>', { 'class': 'filter-panel' }).appendTo($(this.container));
     if (properties.minWidth === false) {
         $(this.panel).css({
@@ -91,7 +91,9 @@ FilterManager.prototype.addFilter = function (name, filter) {
     this.filters.setItem(name, filter);
     $(filter.panel.container).appendTo($(panel));
 };
-
+FilterManager.prototype.view = function() {
+    return this.container;
+};
 
 
 function FilterButton(manager){

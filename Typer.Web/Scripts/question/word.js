@@ -86,7 +86,7 @@
 $(function () {
     //var controller = new WordViewController({
     var manager = new ListManager({
-        controller: 'Words',
+        name: 'Words',
         pageItems: 10,
         currentPage: 1,
         columns: ['id', 'name', 'weight', 'categories'],
