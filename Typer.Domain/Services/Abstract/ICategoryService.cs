@@ -8,6 +8,7 @@ namespace Typer.Domain.Services
     public interface ICategoryService
     {
         IEnumerable<Category> GetCategories();
+        IEnumerable<Category> GetCategories(IEnumerable<int> ids);
         Category GetCategory(int id);
         bool Activate(int id);
         bool Deactivate(int id);

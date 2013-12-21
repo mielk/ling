@@ -32,6 +32,15 @@ namespace Typer.Domain.Services
 
         }
 
+        public IEnumerable<Category> GetCategories(IEnumerable<int> ids)
+        {
+            if (_categories == null)
+                LoadCategories();
+
+            return _categories.Where(c => ids.Contains(c.Id));
+
+        }
+
         private static void LoadCategories()
         {
 

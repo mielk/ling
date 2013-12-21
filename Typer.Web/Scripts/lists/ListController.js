@@ -385,26 +385,43 @@ function ListItemView(item) {
     this.container = jQuery('<div/>', {
         'class': 'item'
     });
+    if (!this.object.isActive) $(this.container).addClass('inactive');
     
     this.id = jQuery('<div/>', { 'class': 'id', html: self.object.id }).appendTo($(this.container));
     this.name = jQuery('<div/>', { 'class': 'name', html: self.object.name }).appendTo($(this.container));
     this.addWeigthPanel();
-    //this.weight = (new WeightPanel(self.item)).appendTo($(this.container));
-    //this.type = jQuery('<div/>', { 'class': 'type', html: me.line.type.symbol }).appendTo($(this.container));
-    //this.categories = jQuery('<div/>', { 'class': 'categories', html: me.line.categories }).appendTo($(this.container));
+    
+    this.categories = jQuery('<div/>', { 'class': 'categories', html: self.object.categoriesToString() }).appendTo($(this.container));
 
     this.edit = jQuery('<div/>', { 'class': 'edit-item' }).
         bind({ click: function () { self.item.edit(); } }).
         appendTo($(this.container));
 
     this.deactivate = jQuery('<a/>', { html: self.object.isActive ? 'Deactivate' : 'Activate' }).
-        bind({ click: function () { self.item.activate(); } }).
+        bind({ click: function () { self.object.activate(); } }).
         appendTo($(this.container));
     
+
+    //Events.
+    this.object.bind({
+        activate: function (e) {
+            self.activate(e.value);
+        }
+    });
+
 }
 ListItemView.prototype.addWeigthPanel = function() {
     var weightPanel = new WeightPanel(this.item);
     weightPanel.appendTo($(this.container));
+};
+ListItemView.prototype.activate = function (value) {
+    if (value) {
+        this.deactivate.html('Deactivate');
+        $(this.container).removeClass('inactive');
+    } else {
+        this.deactivate.html('Activate');
+        $(this.container).addClass('inactive');
+    }
 };
 
 
@@ -412,6 +429,11 @@ ListItemView.prototype.addWeigthPanel = function() {
 function WordListItemView(item) {
     ListItemView.call(this, item);
     this.WordListItemView = true;
+    var self = this;
+
+    //Add panels specific for this type of objects.
+    this.type = jQuery('<div/>', { 'class': 'type', html: self.object.wordtype.symbol }).appendTo($(this.container));
+    $(this.categories).before(this.type);
 }
 extend(ListItemView, WordListItemView);
 
@@ -426,6 +448,7 @@ extend(ListItemView, QuestionListItemView);
 
 function Entity(properties) {
     this.Entity = true;
+    this.service = null;
     //Properties.
     this.id = properties.Id || 0;
     this.name = properties.Name;
@@ -436,6 +459,7 @@ function Entity(properties) {
     this.isApproved = properties.IsApproved;
     this.positive = properties.Positive;
     this.negative = properties.Negative;
+    this.categories = this.loadCategories(properties.Categories);
 
     this.eventHandler = new EventHandler();
     //CategoriesString
@@ -448,20 +472,71 @@ Entity.prototype.trigger = function(e) {
 Entity.prototype.bind = function (e) {
     this.eventHandler.bind(e);
 };
+Entity.prototype.loadCategories = function (categories) {
+    var array = [];
+    for (var i = 0; i < categories.length; i++) {
+        var id = categories[i].Id;
+        var category = my.categories.getCategory(id);
+        array.push(category);
+    }
+    return array;
+};
 Entity.prototype.setWeight = function(weight) {
+    var self = this;
     this.weight = Math.max(Math.min(weight, 10), 1);
-    this.trigger({        
-        type: 'changeWeight',
-        weight: weight
+    var result = this.service.updateWeight({
+        id: self.id,
+        weight: weight,
+        name: self.name,
+        callback: function (result) {
+            if (result !== false) {
+                self.trigger({
+                    type: 'changeWeight',
+                    weight: weight
+                });
+            }
+        }
     });
 };
+Entity.prototype.activate = function (value) {
+    var self = this;
+    var status = (value === undefined ? !this.isActive : value);
+    var e = {
+        id: self.id,
+        name: self.name,
+        callback: function (result) {
+            self.isActive = status;
+            if (result !== false) {
+                self.trigger({
+                    type: 'activate',
+                    value: status
+                });
+            }
+        }
+    };
 
+    if (status) {
+        this.service.activate(e);
+    } else {
+        this.service.deactivate(e);
+    }
 
+};
+Entity.prototype.categoriesToString = function () {
+    var categories = '';
+    for (var i = 0; i < this.categories.length; i++) {
+        var category = this.categories[i];
+        categories += (categories ? '; ' : '');
+        categories += category.path();
+    }
+    return categories;
+};
 
 function Metaword(properties) {
     Entity.call(this, properties);
     this.Metaword = true;
-    this.wordtype = properties.Type;
+    this.service = my.words;
+    this.wordtype = WORDTYPE.getItem(properties.Type);
 }
 extend(Entity, Metaword);
 
@@ -469,9 +544,9 @@ extend(Entity, Metaword);
 function Question(properties) {
     Entity.call(this, properties);
     this.Question = true;
+    this.service = my.questions;
 }
 extend(Entity, Question);
-
 
 
 function WeightPanel(line) {
@@ -535,7 +610,7 @@ function WeightPanel(line) {
             }
         };
 
-    });
+    })();
 
     this.object.bind({
         changeWeight: function (e) {
@@ -545,7 +620,7 @@ function WeightPanel(line) {
 
 }
 WeightPanel.prototype.appendTo = function(parent) {
-    $(this.ui().view()).appendTo($(parent));
+    $(this.ui.view()).appendTo($(parent));
 };
 
 
@@ -557,125 +632,125 @@ WeightPanel.prototype.appendTo = function(parent) {
 
 
 
-function WordLine(word) {
-    this.word = word;
-    this.id = word.Id;
-    this.name = word.Name;
-    this.weight = word.Weight;
-    this.type = WORDTYPE.getItem(word.Type);
-    this.active = word.IsActive;
-    this.categories = word.CategoriesString;
-    this.eventHandler = new EventHandler();
-    this.view = new WordLineView(this);
-}
-WordLine.prototype.bind = function (e) {
-    this.eventHandler.bind(e);
-};
-WordLine.prototype.trigger = function (e) {
-    this.eventHandler.trigger(e);
-};
-WordLine.prototype.appendTo = function (parent) {
-    $(this.view.container).appendTo($(parent));
-};
-WordLine.prototype.setWeight = function (value) {
-    var me = this;
-    var callback = function (result) {
-        if (result) {
-            me.weight = value;
-            me.trigger({
-                type: 'setWeight',
-                weight: value
-            });
-        }
-    };
+//function WordLine(word) {
+//    this.word = word;
+//    this.id = word.Id;
+//    this.name = word.Name;
+//    this.weight = word.Weight;
+//    this.type = WORDTYPE.getItem(word.Type);
+//    this.active = word.IsActive;
+//    this.categories = word.CategoriesString;
+//    this.eventHandler = new EventHandler();
+//    this.view = new WordLineView(this);
+//}
+//WordLine.prototype.bind = function (e) {
+//    this.eventHandler.bind(e);
+//};
+//WordLine.prototype.trigger = function (e) {
+//    this.eventHandler.trigger(e);
+//};
+//WordLine.prototype.appendTo = function (parent) {
+//    $(this.view.container).appendTo($(parent));
+//};
+//WordLine.prototype.setWeight = function (value) {
+//    var me = this;
+//    var callback = function (result) {
+//        if (result) {
+//            me.weight = value;
+//            me.trigger({
+//                type: 'setWeight',
+//                weight: value
+//            });
+//        }
+//    };
 
-    var e = {
-        id: me.id,
-        name: me.name,
-        weight: value,
-        callback: callback
-    };
+//    var e = {
+//        id: me.id,
+//        name: me.name,
+//        weight: value,
+//        callback: callback
+//    };
 
-    my.words.updateWeight(e);
+//    my.words.updateWeight(e);
 
-};
-WordLine.prototype.updateCategories = function (categories) {
-    this.view.updateCategories(categories);
-};
-WordLine.prototype.activate = function (result) {
-    var me = this;
-    var state = (result !== undefined ? result : !this.active);
-
-
-    var callback = function (value) {
-        if (value) {
-            me.active = state;
-            me.view.activate(me.active);
-        }
-    };
-
-    var e = {
-        id: me.id,
-        name: me.name,
-        callback: callback
-    };
-
-    if (state) {
-        my.words.activate(e);
-    } else {
-        my.words.deactivate(e);
-    }
-
-};
+//};
+//WordLine.prototype.updateCategories = function (categories) {
+//    this.view.updateCategories(categories);
+//};
+//WordLine.prototype.activate = function (result) {
+//    var me = this;
+//    var state = (result !== undefined ? result : !this.active);
 
 
-function WordLineView(line) {
-    var me = this;
-    this.line = line;
+//    var callback = function (value) {
+//        if (value) {
+//            me.active = state;
+//            me.view.activate(me.active);
+//        }
+//    };
 
-    this.container = jQuery('<div/>', {
-        'class': 'word '
-    });
-    this.activate(this.line.active);
+//    var e = {
+//        id: me.id,
+//        name: me.name,
+//        callback: callback
+//    };
 
-    this.id = jQuery('<div/>', { 'class': 'id', html: me.line.id }).appendTo($(this.container));
-    this.name = jQuery('<div/>', { 'class': 'name', html: me.line.name }).appendTo($(this.container));
-    this.weight = (new WordLineWeightPanel(this.line)).appendTo($(this.container));
+//    if (state) {
+//        my.words.activate(e);
+//    } else {
+//        my.words.deactivate(e);
+//    }
 
-    this.type = jQuery('<div/>', { 'class': 'type', html: me.line.type.symbol }).appendTo($(this.container));
-    this.categories = jQuery('<div/>', { 'class': 'categories', html: me.line.categories }).appendTo($(this.container));
+//};
 
-    this.edit = jQuery('<div/>', {
-        'class': 'edit-item',
-        html: me.line.id
-    }).bind({
-        click: function () {
-            var id = me.line.id;
-            editMetaword(id, me.line);
-        }
-    }).appendTo($(this.container));
 
-    this.deactivate = jQuery('<a/>', {
-        html: me.line.active ? 'Deactivate' : 'Activate'
-    }).bind({
-        click: function () { me.line.activate(); }
-    }).appendTo($(this.container));
+//function WordLineView(line) {
+//    var me = this;
+//    this.line = line;
 
-}
-WordLineView.prototype.activate = function (value) {
-    if (value) {
-        this.container.removeClass('inactive');
-        this.container.addClass('active');
-        $(this.deactivate).html('Deactivate');
-    } else {
-        this.container.removeClass('active');
-        this.container.addClass('inactive');
-        $(this.deactivate).html('Activate');
-    }
-};
-WordLineView.prototype.updateCategories = function (categories) {
-    $(this.categories).html(categories);
-};
+//    this.container = jQuery('<div/>', {
+//        'class': 'word '
+//    });
+//    this.activate(this.line.active);
+
+//    this.id = jQuery('<div/>', { 'class': 'id', html: me.line.id }).appendTo($(this.container));
+//    this.name = jQuery('<div/>', { 'class': 'name', html: me.line.name }).appendTo($(this.container));
+//    this.weight = (new WordLineWeightPanel(this.line)).appendTo($(this.container));
+
+//    this.type = jQuery('<div/>', { 'class': 'type', html: me.line.type.symbol }).appendTo($(this.container));
+//    this.categories = jQuery('<div/>', { 'class': 'categories', html: me.line.categories }).appendTo($(this.container));
+
+//    this.edit = jQuery('<div/>', {
+//        'class': 'edit-item',
+//        html: me.line.id
+//    }).bind({
+//        click: function () {
+//            var id = me.line.id;
+//            editMetaword(id, me.line);
+//        }
+//    }).appendTo($(this.container));
+
+//    this.deactivate = jQuery('<a/>', {
+//        html: me.line.active ? 'Deactivate' : 'Activate'
+//    }).bind({
+//        click: function () { me.line.activate(); }
+//    }).appendTo($(this.container));
+
+//}
+//WordLineView.prototype.activate = function (value) {
+//    if (value) {
+//        this.container.removeClass('inactive');
+//        this.container.addClass('active');
+//        $(this.deactivate).html('Deactivate');
+//    } else {
+//        this.container.removeClass('active');
+//        this.container.addClass('inactive');
+//        $(this.deactivate).html('Activate');
+//    }
+//};
+//WordLineView.prototype.updateCategories = function (categories) {
+//    $(this.categories).html(categories);
+//};
 
 
 

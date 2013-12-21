@@ -43,18 +43,21 @@ namespace Typer.Domain.Entities
         [Display(Name = "Is complex")]
         public bool IsComplex { get; set; }
 
-        //[Display(Name = "Categories")]
-        public string CategoriesString
+        private IEnumerable<Category> _categories;
+        public IEnumerable<Category> Categories
         {
             get
             {
-                var categoriesString = string.Empty;
-                var categories = QuestionServicesFactory.Instance().GetService().GetCategories(Id);
-                categoriesString = categories.Aggregate(categoriesString, (current, category) => current + ((current.Length > 0 ? " | " : string.Empty) + category.FullPath()));
-                return (categoriesString.Length == 0 ? "" : categoriesString);
+                if (_categories == null) loadCategories();
+                return _categories;
             }
         }
-    
+
+
+        private void loadCategories()
+        {
+            _categories = QuestionServicesFactory.Instance().GetService().GetCategories(Id);
+        }
 
         public Question()
         {
