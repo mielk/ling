@@ -87,10 +87,10 @@ namespace Typer.Web.Controllers
 
             [HttpGet]
             [AllowAnonymous]
-            public ActionResult Filter(int wordType, int lowWeight, int upWeight, int[] categories, string text, int pageSize, int page)
+            public ActionResult Filter(int wordtype, int lowWeight, int upWeight, int[] categories, string text, int pageSize, int page)
             {
 
-                var allWords = _service.Filter(wordType, lowWeight, upWeight, categories, text).ToArray();
+                var allWords = _service.Filter(wordtype, lowWeight, upWeight, categories, text).ToArray();
                 var words = allWords.
                     OrderBy(w => w.Id).
                     Skip((page - 1) * pageSize).

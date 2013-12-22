@@ -118,6 +118,33 @@ input[type=submit].centered
 
 
 
+.edit-background {
+    position: fixed;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #646464;
+    background-color: rgba(100, 100, 100, 0.85);
+    overflow-y: auto;
+}
+
+.edit-panel
+{
+    display: block;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 12px 0;
+    background-color: red;
+}
+
+
+
+
+
+
 
 
 input.valid
@@ -279,81 +306,6 @@ div.pager a.selected {
     visibility: hidden;
 }
 
-/*.question div
-{
-    display: table-cell;
-    position: relative;
-    height: 100%;
-    float: left;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-}
-
-.question .id
-{
-    width: 50px;
-    padding: 0 12px;
-    margin-right: 6px;
-    text-align: right;
-}
-
-.question .name
-{
-    width: 400px;
-    padding: 0 12px;
-}
-
-.question .weight
-{
-    width: 210px;
-    margin: 0 18px;
-}
-
-.question .categories
-{
-    width: 210px;
-    margin: 0 36px;
-    padding: 3px;
-}
-
-
-
-
-.question a
-{
-    float: left;
-    margin-right: 21px;
-    margin-left: 21px;
-}
-
-.question a.weight
-{
-    display: table-cell;
-    position: relative;
-    float: left;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    width: 18px;
-    height: 18px;
-    margin-left: 0;
-    margin-right: 3px;
-    font-size: 0;
-    border: 1px solid transparent;
-    background-image: url('images/gray_star.png');
-}
-
-.question a.checked
-{
-    background-image: url('images/gold_star.png');
-}*/
-
-
-.edit-panel
-{
-    padding: 12px 0;
-}
 
 .field-line
 {

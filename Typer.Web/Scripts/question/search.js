@@ -195,7 +195,7 @@ function WordTypeFilter(manager) {
 
     this.dropdown.bind({
         select: function(e) {
-            me.value = e.object;
+            me.value = e.object && e.object.id ? e.object.id : 0;
         }
     });
 

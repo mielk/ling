@@ -88,7 +88,8 @@ $(function () {
     var manager = new WordListManager({
         pageItems: 10,
         currentPage: 1,
-        columns: ['id', 'name', 'weight','type', 'categories']
+        columns: ['id', 'name', 'weight', 'type', 'categories'],
+        filters: ['wordtype', 'weight', 'categories', 'text']
     });
     manager.start();
 });
@@ -296,175 +297,175 @@ $(function () {
 //};
 
 
-function WordLine(word) {
-    this.word = word;
-    this.id = word.Id;
-    this.name = word.Name;
-    this.weight = word.Weight;
-    this.type = WORDTYPE.getItem(word.Type);
-    this.active = word.IsActive;
-    this.categories = word.CategoriesString;
-    this.eventHandler = new EventHandler();
-    this.view = new WordLineView(this);
-}
-WordLine.prototype.bind = function(e) {
-    this.eventHandler.bind(e);
-};
-WordLine.prototype.trigger = function(e) {
-    this.eventHandler.trigger(e);
-};
-WordLine.prototype.appendTo = function(parent) {
-    $(this.view.container).appendTo($(parent));
-};
-WordLine.prototype.setWeight = function (value) {
-    var me = this;
-    var callback = function(result) {
-        if (result) {
-            me.weight = value;
-            me.trigger({
-                type: 'setWeight',
-                weight: value
-            });
-        }
-    };
+//function WordLine(word) {
+//    this.word = word;
+//    this.id = word.Id;
+//    this.name = word.Name;
+//    this.weight = word.Weight;
+//    this.type = WORDTYPE.getItem(word.Type);
+//    this.active = word.IsActive;
+//    this.categories = word.CategoriesString;
+//    this.eventHandler = new EventHandler();
+//    this.view = new WordLineView(this);
+//}
+//WordLine.prototype.bind = function(e) {
+//    this.eventHandler.bind(e);
+//};
+//WordLine.prototype.trigger = function(e) {
+//    this.eventHandler.trigger(e);
+//};
+//WordLine.prototype.appendTo = function(parent) {
+//    $(this.view.container).appendTo($(parent));
+//};
+//WordLine.prototype.setWeight = function (value) {
+//    var me = this;
+//    var callback = function(result) {
+//        if (result) {
+//            me.weight = value;
+//            me.trigger({
+//                type: 'setWeight',
+//                weight: value
+//            });
+//        }
+//    };
 
-    var e = {        
-        id: me.id,
-        name: me.name,
-        weight: value,
-        callback: callback
-    };
+//    var e = {        
+//        id: me.id,
+//        name: me.name,
+//        weight: value,
+//        callback: callback
+//    };
 
-    my.words.updateWeight(e);
+//    my.words.updateWeight(e);
 
-};
-WordLine.prototype.updateCategories = function(categories) {
-    this.view.updateCategories(categories);
-};
-WordLine.prototype.activate = function (result) {
-    var me = this;
-    var state = (result !== undefined ? result : !this.active);
+//};
+//WordLine.prototype.updateCategories = function(categories) {
+//    this.view.updateCategories(categories);
+//};
+//WordLine.prototype.activate = function (result) {
+//    var me = this;
+//    var state = (result !== undefined ? result : !this.active);
     
 
-    var callback = function(value) {
-        if (value) {
-            me.active = state;
-            me.view.activate(me.active);
-        }
-    };
+//    var callback = function(value) {
+//        if (value) {
+//            me.active = state;
+//            me.view.activate(me.active);
+//        }
+//    };
 
-    var e = {
-        id: me.id,
-        name: me.name,
-        callback: callback
-    };
+//    var e = {
+//        id: me.id,
+//        name: me.name,
+//        callback: callback
+//    };
 
-    if (state) {
-        my.words.activate(e);
-    } else {
-        my.words.deactivate(e);
-    }
+//    if (state) {
+//        my.words.activate(e);
+//    } else {
+//        my.words.deactivate(e);
+//    }
 
-};
-
-
-function WordLineView(line) {
-    var me = this;
-    this.line = line;
-
-    this.container = jQuery('<div/>', {
-        'class': 'word '
-    });
-    this.activate(this.line.active);
-
-    this.id = jQuery('<div/>', { 'class': 'id', html: me.line.id }).appendTo($(this.container));
-    this.name = jQuery('<div/>', { 'class': 'name', html: me.line.name }).appendTo($(this.container));
-    this.weight = (new WordLineWeightPanel(this.line)).appendTo($(this.container));
-
-    this.type = jQuery('<div/>', { 'class': 'type', html: me.line.type.symbol }).appendTo($(this.container));
-    this.categories = jQuery('<div/>', { 'class': 'categories', html: me.line.categories }).appendTo($(this.container));
-
-    this.edit = jQuery('<div/>', {
-        'class': 'edit-item',
-        html: me.line.id
-    }).bind({
-        click: function () {
-            var id = me.line.id;
-            editMetaword(id, me.line);
-        }
-    }).appendTo($(this.container));
-
-    this.deactivate = jQuery('<a/>', {
-        html: me.line.active ?  'Deactivate' : 'Activate'
-    }).bind({
-        click: function () {
-            me.line.activate();
-        }
-    }).appendTo($(this.container));
-
-}
-WordLineView.prototype.activate = function(value) {
-    if (value) {
-        this.container.removeClass('inactive');
-        this.container.addClass('active');
-        $(this.deactivate).html('Deactivate');
-    } else {
-        this.container.removeClass('active');
-        this.container.addClass('inactive');
-        $(this.deactivate).html('Activate');
-    }
-};
-WordLineView.prototype.updateCategories = function(categories) {
-    $(this.categories).html(categories);
-};
+//};
 
 
-function WordLineWeightPanel(line) {
-    var me = this;
-    this.line = line;
-    this.word = this.line.word;
+//function WordLineView(line) {
+//    var me = this;
+//    this.line = line;
 
-    this.container = jQuery('<div/>', { 'class': 'weight' });
-    this.icons = [];
-    for (var i = 0; i < 10; i++) {
-        this.icons[i] = jQuery('<a/>', {
-            'class': 'weight',
-            html: i + 1
-        }).bind({
-            click: function () {
-                var value = Number(this.innerHTML);
-                if ($.isNumeric(value)) {
-                    value = Math.max(Math.min(10, value), 1);
-                    me.line.setWeight(value);
-                }
-            }
-        }).appendTo($(this.container));
-    }
+//    this.container = jQuery('<div/>', {
+//        'class': 'word '
+//    });
+//    this.activate(this.line.active);
 
-    this.line.bind({
-        setWeight: function (e) {
-            me.setValue(e.weight);
-        }
-    });
+//    this.id = jQuery('<div/>', { 'class': 'id', html: me.line.id }).appendTo($(this.container));
+//    this.name = jQuery('<div/>', { 'class': 'name', html: me.line.name }).appendTo($(this.container));
+//    this.weight = (new WordLineWeightPanel(this.line)).appendTo($(this.container));
 
-    (function ini() {
-        me.setValue(me.line.weight);
-    })();
+//    this.type = jQuery('<div/>', { 'class': 'type', html: me.line.type.symbol }).appendTo($(this.container));
+//    this.categories = jQuery('<div/>', { 'class': 'categories', html: me.line.categories }).appendTo($(this.container));
 
-}
-WordLineWeightPanel.prototype.setValue = function (value) {
-    var i;
-    for (i = 0; i < value; i++) {
-        this.icons[i].addClass('checked');
-    }
-    for (i = value; i < 10; i++) {
-        this.icons[i].removeClass('checked');
-    }
-};
-WordLineWeightPanel.prototype.appendTo = function(parent) {
-    $(this.container).appendTo($(parent));
-    return this;
-};
+//    this.edit = jQuery('<div/>', {
+//        'class': 'edit-item',
+//        html: me.line.id
+//    }).bind({
+//        click: function () {
+//            var id = me.line.id;
+//            editMetaword(id, me.line);
+//        }
+//    }).appendTo($(this.container));
+
+//    this.deactivate = jQuery('<a/>', {
+//        html: me.line.active ?  'Deactivate' : 'Activate'
+//    }).bind({
+//        click: function () {
+//            me.line.activate();
+//        }
+//    }).appendTo($(this.container));
+
+//}
+//WordLineView.prototype.activate = function(value) {
+//    if (value) {
+//        this.container.removeClass('inactive');
+//        this.container.addClass('active');
+//        $(this.deactivate).html('Deactivate');
+//    } else {
+//        this.container.removeClass('active');
+//        this.container.addClass('inactive');
+//        $(this.deactivate).html('Activate');
+//    }
+//};
+//WordLineView.prototype.updateCategories = function(categories) {
+//    $(this.categories).html(categories);
+//};
+
+
+//function WordLineWeightPanel(line) {
+//    var me = this;
+//    this.line = line;
+//    this.word = this.line.word;
+
+//    this.container = jQuery('<div/>', { 'class': 'weight' });
+//    this.icons = [];
+//    for (var i = 0; i < 10; i++) {
+//        this.icons[i] = jQuery('<a/>', {
+//            'class': 'weight',
+//            html: i + 1
+//        }).bind({
+//            click: function () {
+//                var value = Number(this.innerHTML);
+//                if ($.isNumeric(value)) {
+//                    value = Math.max(Math.min(10, value), 1);
+//                    me.line.setWeight(value);
+//                }
+//            }
+//        }).appendTo($(this.container));
+//    }
+
+//    this.line.bind({
+//        setWeight: function (e) {
+//            me.setValue(e.weight);
+//        }
+//    });
+
+//    (function ini() {
+//        me.setValue(me.line.weight);
+//    })();
+
+//}
+//WordLineWeightPanel.prototype.setValue = function (value) {
+//    var i;
+//    for (i = 0; i < value; i++) {
+//        this.icons[i].addClass('checked');
+//    }
+//    for (i = value; i < 10; i++) {
+//        this.icons[i].removeClass('checked');
+//    }
+//};
+//WordLineWeightPanel.prototype.appendTo = function(parent) {
+//    $(this.container).appendTo($(parent));
+//    return this;
+//};
 
 
 
@@ -664,7 +665,7 @@ function MetawordView(metaword, properties) {
                 }).css({
                     'display': 'none'
                 }).appendTo($(me.background));
-
+    +
     this.container = jQuery('<div/>', {
                     id: 'question-container',
                     'class': 'question-container'
@@ -1596,7 +1597,7 @@ WordView.prototype.update = function() {
 
 
 
-function EditPanel(properties) {
+function EditPanel$(properties) {
     // ReSharper disable once UnusedLocals
     var me = this;
     this.object = properties.object;
@@ -1612,23 +1613,23 @@ function EditPanel(properties) {
     this.buttons = new EditPanelButtons(this);
 
 }
-EditPanel.prototype.display = function () {
+EditPanel$.prototype.display = function () {
     this.meta.validate();
     this.view.display();
 };
-EditPanel.prototype.destroy = function () {
+EditPanel$.prototype.destroy = function () {
     this.view.destroy();
 };
-EditPanel.prototype.bind = function (e) {
+EditPanel$.prototype.bind = function (e) {
     this.eventHandler.bind(e);
 };
 EditPanel.prototype.trigger = function (e) {
     this.eventHandler.trigger(e);
 };
-EditPanel.prototype.confirm = function (e) {
+EditPanel$.prototype.confirm = function (e) {
     //Confirm.
 };
-EditPanel.prototype.validation = function (validation) {
+EditPanel$.prototype.validation = function (validation) {
     if (validation.status) {
         this.invalid.removeItem(validation.id);
     } else {
@@ -1636,7 +1637,7 @@ EditPanel.prototype.validation = function (validation) {
     }
     this.checkState();
 };
-EditPanel.prototype.checkState = function () {
+EditPanel$.prototype.checkState = function () {
     if (this.buttons) {
         this.buttons.enable(this.invalid.size() === 0);
     }
