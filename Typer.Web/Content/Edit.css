@@ -672,7 +672,7 @@ div.pager a.selected {
     text-transform: uppercase;
 }
 
-.content-container .select-categories-button {
+.search-select-categories-button {
     float: left;
     width: 28px;
     height: 28px;
@@ -743,6 +743,40 @@ div.pager {
     width: 100%;
     height: auto;
 }
+
+span.selected-categories {
+    padding: 6px;
+    line-height: 20px;
+    height: 34px;
+    border: 1px solid #666;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    background-color: white;
+}
+
+.select-categories-button
+{
+    display: block !important;
+    height: 34px !important;
+    width: 50px !important;
+    padding: 9px !important;
+    line-height: 16px !important;
+    text-align: center !important;
+    background-color: #ddd !important;
+    border: 1px solid #666 !important;
+    margin-left: 12px !important;
+    margin-top: 0 !important;
+    color: #444 !important;
+    cursor: pointer;
+}
+
+.select-categories-button:focus
+{
+    background-color: rgb(255, 242, 181) !important;
+}
+
+
 
 
 

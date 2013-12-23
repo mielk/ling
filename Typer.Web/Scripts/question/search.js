@@ -288,7 +288,7 @@ function CategoryFilter(manager) {
     });
 
     this.addButton = jQuery('<div/>', {
-        'class': 'select-categories-button'
+        'class': 'search-select-categories-button'
     });
     $(this.addButton).appendTo($(this.container));
     

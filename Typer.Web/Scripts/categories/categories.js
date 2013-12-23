@@ -105,6 +105,13 @@ my.categories = my.categories || (function () {
         });
     }
 
+    function getCategory(id) {
+        if (!root) {
+            root = loadRoot();
+        }
+        return flyweight.getItem(id);
+    }
+
     return {
         getRoot: function() {
             if (!root) {
@@ -186,13 +193,45 @@ my.categories = my.categories || (function () {
             flyweight.setItem(category.key, category);
         },
         getCategory: function (id) {
-            if (!root) {
-                root = loadRoot();
-            }
-            return flyweight.getItem(id);
-        }
+            return getCategory(id);
+        },
+        getCategories: function (objects) {
 
-    };
+            if (!objects || !objects.length) return [];
+
+            var categories = [];
+            for (var i = 0; i < objects.length; i++) {
+                var object = objects[i];
+                var id = object.id || object.key || 0;
+                var category = getCategory(id);
+                if (category) {
+                    categories.push(category);
+                }
+            }
+            return categories;
+        },
+        toString: function (categories) {
+                var categoriesString = '';
+                for (var i = 0; i < categories.length; i++) {
+                    var category = categories[i];
+                    categoriesString += (categoriesString ? ' | ' : '');
+                    categoriesString += category.path();
+                }
+                return categoriesString;
+        },
+        toIntArray: function (categories) {
+            var array = [];
+            for (var i = 0; i < categories.length; i++) {
+                var category = categories[i];
+                var descendants = category.getDescendants();
+                for (var j = 0; j < descendants.length; j++) {
+                    var item = descendants[j];
+                    array.push(item.key);
+                }
+            }
+            return array;
+        }
+    }; 
 
 })();
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Transactions;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.TransferObjects;
 
@@ -162,6 +163,44 @@ namespace Typer.DAL.Repositories
         #endregion
 
 
+        public bool Update(int id, string name, int weight, int[] categories)
+        {
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                var result = true;
+                var question = GetQuestion(id);
+                if (question != null)
+                {
+                    try
+                    {
+                        if (name.Length > 0) question.Name = name;
+                        if (weight > 0) question.Weight = weight;
+                        if (categories != null)
+                        {
+                            result = UpdateCategories(id, categories);
+                        }
+
+                        if (result)
+                        {
+                            Context.SaveChanges();
+                            scope.Complete();
+                            return true;
+                        }
+
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                }
+
+                scope.Dispose();
+                return false;
+
+            }
+
+        }
 
 
 

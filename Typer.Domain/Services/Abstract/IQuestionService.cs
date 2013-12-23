@@ -15,6 +15,7 @@ namespace Typer.Domain.Services
         bool NameExists(int id, string name);
         bool UpdateQuestion(Question question);
         bool UpdateCategories(int id, int[] categories);
+        bool Update(int id, string name, int weight, int[] categories);
         bool AddQuestion(Question question);
         IEnumerable<QuestionOption> GetOptions(int questionId);
         IEnumerable<Category> GetCategories(int questionId);

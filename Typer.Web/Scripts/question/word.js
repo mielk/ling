@@ -101,6 +101,21 @@
                 error: 'Error when trying to change the weight of the word ' + e.name,
                 callback: e.callback
             });
+        },
+        update: function (e) {
+            dbOperation({
+                functionName: 'Update',
+                data: {
+                    'id': e.word.id,
+                    'name': e.name,
+                    'weight': e.weight,
+                    'categories': e.categories
+                },
+                traditional: true,
+                success: 'Word ' + e.word.name + ' has been updated',
+                error: 'Error when trying to update the word ' + e.word.name,
+                callback: e.callback
+            });
         }
     };
 
@@ -492,35 +507,35 @@ $(function () {
 
 
 
-function editMetaword(id, wordLine) {
-    var metawordJson = getItem('/Words/GetMetaword', id);
-    var metaword = new Metaword(metawordJson, {
-        blockOtherElements: true,
-        wordLine: wordLine
-    });
-    metaword.displayEditForm();
-}
+//function editMetaword(id, wordLine) {
+//    var metawordJson = getItem('/Words/GetMetaword', id);
+//    var metaword = new Metaword(metawordJson, {
+//        blockOtherElements: true,
+//        wordLine: wordLine
+//    });
+//    metaword.displayEditForm();
+//}
 
-function getItem(methodUrl, itemId) {
-    var item;
+//function getItem(methodUrl, itemId) {
+//    var item;
 
-    $.ajax({
-        url: methodUrl,
-        type: "GET",
-        data: { 'id': itemId },
-        datatype: "json",
-        async: false,
-        cache: false,
-        success: function (result) {
-            item = result;
-        },
-        error: function (msg) {
-            alert(msg.status + " | " + msg.statusText);
-        }
-    });
+//    $.ajax({
+//        url: methodUrl,
+//        type: "GET",
+//        data: { 'id': itemId },
+//        datatype: "json",
+//        async: false,
+//        cache: false,
+//        success: function (result) {
+//            item = result;
+//        },
+//        error: function (msg) {
+//            alert(msg.status + " | " + msg.statusText);
+//        }
+//    });
 
-    return item;
-}
+//    return item;
+//}
 
 
 function getLanguages() {
@@ -553,119 +568,119 @@ function getLanguages() {
 
 }
 
-function Metaword$(data, properties) {
-    var me = this;
-    this.object = data.Object || data.Metaword || data.Word;
-    this.id = this.object.Id || 0;
-    this.name = this.object.Name || '';
-    this.weight = this.object.Weight || 1;
-    this.categories = this.initialCategoryCollection(data.Categories);
-    this.wordLine = properties.wordLine;
+//function Metaword$(data, properties) {
+//    var me = this;
+//    this.object = data.Object || data.Metaword || data.Word;
+//    this.id = this.object.Id || 0;
+//    this.name = this.object.Name || '';
+//    this.weight = this.object.Weight || 1;
+//    this.categories = this.initialCategoryCollection(data.Categories);
+//    this.wordLine = properties.wordLine;
     
-    this.properties = properties || {};
-    this.wordtype = WORDTYPE.getItem(this.object.Type);
+//    this.properties = properties || {};
+//    this.wordtype = WORDTYPE.getItem(this.object.Type);
 
-    this.eventHandler = new EventHandler();
-    this.eventHandler.bind({
-        changeCategory: function (e) {
-            e.word = me;
+//    this.eventHandler = new EventHandler();
+//    this.eventHandler.bind({
+//        changeCategory: function (e) {
+//            e.word = me;
             
-            if (me.checkIfCategoriesChanged(e.items)){
-                e.callback = function (result) {
-                    if (result) {
-                        me.categories.length = 0;
-                        for (var i = 0; i < e.items.length; i++) {
-                            me.categories.push(e.items[i].object);
-                        }
-                        me.trigger({ type: 'refreshCategories' });
-                    }
-                };
-                my.words.updateCategory(e);
-            }
+//            if (me.checkIfCategoriesChanged(e.items)){
+//                e.callback = function (result) {
+//                    if (result) {
+//                        me.categories.length = 0;
+//                        for (var i = 0; i < e.items.length; i++) {
+//                            me.categories.push(e.items[i].object);
+//                        }
+//                        me.trigger({ type: 'refreshCategories' });
+//                    }
+//                };
+//                my.words.updateCategory(e);
+//            }
             
-        },
-        refreshCategories: function () {
-            me.updateCategoriesString();
-            if (me.wordLine) {
-                me.wordLine.updateCategories(me.categoriesString);
-            }
-        }
-    });
+//        },
+//        refreshCategories: function () {
+//            me.updateCategoriesString();
+//            if (me.wordLine) {
+//                me.wordLine.updateCategories(me.categoriesString);
+//            }
+//        }
+//    });
 
-    this.validator = new MetawordValidator(this);
+//    this.validator = new MetawordValidator(this);
 
-    this.view = new MetawordView(this, properties);
+//    this.view = new MetawordView(this, properties);
 
-    this.meta = new MetawordMeta(this);
+//    this.meta = new MetawordMeta(this);
 
-    this.languages = this.createLanguageCollection(data.UserLanguages);
+//    this.languages = this.createLanguageCollection(data.UserLanguages);
 
-    this.buttons = new MetawordButtons(this);
+//    this.buttons = new MetawordButtons(this);
 
-    (function ini() {
-        me.trigger({
-            type: 'refreshCategories'
-        });
-    })();
+//    (function ini() {
+//        me.trigger({
+//            type: 'refreshCategories'
+//        });
+//    })();
 
-}
-Metaword$.prototype.updateCategoriesString = function () {
-    var s = '';
-    for (var i = 0; i < this.categories.length; i++) {
-        var category = this.categories[i];
-        s = s + (s ? ' | ' : '') + category.path();
-    }
-    this.categoriesString = s;
-};
-Metaword$.prototype.initialCategoryCollection = function (collection) {
-    var array = [];
-    for (var i = 0; i < collection.length; i++) {
-        var id = collection[i].Id;
-        var category = my.categories.getCategory(id);
-        array.push(category);
-    }
-    return array;
-};
-Metaword$.prototype.createLanguageCollection = function (languages) {
-    var arr = [];
-    for (var i = 0; i < languages.length; i++) {
-        var languageJson = languages[i];
-        arr[i] = new Language(this, {
-            id: languageJson.Language.Id,
-            name: languageJson.Language.Name,
-            flag: languageJson.Language.Flag,
-            words: languageJson.Words
-        });
-    }
+//}
+//Metaword$.prototype.updateCategoriesString = function () {
+//    var s = '';
+//    for (var i = 0; i < this.categories.length; i++) {
+//        var category = this.categories[i];
+//        s = s + (s ? ' | ' : '') + category.path();
+//    }
+//    this.categoriesString = s;
+//};
+//Metaword$.prototype.initialCategoryCollection = function (collection) {
+//    var array = [];
+//    for (var i = 0; i < collection.length; i++) {
+//        var id = collection[i].Id;
+//        var category = my.categories.getCategory(id);
+//        array.push(category);
+//    }
+//    return array;
+//};
+//Metaword$.prototype.createLanguageCollection = function (languages) {
+//    var arr = [];
+//    for (var i = 0; i < languages.length; i++) {
+//        var languageJson = languages[i];
+//        arr[i] = new Language(this, {
+//            id: languageJson.Language.Id,
+//            name: languageJson.Language.Name,
+//            flag: languageJson.Language.Flag,
+//            words: languageJson.Words
+//        });
+//    }
 
-    return arr;
-};
-Metaword$.prototype.cancel = function () {
-    this.view.destroy();
-};
-Metaword$.prototype.confirm = function () {
-    alert('Confirmed');
-    this.view.destroy();
-};
-Metaword$.prototype.displayEditForm = function () {
-    this.view.display();
-};
-Metaword$.prototype.bind = function (e) {
-    this.eventHandler.bind(e);
-};
-Metaword$.prototype.trigger = function (e) {
-    this.eventHandler.trigger(e);
-};
-Metaword$.prototype.checkIfCategoriesChanged = function (items) {
-    var nodes = [];
-    for (var i = 0; i < this.categories.length; i++) {
-        var category = this.categories[i];
-        nodes.push(category.node);
-    }
+//    return arr;
+//};
+//Metaword$.prototype.cancel = function () {
+//    this.view.destroy();
+//};
+//Metaword$.prototype.confirm = function () {
+//    alert('Confirmed');
+//    this.view.destroy();
+//};
+//Metaword$.prototype.displayEditForm = function () {
+//    this.view.display();
+//};
+//Metaword$.prototype.bind = function (e) {
+//    this.eventHandler.bind(e);
+//};
+//Metaword$.prototype.trigger = function (e) {
+//    this.eventHandler.trigger(e);
+//};
+//Metaword$.prototype.checkIfCategoriesChanged = function (items) {
+//    var nodes = [];
+//    for (var i = 0; i < this.categories.length; i++) {
+//        var category = this.categories[i];
+//        nodes.push(category.node);
+//    }
 
-    return (!my.array.equal(items, nodes));
+//    return (!my.array.equal(items, nodes));
     
-};
+//};
 
 
 //function MetawordView(metaword, properties) {
@@ -977,183 +992,183 @@ LanguageView.prototype.addOption = function(element) {
 
 
 
-function WeightPanel$(maxWeight, weight) {
-    this.minWeight = 1;
-    this.maxWeight = maxWeight;
-    this.value = weight;
+//function WeightPanel$(maxWeight, weight) {
+//    this.minWeight = 1;
+//    this.maxWeight = maxWeight;
+//    this.value = weight;
 
-    this.view = new WeightPanelView(this);
+//    this.view = new WeightPanelView(this);
 
-}
-function WeightPanelView(panel) {
-    var me = this;
-    this.checkedCssClass = "weight-checked";
-    this.panel = panel;
-    this.container = jQuery('<div/>', {
-        id: 'weight-panel',
-        'class': 'weight-panel'
-    });
+//}
+//function WeightPanelView(panel) {
+//    var me = this;
+//    this.checkedCssClass = "weight-checked";
+//    this.panel = panel;
+//    this.container = jQuery('<div/>', {
+//        id: 'weight-panel',
+//        'class': 'weight-panel'
+//    });
 
-    this.iconsContainer = jQuery('<div/>', {
-        'class': 'weight-icons-container'
-    }).bind({
-        'clickIcon': function (e) {
-            $(me.textbox).val(e.weight);
-        }
-    }).appendTo($(this.container));
+//    this.iconsContainer = jQuery('<div/>', {
+//        'class': 'weight-icons-container'
+//    }).bind({
+//        'clickIcon': function (e) {
+//            $(me.textbox).val(e.weight);
+//        }
+//    }).appendTo($(this.container));
 
-    this.icons = jQuery('<div/>', {
-        'class': 'weight-icons'
-    }).bind({
-        'changeValue': function (e) {
-            if (e.weight !== me.value) {
-                me.setValue(e.weight);
-            }
-        },
-        'clickIcon': function (e) {
-            me.setValue(e.weight);
-        }
-    }).appendTo($(this.iconsContainer));
-
-
-    for (var i = this.panel.minWeight - 1; i < this.panel.maxWeight; i++) {
-    // ReSharper disable once UnusedLocals
-        var icon = jQuery('<div/>', {
-            'id': i,
-            'class': 'weight-icon',
-            html: i + 1
-        }).bind({
-            'click': function () {
-                $(me.icons).trigger({
-                    'type': 'clickIcon',
-                    'weight': (this.id * 1 + 1)
-                });
-            }
-        }).appendTo($(this.icons));
-    }
-
-    this.textbox = jQuery('<input/>', {
-        'type': 'text',
-        'class': 'default question-weight-textbox'
-    }).bind({
-        'change': function () {
-            var value = Math.min(Math.max(me.panel.minWeight, $(this).val() * 1), me.panel.maxWeight);
-            $(this).val(value);
-            $(me.icons).trigger({
-                'type': 'changeValue',
-                'weight': value
-            });
-        }
-    }).on({
-        'focus': function () {
-            this.select();
-        }
-    })
-    .val(me.panel.value)
-    .appendTo(jQuery('<span/>').
-        bind({
-            'click': function () {
-                $(me.textbox).focus();
-            }
-        }).appendTo($(me.container)));
+//    this.icons = jQuery('<div/>', {
+//        'class': 'weight-icons'
+//    }).bind({
+//        'changeValue': function (e) {
+//            if (e.weight !== me.value) {
+//                me.setValue(e.weight);
+//            }
+//        },
+//        'clickIcon': function (e) {
+//            me.setValue(e.weight);
+//        }
+//    }).appendTo($(this.iconsContainer));
 
 
-    this.setValue(this.panel.value);
+//    for (var i = this.panel.minWeight - 1; i < this.panel.maxWeight; i++) {
+//    // ReSharper disable once UnusedLocals
+//        var icon = jQuery('<div/>', {
+//            'id': i,
+//            'class': 'weight-icon',
+//            html: i + 1
+//        }).bind({
+//            'click': function () {
+//                $(me.icons).trigger({
+//                    'type': 'clickIcon',
+//                    'weight': (this.id * 1 + 1)
+//                });
+//            }
+//        }).appendTo($(this.icons));
+//    }
 
-}
-WeightPanelView.prototype.setValue = function(value) {
-    var me = this;
-    this.panel.value = value;
-    $(this.icons).find('.weight-icon').each(function() {
-        var $value = $(this).html() * 1;
-        if ($value <= value * 1) {
-            $(this).addClass(me.checkedCssClass);
-        } else {
-            $(this).removeClass(me.checkedCssClass);
-        }
-    });
-    $(this.textbox).val(value);
-    this.panel.weight = value;
-};
-
-//panel
-//editButton
-function CategoryPanel(parent) {
-    this.parent = parent;
-    this.word = this.parent.word;
-    this.view = new CategoryPanelView(this);
-}
-CategoryPanel.prototype.panel = function() {
-    return this.view.span;
-};
-CategoryPanel.prototype.selectCategories = function() {
-    var me = this;
-    var tree = new Tree({
-        'mode': MODE.MULTI,
-        'root': my.categories.getRoot(),
-        'selected': me.parent.word.categories,
-        'blockOtherElements': true,
-        'showSelection': true,
-        'hidden': true
-    });
-
-    tree.reset({ unselect: false, collapse: false });
-    tree.eventHandler.bind({
-        confirm: function(e) {
-            me.parent.word.trigger({
-                'type': 'changeCategory',
-                'items': e.item
-            });
-            tree.destroy();
-        },
-        add: function(e) {
-            my.categories.addNew(e);
-        },
-        remove: function(e) {
-            my.categories.remove(e);
-        },
-        rename: function(e) {
-            my.categories.updateName(e);
-        },
-        transfer: function(e) {
-            my.categories.updateParent(e);
-        }
-    });
-    tree.show();
-};
-
-function CategoryPanelView(parent) {
-    var me = this;
-    this.parent = parent;
-    this.panel = jQuery('<span/>');
-    this.value = jQuery('<div/>', {
-        'class': 'categories'
-    }).appendTo(this.panel);
+//    this.textbox = jQuery('<input/>', {
+//        'type': 'text',
+//        'class': 'default question-weight-textbox'
+//    }).bind({
+//        'change': function () {
+//            var value = Math.min(Math.max(me.panel.minWeight, $(this).val() * 1), me.panel.maxWeight);
+//            $(this).val(value);
+//            $(me.icons).trigger({
+//                'type': 'changeValue',
+//                'weight': value
+//            });
+//        }
+//    }).on({
+//        'focus': function () {
+//            this.select();
+//        }
+//    })
+//    .val(me.panel.value)
+//    .appendTo(jQuery('<span/>').
+//        bind({
+//            'click': function () {
+//                $(me.textbox).focus();
+//            }
+//        }).appendTo($(me.container)));
 
 
-    this.refresh();
+//    this.setValue(this.panel.value);
 
-    this.parent.word.bind({
-        refreshCategories: function () {
-            me.refresh();
-        }
-    });
+//}
+//WeightPanelView.prototype.setValue = function(value) {
+//    var me = this;
+//    this.panel.value = value;
+//    $(this.icons).find('.weight-icon').each(function() {
+//        var $value = $(this).html() * 1;
+//        if ($value <= value * 1) {
+//            $(this).addClass(me.checkedCssClass);
+//        } else {
+//            $(this).removeClass(me.checkedCssClass);
+//        }
+//    });
+//    $(this.textbox).val(value);
+//    this.panel.weight = value;
+//};
+
+//////panel
+////editButton
+//function CategoryPanel(parent) {
+//    this.parent = parent;
+//    this.word = this.parent.word;
+//    this.view = new CategoryPanelView(this);
+//}
+//CategoryPanel.prototype.panel = function() {
+//    return this.view.span;
+//};
+//CategoryPanel.prototype.selectCategories = function() {
+//    var me = this;
+//    var tree = new Tree({
+//        'mode': MODE.MULTI,
+//        'root': my.categories.getRoot(),
+//        'selected': me.parent.word.categories,
+//        'blockOtherElements': true,
+//        'showSelection': true,
+//        'hidden': true
+//    });
+
+//    tree.reset({ unselect: false, collapse: false });
+//    tree.eventHandler.bind({
+//        confirm: function(e) {
+//            me.parent.word.trigger({
+//                'type': 'changeCategory',
+//                'items': e.item
+//            });
+//            tree.destroy();
+//        },
+//        add: function(e) {
+//            my.categories.addNew(e);
+//        },
+//        remove: function(e) {
+//            my.categories.remove(e);
+//        },
+//        rename: function(e) {
+//            my.categories.updateName(e);
+//        },
+//        transfer: function(e) {
+//            my.categories.updateParent(e);
+//        }
+//    });
+//    tree.show();
+//};
+
+//function CategoryPanelView(parent) {
+//    var me = this;
+//    this.parent = parent;
+//    this.panel = jQuery('<span/>');
+//    this.value = jQuery('<div/>', {
+//        'class': 'categories'
+//    }).appendTo(this.panel);
 
 
-    this.editButton = jQuery('<input/>', {
-        'id': 'select-categories',
-        'class': 'expand-button',
-        'type': 'submit',
-        'value': '...'
-    }).on({
-        'click': function () {
-            me.parent.selectCategories();
-        }
-    });
-}
-CategoryPanelView.prototype.refresh = function() {
-    $(this.value).html(this.parent.word.categoriesString);
-};
+//    this.refresh();
+
+//    this.parent.word.bind({
+//        refreshCategories: function () {
+//            me.refresh();
+//        }
+//    });
+
+
+//    this.editButton = jQuery('<input/>', {
+//        'id': 'select-categories',
+//        'class': 'expand-button',
+//        'type': 'submit',
+//        'value': '...'
+//    }).on({
+//        'click': function () {
+//            me.parent.selectCategories();
+//        }
+//    });
+//}
+//CategoryPanelView.prototype.refresh = function() {
+//    $(this.value).html(this.parent.word.categoriesString);
+//};
 
 
 

@@ -122,6 +122,15 @@ namespace Typer.Web.Controllers
 
             [HttpPost]
             [AllowAnonymous]
+            public ActionResult Update(int id, string name, int weight, int[] categories)
+            {
+                var result = _service.Update(id, name, weight, categories);
+                return Json(result);
+            }
+
+
+            [HttpPost]
+            [AllowAnonymous]
             public ActionResult Deactivate(int id)
             {
                 var value = _service.Deactivate(id);

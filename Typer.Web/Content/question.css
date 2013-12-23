@@ -301,7 +301,7 @@ span
     background-image: url('images/gold_star.png');
 }
 
-.question-container .expand-button
+/*.question-container .expand-button
 {
     display: block;
     float: right;
@@ -321,7 +321,7 @@ span
 .question-container .expand-button:focus
 {
     background-color: rgb(255, 242, 181) !important;
-}
+}*/
 
 
 

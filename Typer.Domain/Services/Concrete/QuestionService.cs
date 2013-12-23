@@ -81,6 +81,13 @@ namespace Typer.Domain.Services
             return _repository.UpdateCategories(id, categoriesId);
         }
 
+
+        public bool Update(int id, string name, int weight, int[] categories)
+        {
+            return _repository.Update(id, name, weight, categories);
+        }
+
+
         public bool AddQuestion(Question question)
         {
             var dto = QuestionToDto(question);

@@ -92,6 +92,11 @@ namespace Typer.Domain.Services
             return _repository.UpdateCategories(id, categoriesId);
         }
 
+        public bool Update(int id, string name, int weight, int[] categories)
+        {
+            return _repository.Update(id, name, weight, categories);
+        }
+
         public IEnumerable<Category> GetCategories(int metawordId)
         {
             var dtos = _repository.GetCategories(metawordId);

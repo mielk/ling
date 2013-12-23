@@ -398,7 +398,7 @@ function ListItemView(item) {
     this.name = jQuery('<div/>', { 'class': 'name', html: self.object.name }).appendTo($(this.container));
     this.addWeigthPanel();
     
-    this.categories = jQuery('<div/>', { 'class': 'categories', html: self.object.categoriesToString() }).appendTo($(this.container));
+    this.categories = jQuery('<div/>', { 'class': 'categories', html: my.categories.toString(self.object.categories) }).appendTo($(this.container));
 
     this.edit = jQuery('<div/>', { 'class': 'edit-item' }).
         bind({ click: function () { self.item.edit(); } }).
@@ -413,6 +413,12 @@ function ListItemView(item) {
     this.object.bind({
         activate: function (e) {
             self.activate(e.value);
+        },
+        changeName: function (e) {
+            self.name.html(e.name);
+        },
+        changeCategories: function (e) {
+            self.categories.html(my.categories.toString(e.categories));
         }
     });
 
@@ -432,7 +438,6 @@ ListItemView.prototype.activate = function (value) {
 };
 
 
-
 function WordListItemView(item) {
     ListItemView.call(this, item);
     this.WordListItemView = true;
@@ -441,6 +446,7 @@ function WordListItemView(item) {
     //Add panels specific for this type of objects.
     this.type = jQuery('<div/>', { 'class': 'type', html: self.object.wordtype.symbol }).appendTo($(this.container));
     $(this.categories).before(this.type);
+
 }
 extend(ListItemView, WordListItemView);
 
@@ -448,9 +454,15 @@ extend(ListItemView, WordListItemView);
 function QuestionListItemView(item) {
     ListItemView.call(this, item);
     this.QuestionListItemView = true;
+
+    this.object.bind({
+        update: function (e) {
+
+        }
+    });
+
 }
 extend(ListItemView, QuestionListItemView);
-
 
 
 function Entity(properties) {
@@ -488,6 +500,9 @@ Entity.prototype.loadCategories = function (categories) {
     return array;
 };
 Entity.prototype.setWeight = function(weight) {
+    //Leave the function if weight has not been changed.
+    if (weight === this.weight) return;
+
     var self = this;
     this.weight = Math.max(Math.min(weight, 10), 1);
     var result = this.service.updateWeight({
@@ -528,15 +543,6 @@ Entity.prototype.activate = function (value) {
     }
 
 };
-Entity.prototype.categoriesToString = function () {
-    var categories = '';
-    for (var i = 0; i < this.categories.length; i++) {
-        var category = this.categories[i];
-        categories += (categories ? '; ' : '');
-        categories += category.path();
-    }
-    return categories;
-};
 Entity.prototype.editItem = function () {
     alert('Must be defined by implementing class');
 };
@@ -564,7 +570,9 @@ Entity.prototype.checkName = function (name) {
     }
 
 };
-
+Entity.prototype.update = function (properties) {
+    alert('Must by defined by implementing class');
+};
 
 function Metaword(properties) {
     Entity.call(this, properties);
@@ -575,7 +583,7 @@ function Metaword(properties) {
 extend(Entity, Metaword);
 Metaword.prototype.editItem = function () {
     var self = this;
-    return new QuestionEditEntity({
+    return new WordEditEntity({
         id: self.id,
         name: self.name,
         wordtype: self.wordtype,
@@ -585,7 +593,60 @@ Metaword.prototype.editItem = function () {
         options: self.options
     });
 };
+Metaword.prototype.update = function (properties) {
+    if (!properties.WordEditEntity) {
+        alert('Illegal argument passed to function Metaword.update');
+        return;
+    }
 
+    var self = this;
+    var name = (this.name === properties.name ? '' : properties.name);
+    var weight = (this.weight === properties.weight ? 0 : properties.weight);
+    var categories = (my.array.equal(properties.categories, this.categories) ? [] : properties.categories);
+
+    //Check if there are any changes.
+    if (name || weight || (categories && categories.length)){
+        var result = this.service.update({
+            word: self,
+            name: name,
+            weight: weight,
+            categories: my.categories.toIntArray(categories),
+            callback: function (result) {
+                if (result !== false) {
+
+                    //Name.
+                    if (name) {
+                        self.name = name;
+                        self.trigger({
+                            type: 'changeName',
+                            name: name
+                        });
+                    }
+
+                    //Weight.
+                    if (weight) {
+                        self.weight = weight;
+                        self.trigger({
+                            type: 'changeWeight',
+                            weight: weight
+                        });
+                    }
+
+                    //Categories.
+                    if (categories && categories.length) {
+                        self.categories = categories;
+                        self.trigger({
+                            type: 'changeCategories',
+                            categories: categories
+                        });
+                    }
+
+                }
+            }
+        });
+    }
+    
+};
 
 function Question(properties) {
     Entity.call(this, properties);
@@ -602,6 +663,15 @@ Question.prototype.editItem = function () {
         isActive: self.isActive,
         categories: self.categories
     });
+};
+Question.prototype.update = function (properties) {
+    if (!properties.QuestionEditEntity) {
+        alert('Illegal argument passed to function Metaword.update');
+        return;
+    }
+
+    alert('Updating');
+
 };
 
 
@@ -627,7 +697,14 @@ EditEntity.prototype.setWeight = function (value) {
         weight: value
     });
 };
-
+EditEntity.prototype.setCategories = function (categories) {
+    this.categories = categories;
+    this.trigger({
+        'type': 'changeCategories',
+        'categories': categories
+    });
+}
+ 
 function WordEditEntity(properties) {
     EditEntity.call(this, properties);
     this.WordEditEntity = true;
@@ -702,7 +779,8 @@ function EditPanel(line) {
         return {
             display: function () {
                 $(background).css({
-                    'visibility': 'visible'
+                    'visibility': 'visible',
+                    'z-index': my.ui.addTopLayer()
                 });
             },
             hide: function () {
@@ -803,6 +881,8 @@ EditPanel.prototype.cancel = function () {
     this.ui.destroy();
 };
 EditPanel.prototype.confirm = function () {
+    this.object.update(this.editObject);
+    this.ui.destroy();
 };
 EditPanel.prototype.start = function () {
     this.display();
@@ -811,12 +891,14 @@ EditPanel.prototype.generalRender = function () {
 
     var self = this;
 
+    //[Id]
     this.meta.addLine(new EditDataLine(this, { 
         property: 'id', label: 'ID', value: self.editObject.id,
         callback: function (value) { self.editObject.id = value; },
-        inputCss: { 'width': '60px', 'text-align': 'center', 'border': '1px solid #777' } 
+        inputCss: { 'width': '60px', 'text-align': 'center', 'border': '1px solid #777', 'background-color': 'white' } 
     }));
 
+    //[Name]
     this.meta.addLine(new EditDataLine(this, {
         property: 'name', label: 'Name', value: self.editObject.name,
         callback: function (value) { self.editObject.name = value; },
@@ -826,13 +908,30 @@ EditPanel.prototype.generalRender = function () {
         editable: true
     }));
     
-    var weightPanel = new WeightPanel(null, self.editObject, {
+    //[Weight]
+    var weightPanel = new WeightPanel(this, self.editObject, {
         css: { 'margin': '9px 0', 'height': '16px' }
     });
     this.meta.addLine(new EditDataLine(this, {
         property: 'weight', label: 'Weight', value: self.editObject.weight,
         panel: weightPanel.view()
     }));
+
+    //[Category]
+    var categoryPanel = new CategoryPanel(this, self.editObject);
+    this.meta.addLine(new EditDataLine(this, {
+        property: 'categories', label: 'Categories', value: self.editObject.categories,
+        panel: categoryPanel.view()
+    }));
+    //    var categoryPanel = new CategoryPanel(this);
+    //    this.categories = new DataLine(this, {
+    //        property: 'categories',
+    //        label: 'Categories',
+    //        validation: null,
+    //        editable: false,
+    //        panel: categoryPanel.view.panel,
+    //        right: categoryPanel.view.editButton
+    //    });
 
     this.render();
 };
@@ -897,23 +996,7 @@ QuestionEditPanel.prototype.render = function () {
 //    });
 
 
-//    this.weight = new DataLine(this, {
-//        property: 'weight',
-//        label: 'Weight',
-//        validation: null,
-//        editable: false,
-//        panel: (new WeightPanel(10, me.word.weight)).view.container
-//    });
 
-//    var categoryPanel = new CategoryPanel(this);
-//    this.categories = new DataLine(this, {
-//        property: 'categories',
-//        label: 'Categories',
-//        validation: null,
-//        editable: false,
-//        panel: categoryPanel.view.panel,
-//        right: categoryPanel.view.editButton
-//    });
 
 //    this.relatives = 'to be added';
 
@@ -1200,3 +1283,95 @@ WeightPanel.prototype.view = function(){
     return this.ui.view();
 };
 
+
+function CategoryPanel(line, object, properties) {
+    var self = this;
+    this.CategoryPanel = true;
+    this.line = line;
+    this.object = object || line.object;
+    this.categories = object.categories;
+
+    this.ui = (function () {
+
+        var container = jQuery('<span/>');
+
+        var editButton = jQuery('<input/>', {
+            'id': 'select-categories',
+            'class': 'select-categories-button',
+            'type': 'submit',
+            'value': '...'
+        }).css({
+            'float': 'right'
+        }).on({
+            'click': function () {
+                self.selectCategories();
+            }
+        }).appendTo($(container));
+
+        var value = jQuery('<span/>', {
+            'class': 'selected-categories'
+        }).css({
+            
+        }).appendTo($(container));
+
+
+        return {
+            refresh: function () {
+                $(value).html(my.categories.toString(self.categories));
+            },
+            view: function () {
+                return container;
+            }
+        }
+
+    })();
+
+    this.object.bind({
+        changeCategories: function (e) {
+            self.categories = e.categories;
+            self.refresh();
+        }
+    });
+
+    this.refresh();
+
+}
+CategoryPanel.prototype.selectCategories = function () {
+    var self = this;
+    var tree = new Tree({
+        'mode': MODE.MULTI,
+        'root': my.categories.getRoot(),
+        'selected': self.categories,
+        'blockOtherElements': true,
+        'showSelection': true,
+        'hidden': true
+    });
+
+    tree.reset({ unselect: false, collapse: false });
+    tree.eventHandler.bind({
+        confirm: function (e) {
+            var categories = my.categories.getCategories(e.item);
+            self.object.setCategories(categories);
+            tree.destroy();
+        },
+        add: function (e) {
+            my.categories.addNew(e);
+        },
+        remove: function (e) {
+            my.categories.remove(e);
+        },
+        rename: function (e) {
+            my.categories.updateName(e);
+        },
+        transfer: function (e) {
+            my.categories.updateParent(e);
+        }
+    });
+    tree.show();
+};
+CategoryPanel.prototype.refresh = function () {
+    this.ui.refresh();
+};
+CategoryPanel.prototype.view = function () {
+    return this.ui.view();
+};

@@ -89,7 +89,7 @@ function DropDownView(dropdown, properties) {
     var parent = properties.container;
     $(parent).css({
         'overflow-y': 'visible',
-        'z-index': 1
+        'z-index': my.ui.addTopLayer()
     });
     
     this.container = jQuery('<div/>', {

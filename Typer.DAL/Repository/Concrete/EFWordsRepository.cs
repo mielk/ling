@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Transactions;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.TransferObjects;
 
@@ -173,6 +174,44 @@ namespace Typer.DAL.Repositories
 
         }
 
+        public bool Update(int id, string name, int weight, int[] categories)
+        {
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                var result = true;
+                var metaword = GetMetaword(id);
+                if (metaword != null)
+                {
+                    try
+                    {
+                        if (name.Length > 0) metaword.Name = name;
+                        if (weight > 0) metaword.Weight = weight;
+                        if (categories != null)
+                        {
+                            result = UpdateCategories(id, categories);
+                        }
+
+                        if (result)
+                        {
+                            Context.SaveChanges();                                                                                                                      
+                            scope.Complete();
+                            return true;
+                        }
+
+                    }
+                    catch (Exception)
+                    {
+                        
+                    }
+                }
+
+                scope.Dispose();
+                return false;
+
+            }
+
+        }
 
         public IEnumerable<WordCategoryDto> GetCategories(int metawordId)
         {

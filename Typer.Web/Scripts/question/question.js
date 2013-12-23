@@ -102,6 +102,21 @@
                 error: 'Error when trying to change the weight of the question ' + e.name,
                 callback: e.callback
             });
+        },
+        update: function (e) {
+            dbOperation({
+                functionName: 'Update',
+                data: {
+                    'id': e.question.id,
+                    'name': e.name,
+                    'weight': e.weight,
+                    'categories': e.categories
+                },
+                traditional: true,
+                success: 'Word ' + e.question.name + ' has been updated',
+                error: 'Error when trying to update the word ' + e.question.name,
+                callback: e.callback
+            });
         }
     };
 
@@ -482,36 +497,36 @@ $(function () {
 
 
 
-function editQuestion(id, questionLine) {
-    var questionJson = getQuestion(id);
-    var question = new Question(questionJson, {
-        blockOtherElements: true,
-        questionLine: questionLine
-    });
-    question.displayEditForm();
-}
+//function editQuestion(id, questionLine) {
+//    var questionJson = getQuestion(id);
+//    var question = new Question(questionJson, {
+//        blockOtherElements: true,
+//        questionLine: questionLine
+//    });
+//    question.displayEditForm();
+//}
 
-function getQuestion(questionId) {
-    var question;
+//function getQuestion(questionId) {
+//    var question;
 
-    $.ajax({
-        url: "/Questions/GetQuestion",
-        type: "GET",
-        data: { 'id': questionId },
-        datatype: "json",
-        async: false,
-        cache: false,
-        success: function (result) {
-            question = result;
-        },
-        error: function (msg) {
-            alert(msg.status + " | " + msg.statusText);
-        }
-    });
+//    $.ajax({
+//        url: "/Questions/GetQuestion",
+//        type: "GET",
+//        data: { 'id': questionId },
+//        datatype: "json",
+//        async: false,
+//        cache: false,
+//        success: function (result) {
+//            question = result;
+//        },
+//        error: function (msg) {
+//            alert(msg.status + " | " + msg.statusText);
+//        }
+//    });
 
-    return question;
+//    return question;
 
-}
+//}
 
 function getLanguages() {
     var $languages;
@@ -545,529 +560,529 @@ function getLanguages() {
 
 
 
-function Question$(data, properties) {
-    // ReSharper disable once UnusedLocals
-    var me = this;
-    this.object = data.Object || data.Question;
-    this.id = this.object.Id || 0;
-    this.name = this.object.Name || '';
-    this.weight = this.object.Weight || 1;
-    this.categories = this.initialCategoryCollection(data.Categories);
-    this.properties = properties || {};
-    this.questionLine = properties.questionLine;
-
-    this.eventHandler = new EventHandler();
-    this.eventHandler.bind({
-        changeCategory: function (e) {
-            e.question = me;
-
-            if (me.checkIfCategoriesChanged(e.items)) {
-                e.callback = function (result) {
-                    if (result) {
-                        me.categories.length = 0;
-                        for (var i = 0; i < e.items.length; i++) {
-                            me.categories.push(e.items[i].object);
-                        }
-                        me.trigger({ type: 'refreshCategories' });
-                    }
-                };
-                my.questions.updateCategory(e);
-            }
-
-        },
-        refreshCategories: function () {
-            me.updateCategoriesString();
-            if (me.questionLine) {
-                me.questionLine.updateCategories(me.categoriesString);
-            }
-        }
-    });
-
-    this.validator = new QuestionValidator(this);
-
-    this.view = new QuestionView(this, properties);
-
-    this.meta = new QuestionMeta(this);
-
-    this.languages = this.createLanguageCollection(data.UserLanguages);
-
-    this.buttons = new QuestionButtons(this);
-
-    (function ini() {
-        me.trigger({
-            type: 'refreshCategories'
-        });
-    })();
-
-}
-Question$.prototype.updateCategoriesString = function () {
-    var s = '';
-    for (var i = 0; i < this.categories.length; i++) {
-        var category = this.categories[i];
-        s = s + (s ? ' | ' : '') + category.path();
-    }
-    this.categoriesString = s;
-};
-Question$.prototype.initialCategoryCollection = function (collection) {
-    var array = [];
-    for (var i = 0; i < collection.length; i++) {
-        var id = collection[i].Id;
-        var category = my.categories.getCategory(id);
-        array.push(category);
-    }
-    return array;
-};
-Question$.prototype.createLanguageCollection = function (languages) {
-    var arr = [];
-    for (var i = 0; i < languages.length; i++) {
-        var languageJson = languages[i];
-        arr[i] = new Language(this, {
-            id: languageJson.Language.Id,
-            name: languageJson.Language.Name,
-            flag: languageJson.Language.Flag,
-            options: languageJson.Options
-        });
-    }
-
-    return arr;
-};
-Question$.prototype.cancel = function () {
-    this.view.destroy();
-};
-Question$.prototype.confirm = function () {
-    alert('Confirmed');
-    this.view.destroy();
-};
-Question$.prototype.displayEditForm = function () {
-    this.view.display();
-};
-Question$.prototype.bind = function (e) {
-    this.eventHandler.bind(e);
-};
-Question$.prototype.trigger = function (e) {
-    this.eventHandler.trigger(e);
-};
-Question$.prototype.checkIfCategoriesChanged = function (items) {
-    var nodes = [];
-    for (var i = 0; i < this.categories.length; i++) {
-        var category = this.categories[i];
-        nodes.push(category.node);
-    }
-
-    return (!my.array.equal(items, nodes));
-
-};
-
-
-function QuestionValidator(question) {
-    this.question = question;
-    this.invalid = new HashTable(null);
-}
-QuestionValidator.prototype.validation = function (validation) {
-    if (validation.status) {
-        this.invalid.removeItem(validation.id);
-    } else {
-        this.invalid.setItem(validation.id, validation.id);
-    }
-    this.checkState();
-};
-QuestionValidator.prototype.checkState = function () {
-    if (this.question.buttons) {
-        this.question.buttons.enable(this.invalid.size() === 0);
-    }
-};
-
-
-
-function QuestionView(question, properties) {
-    var me = this;
-    this.question = question;
-    this.blockOtherElements = properties.blockOtherElements;
-
-    this.background = properties.container || jQuery('<div/>', {
-        id: 'question-background',
-        'class': 'question-background'
-    }).css({
-        'display': 'none',
-        'z-index': my.ui.addTopLayer()
-    }).appendTo($(document.body));
-
-    this.frame = jQuery('<div/>', {
-        id: 'question-container-frame',
-        'class': 'question-container-frame'
-    }).css({
-        'display': 'none'
-    }).appendTo($(this.background));
-
-    this.container = jQuery('<div/>', {
-        id: 'question-container',
-        'class': 'question-container'
-    }).appendTo($(this.frame));
-
-    this.quit = jQuery('<div/>', {
-        id: 'question-container-exit',
-        'class': 'question-container-exit'
-    }).bind({
-        'click': function () {
-            me.question.cancel();
-        }
-    }).
-    appendTo($(this.background));
-
-
-    //Place container inside the screen.
-    if (properties.x !== undefined) {
-        $(this.container).css('left', properties.x);
-    }
-    if (properties.y !== undefined) {
-        $(this.container).css('top', properties.y);
-    }
-
-}
-QuestionView.prototype.destroy = function () {
-    $(this.background).empty();
-    if (this.blockOtherElements) {
-        $(this.background).remove();
-    }
-};
-QuestionView.prototype.display = function () {
-    $(this.background).css({
-        'display': 'block'
-    });
-    $(this.frame).css({
-        'display': 'block'
-    });
-
-    this.question.meta.name.focus();
-
-};
-QuestionView.prototype.append = function (element) {
-    $(element).appendTo(this.container);
-};
-
-
-function QuestionMeta(question) {
-    var me = this;
-    this.question = question;
-
-    this.container = jQuery('<div/>', {
-        id: 'question-meta-container',
-        'class': 'question-meta-container'
-    });
-
-    this.question.view.append(this.container);
-
-
-    this.id = new DataLine(this, {
-        property: 'id',
-        label: 'ID',
-        validation: null,
-        editable: false,
-        inputCss: { 'width': '60px', 'text-align': 'center', 'border': '1px solid #777' }
-    });
-
-    this.name = new DataLine(this, {
-        property: 'name',
-        label: 'Name',
-        validation: nameChecker.check,
-        editable: true
-    });
-
-    this.weight = new DataLine(this, {
-        property: 'weight',
-        label: 'Weight',
-        validation: null,
-        editable: false,
-        value: (new WeightPanel(10, me.question.weight)).view.container
-    });
-
-    var categoryPanel = new CategoryPanel(this);
-    this.categories = new DataLine(this, {
-        property: 'categories',
-        label: 'Categories',
-        validation: null,
-        editable: false,
-        value: categoryPanel.view.panel,
-        right: categoryPanel.view.editButton
-    });
-
-    this.relatives = 'to be added';
-
-    this.contrary = 'to be added';
-
-}
-QuestionMeta.prototype.append = function (element) {
-    $(element).appendTo($(this.container));
-};
-
-
-function DataLine(parent, properties) {
-    this.parent = parent;
-    this.question = this.parent.question;
-    this.property = properties.property;
-    this.linked = new HashTable(null);
-    this.validation = properties.validation;
-
-    this.view = new DataLineView(this, properties);
-
-    this.parent.append(this.view.container);
-
-    if (this.validation) {
-        this.validate();
-    }
-
-}
-DataLine.prototype.validate = function () {
-    var me = this;
-    this.verifyLinked();
-
-    var isValid = this.validation({
-        value: me.getValue(),
-        property: me.property,
-        id: me.question.id
-    });
-
-    this.format(isValid === true);
-    if (isValid !== true) {
-        $(this.view.error).text(isValid);
-    }
-
-    this.question.validator.validation({
-        id: me.property,
-        status: (isValid === true ? true : false)
-    });
-
-};
-DataLine.prototype.verifyLinked = function () {
-    this.linked.each(
-        function (key, value) {
-            value.validate();
-        }
-    );
-};
-DataLine.prototype.getValue = function () {
-    return this.view.getValue();
-};
-DataLine.prototype.addLinked = function (line) {
-    this.linked.setItem(line.property, line);
-};
-DataLine.prototype.format = function (value) {
-    this.view.format(value);
-};
-DataLine.prototype.focus = function () {
-    this.view.focus();
-};
-
-
-
-function DataLineView(dataLine, properties) {
-    var me = this;
-    this.dataLine = dataLine;
-
-    this.container = jQuery('<div/>', {
-        'class': 'field-line'
-    });
-
-    this.label = jQuery('<label/>', {
-        'class': 'label',
-        html: properties.label
-    }).appendTo(jQuery('<span/>').css({
-        'display': 'block',
-        'float': 'left'
-    }).appendTo($(this.container)));
-
-    if (this.dataLine.validation) {
-        this.errorContainer = jQuery('<div/>').addClass('error').appendTo($(this.container));
-        this.error = jQuery('<div/>', { 'class': 'error_content' }).appendTo(this.errorContainer);
-        this.errorIcon = jQuery('<span/>', { 'class': 'icon' }).appendTo($(this.container));
-    }
-
-    if (properties.right) {
-        $(properties.right).appendTo(this.container);
-    }
-
-    var $timer;
-    if (properties.value) {
-        this.value = $(properties.value);
-        $(this.value).appendTo($(this.container));
-    } else if (properties.editable) {
-        this.value = jQuery('<input/>', {
-            'class': 'field default',
-            'type': 'text'
-        }).bind({
-            'keydown': function (e) {
-                if (e.which === 13) {
-                    /* Jeżeli to nie jest ustawione, w IE 9 focus przeskakuje od razu
-                        * na przycisk [Select categories] i wywołuje jego kliknięcie. */
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            },
-            'keyup': function () {
-                if ($timer) {
-                    clearTimeout($timer);
-                }
-                $timer = setTimeout(function () {
-                    me.dataLine.validate();
-                }, 150);
-            },
-            'change': function () {
-                me.dataLine.validate();
-            },
-            'mouseup': function (e) {
-                e.preventDefault();
-            },
-            'blur': function () {
-                me.dataLine.validate();
-            }
-        })
-        .on({
-            'focus': function () {
-                this.select();
-            }
-        }).val(me.dataLine.question[properties.property]);
-
-        var span = jQuery('<span/>').
-            bind({
-                'click': function () {
-                    me.value.focus();
-                }
-            }).
-            appendTo($(this.container));
-
-        this.value.appendTo($(span));
-
-    } else {
-        this.value = jQuery('<label/>', {
-            'class': 'value',
-            html: me.dataLine.question[properties.property]
-        }).appendTo($(this.container));
-    }
-
-    if (properties.inputCss) {
-        $(this.value).css(properties.inputCss);
-    }
-
-}
-DataLineView.prototype.format = function (isValid) {
-    if (isValid) {
-        $(this.value).removeClass('invalid').addClass('valid');
-        $(this.errorContainer).css({ 'display': 'none' });
-        $(this.errorIcon).removeClass('iconInvalid').addClass('iconValid');
-    } else {
-        $(this.value).removeClass('valid').addClass('invalid');
-        $(this.errorContainer).css({ 'display': 'table' });
-        $(this.errorIcon).removeClass('iconValid').addClass('iconInvalid');
-    }
-
-};
-DataLineView.prototype.focus = function () {
-    $(this.value).focus();
-};
-DataLineView.prototype.getValue = function () {
-    return $(this.value).val();
-};
-
-
-var nameChecker = (function () {
-    var nameExists = false;
-    function check(params) {
-        var maxLength = 255;
-        var name = params.value;
-        var id = params.id;
-
-        if (!name.trim()) {
-            return MessageBundle.get(dict.NameCannotBeEmpty);
-        } else if (name.length > maxLength) {
-            return MessageBundle.get(dict.NameCannotBeLongerThan, [maxLength]);
-        } else {
-            nameAlreadyExists(name, id);
-
-            if (nameExists) {
-                return MessageBundle.get(dict.NameAlreadyExists);
-            } else {
-                return true;
-            }
-
-        }
-
-    }
-
-    function nameAlreadyExists(name, id) {
-        $.ajax({
-            url: "/Questions/CheckName",
-            type: "GET",
-            data: {
-                'id': id,
-                'name': name
-            },
-            datatype: "json",
-            async: false,
-            cache: false,
-            success: function (result) {
-                nameExists = (result.IsExisting === true);
-            },
-            error: function (msg) {
-                alert("[register.js::nameAlreadyExists] " + msg.status + " | " + msg.statusText);
-            }
-        });
-
-    }
-
-    return {
-        check: function (params) {
-            return check(params);
-        }
-    };
-})();
-
-function QuestionButtons(question) {
-    var me = this;
-    this.question = question;
-
-    this.panel = jQuery('<div/>', {
-        id: 'question-buttons-panel',
-        'class': 'question-buttons-panel'
-    });
-
-    this.question.view.append(this.panel);
-
-    this.container = jQuery('<div/>', {
-        id: 'question-buttons-container',
-        'class': 'question-buttons-container'
-    }).appendTo($(this.panel));
-
-    this.ok = jQuery('<input/>', {
-        id: 'question-button-ok',
-        'class': 'question-button',
-        'type': 'submit',
-        'value': 'OK'
-    }).bind({
-        'click': function () {
-            me.question.confirm();
-        }
-    }).appendTo($(this.container));
-
-    this.cancel = jQuery('<input/>', {
-        id: 'question-button-cancel',
-        'class': 'question-button',
-        'type': 'submit',
-        'value': 'Cancel'
-    }).bind({
-        'click': function () {
-            me.question.cancel();
-        }
-    }).appendTo($(this.container));
-
-
-}
-QuestionButtons.prototype.enable = function (value) {
-    if (value) {
-        $(this.ok).removeAttr('disabled');
-    } else {
-        $(this.ok).attr('disabled', 'disabled');
-    }
-};
+//function Question$(data, properties) {
+//    // ReSharper disable once UnusedLocals
+//    var me = this;
+//    this.object = data.Object || data.Question;
+//    this.id = this.object.Id || 0;
+//    this.name = this.object.Name || '';
+//    this.weight = this.object.Weight || 1;
+//    this.categories = this.initialCategoryCollection(data.Categories);
+//    this.properties = properties || {};
+//    this.questionLine = properties.questionLine;
+
+//    this.eventHandler = new EventHandler();
+//    this.eventHandler.bind({
+//        changeCategory: function (e) {
+//            e.question = me;
+
+//            if (me.checkIfCategoriesChanged(e.items)) {
+//                e.callback = function (result) {
+//                    if (result) {
+//                        me.categories.length = 0;
+//                        for (var i = 0; i < e.items.length; i++) {
+//                            me.categories.push(e.items[i].object);
+//                        }
+//                        me.trigger({ type: 'refreshCategories' });
+//                    }
+//                };
+//                my.questions.updateCategory(e);
+//            }
+
+//        },
+//        refreshCategories: function () {
+//            me.updateCategoriesString();
+//            if (me.questionLine) {
+//                me.questionLine.updateCategories(me.categoriesString);
+//            }
+//        }
+//    });
+
+//    this.validator = new QuestionValidator(this);
+
+//    this.view = new QuestionView(this, properties);
+
+//    this.meta = new QuestionMeta(this);
+
+//    this.languages = this.createLanguageCollection(data.UserLanguages);
+
+//    this.buttons = new QuestionButtons(this);
+
+//    (function ini() {
+//        me.trigger({
+//            type: 'refreshCategories'
+//        });
+//    })();
+
+//}
+//Question$.prototype.updateCategoriesString = function () {
+//    var s = '';
+//    for (var i = 0; i < this.categories.length; i++) {
+//        var category = this.categories[i];
+//        s = s + (s ? ' | ' : '') + category.path();
+//    }
+//    this.categoriesString = s;
+//};
+//Question$.prototype.initialCategoryCollection = function (collection) {
+//    var array = [];
+//    for (var i = 0; i < collection.length; i++) {
+//        var id = collection[i].Id;
+//        var category = my.categories.getCategory(id);
+//        array.push(category);
+//    }
+//    return array;
+//};
+//Question$.prototype.createLanguageCollection = function (languages) {
+//    var arr = [];
+//    for (var i = 0; i < languages.length; i++) {
+//        var languageJson = languages[i];
+//        arr[i] = new Language(this, {
+//            id: languageJson.Language.Id,
+//            name: languageJson.Language.Name,
+//            flag: languageJson.Language.Flag,
+//            options: languageJson.Options
+//        });
+//    }
+
+//    return arr;
+//};
+//Question$.prototype.cancel = function () {
+//    this.view.destroy();
+//};
+//Question$.prototype.confirm = function () {
+//    alert('Confirmed');
+//    this.view.destroy();
+//};
+//Question$.prototype.displayEditForm = function () {
+//    this.view.display();
+//};
+//Question$.prototype.bind = function (e) {
+//    this.eventHandler.bind(e);
+//};
+//Question$.prototype.trigger = function (e) {
+//    this.eventHandler.trigger(e);
+//};
+//Question$.prototype.checkIfCategoriesChanged = function (items) {
+//    var nodes = [];
+//    for (var i = 0; i < this.categories.length; i++) {
+//        var category = this.categories[i];
+//        nodes.push(category.node);
+//    }
+
+//    return (!my.array.equal(items, nodes));
+
+//};
+
+
+//function QuestionValidator(question) {
+//    this.question = question;
+//    this.invalid = new HashTable(null);
+//}
+//QuestionValidator.prototype.validation = function (validation) {
+//    if (validation.status) {
+//        this.invalid.removeItem(validation.id);
+//    } else {
+//        this.invalid.setItem(validation.id, validation.id);
+//    }
+//    this.checkState();
+//};
+//QuestionValidator.prototype.checkState = function () {
+//    if (this.question.buttons) {
+//        this.question.buttons.enable(this.invalid.size() === 0);
+//    }
+//};
+
+
+
+//function QuestionView(question, properties) {
+//    var me = this;
+//    this.question = question;
+//    this.blockOtherElements = properties.blockOtherElements;
+
+//    this.background = properties.container || jQuery('<div/>', {
+//        id: 'question-background',
+//        'class': 'question-background'
+//    }).css({
+//        'display': 'none',
+//        'z-index': my.ui.addTopLayer()
+//    }).appendTo($(document.body));
+
+//    this.frame = jQuery('<div/>', {
+//        id: 'question-container-frame',
+//        'class': 'question-container-frame'
+//    }).css({
+//        'display': 'none'
+//    }).appendTo($(this.background));
+
+//    this.container = jQuery('<div/>', {
+//        id: 'question-container',
+//        'class': 'question-container'
+//    }).appendTo($(this.frame));
+
+//    this.quit = jQuery('<div/>', {
+//        id: 'question-container-exit',
+//        'class': 'question-container-exit'
+//    }).bind({
+//        'click': function () {
+//            me.question.cancel();
+//        }
+//    }).
+//    appendTo($(this.background));
+
+
+//    //Place container inside the screen.
+//    if (properties.x !== undefined) {
+//        $(this.container).css('left', properties.x);
+//    }
+//    if (properties.y !== undefined) {
+//        $(this.container).css('top', properties.y);
+//    }
+
+//}
+//QuestionView.prototype.destroy = function () {
+//    $(this.background).empty();
+//    if (this.blockOtherElements) {
+//        $(this.background).remove();
+//    }
+//};
+//QuestionView.prototype.display = function () {
+//    $(this.background).css({
+//        'display': 'block'
+//    });
+//    $(this.frame).css({
+//        'display': 'block'
+//    });
+
+//    this.question.meta.name.focus();
+
+//};
+//QuestionView.prototype.append = function (element) {
+//    $(element).appendTo(this.container);
+//};
+
+
+//function QuestionMeta(question) {
+//    var me = this;
+//    this.question = question;
+
+//    this.container = jQuery('<div/>', {
+//        id: 'question-meta-container',
+//        'class': 'question-meta-container'
+//    });
+
+//    this.question.view.append(this.container);
+
+
+//    this.id = new DataLine(this, {
+//        property: 'id',
+//        label: 'ID',
+//        validation: null,
+//        editable: false,
+//        inputCss: { 'width': '60px', 'text-align': 'center', 'border': '1px solid #777' }
+//    });
+
+//    this.name = new DataLine(this, {
+//        property: 'name',
+//        label: 'Name',
+//        validation: nameChecker.check,
+//        editable: true
+//    });
+
+//    this.weight = new DataLine(this, {
+//        property: 'weight',
+//        label: 'Weight',
+//        validation: null,
+//        editable: false,
+//        value: (new WeightPanel(10, me.question.weight)).view.container
+//    });
+
+//    var categoryPanel = new CategoryPanel(this);
+//    this.categories = new DataLine(this, {
+//        property: 'categories',
+//        label: 'Categories',
+//        validation: null,
+//        editable: false,
+//        value: categoryPanel.view.panel,
+//        right: categoryPanel.view.editButton
+//    });
+
+//    this.relatives = 'to be added';
+
+//    this.contrary = 'to be added';
+
+//}
+//QuestionMeta.prototype.append = function (element) {
+//    $(element).appendTo($(this.container));
+//};
+
+
+//function DataLine(parent, properties) {
+//    this.parent = parent;
+//    this.question = this.parent.question;
+//    this.property = properties.property;
+//    this.linked = new HashTable(null);
+//    this.validation = properties.validation;
+
+//    this.view = new DataLineView(this, properties);
+
+//    this.parent.append(this.view.container);
+
+//    if (this.validation) {
+//        this.validate();
+//    }
+
+//}
+//DataLine.prototype.validate = function () {
+//    var me = this;
+//    this.verifyLinked();
+
+//    var isValid = this.validation({
+//        value: me.getValue(),
+//        property: me.property,
+//        id: me.question.id
+//    });
+
+//    this.format(isValid === true);
+//    if (isValid !== true) {
+//        $(this.view.error).text(isValid);
+//    }
+
+//    this.question.validator.validation({
+//        id: me.property,
+//        status: (isValid === true ? true : false)
+//    });
+
+//};
+//DataLine.prototype.verifyLinked = function () {
+//    this.linked.each(
+//        function (key, value) {
+//            value.validate();
+//        }
+//    );
+//};
+//DataLine.prototype.getValue = function () {
+//    return this.view.getValue();
+//};
+//DataLine.prototype.addLinked = function (line) {
+//    this.linked.setItem(line.property, line);
+//};
+//DataLine.prototype.format = function (value) {
+//    this.view.format(value);
+//};
+//DataLine.prototype.focus = function () {
+//    this.view.focus();
+//};
+
+
+
+//function DataLineView(dataLine, properties) {
+//    var me = this;
+//    this.dataLine = dataLine;
+
+//    this.container = jQuery('<div/>', {
+//        'class': 'field-line'
+//    });
+
+//    this.label = jQuery('<label/>', {
+//        'class': 'label',
+//        html: properties.label
+//    }).appendTo(jQuery('<span/>').css({
+//        'display': 'block',
+//        'float': 'left'
+//    }).appendTo($(this.container)));
+
+//    if (this.dataLine.validation) {
+//        this.errorContainer = jQuery('<div/>').addClass('error').appendTo($(this.container));
+//        this.error = jQuery('<div/>', { 'class': 'error_content' }).appendTo(this.errorContainer);
+//        this.errorIcon = jQuery('<span/>', { 'class': 'icon' }).appendTo($(this.container));
+//    }
+
+//    if (properties.right) {
+//        $(properties.right).appendTo(this.container);
+//    }
+
+//    var $timer;
+//    if (properties.value) {
+//        this.value = $(properties.value);
+//        $(this.value).appendTo($(this.container));
+//    } else if (properties.editable) {
+//        this.value = jQuery('<input/>', {
+//            'class': 'field default',
+//            'type': 'text'
+//        }).bind({
+//            'keydown': function (e) {
+//                if (e.which === 13) {
+//                    /* Jeżeli to nie jest ustawione, w IE 9 focus przeskakuje od razu
+//                        * na przycisk [Select categories] i wywołuje jego kliknięcie. */
+//                    e.preventDefault();
+//                    e.stopPropagation();
+//                }
+//            },
+//            'keyup': function () {
+//                if ($timer) {
+//                    clearTimeout($timer);
+//                }
+//                $timer = setTimeout(function () {
+//                    me.dataLine.validate();
+//                }, 150);
+//            },
+//            'change': function () {
+//                me.dataLine.validate();
+//            },
+//            'mouseup': function (e) {
+//                e.preventDefault();
+//            },
+//            'blur': function () {
+//                me.dataLine.validate();
+//            }
+//        })
+//        .on({
+//            'focus': function () {
+//                this.select();
+//            }
+//        }).val(me.dataLine.question[properties.property]);
+
+//        var span = jQuery('<span/>').
+//            bind({
+//                'click': function () {
+//                    me.value.focus();
+//                }
+//            }).
+//            appendTo($(this.container));
+
+//        this.value.appendTo($(span));
+
+//    } else {
+//        this.value = jQuery('<label/>', {
+//            'class': 'value',
+//            html: me.dataLine.question[properties.property]
+//        }).appendTo($(this.container));
+//    }
+
+//    if (properties.inputCss) {
+//        $(this.value).css(properties.inputCss);
+//    }
+
+//}
+//DataLineView.prototype.format = function (isValid) {
+//    if (isValid) {
+//        $(this.value).removeClass('invalid').addClass('valid');
+//        $(this.errorContainer).css({ 'display': 'none' });
+//        $(this.errorIcon).removeClass('iconInvalid').addClass('iconValid');
+//    } else {
+//        $(this.value).removeClass('valid').addClass('invalid');
+//        $(this.errorContainer).css({ 'display': 'table' });
+//        $(this.errorIcon).removeClass('iconValid').addClass('iconInvalid');
+//    }
+
+//};
+//DataLineView.prototype.focus = function () {
+//    $(this.value).focus();
+//};
+//DataLineView.prototype.getValue = function () {
+//    return $(this.value).val();
+//};
+
+
+//var nameChecker = (function () {
+//    var nameExists = false;
+//    function check(params) {
+//        var maxLength = 255;
+//        var name = params.value;
+//        var id = params.id;
+
+//        if (!name.trim()) {
+//            return MessageBundle.get(dict.NameCannotBeEmpty);
+//        } else if (name.length > maxLength) {
+//            return MessageBundle.get(dict.NameCannotBeLongerThan, [maxLength]);
+//        } else {
+//            nameAlreadyExists(name, id);
+
+//            if (nameExists) {
+//                return MessageBundle.get(dict.NameAlreadyExists);
+//            } else {
+//                return true;
+//            }
+
+//        }
+
+//    }
+
+//    function nameAlreadyExists(name, id) {
+//        $.ajax({
+//            url: "/Questions/CheckName",
+//            type: "GET",
+//            data: {
+//                'id': id,
+//                'name': name
+//            },
+//            datatype: "json",
+//            async: false,
+//            cache: false,
+//            success: function (result) {
+//                nameExists = (result.IsExisting === true);
+//            },
+//            error: function (msg) {
+//                alert("[register.js::nameAlreadyExists] " + msg.status + " | " + msg.statusText);
+//            }
+//        });
+
+//    }
+
+//    return {
+//        check: function (params) {
+//            return check(params);
+//        }
+//    };
+//})();
+
+//function QuestionButtons(question) {
+//    var me = this;
+//    this.question = question;
+
+//    this.panel = jQuery('<div/>', {
+//        id: 'question-buttons-panel',
+//        'class': 'question-buttons-panel'
+//    });
+
+//    this.question.view.append(this.panel);
+
+//    this.container = jQuery('<div/>', {
+//        id: 'question-buttons-container',
+//        'class': 'question-buttons-container'
+//    }).appendTo($(this.panel));
+
+//    this.ok = jQuery('<input/>', {
+//        id: 'question-button-ok',
+//        'class': 'question-button',
+//        'type': 'submit',
+//        'value': 'OK'
+//    }).bind({
+//        'click': function () {
+//            me.question.confirm();
+//        }
+//    }).appendTo($(this.container));
+
+//    this.cancel = jQuery('<input/>', {
+//        id: 'question-button-cancel',
+//        'class': 'question-button',
+//        'type': 'submit',
+//        'value': 'Cancel'
+//    }).bind({
+//        'click': function () {
+//            me.question.cancel();
+//        }
+//    }).appendTo($(this.container));
+
+
+//}
+//QuestionButtons.prototype.enable = function (value) {
+//    if (value) {
+//        $(this.ok).removeAttr('disabled');
+//    } else {
+//        $(this.ok).attr('disabled', 'disabled');
+//    }
+//};
 
 
 function Language(parent, properties) {
