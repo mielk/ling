@@ -33,6 +33,23 @@ WORDTYPE = {
             }
         }
         return null;
+    },
+    getValues: function (value) {
+        var array = [];
+        for (var key in this) {
+            if (this.hasOwnProperty(key)) {
+                var item = this[key];
+                if (item && item.id) {
+                    var object = {
+                        id: item.id,
+                        name: item.name,
+                        object: item
+                    };
+                    array.push(object);
+                }
+            }
+        }
+        return array;
     }
 };
 

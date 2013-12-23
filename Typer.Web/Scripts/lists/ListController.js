@@ -447,6 +447,12 @@ function WordListItemView(item) {
     this.type = jQuery('<div/>', { 'class': 'type', html: self.object.wordtype.symbol }).appendTo($(this.container));
     $(this.categories).before(this.type);
 
+    this.object.bind({
+        changeWordtype: function (e) {
+            self.type.html(e.wordtype.symbol);
+        }
+    });
+
 }
 extend(ListItemView, WordListItemView);
 
@@ -454,13 +460,6 @@ extend(ListItemView, WordListItemView);
 function QuestionListItemView(item) {
     ListItemView.call(this, item);
     this.QuestionListItemView = true;
-
-    this.object.bind({
-        update: function (e) {
-
-        }
-    });
-
 }
 extend(ListItemView, QuestionListItemView);
 
@@ -603,11 +602,100 @@ Metaword.prototype.update = function (properties) {
     var name = (this.name === properties.name ? '' : properties.name);
     var weight = (this.weight === properties.weight ? 0 : properties.weight);
     var categories = (my.array.equal(properties.categories, this.categories) ? [] : properties.categories);
+    var wordtype = (this.wordtype === properties.wordtype ? 0 : properties.wordtype.id);
 
     //Check if there are any changes.
-    if (name || weight || (categories && categories.length)){
+    if (name || weight || (categories && categories.length) || wordtype){
         var result = this.service.update({
             word: self,
+            name: name,
+            weight: weight,
+            wordtype: wordtype,
+            categories: my.categories.toIntArray(categories),
+            callback: function (result) {
+                if (result !== false) {
+
+                    //Name.
+                    if (name) {
+                        self.name = name;
+                        self.trigger({
+                            type: 'changeName',
+                            name: name
+                        });
+                    }
+
+                    //Wordtype.
+                    if (wordtype) {
+                        self.wordtype = properties.wordtype;
+                        self.trigger({
+                            type: 'changeWordtype',
+                            wordtype: self.wordtype
+                        });
+                    }
+
+                    //Weight.
+                    if (weight) {
+                        self.weight = weight;
+                        self.trigger({
+                            type: 'changeWeight',
+                            weight: weight
+                        });
+                    }
+
+                    //Categories.
+                    if (categories && categories.length) {
+                        self.categories = categories;
+                        self.trigger({
+                            type: 'changeCategories',
+                            categories: categories
+                        });
+                    }
+
+                }
+            }
+        });
+    }
+    
+};
+Metaword.prototype.checkWordtype = function (wordtype) {
+    if (!wordtype || !wordtype.id) {
+        return MessageBundle.get(dict.WordtypeCannotBeEmpty);
+    } else {
+        return true;
+    }
+};
+
+function Question(properties) {
+    Entity.call(this, properties);
+    this.Question = true;
+    this.service = my.questions;
+}
+extend(Entity, Question);
+Question.prototype.editItem = function () {
+    var self = this;
+    return new QuestionEditEntity({
+        id: self.id,
+        name: self.name,
+        weight: self.weight,
+        isActive: self.isActive,
+        categories: self.categories
+    });
+};
+Question.prototype.update = function (properties) {
+    if (!properties.QuestionEditEntity) {
+        alert('Illegal argument passed to function Metaword.update');
+        return;
+    }
+
+    var self = this;
+    var name = (this.name === properties.name ? '' : properties.name);
+    var weight = (this.weight === properties.weight ? 0 : properties.weight);
+    var categories = (my.array.equal(properties.categories, this.categories) ? [] : properties.categories);
+
+    //Check if there are any changes.
+    if (name || weight || (categories && categories.length)) {
+        var result = this.service.update({
+            question: self,
             name: name,
             weight: weight,
             categories: my.categories.toIntArray(categories),
@@ -645,32 +733,6 @@ Metaword.prototype.update = function (properties) {
             }
         });
     }
-    
-};
-
-function Question(properties) {
-    Entity.call(this, properties);
-    this.Question = true;
-    this.service = my.questions;
-}
-extend(Entity, Question);
-Question.prototype.editItem = function () {
-    var self = this;
-    return new QuestionEditEntity({
-        id: self.id,
-        name: self.name,
-        weight: self.weight,
-        isActive: self.isActive,
-        categories: self.categories
-    });
-};
-Question.prototype.update = function (properties) {
-    if (!properties.QuestionEditEntity) {
-        alert('Illegal argument passed to function Metaword.update');
-        return;
-    }
-
-    alert('Updating');
 
 };
 
@@ -700,17 +762,28 @@ EditEntity.prototype.setWeight = function (value) {
 EditEntity.prototype.setCategories = function (categories) {
     this.categories = categories;
     this.trigger({
-        'type': 'changeCategories',
-        'categories': categories
+        type: 'changeCategories',
+        categories: categories
     });
 }
- 
+
 function WordEditEntity(properties) {
     EditEntity.call(this, properties);
     this.WordEditEntity = true;
     this.wordtype = properties.wordtype;
 }
 extend(EditEntity, WordEditEntity);
+WordEditEntity.prototype.setWordtype = function (params) {
+    var wordtype = params.wordtype;
+    var line = params.line;
+
+    this.wordtype = wordtype;
+    this.trigger({
+        type: 'changeWordtype',
+        wordtype: wordtype,
+        line: line
+    });
+};
 
 function QuestionEditEntity(properties) {
     EditEntity.call(this, properties);
@@ -810,6 +883,9 @@ function EditPanel(line) {
             addLine: function (line) {
                 controls.setItem(line.property, line);
                 line.appendTo(container);
+            },
+            getLine: function (key) {
+                return controls.getItem(key);
             }
         };
 
@@ -923,15 +999,6 @@ EditPanel.prototype.generalRender = function () {
         property: 'categories', label: 'Categories', value: self.editObject.categories,
         panel: categoryPanel.view()
     }));
-    //    var categoryPanel = new CategoryPanel(this);
-    //    this.categories = new DataLine(this, {
-    //        property: 'categories',
-    //        label: 'Categories',
-    //        validation: null,
-    //        editable: false,
-    //        panel: categoryPanel.view.panel,
-    //        right: categoryPanel.view.editButton
-    //    });
 
     this.render();
 };
@@ -951,7 +1018,29 @@ function WordEditPanel(line) {
 }
 extend(EditPanel, WordEditPanel);
 WordEditPanel.prototype.render = function () {
-    //alert('Not implemented yet');
+    var self = this;
+    //[Wordtype]
+    var wordtypePanel = new WordtypePanel(this, self.editObject);
+    var wordtypeLine = new EditDataLine(this, {
+        property: 'wordtype', label: 'Type', value: self.editObject.wordtype,
+        panel: wordtypePanel.view(), editable: true, 
+        validation: function (params) {
+            return self.object.checkWordtype(params.value);
+        },
+        binding: {
+            changeWordtype: function (e) {
+                e.line.validate(e.wordtype);
+            }
+        }
+    });
+    wordtypePanel.injectEditLine(wordtypeLine);
+    this.meta.addLine(wordtypeLine);
+    
+
+    //Move wordtype panel before name panel.
+    var nameEditLine = this.meta.getLine('name');
+    $(nameEditLine.view()).before(wordtypeLine.view());
+
 };
 
 
@@ -961,51 +1050,9 @@ function QuestionEditPanel(line) {
 }
 extend(EditPanel, QuestionEditPanel);
 QuestionEditPanel.prototype.render = function () {
-    alert('Not implemented yet');
+    //alert('Not implemented yet');
 };
 
-
- 
-//function MetawordMeta(metaword) {
-//    var me = this;
-//    this.word = metaword;
-
-//    this.container = jQuery('<div/>', {
-//        id: 'question-meta-container',
-//        'class': 'question-meta-container'
-//    });
-
-//    this.word.view.append(this.container);
-
-
-
-
-//    var wordtypePanel = new WordtypePanel(this);
-//    this.type = new DataLine(this, {
-//        property: 'type',
-//        label: 'Type',
-//        validation: null,
-//        editable: true,
-//        panel: wordtypePanel.container,
-//        value: function () {
-//            return wordtypePanel.value;
-//        },
-//        setValue: function () {
-//            wordtypePanel.setValue(me.word.wordtype);
-//        }
-//    });
-
-
-
-
-//    this.relatives = 'to be added';
-
-//    this.contrary = 'to be added';
-
-//}
-//MetawordMeta.prototype.append = function (element) {
-//    $(element).appendTo($(this.container));
-//};
 
    
 function EditDataLine(panel, properties) {
@@ -1136,10 +1183,17 @@ function EditDataLine(panel, properties) {
             },
             appendTo: function (parent) {
                 $(container).appendTo($(parent));
+            },
+            view: function () {
+                return container;
             }
         };
 
     })();
+
+    if (properties.binding) {
+        this.object.bind(properties.binding);
+    }
 
     if (this.validation) this.validate(properties.value);
 
@@ -1187,7 +1241,9 @@ EditDataLine.prototype.addLinked = function (item) {
 EditDataLine.prototype.appendTo = function (parent) {
     this.ui.appendTo(parent);
 };
-
+EditDataLine.prototype.view = function () {
+    return this.ui.view();
+};
 
 
 
@@ -1374,4 +1430,66 @@ CategoryPanel.prototype.refresh = function () {
 };
 CategoryPanel.prototype.view = function () {
     return this.ui.view();
+};
+
+function WordtypePanel(line, object, properties) {
+    var self = this;
+    this.WordtypePanel = true;
+    this.line = line;
+    this.object = object || line.object;
+    this.value = this.object.wordtype;
+
+    this.ui = (function () {
+        var container = jQuery('<div/>', {
+            'class': 'wordtype-dropdown-container'
+        });
+
+        var dropdown = new DropDown({            
+            container: container,
+            data: WORDTYPE.getValues(),
+            slots: 4,
+            caseSensitive: false,
+            confirmWithFirstClick: true
+        });
+
+        if (self.value) {
+            dropdown.trigger({
+                type: 'select',
+                object: self.value
+            });
+        }
+
+        dropdown.bind({
+            select: function (e) {
+                self.object.setWordtype({
+                    wordtype: e.object,
+                    line: self.line
+                });
+            },
+            change: function (e) {
+                if (!e.value) {
+                    self.object.setWordtype({
+                        wordtype: null,
+                        line: self.line
+                    });
+                }
+            }
+        });
+
+
+        return {
+            view: function () {
+                return container;
+            }
+        }
+
+    })();
+
+}
+WordtypePanel.prototype.view = function () {
+    return this.ui.view();
+};
+WordtypePanel.prototype.injectEditLine = function (editLine) {
+    this.line = editLine;
+    this.line.value = this.value;
 };

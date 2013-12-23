@@ -92,6 +92,10 @@ var dict = dict || {
     NodeCannotBeMovedToItself: {
         POL: 'Element nie może być przeniesiony do samego siebie',
         ENG: 'Node cannot be moved into itself'
+    },
+    WordtypeCannotBeEmpty: {
+        POL: 'Część mowy nie może być pusta',
+        ENG: 'Wordtype cannot be empty'
     }
     
 };

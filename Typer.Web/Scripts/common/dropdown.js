@@ -164,6 +164,12 @@ function DropDownFilter(dropdown) {
         },
         click: function() {
             me.dropdown.render.activate();
+        },
+        blur: function (e) {
+            me.dropdown.trigger({
+                type: 'change',
+                value: e.currentTarget.value
+            });
         }
     });
 

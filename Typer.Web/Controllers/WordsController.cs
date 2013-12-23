@@ -122,9 +122,9 @@ namespace Typer.Web.Controllers
 
             [HttpPost]
             [AllowAnonymous]
-            public ActionResult Update(int id, string name, int weight, int[] categories)
+            public ActionResult Update(int id, string name, int wordtype, int weight, int[] categories)
             {
-                var result = _service.Update(id, name, weight, categories);
+                var result = _service.Update(id, name, wordtype, weight, categories);
                 return Json(result);
             }
 

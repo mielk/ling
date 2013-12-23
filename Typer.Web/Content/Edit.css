@@ -108,7 +108,13 @@ input.edit-button:focus
 }
 
 
-
+.wordtype-dropdown-container {
+    display: block;
+    position: relative;
+    float: left;
+    width: 200px;
+    height: 32px;
+}
 
 
 div {

@@ -174,7 +174,7 @@ namespace Typer.DAL.Repositories
 
         }
 
-        public bool Update(int id, string name, int weight, int[] categories)
+        public bool Update(int id, string name, int wordtype, int weight, int[] categories)
         {
 
             using (TransactionScope scope = new TransactionScope())
@@ -187,6 +187,7 @@ namespace Typer.DAL.Repositories
                     {
                         if (name.Length > 0) metaword.Name = name;
                         if (weight > 0) metaword.Weight = weight;
+                        if (wordtype > 0) metaword.Type = wordtype;
                         if (categories != null)
                         {
                             result = UpdateCategories(id, categories);
