@@ -207,7 +207,7 @@ function WordTypeFilter(manager) {
 
 }
 WordTypeFilter.prototype.refresh = function() {
-    
+    this.value = this.value || 0;
 };
 
 function WeightFilter(manager) {

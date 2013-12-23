@@ -540,6 +540,31 @@ Entity.prototype.categoriesToString = function () {
 Entity.prototype.editItem = function () {
     alert('Must be defined by implementing class');
 };
+Entity.prototype.getProperty = function (key) {
+    if (this.hasOwnProperty(key)) {
+        return this[key];
+    }
+    return null;
+};
+Entity.prototype.checkName = function (name) {
+    var maxLength = 255;
+
+    if (!name.trim()) {
+        return MessageBundle.get(dict.NameCannotBeEmpty);
+    } else if (name.length > maxLength) {
+        return MessageBundle.get(dict.NameCannotBeLongerThan, [maxLength]);
+    } else {
+        var nameExists = this.service.nameAlreadyExists(this.id, name);
+        if (nameExists) {
+            return MessageBundle.get(dict.NameAlreadyExists);
+        } else {
+            return true;
+        }
+
+    }
+
+};
+
 
 function Metaword(properties) {
     Entity.call(this, properties);
@@ -549,14 +574,16 @@ function Metaword(properties) {
 }
 extend(Entity, Metaword);
 Metaword.prototype.editItem = function () {
-    return {
-        id: this.id,
-        name: this.name,
-        wordtype: this.wordtype,
-        isActive: this.isActive,
-        categories: this.categories,
-        words: this.words
-    }
+    var self = this;
+    return new QuestionEditEntity({
+        id: self.id,
+        name: self.name,
+        wordtype: self.wordtype,
+        weight: self.weight,
+        isActive: self.isActive,
+        categories: self.categories,
+        options: self.options
+    });
 };
 
 
@@ -567,31 +594,550 @@ function Question(properties) {
 }
 extend(Entity, Question);
 Question.prototype.editItem = function () {
-    return {
-        id: this.id,
-        name: this.name,
-        wordtype: this.wordtype,
-        isActive: this.isActive,
-        categories: this.categories,
-        options: this.options
-    }
+    var self = this;
+    return new QuestionEditEntity({
+        id: self.id,
+        name: self.name,
+        weight: self.weight,
+        isActive: self.isActive,
+        categories: self.categories
+    });
 };
 
-function WeightPanel(line) {
+
+function EditEntity(properties) {
+    this.EditEntity = true;
+    this.id = properties.id;
+    this.name = properties.name;
+    this.weight = properties.weight;
+    this.isActive = properties.isActive;
+    this.categories = properties.categories;
+    this.eventHandler = new EventHandler();
+}
+EditEntity.prototype.bind = function (e) {
+    this.eventHandler.bind(e);
+};
+EditEntity.prototype.trigger = function (e) {
+    this.eventHandler.trigger(e);
+};
+EditEntity.prototype.setWeight = function (value) {
+    this.weight = value;
+    this.trigger({
+        type: 'changeWeight',
+        weight: value
+    });
+};
+
+function WordEditEntity(properties) {
+    EditEntity.call(this, properties);
+    this.WordEditEntity = true;
+    this.wordtype = properties.wordtype;
+}
+extend(EditEntity, WordEditEntity);
+
+function QuestionEditEntity(properties) {
+    EditEntity.call(this, properties);
+    this.QuestionEditEntity = true;
+}
+extend(EditEntity, QuestionEditEntity);
+
+
+/*
+ * Class:           EditPanel
+ * Description:     Responsible for displaying properties of the 
+ *                  given object in a separate modal window.
+ * Parameters:      
+ *  ListItem item   List item that the object edited is assigned to.
+ */
+function EditPanel(line) {
+    this.EditPanel = true;
+    var self = this;
+    this.line = line;
+    this.object = line.object;
+    this.editObject = this.object.editItem();
+
+    this.validator = (function () {
+        var invalid = new HashTable(null);
+
+        return {
+            validation: function (e) {
+                if (e.status) {
+                    invalid.removeItem(e.id);
+                } else {
+                    invalid.setItem(e.id, e.id);
+                }
+
+                self.object.trigger({
+                    type: 'validation',
+                    status: invalid.size() === 0
+                });
+
+            }
+        };
+
+    })();
+
+    this.ui = (function () {
+        var background = jQuery('<div/>', {
+            'class': 'edit-background',
+            'z-index': my.ui.addTopLayer()
+        }).appendTo($(document.body));
+
+        var frame = jQuery('<div/>', {
+            'class': 'edit-frame'
+        }).appendTo($(background));
+
+        var container = jQuery('<div/>', {
+            'class': 'edit-container'
+        }).appendTo($(frame));
+
+        var close = jQuery('<div/>', {
+            'class': 'edit-close'
+        }).bind({
+            'click': function () {
+                self.cancel();
+            }
+        }).appendTo($(frame));
+
+        return {
+            display: function () {
+                $(background).css({
+                    'visibility': 'visible'
+                });
+            },
+            hide: function () {
+                $(background).css({
+                    'visibility': 'hidden'
+                });
+            },
+            destroy: function () {
+                $(background).remove();
+            },
+            append: function (element) {
+                $(element).appendTo($(container));
+            }
+        }
+
+    })();
+
+    this.meta = (function () {
+        var controls = new HashTable(null);
+
+        var container = jQuery('<div/>', {
+            id: 'meta-container'
+        });
+        self.ui.append($(container));
+
+        return {
+            addLine: function (line) {
+                controls.setItem(line.property, line);
+                line.appendTo(container);
+            }
+        };
+
+    })();
+
+    this.languages = (function () {
+        var container = jQuery('<div/>', {
+            id: 'languages-container'
+        });
+        self.ui.append($(container));
+
+        return {
+            append: function (element) {
+                $(element).appendTo($(container));
+            }
+        };
+    })();
+
+    this.buttons = (function () {
+        var panel = jQuery('<div/>', {
+            'class': 'edit-buttons-panel'
+        });
+
+        var container = jQuery('<div/>', {
+            'class': 'edit-buttons-container'
+        }).appendTo($(panel));
+
+        var ok = jQuery('<input/>', {
+            'class': 'edit-button',
+            'type': 'submit',
+            'value': 'OK'
+        }).bind({
+            'click': function () {
+                self.confirm();
+            }
+        }).appendTo($(container));
+
+        var cancel = jQuery('<input/>', {
+            'class': 'edit-button',
+            'type': 'submit',
+            'value': 'Cancel'
+        }).bind({
+            'click': function () {
+                self.cancel();
+            }
+        }).appendTo($(container));
+
+        self.ui.append(panel);
+
+        self.object.bind({
+            validation: function (e) {
+                if (e.status) {
+                    $(ok).removeAttr('disabled');
+                } else {
+                    $(ok).attr('disabled', 'disabled');
+                }
+            }
+        });
+
+    })();
+
+    this.generalRender();
+
+}
+EditPanel.prototype.display = function () {
+    this.ui.display();
+};
+EditPanel.prototype.cancel = function () {
+    this.ui.destroy();
+};
+EditPanel.prototype.confirm = function () {
+};
+EditPanel.prototype.start = function () {
+    this.display();
+};
+EditPanel.prototype.generalRender = function () {
+
+    var self = this;
+
+    this.meta.addLine(new EditDataLine(this, { 
+        property: 'id', label: 'ID', value: self.editObject.id,
+        callback: function (value) { self.editObject.id = value; },
+        inputCss: { 'width': '60px', 'text-align': 'center', 'border': '1px solid #777' } 
+    }));
+
+    this.meta.addLine(new EditDataLine(this, {
+        property: 'name', label: 'Name', value: self.editObject.name,
+        callback: function (value) { self.editObject.name = value; },
+        validation: function (params) {
+            return self.object.checkName(params.value);
+        },
+        editable: true
+    }));
+    
+    var weightPanel = new WeightPanel(null, self.editObject, {
+        css: { 'margin': '9px 0', 'height': '16px' }
+    });
+    this.meta.addLine(new EditDataLine(this, {
+        property: 'weight', label: 'Weight', value: self.editObject.weight,
+        panel: weightPanel.view()
+    }));
+
+    this.render();
+};
+EditPanel.prototype.render = function () {
+    alert('Must be defined by implementing class');
+};
+EditPanel.prototype.getProperty = function (key) {
+    if (this.editPanel.hasOwnProperty(key)) {
+        return this.editPanel[key];
+    }
+    return null;
+};
+
+function WordEditPanel(line) {
+    EditPanel.call(this, line);
+    this.WordEditPanel = true;
+}
+extend(EditPanel, WordEditPanel);
+WordEditPanel.prototype.render = function () {
+    //alert('Not implemented yet');
+};
+
+
+function QuestionEditPanel(line) {
+    EditPanel.call(this, line);
+    this.QuestionEditPanel = true;
+}
+extend(EditPanel, QuestionEditPanel);
+QuestionEditPanel.prototype.render = function () {
+    alert('Not implemented yet');
+};
+
+
+ 
+//function MetawordMeta(metaword) {
+//    var me = this;
+//    this.word = metaword;
+
+//    this.container = jQuery('<div/>', {
+//        id: 'question-meta-container',
+//        'class': 'question-meta-container'
+//    });
+
+//    this.word.view.append(this.container);
+
+
+
+
+//    var wordtypePanel = new WordtypePanel(this);
+//    this.type = new DataLine(this, {
+//        property: 'type',
+//        label: 'Type',
+//        validation: null,
+//        editable: true,
+//        panel: wordtypePanel.container,
+//        value: function () {
+//            return wordtypePanel.value;
+//        },
+//        setValue: function () {
+//            wordtypePanel.setValue(me.word.wordtype);
+//        }
+//    });
+
+
+//    this.weight = new DataLine(this, {
+//        property: 'weight',
+//        label: 'Weight',
+//        validation: null,
+//        editable: false,
+//        panel: (new WeightPanel(10, me.word.weight)).view.container
+//    });
+
+//    var categoryPanel = new CategoryPanel(this);
+//    this.categories = new DataLine(this, {
+//        property: 'categories',
+//        label: 'Categories',
+//        validation: null,
+//        editable: false,
+//        panel: categoryPanel.view.panel,
+//        right: categoryPanel.view.editButton
+//    });
+
+//    this.relatives = 'to be added';
+
+//    this.contrary = 'to be added';
+
+//}
+//MetawordMeta.prototype.append = function (element) {
+//    $(element).appendTo($(this.container));
+//};
+
+   
+function EditDataLine(panel, properties) {
+    this.EditDataLine = true;
+    var self = this;
+    this.panel = panel;
+    this.object = panel.editObject;
+    this.property = properties.property;
+    this.linked = new HashTable(null);
+    this.validation = properties.validation;
+    this.callback = properties.callback;
+
+    this.ui = (function () {
+        var timer;
+        var panel;
+
+        var container = jQuery('<div/>', {
+            'class': 'field-line'
+        });
+
+        var label = jQuery('<label/>', {
+            'class': 'label',
+            html: properties.label
+        }).appendTo(jQuery('<span/>').css({
+            'display': 'block',
+            'float': 'left'
+        }).appendTo($(container)));
+
+        //Append error panels if this property is validatable.
+        if (self.validation) {
+            var errorContainer = jQuery('<div/>').addClass('error').appendTo($(container));
+            var error = jQuery('<div/>', { 'class': 'error_content' }).appendTo(errorContainer);
+            var errorIcon = jQuery('<span/>', { 'class': 'icon' }).appendTo($(container));
+        }
+
+        //Append right panel if is defined.
+        if (properties.right) {
+            $(properties.right).appendTo($(container));
+        }
+
+
+        if (properties.panel) {
+            panel = $(properties.panel);
+            $(panel).appendTo($(container));
+        } else if (properties.editable) {
+            panel = jQuery('<input/>', {
+                'class': 'field default',
+                'type': 'text'
+            }).bind({
+                'keydown': function (e) {
+                    if (e.which === 13) {
+                        /* Jeżeli to nie jest ustawione, w IE 9 focus przeskakuje od razu
+                         * na przycisk [Select categories] i wywołuje jego kliknięcie. */
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                },
+                'keyup': function () {
+                    var field = this;
+                    if (timer) {
+                        clearTimeout(timer);
+                    }
+                    timer = setTimeout(function () {
+                        self.validate($(field).val());
+                    }, 150);
+                },
+                'change': function () {
+                    self.validate($(this).val());
+                },
+                'mouseup': function (e) {
+                    e.preventDefault();
+                },
+                'blur': function () {
+                    self.validate($(this).val());
+                }
+            }).on({
+                'focus': function () {
+                    this.select();
+                }
+            });
+
+            $(panel).val(properties.value);
+
+            //Append panel to span to center it vertically.
+            var span = jQuery('<span/>').
+            bind({
+                'click': function () {
+                    $(panel).focus();
+                }
+            }).appendTo($(container));
+
+            panel.appendTo($(span));
+
+        } else {
+            panel = jQuery('<label/>', {
+                'class': 'value',
+                html: properties.value
+            }).appendTo($(container));
+        }
+
+        if (properties.inputCss) {
+            $(panel).css(properties.inputCss);
+        }
+
+        function format(value) {
+            if (value === true) {
+                $(panel).removeClass('invalid').addClass('valid');
+                $(errorContainer).css({ 'display': 'none' });
+                $(errorIcon).removeClass('iconInvalid').addClass('iconValid');
+            } else {
+                $(panel).removeClass('valid').addClass('invalid');
+                $(errorContainer).css({ 'display': 'table' });
+                $(errorIcon).removeClass('iconValid').addClass('iconInvalid');
+                $(error).text(value);
+            }
+        }
+
+
+        return {
+            focus: function () {
+                $(panel).focus();
+            },
+            value: function(){
+                return $(panel).val();
+            },
+            format: function (value) {
+                format(value);
+            },
+            appendTo: function (parent) {
+                $(container).appendTo($(parent));
+            }
+        };
+
+    })();
+
+    if (this.validation) this.validate(properties.value);
+
+}
+EditDataLine.prototype.focus = function () {
+    this.ui.focus();
+};
+EditDataLine.prototype.validate = function (value) {
+    //There is no point to validate value if it hadn't changed.
+    if (!this.validation || value === this.value) return;
+
+    var self = this;
+    this.value = value;
+    this.verifyLinked();
+
+    //Assign value to EditObject.
+    if (this.callback && typeof (this.callback) === 'function') {
+        this.callback(value);
+    }
+
+    var validationResult = this.validation({
+        value: self.value,
+        property: self.property,
+        id: self.object.id
+    });
+
+    this.ui.format(validationResult);
+
+    this.panel.validator.validation({
+        id: self.property,
+        status: (validationResult === true ? true : false)
+    });
+
+};
+EditDataLine.prototype.verifyLinked = function () {
+    this.linked.each(
+        function (key, value) {
+            value.validate();
+        }
+    );
+};
+EditDataLine.prototype.addLinked = function (item) {
+    this.linked.setItem(item.property, item);
+};
+EditDataLine.prototype.appendTo = function (parent) {
+    this.ui.appendTo(parent);
+};
+
+
+
+
+function WeightPanel(line, object, properties) {
     this.WeightPanel = true;
     var self = this;
     this.maxWeight = 10;
     this.line = line;
-    this.object = this.line.object;
-    
-    this.ui = (function() {
-        var container = jQuery('<div/>', { 'class': 'weight' });
+    this.object = object || this.line.object;
+
+    this.ui = (function () {
+        var container = jQuery('<div/>').css({
+            'display': 'table-cell',
+            'position': 'relative',
+            'height': '100%',
+            'float': 'left',
+            '-moz-box-sizing': 'box-border',
+            '-webkit-box-sizing': 'box-border',
+            'box-sizing': 'box-border',
+            'width': '210px',
+            'margin': '0 18px'
+        });
+
+        if (properties && properties.css) {
+            $(container).css(properties.css);
+        }
+
         var icons = [];
         for (var i = 0; i < self.maxWeight; i++) {
             var $icon = icon(i);
             icons[i] = $icon;
         }
-        
+
         function icon($index) {
             var index = $index;
             var dom = jQuery('<a/>', {
@@ -603,8 +1149,8 @@ function WeightPanel(line) {
             });
             $(dom).appendTo($(container));
 
-            return {                
-                activate: function(value) {
+            return {
+                activate: function (value) {
                     if (value) {
                         $(dom).addClass('checked');
                     } else {
@@ -629,11 +1175,11 @@ function WeightPanel(line) {
             refresh(self.object.weight || 1);
         })();
 
-        return {            
-            refresh: function(value) {
+        return {
+            refresh: function (value) {
                 refresh(value);
             },
-            view: function() {
+            view: function () {
                 return container;
             }
         };
@@ -647,74 +1193,10 @@ function WeightPanel(line) {
     });
 
 }
-WeightPanel.prototype.appendTo = function(parent) {
+WeightPanel.prototype.appendTo = function (parent) {
     $(this.ui.view()).appendTo($(parent));
 };
-
-
-
-/*
- * Class:           EditPanel
- * Description:     Responsible for displaying properties of the 
- *                  given object in a separate modal window.
- * Parameters:      
- *  ListItem item   List ite
- m that the object edited is assigned to.
- */
-function EditPanel(line) {
-    this.EditPanel = true;
-    var self = this;
-    this.line = line;
-    this.object = line.object;
-    this.editObject = this.object.editItem();
-
-    this.ui = (function () {
-        var background = jQuery('<div/>', {
-            'class': 'edit-background',
-            'z-index': my.ui.addTopLayer()
-        }).appendTo($(document.body));
-
-        var container = jQuery('<div/>', {
-            'class': 'edit-panel'
-        }).appendTo($(background));
-
-        return {
-            display: function () {
-                $(background).css({
-                    'visibility': 'visible'
-                });
-            },
-            hide: function () {
-                $(background).css({
-                    'visibility': 'hidden'
-                });
-            },
-            destroy: function () {
-                $(background).remove();
-            }
-        }
-
-    })();
-
-}
-EditPanel.prototype.display = function () {
-    this.ui.display();
-};
-EditPanel.prototype.cancel = function () {
-    this.ui.destroy();
-};
-EditPanel.prototype.confirm = function () {
+WeightPanel.prototype.view = function(){
+    return this.ui.view();
 };
 
-function WordEditPanel(word) {
-    EditPanel.call(this, word);
-    this.WordEditPanel = true;
-}
-extend(EditPanel, WordEditPanel);
-
-
-function QuestionEditPanel(question) {
-    EditPanel.call(this, question);
-    this.QuestionEditPanel = true;
-}
-extend(EditPanel, QuestionEditPanel);

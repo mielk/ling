@@ -3,6 +3,113 @@
     display: block;
 }
 
+a {
+    cursor: pointer;
+}
+
+.edit-background {
+    position: fixed;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #646464;
+    background-color: rgba(100, 100, 100, 0.85);
+    overflow-y: auto;
+}
+
+.edit-frame
+{
+    position: absolute;
+    display: block;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 90%;
+    height: auto;
+    top: 50px;
+    left: 5%;
+    margin: 0;
+    padding: 0;
+    padding-bottom: 20px;
+    background-color: transparent;
+}
+
+.edit-container
+{
+    position: relative;
+    display: block;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: 12px;
+    border: 3px solid #999;
+    background-color: #eee;
+}
+
+.edit-close
+{
+    display: block !important;
+    position: absolute !important;
+    top: -41px !important;
+    right: -41px !important;
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background-image: url('images/close.png') !important;
+    background-position: center;
+    background-color: transparent !important;
+}
+
+
+
+.edit-buttons-panel
+{
+    display: block;
+    float: left;
+    width: 100%;
+    height: auto;
+    padding-top: 12px;
+}
+
+.edit-buttons-container
+{
+    display: block;
+    float: none !important;
+    width: 180px;
+    height: auto;
+    margin: 0 auto;
+}
+
+input.edit-button
+{
+    display: block !important;
+    float: left !important;
+    width: 46% !important;
+    height: 30px !important;
+    padding: 6px !important;
+    text-align: center !important;
+    line-height: 16px !important;
+    font-weight: bold !important;
+    border: 1px solid #777 !important;
+    margin: 0 2% !important;
+    background-color: #ddd !important;
+    color: #444 !important;
+}
+
+input.edit-button:focus
+{
+    background-color: rgb(255, 242, 181) !important;
+}
+
+
+
+
 
 div {
     outline-style: none !important;
@@ -75,12 +182,21 @@ input[type=submit].centered
     display: none;
 }
 
+
+
+
+
+
+
+
 .error
 {
     display: table;
     vertical-align: middle;
     float: right;
     height: 34px;
+    width: 200px;
+    margin-left: 9px;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -95,6 +211,31 @@ input[type=submit].centered
     text-align: center;
     font-size: 13px;
 }
+
+.icon
+{
+    float: right;
+    width: 32px;
+    height: 32px;
+    margin-left: 9px;
+    border: 1px solid transparent;
+}
+
+.iconValid
+{
+    background-image: url('images/icon_valid.png');
+    background-position: center;
+    /*background-color: green;*/
+}
+
+.iconInvalid
+{
+    background-image: url('images/icon_invalid.png');
+    background-position: center;
+    /*background-color: red;*/
+}
+
+
 
 .centerize
 {
@@ -115,31 +256,6 @@ input[type=submit].centered
 {
     margin-top: 48px;
 }
-
-
-
-.edit-background {
-    position: fixed;
-    display: block;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #646464;
-    background-color: rgba(100, 100, 100, 0.85);
-    overflow-y: auto;
-}
-
-.edit-panel
-{
-    display: block;
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    padding: 12px 0;
-    background-color: red;
-}
-
 
 
 
@@ -321,42 +437,8 @@ div.pager a.selected {
 
 
 
-
-
-.edit-panel .icon
-{
-    float: right;
-    width: 32px;
-    height: 32px;
-    margin-left: 9px;
-    border: 1px solid transparent;
-}
-
-.iconValid
-{
-    background-image: url('images/icon_valid.png');
-    background-position: center;
-    /*background-color: green;*/
-}
-
-.iconInvalid
-{
-    background-image: url('images/icon_invalid.png');
-    background-position: center;
-    /*background-color: red;*/
-}
-
-.edit-panel .error
-{
-    width: 200px;
-    margin-left: 9px;
-    /*margin-right: -218px;*/
-}
-
-
-
-
-#weight-panel
+/*/* Weight panel */
+/*#weight-panel
 {
     display: table;
     height: 34px;
@@ -370,7 +452,7 @@ div.pager a.selected {
     vertical-align: middle;
 }
 
-/*#weight-panel div*/
+/*#weight-panel div
 .weight-icon
 {
     display: table-cell;
@@ -391,7 +473,7 @@ div.pager a.selected {
 .weight-checked
 {
     background-image: url('images/gold_star.png');
-}
+}*/
 
 .edit-item
 {
@@ -417,6 +499,13 @@ div.pager a.selected {
     border: 1px solid rgb(189, 133, 0);
 }
 
+
+
+
+
+
+
+/* Search panel */
 .filter-container {
     display: block;
     position: relative;
@@ -496,8 +585,6 @@ div.pager a.selected {
     background-color: rgb(238, 238, 238);
     padding: 6px;
 }
-
-
 
 .search-button {
     display: table-cell;
@@ -649,7 +736,6 @@ div.pager {
     margin: 12px 0;
 }
 
-
 .category-options {
     display: block;
     position: relative;
@@ -660,7 +746,7 @@ div.pager {
 
 
 
-
+/* Item line */
 .item {
     display: table;
     position: relative;
@@ -677,7 +763,6 @@ div.pager {
     padding-top: 12px;
     padding-bottom: 12px;
 }
-
 
 .item div
 {
@@ -704,7 +789,7 @@ div.pager {
     padding: 0 12px;
 }
 
-.item .weight
+.item div.weight
 {
     width: 210px;
     margin: 0 18px;
@@ -724,17 +809,14 @@ div.pager {
     text-align: center;
 }
 
-
-
 .item a
 {
     float: left;
     margin-right: 21px;
     margin-left: 21px;
-    cursor: pointer;
 }
 
-.item a.weight
+a.weight
 {
     display: table-cell;
     position: relative;
@@ -751,7 +833,7 @@ div.pager {
     background-image: url('images/gray_star.png');
 }
 
-.item a.checked
+a.checked
 {
     background-image: url('images/gold_star.png');
 }

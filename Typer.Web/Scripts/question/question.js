@@ -24,6 +24,29 @@
     }
 
     return {
+        nameAlreadyExists: function (id, name) {
+            var nameExists = true;
+            $.ajax({
+                url: '/Questions/CheckName',
+                type: "GET",
+                data: {
+                    'id': id,
+                    'name': name
+                },
+                datatype: "json",
+                async: false,
+                cache: false,
+                success: function (result) {
+                    nameExists = (result.IsExisting === true);
+                },
+                error: function (msg) {
+                    alert("[register.js::nameAlreadyExists] " + msg.status + " | " + msg.statusText);
+                }
+            });
+
+            return nameExists;
+
+        },
         updateCategory: function (e) {
 
             var categoriesIds = [];

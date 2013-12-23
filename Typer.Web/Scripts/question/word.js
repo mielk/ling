@@ -23,7 +23,30 @@
         });
     }
 
-    return {
+    return{
+        nameAlreadyExists: function (id, name) {
+            var nameExists = true;
+            $.ajax({
+                url: '/Words/CheckName',
+                type: "GET",
+                data: {
+                    'id': id,
+                    'name': name
+                },
+                datatype: "json",
+                async: false,
+                cache: false,
+                success: function (result) {
+                    nameExists = (result.IsExisting === true);
+                },
+                error: function (msg) {
+                    alert("[register.js::nameAlreadyExists] " + msg.status + " | " + msg.statusText);
+                }
+            });
+
+            return nameExists;
+
+        },
         updateCategory: function (e) {
             var categoriesIds = [];
             var categoriesNames = '';
@@ -645,164 +668,95 @@ Metaword$.prototype.checkIfCategoriesChanged = function (items) {
 };
 
 
-function MetawordView(metaword, properties) {
-    var me = this;
-    this.word = metaword;
-    this.blockOtherElements = properties.blockOtherElements;
+//function MetawordView(metaword, properties) {
+//    var me = this;
+//    this.word = metaword;
+//    this.blockOtherElements = properties.blockOtherElements;
 
-    this.background = properties.container || jQuery('<div/>', {
-                            id: 'question-background',
-                            'class': 'question-background'
-                        }).
-                        css({
-                            'display': 'none',
-                            'z-index' : my.ui.addTopLayer()
-                        }).appendTo($(document.body));
+//    this.background = properties.container || jQuery('<div/>', {
+//                            id: 'question-background',
+//                            'class': 'question-background'
+//                        }).
+//                        css({
+//                            'display': 'none',
+//                            'z-index' : my.ui.addTopLayer()
+//                        }).appendTo($(document.body));
 
-    this.frame = jQuery('<div/>', {
-                    id: 'question-container-frame',
-                    'class': 'question-container-frame'
-                }).css({
-                    'display': 'none'
-                }).appendTo($(me.background));
-    +
-    this.container = jQuery('<div/>', {
-                    id: 'question-container',
-                    'class': 'question-container'
-                }).
-                appendTo($(this.frame));
+//    this.frame = jQuery('<div/>', {
+//                    id: 'question-container-frame',
+//                    'class': 'question-container-frame'
+//                }).css({
+//                    'display': 'none'
+//                }).appendTo($(me.background));
+    
+//    this.container = jQuery('<div/>', {
+//                    id: 'question-container',
+//                    'class': 'question-container'
+//                }).
+//                appendTo($(this.frame));
 
-    this.quit = jQuery('<div/>', {
-                id: 'question-container-exit',
-                'class': 'question-container-exit'
-            }).
-            bind({
-                'click': function () {
-                    me.word.cancel();
-                }
-            }).
-            appendTo($(this.background));
-
-
-    //Place container inside the screen.
-    if (properties.x !== undefined) {
-        $(this.container).css('left', properties.x);
-    }
-    if (properties.y !== undefined) {
-        $(this.container).css('top', properties.y);
-    }
-
-}
-MetawordView.prototype.destroy = function() {
-    $(this.background).empty();
-    if (this.blockOtherElements) {
-        $(this.background).remove();
-    }
-};
-MetawordView.prototype.display = function() {
-    $(this.background).css({
-        'display': 'block'
-    });
-    $(this.frame).css({
-        'display': 'block'
-    });
-
-    this.word.meta.name.focus();
-
-};
-MetawordView.prototype.append = function(element) {
-    $(element).appendTo(this.container);
-};
+//    this.quit = jQuery('<div/>', {
+//                id: 'question-container-exit',
+//                'class': 'question-container-exit'
+//            }).
+//            bind({
+//                'click': function () {
+//                    me.word.cancel();
+//                }
+//            }).
+//            appendTo($(this.background));
 
 
-function MetawordValidator(metaword) {
-    this.word = metaword;
-    this.invalid = new HashTable(null);
-}
-MetawordValidator.prototype.validation = function(validation) {
-    if (validation.status) {
-        this.invalid.removeItem(validation.id);
-    } else {
-        this.invalid.setItem(validation.id, validation.id);
-    }
-    this.checkState();
-};
-MetawordValidator.prototype.checkState = function() {
-    if (this.word.buttons) {
-        this.word.buttons.enable(this.invalid.size() === 0);
-    }
-};
+//    //Place container inside the screen.
+//    if (properties.x !== undefined) {
+//        $(this.container).css('left', properties.x);
+//    }
+//    if (properties.y !== undefined) {
+//        $(this.container).css('top', properties.y);
+//    }
+
+//}
+//MetawordView.prototype.destroy = function() {
+//    $(this.background).empty();
+//    if (this.blockOtherElements) {
+//        $(this.background).remove();
+//    }
+//};
+//MetawordView.prototype.display = function() {
+//    $(this.background).css({
+//        'display': 'block'
+//    });
+//    $(this.frame).css({
+//        'display': 'block'
+//    });
+
+//    this.word.meta.name.focus();
+
+//};
+//MetawordView.prototype.append = function(element) {
+//    $(element).appendTo(this.container);
+//};
 
 
+//function MetawordValidator(metaword) {
+//    this.word = metaword;
+//    this.invalid = new HashTable(null);
+//}
+//MetawordValidator.prototype.validation = function(validation) {
+//    if (validation.status) {
+//        this.invalid.removeItem(validation.id);
+//    } else {
+//        this.invalid.setItem(validation.id, validation.id);
+//    }
+//    this.checkState();
+//};
+//MetawordValidator.prototype.checkState = function() {
+//    if (this.word.buttons) {
+//        this.word.buttons.enable(this.invalid.size() === 0);
+//    }
+//};
 
-function MetawordMeta(metaword) {
-    var me = this;
-    this.word = metaword;
 
-    this.container = jQuery('<div/>', {
-        id: 'question-meta-container',
-        'class': 'question-meta-container'
-    });
-
-    this.word.view.append(this.container);
-
-
-    this.id = new DataLine(this, {
-        property: 'id',
-        label: 'ID',
-        validation: null,
-        editable: false,
-        inputCss: { 'width': '60px', 'text-align': 'center', 'border': '1px solid #777' }
-    });
-
-    var wordtypePanel = new WordtypePanel(this);
-    this.type = new DataLine(this, {
-        property: 'type',
-        label: 'Type',
-        validation: null,
-        editable: true,
-        panel: wordtypePanel.container,
-        value: function () {
-            return wordtypePanel.value;
-        },
-        setValue: function () {
-            wordtypePanel.setValue(me.word.wordtype);
-        }
-    });
-
-    this.name = new DataLine(this, {
-        property: 'name',
-        label: 'Name',
-        validation: nameChecker.check,
-        editable: true
-    });
-
-    this.weight = new DataLine(this, {
-        property: 'weight',
-        label: 'Weight',
-        validation: null,
-        editable: false,
-        panel: (new WeightPanel(10, me.word.weight)).view.container
-    });
-
-    var categoryPanel = new CategoryPanel(this);
-    this.categories = new DataLine(this, {
-        property: 'categories',
-        label: 'Categories',
-        validation: null,
-        editable: false,
-        panel: categoryPanel.view.panel,
-        right: categoryPanel.view.editButton
-    });
-
-    this.relatives = 'to be added';
-
-    this.contrary = 'to be added';
-
-}
-MetawordMeta.prototype.append = function(element) {
-    $(element).appendTo($(this.container));
-};
 
 
 function WordtypePanel(parent) {
@@ -861,286 +815,6 @@ WordtypePanel.prototype.setValue = function (value) {
     });
 }
 
-
-function DataLine(parent, properties) {
-    this.parent = parent;
-    this.word = this.parent.word;
-    this.property = properties.property;
-    this.linked = new HashTable(null);
-    this.validation = properties.validation;
-    this.valueFunction = (properties.value && typeof(properties.value) === 'function' ? properties.value : null);
-
-    this.view = new DataLineView(this, properties);
-
-    this.parent.append(this.view.container);
-
-    if (this.validation) {
-        this.validate();
-    }
-
-}
-DataLine.prototype.validate = function() {
-    var me = this;
-    this.verifyLinked();
-
-    var isValid = this.validation({
-        value: me.getValue(),
-        property: me.property,
-        id: me.word.id
-    });
-
-    this.format(isValid === true);
-    if (isValid !== true) {
-        $(this.view.error).text(isValid);
-    }
-
-    this.word.validator.validation({
-        id: me.property,
-        status: (isValid === true ? true : false)
-    });
-
-};
-DataLine.prototype.verifyLinked = function() {
-    this.linked.each(
-        function(key, value) {
-            value.validate();
-        }
-    );
-};
-DataLine.prototype.getValue = function () {
-    if (this.valueFunction) {
-        return this.valueFunction();
-    } else {
-        return this.view.getValue();
-    }
-};
-DataLine.prototype.addLinked = function(line) {
-    this.linked.setItem(line.property, line);
-};
-DataLine.prototype.format = function(value) {
-    this.view.format(value);
-};
-DataLine.prototype.focus = function() {
-    this.view.focus();
-};
-
-
-
-function DataLineView(dataLine, properties) {
-    var me = this;
-    this.dataLine = dataLine;
-
-    this.container = jQuery('<div/>', {
-        'class': 'field-line'
-    });
-
-    this.label = jQuery('<label/>', {
-        'class': 'label',
-        html: properties.label
-    }).appendTo(jQuery('<span/>').css({
-        'display': 'block',
-        'float': 'left'
-    }).appendTo($(this.container)));
-
-    if (this.dataLine.validation) {
-        this.errorContainer = jQuery('<div/>').addClass('error').appendTo($(this.container));
-        this.error = jQuery('<div/>', { 'class': 'error_content' }).appendTo(this.errorContainer);
-        this.errorIcon = jQuery('<span/>', {'class': 'icon'}).appendTo($(this.container));
-    }
-
-    if (properties.right) {
-        $(properties.right).appendTo(this.container);
-    }
-
-    var $timer;
-    if (properties.panel) {
-        this.panel = $(properties.panel);
-        $(this.panel).appendTo($(this.container));
-    } else if (properties.editable) {
-        this.panel = jQuery('<input/>', {
-            'class': 'field default',
-            'type': 'text'
-        }).bind({
-            'keydown': function (e) {
-                if (e.which === 13) {
-                    /* Jeżeli to nie jest ustawione, w IE 9 focus przeskakuje od razu
-                        * na przycisk [Select categories] i wywołuje jego kliknięcie. */
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            },
-            'keyup': function () {
-                if ($timer) {
-                    clearTimeout($timer);
-                }
-                $timer = setTimeout(function () {
-                    me.dataLine.validate();
-                }, 150);
-            },
-            'change': function () {
-                me.dataLine.validate();
-            },
-            'mouseup': function (e) {
-                e.preventDefault();
-            },
-            'blur': function () {
-                me.dataLine.validate();
-            }
-        })
-        .on({
-            'focus': function () {
-                this.select();
-            }
-        });
-        
-        if (properties.setValue) {
-            properties.setValue();
-        } else {
-            $(this.panel).val(me.dataLine.word[properties.property]);
-        }
-        
-
-        var span = jQuery('<span/>').
-            bind({
-                'click': function() {
-                    me.panel.focus();
-                }
-            }).
-            appendTo($(this.container));
-
-        this.panel.appendTo($(span));
-
-    } else {
-        this.panel = jQuery('<label/>', {
-            'class': 'value',
-            html: me.dataLine.word[properties.property]
-        }).appendTo($(this.container));
-    }
-
-    if (properties.inputCss) {
-        $(this.panel).css(properties.inputCss);
-    }
-
-}
-DataLineView.prototype.format = function (isValid) {
-    if (isValid) {
-        $(this.panel).removeClass('invalid').addClass('valid');
-        $(this.errorContainer).css({ 'display': 'none' });
-        $(this.errorIcon).removeClass('iconInvalid').addClass('iconValid');
-    } else {
-        $(this.panel).removeClass('valid').addClass('invalid');
-        $(this.errorContainer).css({ 'display': 'table' });
-        $(this.errorIcon).removeClass('iconValid').addClass('iconInvalid');
-    }
-
-};
-DataLineView.prototype.focus = function() {
-    $(this.panel).focus();
-};
-DataLineView.prototype.getValue = function() {
-    return $(this.panel).val();
-};
-
-
-var nameChecker = (function(){
-    var nameExists = false;
-    function check(params) {
-        var maxLength = 255;
-        var name = params.value;
-        var id = params.id;
-
-        if (!name.trim()) {
-            return MessageBundle.get(dict.NameCannotBeEmpty);
-        } else if (name.length > maxLength) {
-            return MessageBundle.get(dict.NameCannotBeLongerThan, [maxLength]);
-        } else {
-            nameAlreadyExists(name, id);
-
-            if (nameExists) {
-                return MessageBundle.get(dict.NameAlreadyExists);
-            } else {
-                return true;
-            }
-
-        }
-
-    }
-
-    function nameAlreadyExists(name, id) {
-        $.ajax({
-            url: "/Words/CheckName",
-            type: "GET",
-            data: {
-                'id': id,
-                'name': name
-            },
-            datatype: "json",
-            async: false,
-            cache: false,
-            success: function (result) {
-                nameExists = (result.IsExisting === true);
-            },
-            error: function (msg) {
-                alert("[register.js::nameAlreadyExists] " + msg.status + " | " + msg.statusText);
-            }
-        });
-        
-    }
-
-    return {
-        check: function(params) {
-            return check(params);
-        }
-    };
-})();
-
-function MetawordButtons(metaword) {
-    var me = this;
-    this.word = metaword;
-
-    this.panel = jQuery('<div/>', {
-        id: 'question-buttons-panel',
-        'class': 'question-buttons-panel'
-    });
-
-    this.word.view.append(this.panel);
-
-    this.container = jQuery('<div/>', {
-        id: 'question-buttons-container',
-        'class': 'question-buttons-container'
-    }).appendTo($(this.panel));
-
-    this.ok = jQuery('<input/>', {
-        id: 'question-button-ok',
-        'class': 'question-button',
-        'type': 'submit',
-        'value': 'OK'
-    }).bind({
-        'click': function () {
-            me.word.confirm();
-        }
-    }).appendTo($(this.container));
-
-    this.cancel = jQuery('<input/>', {
-        id: 'question-button-cancel',
-        'class': 'question-button',
-        'type': 'submit',
-        'value': 'Cancel'
-    }).bind({
-        'click': function () {
-            me.word.cancel();
-        }
-    }).appendTo($(this.container));
-
-
-}
-MetawordButtons.prototype.enable = function(value) {
-    if (value) {
-        $(this.ok).removeAttr('disabled');
-    } else {
-        $(this.ok).attr('disabled', 'disabled');
-    }
-};
 
 
 function Language(parent, properties) {
