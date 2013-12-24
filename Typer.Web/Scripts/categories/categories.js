@@ -2,6 +2,7 @@
 
 function Category(parent, properties) {
     var me = this;
+    this.Category = true;
     this.key = properties.key;
     this.name = properties.name;
     this.parent = parent;

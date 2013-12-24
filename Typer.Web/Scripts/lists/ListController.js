@@ -51,7 +51,13 @@ ListManager.prototype.createObject = function() {
 ListManager.prototype.createListItem = function() {
     alert('Must be defined in implementing class');
 }; 
-
+ListManager.prototype.createNewItem = function () {
+    var item = this.emptyItem();
+    item.edit();
+};
+ListManager.prototype.emptyItem = function () {
+    alert('Must be defined in implementing class');
+};
 
 //Implementations of ListManager.
 function WordListManager(properties) {
@@ -65,6 +71,22 @@ WordListManager.prototype.createObject = function (properties) {
 };
 WordListManager.prototype.createListItem = function (object) {
     return new WordListItem(object);
+};
+WordListManager.prototype.emptyItem = function () {
+    var filters = this.filterManager.filters;
+    return new Metaword({
+        Id: 0,
+        Name: '',
+        Weight: (filters.weight && filters.weight.from && filters.weight.from === filters.weight.to ? filters.weight.from : 1),
+        Type: filters.wordtype || 0,
+        IsActive: true,
+        CreatorId: 1,
+        CreateDate: new Date().getTime,
+        IsApprover: false,
+        Positive: 0,
+        Negative: 0,
+        Categories: (filters.categories && filters.categories.length === 1 ? filters.categories : [])
+    });
 };
 
 
@@ -80,7 +102,21 @@ QuestionListManager.prototype.createObject = function (properties) {
 QuestionListManager.prototype.createListItem = function (object) {
     return new QuestionListItem(object);
 };
-
+QuestionListManager.prototype.emptyItem = function () {
+    var filters = this.filterManager.filters;
+    return new Question({
+        Id: 0,
+        Name: '',
+        Weight: filters.weight || 1,
+        IsActive: true,
+        CreatorId: 1,
+        CreateDate: new Date().getTime,
+        IsApprover: false,
+        Positive: 0,
+        Negative: 0,
+        Categories: (filters.categories && filters.categories.length === 1 ? filters.categories : [])
+    });
+};
 
 
 function ListView(controller) {
@@ -102,13 +138,13 @@ ListView.prototype.addHeaderRow = function (columns) {
     }
     return headerContainer;
 };
-ListView.prototype.createAddButton = function() {
+ListView.prototype.createAddButton = function () {
+    var controller = this.controller;
     this.addButton = jQuery('<a/>', {
         id: 'add-item', 'class': 'add', html: 'Add'
     }).bind({
         click: function () {
-            //var item = createNewItem();
-            //item.displayEditForm();
+            controller.createNewItem();
         }
     }).appendTo(jQuery('<div/>', { 'id': 'add-button-container' }).appendTo($(this.container)));
 };
@@ -212,20 +248,6 @@ ListFilterManager.prototype.filter = function (e) {
 };
 
 
-//var metaword = new Metaword({
-//    Object: {
-//        Type: me.controller.wordtype ? me.controller.wordtype.id : 0
-//    },
-//    Categories: [],
-//    UserLanguages: getLanguages()
-//}, {
-//    blockOtherElements: true
-//});
-//metaword.wordtype = me.controller.wordtype;
-//metaword.displayEditForm();
-
-
-
 function ListPager(controller, properties) {
     ListManagerPanel.call(this, controller);
     this.ListPager = true;
@@ -326,6 +348,7 @@ ListItemsManager.prototype.refresh = function (items) {
     for (var i = 0; i < items.length; i++) {
         var object = this.controller.createObject(items[i]);
         var item = this.controller.createListItem(object);
+        object.injectListItem(item);
         item.appendTo($(this.container));
         this.items[i] = item;
     }
@@ -350,10 +373,7 @@ ListItem.prototype.remove = function () {
     this.object = null;
     $(this.view.container).remove();
 };
-ListItem.prototype.edit = function () {
-    var editPanel = this.editPanel(this);
-    editPanel.display();
-};
+
 
 function WordListItem(properties) {
     ListItem.call(this, properties);
@@ -363,9 +383,6 @@ function WordListItem(properties) {
     this.view = new WordListItemView(self);
 }
 extend(ListItem, WordListItem);
-WordListItem.prototype.editPanel = function (item) {
-    return new WordEditPanel(item);
-};
 
 
 function QuestionListItem(properties) {
@@ -376,10 +393,6 @@ function QuestionListItem(properties) {
     this.view = new QuestionListItemView(self, { className: this.name });
 }
 extend(ListItem, QuestionListItem);
-QuestionListItem.prototype.editPanel = function (item) {
-    return new QuestionEditPanel(item);
-};
-
 
 
 
@@ -401,7 +414,7 @@ function ListItemView(item) {
     this.categories = jQuery('<div/>', { 'class': 'categories', html: my.categories.toString(self.object.categories) }).appendTo($(this.container));
 
     this.edit = jQuery('<div/>', { 'class': 'edit-item' }).
-        bind({ click: function () { self.item.edit(); } }).
+        bind({ click: function () { self.object.edit(); } }).
         appendTo($(this.container));
 
     this.deactivate = jQuery('<a/>', { html: self.object.isActive ? 'Deactivate' : 'Activate' }).
@@ -471,13 +484,13 @@ function Entity(properties) {
     this.id = properties.Id || 0;
     this.name = properties.Name;
     this.weight = properties.Weight || 1;
-    this.isActive = properties.IsActive;
-    this.creatorId = properties.CreatorId;
-    this.createDate = properties.CreateDate;
-    this.isApproved = properties.IsApproved;
-    this.positive = properties.Positive;
-    this.negative = properties.Negative;
-    this.categories = this.loadCategories(properties.Categories);
+    this.isActive = properties.IsActive || true;
+    this.creatorId = properties.CreatorId || 1;
+    this.createDate = properties.CreateDate || new Date().getDate;
+    this.isApproved = properties.IsApproved || false;
+    this.positive = properties.Positive || 0;
+    this.negative = properties.Negative || 0;
+    this.categories = this.loadCategories(properties.Categories) || [];
 
     this.eventHandler = new EventHandler();
     //Words
@@ -492,9 +505,18 @@ Entity.prototype.bind = function (e) {
 Entity.prototype.loadCategories = function (categories) {
     var array = [];
     for (var i = 0; i < categories.length; i++) {
-        var id = categories[i].Id;
-        var category = my.categories.getCategory(id);
-        array.push(category);
+        var object = categories[i];
+
+        if (object.Category) {
+            array.push(object);
+        } else if (object.Id) {
+            var id = categories[i].Id;
+            var category = my.categories.getCategory(id);
+            array.push(category);
+        } else if ($.isNumeric(object)) {
+            var category = my.categories.getCategory(object);
+            array.push(category);
+        }
     }
     return array;
 };
@@ -542,6 +564,9 @@ Entity.prototype.activate = function (value) {
     }
 
 };
+Entity.prototype.editPanel = function () {
+    alert('Must be defined by implementing class');
+};
 Entity.prototype.editItem = function () {
     alert('Must be defined by implementing class');
 };
@@ -572,6 +597,14 @@ Entity.prototype.checkName = function (name) {
 Entity.prototype.update = function (properties) {
     alert('Must by defined by implementing class');
 };
+Entity.prototype.injectListItem = function (item) {
+    this.listItem = item;
+};
+Entity.prototype.edit = function () {
+    var editPanel = this.editPanel();
+    editPanel.display();
+};
+
 
 function Metaword(properties) {
     Entity.call(this, properties);
@@ -664,6 +697,10 @@ Metaword.prototype.checkWordtype = function (wordtype) {
         return true;
     }
 };
+Metaword.prototype.editPanel = function () {
+    return new WordEditPanel(this);
+};
+
 
 function Question(properties) {
     Entity.call(this, properties);
@@ -735,6 +772,10 @@ Question.prototype.update = function (properties) {
     }
 
 };
+Question.prototype.editPanel = function () {
+    return new QuestionEditPanel(this);
+};
+
 
 
 function EditEntity(properties) {
@@ -799,11 +840,11 @@ extend(EditEntity, QuestionEditEntity);
  * Parameters:      
  *  ListItem item   List item that the object edited is assigned to.
  */
-function EditPanel(line) {
+function EditPanel(object) {
     this.EditPanel = true;
     var self = this;
-    this.line = line;
-    this.object = line.object;
+    this.object = object;
+    this.line = this.object.line;
     this.editObject = this.object.editItem();
 
     this.validator = (function () {
