@@ -302,19 +302,6 @@ namespace Typer.Web.Controllers
             return PartialView(user);
         }
 
-
-        [HttpGet]
-        [AllowAnonymous]
-        public ActionResult GetLanguages()
-        {
-            var user = (User)HttpContext.Session[Domain.Entities.User.SessionKey];
-            var languages = _languageService.GetUserLanguages(user.UserID > 0 ? user.UserID : 1);
-            return Json(languages, JsonRequestBehavior.AllowGet);
-
-        }
-
-
-
     }
 
 }

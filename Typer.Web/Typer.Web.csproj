@@ -147,6 +147,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Binders\UserModelBinder.cs" />
     <Compile Include="Controllers\CategoriesController.cs" />
+    <Compile Include="Controllers\LanguageController.cs" />
     <Compile Include="Controllers\QuestionsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
@@ -187,6 +188,8 @@
     <Content Include="Content\images\line.png" />
     <Content Include="Content\images\node.png" />
     <Content Include="Content\images\white_star.png" />
+    <Content Include="Content\images\ESP.png" />
+    <Content Include="Content\images\ITA.png" />
     <Content Include="Content\login.css" />
     <Content Include="Content\normalize.css" />
     <Content Include="Content\question.css" />
@@ -332,6 +335,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Content\images\xcf\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

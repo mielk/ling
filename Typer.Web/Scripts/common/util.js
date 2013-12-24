@@ -515,3 +515,71 @@ my.values = (function () {
         }
     };
 })();
+
+
+function Language(properties) {
+    this.Language = true;
+    var self = this;
+    this.id = properties.id;
+    this.name = properties.name;
+    this.flag = properties.flag;
+}
+my.languages = (function () {
+
+    var used = null;
+
+    function loadLanguages() {
+
+        var userId = my.user.id();
+
+        $.ajax({
+            url: '/Language/GetUserLanguages',
+            type: "GET",
+            data: {
+                'userId': userId,
+            },
+            datatype: "json",
+            async: false,
+            traditional: false,
+            success: function (result) {
+                used = [];
+                for (var i = 0; i < result.length; i++) {
+                    var object = result[i];
+                    var language = new Language({
+                        id: object.Id,
+                        name: object.Name,
+                        flag: object.Flag
+                    });
+                    used.push(language);
+                }
+            },
+            error: function (msg) {
+                my.notify.display('Error when trying to load user languages', false);
+            }
+        });
+
+
+
+    }
+
+    return {
+        get: function () {
+            if (!used) {
+                loadLanguages();
+            }
+            return used;
+        }
+    }
+
+})();
+
+my.user = (function () {
+    var currentUserId = 1;
+
+    return {
+        id: function () {
+            return currentUserId;
+        }
+    }
+
+})();

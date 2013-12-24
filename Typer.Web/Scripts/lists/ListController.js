@@ -477,6 +477,11 @@ function QuestionListItemView(item) {
 extend(ListItemView, QuestionListItemView);
 
 
+
+
+
+
+
 function Entity(properties) {
     this.Entity = true;
     this.service = null;
@@ -601,8 +606,18 @@ Entity.prototype.injectListItem = function (item) {
     this.listItem = item;
 };
 Entity.prototype.edit = function () {
+    this.loadDetails();
     var editPanel = this.editPanel();
     editPanel.display();
+};
+Entity.prototype.loadDetails = function () {
+    this.languages = my.languages.get();
+
+    //For new items options are not loaded.
+    if (this.id) {
+
+    }
+
 };
 
 
@@ -622,7 +637,8 @@ Metaword.prototype.editItem = function () {
         weight: self.weight,
         isActive: self.isActive,
         categories: self.categories,
-        options: self.options
+        options: self.options,
+        languages: self.languages
     });
 };
 Metaword.prototype.update = function (properties) {
@@ -715,7 +731,8 @@ Question.prototype.editItem = function () {
         name: self.name,
         weight: self.weight,
         isActive: self.isActive,
-        categories: self.categories
+        categories: self.categories,
+        languages: self.languages
     });
 };
 Question.prototype.update = function (properties) {
@@ -785,6 +802,7 @@ function EditEntity(properties) {
     this.weight = properties.weight;
     this.isActive = properties.isActive;
     this.categories = properties.categories;
+    this.languages = properties.languages;
     this.eventHandler = new EventHandler();
 }
 EditEntity.prototype.bind = function (e) {
@@ -831,6 +849,12 @@ function QuestionEditEntity(properties) {
     this.QuestionEditEntity = true;
 }
 extend(EditEntity, QuestionEditEntity);
+
+
+
+
+
+
 
 
 /*
@@ -933,14 +957,17 @@ function EditPanel(object) {
     })();
 
     this.languages = (function () {
+        var items = new HashTable(null);
+
         var container = jQuery('<div/>', {
             id: 'languages-container'
         });
         self.ui.append($(container));
 
         return {
-            append: function (element) {
-                $(element).appendTo($(container));
+            add: function(panel){
+                items.setItem(panel.id, panel);
+                $(panel.view()).appendTo($(container));
             }
         };
     })();
@@ -989,6 +1016,8 @@ function EditPanel(object) {
     })();
 
     this.generalRender();
+
+    this.renderLanguages();
 
 }
 EditPanel.prototype.display = function () {
@@ -1051,6 +1080,14 @@ EditPanel.prototype.getProperty = function (key) {
         return this.editPanel[key];
     }
     return null;
+};
+EditPanel.prototype.renderLanguages = function () {
+    var languages = this.object.languages;
+    for (var i = 0; i < languages.length; i++) {
+        var language = languages[i];
+        var panel = new LanguagePanel(this.object, this, language);
+        this.languages.add(panel);
+    }
 };
 
 function WordEditPanel(line) {
@@ -1285,6 +1322,182 @@ EditDataLine.prototype.appendTo = function (parent) {
 EditDataLine.prototype.view = function () {
     return this.ui.view();
 };
+
+
+function LanguagePanel(item, panel, language) {
+    this.LanguagePanel = true;
+    var self = this;
+    this.item = item;
+    this.panel = panel;
+    this.language = language;
+    this.items = new HashTable(null);
+
+    this.ui = (function () {
+        var isCollapsed = false;
+
+        var container = jQuery('<div/>', {
+            'class': 'language'
+        });
+
+        var info = jQuery('<div/>', {
+            'class': 'info'
+        }).appendTo($(container));
+
+
+        var collapseButton = jQuery('<div/>', {
+            'class': 'collapse'
+        }).bind({
+            'click': function () {
+                if (isCollapsed === true) {
+                    expand();
+                } else {
+                    collapse();
+                }
+            }
+        }).appendTo($(info));
+
+
+        var flag = jQuery('<div/>', {
+            'class': 'flag',
+        }).css({
+            'background-image': self.language.flag
+        }).appendTo($(info));
+
+        var name = jQuery('<div/>', {
+            'class': 'name',
+            'html': self.language.name
+        }).appendTo($(info));
+
+
+        //Options.
+        var options = jQuery('<div/>', {
+            'class': 'options'
+        }).css({
+            'display': self.items.size() ? 'block' : 'none'
+        }).appendTo($(container));
+
+
+        //Buttons.
+        var buttons = jQuery('<div/>', {
+            'class': 'buttons'
+        }).appendTo($(container));
+
+        var add = jQuery('<input/>', {
+            'class': 'button add',
+            'type': 'submit',
+            'value': 'Add'
+        }).bind({
+            'click': function () {
+                //var word = new Word({
+                //    language: me.language
+                //});
+                //var editPanel = new EditPanel({
+                //    object: word
+                //});
+                //editPanel.bind({
+                //    confirm: function (e) {
+                //        var $word = e.object;
+                //        me.language.addOption($word);
+                //        alert('confirm');
+                //    }
+                //});
+                //editPanel.display();
+            }
+        }).appendTo($(buttons));
+
+        //this.language.parent.view.append($(this.container));
+
+        function collapse() {
+            isCollapsed = true;
+
+            $(options).css({
+                'display': 'none'
+            });
+            $(buttons).css({
+                'display': 'none'
+            });
+        }
+
+        function expand() {
+            isCollapsed = false;
+
+            $(options).css({
+                'display': self.items.size() ? 'block' : 'none'
+            });
+            $(buttons).css({
+                'display': 'block'
+            });
+        }
+
+        return {
+            view: function () {
+                return container;
+            },
+            addOption: function (option) {
+
+            }
+        }
+
+    })();
+
+}
+LanguagePanel.prototype.view = function () {
+    return this.ui.view();
+};
+
+
+//function Language(parent, properties) {
+
+//    this.view = new LanguageView(this);
+
+//    this.options = this.createOptionsSet(properties.words || {});
+
+//    this.view.refreshOptionsPanel();
+
+//}
+//Language.prototype.createOptionsSet = function(options) {
+//    var me = this;
+//    var array = new HashTable(null);
+//    for (var i = 0; i < options.length; i++) {
+//        var optionJson = options[i];
+//        var word = new Word({
+//            id: optionJson.Id,
+//            content: optionJson.Name,
+//            metawordId: optionJson.MetawordId,
+//            weight: optionJson.Weight,
+//            language: me
+//        });
+//        array.setItem(word.id, word);
+//    }
+
+//    return array;
+
+//};
+//Language.prototype.addOption = function (option) {
+//    this.options.setItem(option.key, option);
+//    this.view.addOption(option.view.container);
+//};
+//Language.prototype.removeOption = function(option) {
+//    this.options.removeItem(option.id);
+//    this.view.refreshOptionsPanel();
+//};
+//Language.prototype.isUnique = function(content, optionId) {
+//    var unique = true;
+//    this.options.each(function(key, option) {
+//        if (option.content === content) {
+//            if (option.id !== optionId) {
+//                unique = false;
+//            }
+//        }
+//    });
+//    return unique;
+//};
+
+
+
+//LanguageView.prototype.addOption = function(element) {
+//    $(element).appendTo($(this.options));
+//};
 
 
 

@@ -25,7 +25,6 @@ namespace Typer.Domain.Services
             return dataObjects.Select(LanguageFromDto).ToList();
         }
 
-
         public Language GetLanguage(int id)
         {
             var dto = _repository.GetLanguage(id);
@@ -45,7 +44,8 @@ namespace Typer.Domain.Services
             return new Language
             {
                 Id = dto.Id,
-                Name = dto.Name
+                Name = dto.Name,
+                Flag = dto.Flag
             };
         }
 
