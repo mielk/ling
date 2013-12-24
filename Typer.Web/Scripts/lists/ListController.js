@@ -1358,9 +1358,7 @@ function LanguagePanel(item, panel, language) {
 
 
         var flag = jQuery('<div/>', {
-            'class': 'flag',
-        }).css({
-            'background-image': self.language.flag
+            'class': 'flag ' + self.language.flag,
         }).appendTo($(info));
 
         var name = jQuery('<div/>', {
