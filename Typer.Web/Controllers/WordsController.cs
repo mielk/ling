@@ -192,15 +192,14 @@ namespace Typer.Web.Controllers
 
 
 
-            //[HttpPost]
-            //[AllowAnonymous]
-            //public ActionResult GetQuestion(int id)
-            //{
+            [HttpGet]
+            [AllowAnonymous]
+            public ActionResult getWords(int id, int[] languages)
+            {
+                var words = _service.GetWords(id, languages);
+                return Json(words, JsonRequestBehavior.AllowGet);
+            }
 
-            //    QuestionViewModel question = new QuestionViewModel() { Id = 1, Name = "abc", Weight = 8, CreatorId = 1, CreatorName = "xyz", CreateDate = new DateTime(2013, 10, 25) };
-            //    return Json(question, JsonRequestBehavior.AllowGet);
-
-            //}
 
 
         }

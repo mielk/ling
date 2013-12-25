@@ -100,6 +100,12 @@ namespace Typer.Domain.Services
             return dataObjects.Select(OptionFromDto).ToList();
         }
 
+        public IEnumerable<QuestionOption> GetOptions(int questionId, int[] languages)
+        {
+            var dataObjects = _repository.GetOptions(questionId, languages);
+            return dataObjects.Select(OptionFromDto).ToList();
+        }
+
 
         public IEnumerable<Category> GetCategories(int questionId)
         {

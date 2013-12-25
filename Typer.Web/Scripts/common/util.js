@@ -358,6 +358,20 @@ my.array = (function () {
 
             return false;
             
+        },
+        remove: function (array, item) {
+            var after = [];
+            if (!array || !array.length) return;
+
+            for (var i = 0; i < array.length; i++) {
+                var object = array[i];
+                if (object !== item) {
+                    after.push(object);
+                }
+            }
+
+            return after;
+
         }
     };
 })();
@@ -563,11 +577,26 @@ my.languages = (function () {
     }
 
     return {
-        get: function () {
+        userLanguages: function () {
             if (!used) {
                 loadLanguages();
             }
             return used;
+        },
+        get: function (id) {
+            if (!used) {
+                loadLanguages();
+            }
+
+            for (var i = 0; i < used.length; i++) {
+                var language = used[i];
+                if (language.id === id) {
+                    return language;
+                }
+            }
+
+            return null;
+
         }
     }
 

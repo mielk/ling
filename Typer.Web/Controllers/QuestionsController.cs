@@ -165,6 +165,18 @@ namespace Typer.Web.Controllers
             return Json(questionViewModel, JsonRequestBehavior.AllowGet);
 
         }
+
+
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult getOptions(int id, int[] languages)
+        {
+            var words = _service.GetOptions(id, languages);
+            return Json(words, JsonRequestBehavior.AllowGet);
+        }
+
         
 
     }

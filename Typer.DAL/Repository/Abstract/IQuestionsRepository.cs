@@ -24,6 +24,7 @@ namespace Typer.DAL.Repositories
         bool NameExists(int id, string name);
 
         IEnumerable<QuestionOptionDto> GetOptions(int questionId);
+        IEnumerable<QuestionOptionDto> GetOptions(int questionId, int[] languages);
         IEnumerable<QuestionCategoryDto> GetCategories(int metawordId);
         IEnumerable<int> GetQuestionsIdsByCategories(int[] categories);
 

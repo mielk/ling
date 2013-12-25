@@ -117,6 +117,30 @@
                 error: 'Error when trying to update the word ' + e.word.name,
                 callback: e.callback
             });
+        },
+        getWords: function (id, languages) {
+            var words;
+            $.ajax({
+                url: '/Words/GetWords',
+                type: "GET",
+                data: {
+                    'id': id,
+                    'languages': languages
+                },
+                datatype: "json",
+                async: false,
+                cache: false,
+                traditional: true,
+                success: function (result) {
+                    words = result;
+                },
+                error: function (msg) {
+                    alert("[register.js::nameAlreadyExists] " + msg.status + " | " + msg.statusText);
+                }
+            });
+
+            return words;
+
         }
     };
 

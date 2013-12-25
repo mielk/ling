@@ -86,6 +86,10 @@ namespace Typer.Domain.Services
             return dataObjects.Select(WordFromDto).ToList();
         }
 
+        public IEnumerable<Word> GetWords(int metawordId, int[] languages){
+            var dataObjects = _repository.GetWords(metawordId, languages);
+            return dataObjects.Select(WordFromDto).ToList();
+        }
 
         public bool UpdateCategories(int id, int[] categoriesId)
         {

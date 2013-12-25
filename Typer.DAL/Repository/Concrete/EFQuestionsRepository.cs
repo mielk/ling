@@ -268,6 +268,13 @@ namespace Typer.DAL.Repositories
             return Context.QuestionOptions.Where(o => o.QuestionId == questionId && o.IsActive);
         }
 
+
+        public IEnumerable<QuestionOptionDto> GetOptions(int questionId, int[] languages)
+        {
+            return Context.QuestionOptions.Where(o => o.QuestionId == questionId && o.IsActive && languages.Contains(o.LanguageId));
+        }
+
+
         public IEnumerable<QuestionCategoryDto> GetCategories(int questionId)
         {
             return Context.MatchQuestionCategory.Where(m => m.QuestionId == questionId);

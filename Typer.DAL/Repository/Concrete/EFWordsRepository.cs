@@ -274,9 +274,14 @@ namespace Typer.DAL.Repositories
 
 
 
-        public IEnumerable<WordDto> GetWords(int wordId)
+        public IEnumerable<WordDto> GetWords(int metawordId)
         {
-            return Context.Words.Where(o => o.MetawordId == wordId && o.IsActive);
+            return Context.Words.Where(o => o.MetawordId == metawordId && o.IsActive);
+        }
+
+        public IEnumerable<WordDto> GetWords(int metawordId, int[] languages)
+        {
+            return Context.Words.Where(o => o.MetawordId == metawordId && o.IsActive && languages.Contains(o.LanguageId));
         }
 
 

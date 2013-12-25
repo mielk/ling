@@ -498,7 +498,6 @@ function Entity(properties) {
     this.categories = this.loadCategories(properties.Categories) || [];
 
     this.eventHandler = new EventHandler();
-    //Words
 
 }
 Entity.prototype.trigger = function(e) {
@@ -569,7 +568,7 @@ Entity.prototype.activate = function (value) {
     }
 
 };
-Entity.prototype.editPanel = function () {
+Entity.prototype.editPanel = function (editItem) {
     alert('Must be defined by implementing class');
 };
 Entity.prototype.editItem = function () {
@@ -606,18 +605,20 @@ Entity.prototype.injectListItem = function (item) {
     this.listItem = item;
 };
 Entity.prototype.edit = function () {
-    this.loadDetails();
-    var editPanel = this.editPanel();
+    var editItem = this.editItem();
+    var editPanel = this.editPanel(editItem);
     editPanel.display();
 };
-Entity.prototype.loadDetails = function () {
-    this.languages = my.languages.get();
-
-    //For new items options are not loaded.
-    if (this.id) {
-
+Entity.prototype.removedLogs = function (logs) {
+    var tag = 'remove';
+    var array = [];
+    for (var i = 0; i < logs.length; i++) {
+        var log = logs[i];
+        if (log.event === tag) {
+            array.push(log.item.id)
+        }
     }
-
+    return array;
 };
 
 
@@ -637,8 +638,7 @@ Metaword.prototype.editItem = function () {
         weight: self.weight,
         isActive: self.isActive,
         categories: self.categories,
-        options: self.options,
-        languages: self.languages
+        options: self.options
     });
 };
 Metaword.prototype.update = function (properties) {
@@ -652,6 +652,7 @@ Metaword.prototype.update = function (properties) {
     var weight = (this.weight === properties.weight ? 0 : properties.weight);
     var categories = (my.array.equal(properties.categories, this.categories) ? [] : properties.categories);
     var wordtype = (this.wordtype === properties.wordtype ? 0 : properties.wordtype.id);
+    var removed = this.removedLogs(properties.logs);
 
     //Check if there are any changes.
     if (name || weight || (categories && categories.length) || wordtype){
@@ -713,8 +714,8 @@ Metaword.prototype.checkWordtype = function (wordtype) {
         return true;
     }
 };
-Metaword.prototype.editPanel = function () {
-    return new WordEditPanel(this);
+Metaword.prototype.editPanel = function (editItem) {
+    return new WordEditPanel(this, editItem);
 };
 
 
@@ -731,8 +732,7 @@ Question.prototype.editItem = function () {
         name: self.name,
         weight: self.weight,
         isActive: self.isActive,
-        categories: self.categories,
-        languages: self.languages
+        categories: self.categories
     });
 };
 Question.prototype.update = function (properties) {
@@ -789,10 +789,9 @@ Question.prototype.update = function (properties) {
     }
 
 };
-Question.prototype.editPanel = function () {
-    return new QuestionEditPanel(this);
+Question.prototype.editPanel = function (editItem) {
+    return new QuestionEditPanel(this, editItem);
 };
-
 
 
 function EditEntity(properties) {
@@ -802,8 +801,14 @@ function EditEntity(properties) {
     this.weight = properties.weight;
     this.isActive = properties.isActive;
     this.categories = properties.categories;
-    this.languages = properties.languages;
+
+    //Logic.
     this.eventHandler = new EventHandler();
+    this.languages = new HashTable(null);
+    this.logs = [];
+
+    this.loadDetails();
+
 }
 EditEntity.prototype.bind = function (e) {
     this.eventHandler.bind(e);
@@ -825,6 +830,36 @@ EditEntity.prototype.setCategories = function (categories) {
         categories: categories
     });
 }
+EditEntity.prototype.addLog = function (log) {
+    this.logs.push(log);
+};
+EditEntity.prototype.loadDetails = function () {
+    var languages = my.languages.userLanguages();
+    for (var i = 0; i < languages.length; i++) {
+        var language = languages[i];
+        var object = new LanguageEntity(this, language);
+        this.languages.setItem(language.id, object);
+    }
+
+    //For new items options are not loaded.
+    if (this.id) {
+        this.loadItems();
+    }
+
+};
+EditEntity.prototype.loadItems = function () {
+    alert('Must by defined by implementing class');
+};
+EditEntity.prototype.getLanguagesIds = function () {
+    if (!this.languages) return [];
+    var languages = [];
+    this.languages.each(function (key, object) {
+        var language = object.language;
+        languages.push(language.id);
+    });
+    return languages;
+};
+
 
 function WordEditEntity(properties) {
     EditEntity.call(this, properties);
@@ -843,15 +878,126 @@ WordEditEntity.prototype.setWordtype = function (params) {
         line: line
     });
 };
+WordEditEntity.prototype.loadItems = function () {
+    var words = my.words.getWords(this.id, this.getLanguagesIds());
+
+    for (var i = 0; i < words.length; i++) {
+        var object = words[i];
+        var word = new Word(this, object);
+        var languageId = word.getLanguageId();
+        var language = this.languages.getItem(languageId);
+        language.addItem(word);
+    }
+
+};
 
 function QuestionEditEntity(properties) {
     EditEntity.call(this, properties);
     this.QuestionEditEntity = true;
 }
 extend(EditEntity, QuestionEditEntity);
+QuestionEditEntity.prototype.loadItems = function () {
+    var options = my.questions.getOptions(this.id, this.getLanguagesIds());
+
+    for (var i = 0; i < options.length; i++) {
+        var object = options[i];
+        var option = new Option(this, object);
+        var languageId = option.getLanguageId();
+        var language = this.languages.getItem(languageId);
+        language.addItem(option);
+    }
+
+};
 
 
 
+function LanguageEntity(parent, language) {
+    this.LanguageEntity = true;
+    var self = this;
+    this.parent = parent;
+    this.language = language;
+    this.items = [];
+}
+LanguageEntity.prototype.addItem = function (option) {
+    this.items.push(option);
+    option.injectLanguageEntity(this);
+};
+LanguageEntity.prototype.remove = function (item) {
+    this.items = my.array.remove(this.items, item);
+    
+    this.parent.addLog({
+        event: 'remove',
+        item: item
+    });
+
+};
+
+
+
+
+
+
+function OptionEntity(entity, properties) {
+    this.OptionEntity = true;
+    this.service = null;
+    //Properties.
+    this.parent = entity;
+    this.id = properties.Id || 0;
+    this.name = properties.Name || properties.Content;
+    this.weight = properties.Weight || 1;
+    this.languageId = properties.LanguageId;
+    this.isActive = properties.IsActive || true;
+    this.creatorId = properties.CreatorId || 1;
+    this.createDate = properties.CreateDate || new Date().getDate;
+    this.isApproved = properties.IsApproved || false;
+    this.positive = properties.Positive || 0;
+    this.negative = properties.Negative || 0;
+
+    //Logic.
+    this.eventHandler = new EventHandler();
+    this.language = null; //LanguageEntity
+
+}
+OptionEntity.prototype.bind = function (e) {
+    this.eventHandler.bind(e);
+};
+OptionEntity.prototype.trigger = function (e) {
+    this.eventHandler.trigger(e);
+};
+OptionEntity.prototype.getLanguageId = function () {
+    return this.languageId;
+};
+OptionEntity.prototype.injectLanguageEntity = function (languageEntity) {
+    this.language = languageEntity;
+};
+OptionEntity.prototype.delete = function () {
+    if (this.language) {
+        this.language.remove(this);
+    }
+
+    this.trigger({
+        type: 'remove'
+    });
+
+};
+
+
+function Word(metaword, properties) {
+    OptionEntity.call(this, metaword, properties);
+    this.Word = true;
+    var self = this;
+    this.service = my.words;
+}
+extend(OptionEntity, Word);
+
+
+function Option(question, properties) {
+    OptionEntity.call(this, question, properties);
+    this.Option = true;
+    var self = this;
+    this.service = my.questions;
+}
+extend(OptionEntity, Option);
 
 
 
@@ -864,12 +1010,12 @@ extend(EditEntity, QuestionEditEntity);
  * Parameters:      
  *  ListItem item   List item that the object edited is assigned to.
  */
-function EditPanel(object) {
+function EditPanel(object, editObject) {
     this.EditPanel = true;
     var self = this;
     this.object = object;
+    this.editObject = editObject;
     this.line = this.object.line;
-    this.editObject = this.object.editItem();
 
     this.validator = (function () {
         var invalid = new HashTable(null);
@@ -1082,16 +1228,16 @@ EditPanel.prototype.getProperty = function (key) {
     return null;
 };
 EditPanel.prototype.renderLanguages = function () {
-    var languages = this.object.languages;
-    for (var i = 0; i < languages.length; i++) {
-        var language = languages[i];
-        var panel = new LanguagePanel(this.object, this, language);
-        this.languages.add(panel);
-    }
+    var self = this;
+    var languages = this.editObject.languages;
+    languages.each(function (key, object) {
+        var panel = new LanguagePanel(self.editObject, self, object);
+        self.languages.add(panel);
+    });
 };
 
-function WordEditPanel(line) {
-    EditPanel.call(this, line);
+function WordEditPanel(object, editObject) {
+    EditPanel.call(this, object, editObject);
     this.WordEditPanel = true;
 }
 extend(EditPanel, WordEditPanel);
@@ -1122,8 +1268,8 @@ WordEditPanel.prototype.render = function () {
 };
 
 
-function QuestionEditPanel(line) {
-    EditPanel.call(this, line);
+function QuestionEditPanel(object, editObject) {
+    EditPanel.call(this, object, editObject);
     this.QuestionEditPanel = true;
 }
 extend(EditPanel, QuestionEditPanel);
@@ -1324,12 +1470,13 @@ EditDataLine.prototype.view = function () {
 };
 
 
-function LanguagePanel(item, panel, language) {
+function LanguagePanel(item, panel, languageEntity) {
     this.LanguagePanel = true;
     var self = this;
     this.item = item;
     this.panel = panel;
-    this.language = language;
+    this.languageEntity = languageEntity;
+    this.language = this.languageEntity.language;
     this.items = new HashTable(null);
 
     this.ui = (function () {
@@ -1418,12 +1565,15 @@ function LanguagePanel(item, panel, language) {
 
         function expand() {
             isCollapsed = false;
-
-            $(options).css({
-                'display': self.items.size() ? 'block' : 'none'
-            });
+            showOptionsPanel();
             $(buttons).css({
                 'display': 'block'
+            });
+        }
+
+        function showOptionsPanel() {
+            $(options).css({
+                'display': self.items.size() ? 'block' : 'none'
             });
         }
 
@@ -1432,16 +1582,159 @@ function LanguagePanel(item, panel, language) {
                 return container;
             },
             addOption: function (option) {
-
+                $(option).appendTo($(options));
+                showOptionsPanel();
+            },
+            refresh: function () {
+                showOptionsPanel();
             }
         }
 
     })();
 
+    this.loadOptions();
+
 }
 LanguagePanel.prototype.view = function () {
     return this.ui.view();
 };
+LanguagePanel.prototype.loadOptions = function () {
+    var entity = this.languageEntity;
+    var items = entity.items;
+    for (var i = 0; i < items.length; i++) {
+        var option = items[i];
+        var panel = new OptionPanel(option, this);
+        this.items.setItem(option.id, panel);
+        this.ui.addOption(panel.view());
+    }
+};
+LanguagePanel.prototype.remove = function (item) {
+    this.items.removeItem(item.id);
+    this.ui.refresh();
+};
+
+
+function OptionPanel(item, parent) {
+    this.OptionPanel = true;
+    var self = this;
+    this.item = item;
+    this.parent = parent;
+
+    this.ui = (function () {
+
+        var container = jQuery('<div/>', { 'class': 'option' });
+        
+        var deleteButton = jQuery('<div/>', {
+            'class': 'button delete',
+            'title': 'Delete this option'
+        }).bind({
+            click: function () {
+                self.delete();
+            }
+        }).appendTo($(container));
+
+        var edit = jQuery('<div/>', {
+            'class': 'button edit',
+            'title': 'Edit this option'
+        }).bind({
+            click: function () {
+                //var editPanel = new EditPanel({
+                //    'object': me.word
+                //});
+                //editPanel.bind({
+                //    'confirm': function (e) {
+                //        me.word.update(e.name, e.weight);
+                //    }
+                //});
+                //editPanel.display();
+            }
+        }).appendTo($(container));
+
+        var content = jQuery('<div/>', {
+            'class': 'content',
+            'html': self.contentToHtml()
+        }).appendTo($(container));
+
+        var weight = jQuery('<div/>', {
+            'class': 'weight',
+            'html': self.item.weight
+        }).appendTo($(container));
+
+        return {
+            view: function () {
+                return container;
+            },
+            destroy: function(){
+                $(container).remove();
+            },
+            update: function(){
+                $(content).html();
+                $(weight).html();
+            }
+        }
+
+    })();
+
+    this.item.bind({
+        remove: function () {
+            self.ui.destroy();
+        }
+    });
+
+}
+OptionPanel.prototype.view = function () {
+    return this.ui.view();
+};
+OptionPanel.prototype.delete = function () {
+    this.item.delete();
+    this.parent.remove(this.item);
+};
+OptionPanel.prototype.isUniqueContent = function (content) {
+//!Inherited
+    //return this.language.isUnique(content.trim(), this.id);
+};
+OptionPanel.prototype.update = function (content, weight) {
+//!Inherited
+    //this.content = content;
+    //this.weight = weight;
+    //this.view.update();
+};
+OptionPanel.prototype.toHtml = function () {
+    var content = this.item.name;
+    var weight = this.item.weight;
+
+    var html = '<div class="button delete" title="Delete this option"></div>';
+    html += '<div class="button edit" title="Edit this option"></div>';
+    html += '<div class="content" data-value="' + content + '">';
+    html += this.contentToHtml(content);
+    html += '</div>';
+    html += '<div class="weight" data-value="' + weight + '">' + weight + '</div>';
+
+    return html;
+
+};
+OptionPanel.prototype.contentToHtml = function () {
+    var content = this.item.name;
+    var replaced = content.replace(/\[/g, '|$').replace(/\]/g, '|');
+    var parts = replaced.split("|");
+
+    var result = '';
+    for (var part = 0; part < parts.length; part++) {
+        var s = parts[part];
+        if (s.length > 0) {
+            result += '<span class="';
+            result += (my.text.startsWith(s, '$') ? 'complex' : 'plain');
+            result += '">';
+            result += s.replace("$", "");
+            result += '</span>';
+        }
+    }
+
+    return result;
+};
+
+
+
 
 
 //function Language(parent, properties) {

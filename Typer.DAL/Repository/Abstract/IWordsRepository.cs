@@ -24,6 +24,7 @@ namespace Typer.DAL.Repositories
         bool NameExists(int id, string name);
 
         IEnumerable<WordDto> GetWords(int metawordId);
+        IEnumerable<WordDto> GetWords(int metawordId, int[] languages);
         IEnumerable<WordCategoryDto> GetCategories(int metawordId);
         IEnumerable<int> GetMetawordsIdsByCategories(int[] categories);
 
