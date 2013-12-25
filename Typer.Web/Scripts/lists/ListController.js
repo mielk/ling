@@ -614,8 +614,34 @@ Entity.prototype.removedLogs = function (logs) {
     var array = [];
     for (var i = 0; i < logs.length; i++) {
         var log = logs[i];
-        if (log.event === tag) {
+        if (log.event === tag && log.item && log.item.id) {
             array.push(log.item.id)
+        }
+    }
+    return array;
+};
+Entity.prototype.editedLogs = function (logs) {
+    var tag = 'edit';
+    var array = [];
+    for (var i = 0; i < logs.length; i++) {
+        var log = logs[i];
+        var item = log.item;
+        if (log.event === tag && item && item.id) {
+            var text = item.id + '|' + item.name + '|' + item.weight;
+            array.push(text)
+        }
+    }
+    return array;
+};
+Entity.prototype.addedLogs = function (logs) {
+    var tag = 'add';
+    var array = [];
+    for (var i = 0; i < logs.length; i++) {
+        var log = logs[i];
+        var item = log.item;
+        if (log.event === tag && item) {
+            var text = item.languageId + '|' + item.name + '|' + item.weight;
+            array.push(text)
         }
     }
     return array;
@@ -653,14 +679,24 @@ Metaword.prototype.update = function (properties) {
     var categories = (my.array.equal(properties.categories, this.categories) ? [] : properties.categories);
     var wordtype = (this.wordtype === properties.wordtype ? 0 : properties.wordtype.id);
     var removed = this.removedLogs(properties.logs);
+    var edited = this.editedLogs(properties.logs);
+    var added = this.addedLogs(properties.logs);
+
 
     //Check if there are any changes.
-    if (name || weight || (categories && categories.length) || wordtype){
+    if (name || weight || wordtype ||
+        (categories && categories.length) ||
+        (removed && removed.length) ||
+        (edited && edited.length) ||
+        (added && added.length)) {
         var result = this.service.update({
             word: self,
             name: name,
             weight: weight,
             wordtype: wordtype,
+            removed: removed,
+            edited: edited,
+            added: added,
             categories: my.categories.toIntArray(categories),
             callback: function (result) {
                 if (result !== false) {
@@ -745,13 +781,21 @@ Question.prototype.update = function (properties) {
     var name = (this.name === properties.name ? '' : properties.name);
     var weight = (this.weight === properties.weight ? 0 : properties.weight);
     var categories = (my.array.equal(properties.categories, this.categories) ? [] : properties.categories);
+    var removed = this.removedLogs(properties.logs);
+    var edited = this.editedLogs(properties.logs);
+    var added = this.addedLogs(properties.logs);
+
 
     //Check if there are any changes.
-    if (name || weight || (categories && categories.length)) {
+    if (name || weight || (categories && categories.length) || (removed && removed.length) ||
+            (edited && edited.length) || (added && added.length)) {
         var result = this.service.update({
             question: self,
             name: name,
             weight: weight,
+            removed: removed,
+            edited: edited,
+            added: added,
             categories: my.categories.toIntArray(categories),
             callback: function (result) {
                 if (result !== false) {
@@ -833,6 +877,16 @@ EditEntity.prototype.setCategories = function (categories) {
 EditEntity.prototype.addLog = function (log) {
     this.logs.push(log);
 };
+EditEntity.prototype.removeLog = function (type, item) {
+    var array = [];
+    for (var i = 0; i < this.logs.length; i++) {
+        var log = this.logs[i];
+        if (log.event !== type && log.item !== item) {
+            array.push(log);
+        }
+    }
+    this.logs = array;
+};
 EditEntity.prototype.loadDetails = function () {
     var languages = my.languages.userLanguages();
     for (var i = 0; i < languages.length; i++) {
@@ -858,6 +912,9 @@ EditEntity.prototype.getLanguagesIds = function () {
         languages.push(language.id);
     });
     return languages;
+};
+EditEntity.prototype.newItem = function () {
+    alert('Must be defined in implementing class');
 };
 
 
@@ -890,6 +947,12 @@ WordEditEntity.prototype.loadItems = function () {
     }
 
 };
+WordEditEntity.prototype.newItem = function (languageId) {
+    return new Word(this, {
+        LanguageId: languageId,
+        'new': true
+    });
+};
 
 function QuestionEditEntity(properties) {
     EditEntity.call(this, properties);
@@ -908,6 +971,13 @@ QuestionEditEntity.prototype.loadItems = function () {
     }
 
 };
+QuestionEditEntity.prototype.newItem = function (languageId) {
+    return new Option(this, {
+        LanguageId: languageId,
+        'new': true
+    });
+};
+
 
 
 
@@ -925,10 +995,14 @@ LanguageEntity.prototype.addItem = function (option) {
 LanguageEntity.prototype.remove = function (item) {
     this.items = my.array.remove(this.items, item);
     
-    this.parent.addLog({
-        event: 'remove',
-        item: item
-    });
+    if (item.new) {
+        this.parent.removeLog('add', item);
+    } else {
+        this.parent.addLog({
+            event: 'remove',
+            item: item
+        });
+    }
 
 };
 
@@ -943,7 +1017,7 @@ function OptionEntity(entity, properties) {
     //Properties.
     this.parent = entity;
     this.id = properties.Id || 0;
-    this.name = properties.Name || properties.Content;
+    this.name = properties.Name || properties.Content || '';
     this.weight = properties.Weight || 1;
     this.languageId = properties.LanguageId;
     this.isActive = properties.IsActive || true;
@@ -952,6 +1026,7 @@ function OptionEntity(entity, properties) {
     this.isApproved = properties.IsApproved || false;
     this.positive = properties.Positive || 0;
     this.negative = properties.Negative || 0;
+    this.new = properties.new || false;
 
     //Logic.
     this.eventHandler = new EventHandler();
@@ -980,6 +1055,75 @@ OptionEntity.prototype.delete = function () {
     });
 
 };
+OptionEntity.prototype.edit = function (properties) {
+    var editItem = this.editItem();
+    var editPanel = this.editOptionPanel(editItem, properties);
+    editPanel.display();
+};
+OptionEntity.prototype.editOptionPanel = function (line) {
+    alert('Must be defined in implementing class');
+};
+OptionEntity.prototype.checkName = function (name) {
+
+    if (!name) return MessageBundle.get(dict.NameCannotBeEmpty);
+
+    var language = this.language;
+    var items = language ? language.items : [];
+    for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        var itemName = item.name;
+        if (itemName === name && item !== this) {
+            return MessageBundle.get(dict.NameAlreadyExists);
+        }
+    }
+    return true;
+};
+OptionEntity.prototype.update = function (properties) {
+    if (!properties.OptionEditEntity) {
+        alert('Illegal argument passed to function Metaword.update');
+        return;
+    }
+
+    var self = this;
+    var name = (this.name === properties.name ? '' : properties.name);
+    var weight = (this.weight === properties.weight ? 0 : properties.weight);
+
+    //Check if there are any changes.
+    if (name || weight) {
+        this.name = name;
+        this.weight = weight;
+
+
+        if (this.new) {
+
+            this.parent.addLog({
+                event: 'add',
+                item: self
+            });
+
+            this.trigger({
+                type: 'add',
+                item: self
+            });
+
+        } else {
+            this.parent.addLog({
+                event: 'edit',
+                item: self
+            });
+
+            this.trigger({
+                type: 'update',
+                name: name,
+                weight: weight
+            });
+
+
+        }
+
+    }
+
+};
 
 
 function Word(metaword, properties) {
@@ -989,7 +1133,19 @@ function Word(metaword, properties) {
     this.service = my.words;
 }
 extend(OptionEntity, Word);
-
+Word.prototype.editOptionPanel = function (editItem, properties) {
+    return new WordOptionEditPanel(this, editItem, properties);
+};
+Word.prototype.editItem = function () {
+    var self = this;
+    return new WordOptionEditEntity({
+        id: self.id,
+        name: self.name,
+        weight: self.weight,
+        isActive: self.isActive,
+        languageId: self.languageId
+    });
+};
 
 function Option(question, properties) {
     OptionEntity.call(this, question, properties);
@@ -998,8 +1154,72 @@ function Option(question, properties) {
     this.service = my.questions;
 }
 extend(OptionEntity, Option);
+Option.prototype.editOptionPanel = function (editItem, properties) {
+    return new QuestionOptionEditPanel(this, editItem, properties);
+};
+Option.prototype.editItem = function () {
+    var self = this;
+    return new QuestionOptionEditEntity({
+        id: self.id,
+        name: self.name,
+        weight: self.weight,
+        isActive: self.isActive,
+        languageId: self.languageId
+    });
+};
 
 
+function OptionEditEntity(properties) {
+    this.OptionEditEntity = true;
+    this.id = properties.id;
+    this.name = properties.name;
+    this.weight = properties.weight;
+    this.isActive = properties.isActive;
+    this.languageId = properties.languageId;
+    this.isActive = properties.isActive || true;
+
+    //Logic.
+    this.eventHandler = new EventHandler();
+
+    //Logic.
+    this.eventHandler = new EventHandler();
+    this.logs = [];
+
+    //this.loadDetails();
+
+}
+OptionEditEntity.prototype.bind = function (e) {
+    this.eventHandler.bind(e);
+};
+OptionEditEntity.prototype.trigger = function (e) {
+    this.eventHandler.trigger(e);
+};
+OptionEditEntity.prototype.setWeight = function (value) {
+    this.weight = value;
+    this.trigger({
+        type: 'changeWeight',
+        weight: value
+    });
+};
+OptionEditEntity.prototype.addLog = function (log) {
+    this.logs.push(log);
+};
+OptionEditEntity.prototype.editItem = function () {
+    alert('Must be defined by implementing class');
+};
+
+
+function WordOptionEditEntity(properties) {
+    OptionEditEntity.call(this, properties);
+    this.WordOptionEditEntity = true;
+}
+extend(OptionEditEntity, WordOptionEditEntity);
+
+function QuestionOptionEditEntity(properties) {
+    OptionEditEntity.call(this, properties);
+    this.QuestionOptionEditEntity = true;
+}
+extend(OptionEditEntity, QuestionOptionEditEntity);
 
 
 
@@ -1283,7 +1503,7 @@ function EditDataLine(panel, properties) {
     this.EditDataLine = true;
     var self = this;
     this.panel = panel;
-    this.object = panel.editObject;
+    this.object = panel.editObject || properties.object;
     this.property = properties.property;
     this.linked = new HashTable(null);
     this.validation = properties.validation;
@@ -1394,7 +1614,6 @@ function EditDataLine(panel, properties) {
             }
         }
 
-
         return {
             focus: function () {
                 $(panel).focus();
@@ -1420,6 +1639,8 @@ function EditDataLine(panel, properties) {
     }
 
     if (this.validation) this.validate(properties.value);
+
+    if (properties.focus) this.ui.focus();
 
 }
 EditDataLine.prototype.focus = function () {
@@ -1533,24 +1754,10 @@ function LanguagePanel(item, panel, languageEntity) {
             'value': 'Add'
         }).bind({
             'click': function () {
-                //var word = new Word({
-                //    language: me.language
-                //});
-                //var editPanel = new EditPanel({
-                //    object: word
-                //});
-                //editPanel.bind({
-                //    confirm: function (e) {
-                //        var $word = e.object;
-                //        me.language.addOption($word);
-                //        alert('confirm');
-                //    }
-                //});
-                //editPanel.display();
+                self.addNew();
             }
         }).appendTo($(buttons));
 
-        //this.language.parent.view.append($(this.container));
 
         function collapse() {
             isCollapsed = true;
@@ -1603,15 +1810,28 @@ LanguagePanel.prototype.loadOptions = function () {
     var items = entity.items;
     for (var i = 0; i < items.length; i++) {
         var option = items[i];
-        var panel = new OptionPanel(option, this);
-        this.items.setItem(option.id, panel);
-        this.ui.addOption(panel.view());
+        this.addOption(option);
     }
+};
+LanguagePanel.prototype.addOption = function (option) {
+    var panel = new OptionPanel(option, this);
+    this.items.setItem(option.id || option.name, panel);
+    this.ui.addOption(panel.view());
 };
 LanguagePanel.prototype.remove = function (item) {
     this.items.removeItem(item.id);
     this.ui.refresh();
+}; 
+LanguagePanel.prototype.addNew = function () {
+    var item = this.item.newItem(this.language.id);
+    item.injectLanguageEntity(this.languageEntity);
+    item.edit({ languagePanel: this });
 };
+LanguagePanel.prototype.add = function (item) {
+    this.addOption(item);
+};
+
+
 
 
 function OptionPanel(item, parent) {
@@ -1638,15 +1858,7 @@ function OptionPanel(item, parent) {
             'title': 'Edit this option'
         }).bind({
             click: function () {
-                //var editPanel = new EditPanel({
-                //    'object': me.word
-                //});
-                //editPanel.bind({
-                //    'confirm': function (e) {
-                //        me.word.update(e.name, e.weight);
-                //    }
-                //});
-                //editPanel.display();
+                self.item.edit({ line: self });
             }
         }).appendTo($(container));
 
@@ -1667,9 +1879,9 @@ function OptionPanel(item, parent) {
             destroy: function(){
                 $(container).remove();
             },
-            update: function(){
-                $(content).html();
-                $(weight).html();
+            update: function($content, $weight){
+                $(content).html(self.contentToHtml($content));
+                $(weight).html($weight);
             }
         }
 
@@ -1694,10 +1906,7 @@ OptionPanel.prototype.isUniqueContent = function (content) {
     //return this.language.isUnique(content.trim(), this.id);
 };
 OptionPanel.prototype.update = function (content, weight) {
-//!Inherited
-    //this.content = content;
-    //this.weight = weight;
-    //this.view.update();
+    this.ui.update(content, weight);
 };
 OptionPanel.prototype.toHtml = function () {
     var content = this.item.name;
@@ -1733,62 +1942,6 @@ OptionPanel.prototype.contentToHtml = function () {
     return result;
 };
 
-
-
-
-
-//function Language(parent, properties) {
-
-//    this.view = new LanguageView(this);
-
-//    this.options = this.createOptionsSet(properties.words || {});
-
-//    this.view.refreshOptionsPanel();
-
-//}
-//Language.prototype.createOptionsSet = function(options) {
-//    var me = this;
-//    var array = new HashTable(null);
-//    for (var i = 0; i < options.length; i++) {
-//        var optionJson = options[i];
-//        var word = new Word({
-//            id: optionJson.Id,
-//            content: optionJson.Name,
-//            metawordId: optionJson.MetawordId,
-//            weight: optionJson.Weight,
-//            language: me
-//        });
-//        array.setItem(word.id, word);
-//    }
-
-//    return array;
-
-//};
-//Language.prototype.addOption = function (option) {
-//    this.options.setItem(option.key, option);
-//    this.view.addOption(option.view.container);
-//};
-//Language.prototype.removeOption = function(option) {
-//    this.options.removeItem(option.id);
-//    this.view.refreshOptionsPanel();
-//};
-//Language.prototype.isUnique = function(content, optionId) {
-//    var unique = true;
-//    this.options.each(function(key, option) {
-//        if (option.content === content) {
-//            if (option.id !== optionId) {
-//                unique = false;
-//            }
-//        }
-//    });
-//    return unique;
-//};
-
-
-
-//LanguageView.prototype.addOption = function(element) {
-//    $(element).appendTo($(this.options));
-//};
 
 
 
@@ -2038,3 +2191,214 @@ WordtypePanel.prototype.injectEditLine = function (editLine) {
     this.line = editLine;
     this.line.value = this.value;
 };
+
+
+
+
+
+
+
+
+function EditOptionPanel(object, editObject, properties) {
+    this.EditOptionPanel = true;
+    var self = this;
+    this.object = object;
+    this.editObject = editObject;
+    this.line = properties.line;
+    this.languagePanel = (this.line ? this.line.parent : properties.languagePanel);
+
+
+    this.validator = (function () {
+        var invalid = new HashTable(null);
+
+        return {
+            validation: function (e) {
+                if (e.status) {
+                    invalid.removeItem(e.id);
+                } else {
+                    invalid.setItem(e.id, e.id);
+                }
+
+                self.editObject.trigger({
+                    type: 'validation',
+                    status: invalid.size() === 0
+                });
+
+            }
+        };
+
+    })();
+
+    this.ui = (function () {
+        var background = jQuery('<div/>', {
+            'class': 'edit-background',
+            'z-index': my.ui.addTopLayer()
+        }).appendTo($(document.body));
+
+        var frame = jQuery('<div/>', {
+            'class': 'edit-frame'
+        }).appendTo($(background));
+
+        var container = jQuery('<div/>', {
+            'class': 'edit-container'
+        }).appendTo($(frame));
+
+        var close = jQuery('<div/>', {
+            'class': 'edit-close'
+        }).bind({
+            'click': function () {
+                self.cancel();
+            }
+        }).appendTo($(frame));
+
+        return {
+            display: function () {
+                $(background).css({
+                    'visibility': 'visible',
+                    'z-index': my.ui.addTopLayer()
+                });
+            },
+            hide: function () {
+                $(background).css({
+                    'visibility': 'hidden'
+                });
+            },
+            destroy: function () {
+                $(background).remove();
+            },
+            append: function (element) {
+                $(element).appendTo($(container));
+            }
+        }
+
+    })();
+
+    this.meta = (function () {
+        var controls = new HashTable(null);
+
+        var container = jQuery('<div/>', {
+            id: 'meta-container'
+        });
+        self.ui.append($(container));
+
+        return {
+            addLine: function (line) {
+                controls.setItem(line.property, line);
+                line.appendTo(container);
+            },
+            getLine: function (key) {
+                return controls.getItem(key);
+            }
+        };
+
+    })();
+
+    this.buttons = (function () {
+        var panel = jQuery('<div/>', {
+            'class': 'edit-buttons-panel'
+        });
+
+        var container = jQuery('<div/>', {
+            'class': 'edit-buttons-container'
+        }).appendTo($(panel));
+
+        var ok = jQuery('<input/>', {
+            'class': 'edit-button',
+            'type': 'submit',
+            'value': 'OK'
+        }).bind({
+            'click': function () {
+                self.confirm();
+            }
+        }).appendTo($(container));
+
+        var cancel = jQuery('<input/>', {
+            'class': 'edit-button',
+            'type': 'submit',
+            'value': 'Cancel'
+        }).bind({
+            'click': function () {
+                self.cancel();
+            }
+        }).appendTo($(container));
+
+        self.ui.append(panel);
+
+        self.editObject.bind({
+            validation: function (e) {
+                if (e.status) {
+                    $(ok).removeAttr('disabled');
+                } else {
+                    $(ok).attr('disabled', 'disabled');
+                }
+            }
+        });
+
+    })();
+
+    this.generalRender();
+
+
+    this.object.bind({
+        update: function (e) {
+            self.line.update(e.name, e.weight);
+        },
+        add: function (e) {
+            self.languagePanel.add(e.item);
+        }
+    });
+
+}
+EditOptionPanel.prototype.display = function () {
+    this.ui.display();
+};
+EditOptionPanel.prototype.cancel = function () {
+    this.ui.destroy();
+};
+EditOptionPanel.prototype.confirm = function () {
+    this.object.update(this.editObject);
+    this.ui.destroy();
+};
+EditOptionPanel.prototype.start = function () {
+    this.display();
+};
+EditOptionPanel.prototype.generalRender = function () {
+
+    var self = this;
+
+    //[Name]
+    this.meta.addLine(new EditDataLine(this, {
+        property: 'name', label: 'Name', object: self.editObject, value: self.editObject.name,
+        callback: function (value) { self.editObject.name = value; },
+        validation: function (params) {
+            return self.object.checkName(params.value);
+        },
+        editable: true, focus: true
+    }));
+
+    //[Weight]
+    var weightPanel = new WeightPanel(this, self.editObject, {
+        css: { 'margin': '9px 0', 'height': '16px' }
+    });
+    this.meta.addLine(new EditDataLine(this, {
+        property: 'weight', label: 'Weight', object: self.editObject, value: self.editObject.weight,
+        panel: weightPanel.view()
+    }));
+
+};
+
+function WordOptionEditPanel(object, editObject, line) {
+    EditOptionPanel.call(this, object, editObject, line);
+    this.WordOptionEditPanel = true;
+    var self = this;
+}
+extend(EditOptionPanel, WordOptionEditPanel);
+
+
+
+function QuestionOptionEditPanel(object, editObject, line) {
+    EditOptionPanel.call(this, object, editObject, line);
+    this.QuestionOptionEditPanel = true;
+    var self = this;
+}
+extend(EditOptionPanel, QuestionOptionEditPanel);

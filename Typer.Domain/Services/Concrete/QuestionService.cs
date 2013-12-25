@@ -82,9 +82,9 @@ namespace Typer.Domain.Services
         }
 
 
-        public bool Update(int id, string name, int weight, int[] categories)
+        public bool Update(int id, string name, int weight, int[] categories, int[] removed, string[] edited, string[] added)
         {
-            return _repository.Update(id, name, weight, categories);
+            return _repository.Update(id, name, weight, categories, removed, edited, added);
         }
 
 

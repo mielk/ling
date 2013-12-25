@@ -1,11 +1,11 @@
-﻿var Language = Language || {
+﻿var EnumLanguage = EnumLanguage || {
     POL: { code: 'POL', name: 'polski' },
     ENG: { code: 'ENG', name: 'English' }
 };
 
 
 var my = my || {};
-my.language = Language.ENG;
+my.language = EnumLanguage.ENG;
 
 
 var dict = dict || {

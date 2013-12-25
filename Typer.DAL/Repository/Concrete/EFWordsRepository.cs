@@ -174,7 +174,7 @@ namespace Typer.DAL.Repositories
 
         }
 
-        public bool Update(int id, string name, int wordtype, int weight, int[] categories)
+        public bool Update(int id, string name, int wordtype, int weight, int[] categories, int[] removed, string[] edited, string[] added)
         {
 
             using (TransactionScope scope = new TransactionScope())
@@ -193,9 +193,47 @@ namespace Typer.DAL.Repositories
                             result = UpdateCategories(id, categories);
                         }
 
+
+                        //Removed
+                        if (removed != null){
+                            for (var i = 0; i < removed.Length; i++)
+                            {
+                                var _id = removed[i];
+                                var word = GetWord(_id);
+                                if (word == null) result = false;
+                                word.IsActive = false;
+                            }
+                        }
+
+
+                        //Edited
+                        if (edited != null)
+                        {
+                            for (var i = 0; i < edited.Length; i++)
+                            {
+                                var s = edited[i];
+                                var _result = UpdateWord(s);
+                                if (!_result) result = false;
+                            }
+                        }
+
+
+                        //Added
+                        if (added != null)
+                        {
+                            for (var i = 0; i < added.Length; i++)
+                            {
+                                var s = added[i];
+                                var _result = AddOption(s, id);
+                                if (!_result) result = false;
+                            }
+                        }
+
+
+
                         if (result)
                         {
-                            Context.SaveChanges();                                                                                                                      
+                            Context.SaveChanges();
                             scope.Complete();
                             return true;
                         }
@@ -213,6 +251,70 @@ namespace Typer.DAL.Repositories
             }
 
         }
+
+
+        private bool UpdateWord(string s)
+        {
+            string[] parameters = s.Split('|');
+
+            //Id.
+            var id = 0;
+            Int32.TryParse(parameters[0], out id);
+
+            //Name.
+            var name = parameters[1];
+
+            //Weight.
+            var weight = 1;
+            Int32.TryParse(parameters[2], out weight);
+
+            var option = GetWord(id);
+            if (option == null) return false;
+            option.Name = name;
+            option.Weight = weight;
+
+            return true;
+
+        }
+
+
+        private bool AddOption(string s, int id)
+        {
+            string[] parameters = s.Split('|');
+
+            //Language Id.
+            var languageId = 0;
+            Int32.TryParse(parameters[0], out languageId);
+
+            //Name.
+            var name = parameters[1];
+
+            //Weight.
+            var weight = 1;
+            Int32.TryParse(parameters[2], out weight);
+
+            var word = new WordDto
+            {
+                Name = name,
+                Weight = weight,
+                CreateDate = DateTime.Now,
+                CreatorId = 1,
+                IsActive = true,
+                Negative = 0,
+                Positive = 0,
+                IsApproved = false,
+                MetawordId = id,
+                LanguageId = languageId
+            };
+            if (word == null) return false;
+
+            Context.Words.Add(word);
+
+            return true;
+
+        }
+
+
 
         public IEnumerable<WordCategoryDto> GetCategories(int metawordId)
         {
@@ -277,6 +379,11 @@ namespace Typer.DAL.Repositories
         public IEnumerable<WordDto> GetWords(int metawordId)
         {
             return Context.Words.Where(o => o.MetawordId == metawordId && o.IsActive);
+        }
+
+        public WordDto GetWord(int wordId)
+        {
+            return Context.Words.SingleOrDefault(w => w.Id == wordId);
         }
 
         public IEnumerable<WordDto> GetWords(int metawordId, int[] languages)

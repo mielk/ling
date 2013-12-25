@@ -15,7 +15,7 @@ namespace Typer.Domain.Services
         bool NameExists(int id, string name);
         bool UpdateMetaword(Metaword metaword);
         bool UpdateCategories(int id, int[] categories);
-        bool Update(int id, string name, int wordtype, int weight, int[] categories);
+        bool Update(int id, string name, int wordtype, int weight, int[] categories, int[] removed, string[] edited, string[] added);
         bool AddMetaword(Metaword metaword);
         IEnumerable<Word> GetWords(int metawordId);
         IEnumerable<Word> GetWords(int metawordId, int[] languages);

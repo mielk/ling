@@ -163,7 +163,7 @@ namespace Typer.DAL.Repositories
         #endregion
 
 
-        public bool Update(int id, string name, int weight, int[] categories)
+        public bool Update(int id, string name, int weight, int[] categories, int[] removed, string[] edited, string[] added)
         {
 
             using (TransactionScope scope = new TransactionScope())
@@ -180,6 +180,46 @@ namespace Typer.DAL.Repositories
                         {
                             result = UpdateCategories(id, categories);
                         }
+
+
+
+
+                        //Removed
+                        if (removed != null)
+                        {
+                            for (var i = 0; i < removed.Length; i++)
+                            {
+                                var _id = removed[i];
+                                var option = GetOption(_id);
+                                if (option == null) result = false;
+                                option.IsActive = false;
+                            }
+                        }
+
+
+                        //Edited
+                        if (edited != null)
+                        {
+                            for (var i = 0; i < edited.Length; i++)
+                            {
+                                var s = edited[i];
+                                var _result = UpdateOption(s);
+                                if (!_result) result = false;
+                            }
+                        }
+
+                        //Added
+                        if (added != null)
+                        {
+                            for (var i = 0; i < added.Length; i++)
+                            {
+                                var s = added[i];
+                                var _result = AddOption(s, id);
+                                if (!_result) result = false;
+                            }
+                        }
+
+
 
                         if (result)
                         {
@@ -206,6 +246,65 @@ namespace Typer.DAL.Repositories
 
 
 
+        private bool UpdateOption(string s)
+        {
+            string[] parameters = s.Split('|');
+
+            //Id.
+            var id = 0;
+            Int32.TryParse(parameters[0], out id);
+
+            //Name.
+            var name = parameters[1];
+
+            //Weight.
+            var weight = 1;
+            Int32.TryParse(parameters[2], out weight);
+
+            var option = GetOption(id);
+            if (option == null) return false;
+            option.Content = name;
+            option.Weight = weight;
+
+            return true;
+
+        }
+
+        private bool AddOption(string s, int id)
+        {
+            string[] parameters = s.Split('|');
+
+            //Language Id.
+            var languageId = 0;
+            Int32.TryParse(parameters[0], out languageId);
+
+            //Name.
+            var name = parameters[1];
+
+            //Weight.
+            var weight = 1;
+            Int32.TryParse(parameters[2], out weight);
+
+            var option = new QuestionOptionDto
+            {
+                Content = name,
+                Weight = weight,
+                CreateDate = DateTime.Now,
+                CreatorId = 1,
+                IsActive = true,
+                Negative = 0,
+                Positive = 0,
+                IsApproved = false,
+                QuestionId = id,
+                LanguageId = languageId
+            };
+            if (option == null) return false;
+
+            Context.QuestionOptions.Add(option);
+
+            return true;
+
+        }
 
 
 
@@ -274,6 +373,10 @@ namespace Typer.DAL.Repositories
             return Context.QuestionOptions.Where(o => o.QuestionId == questionId && o.IsActive && languages.Contains(o.LanguageId));
         }
 
+        public QuestionOptionDto GetOption(int optionId)
+        {
+            return Context.QuestionOptions.SingleOrDefault(o => o.Id == optionId);
+        }
 
         public IEnumerable<QuestionCategoryDto> GetCategories(int questionId)
         {
