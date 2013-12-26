@@ -7,8 +7,6 @@ namespace Typer.Web.Models
         public Question Question { get; set; }
         public Language ParentLanguage { get; set; }
         public Language LearnLanguage { get; set; }
-        private QuestionOption selectedOption;
-
 
     }
 }

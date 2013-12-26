@@ -325,11 +325,9 @@
     <Content Include="Views\Login\Summary.cshtml" />
     <Content Include="Views\Test\Index.cshtml" />
     <Content Include="Views\Questions\List.cshtml" />
-    <Content Include="Views\Questions\Question.cshtml" />
     <Content Include="Views\Test\Index2.cshtml" />
     <Content Include="Views\Categories\Index.cshtml" />
     <Content Include="Views\Words\List.cshtml" />
-    <Content Include="Views\Words\Metaword.cshtml" />
     <Content Include="Views\Words\SearchPanel.cshtml" />
     <Content Include="Views\Home\UnitTests.cshtml" />
   </ItemGroup>
