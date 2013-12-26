@@ -120,6 +120,21 @@
                 callback: e.callback
             });
         },
+        add: function (e) {
+            dbOperation({
+                functionName: 'Add',
+                data: {
+                    'name': e.name,
+                    'weight': e.weight,
+                    'categories': e.categories,
+                    'wordtype': e.wordtype,
+                    'added': e.added
+                }, traditional: true,
+                success: 'Word ' + e.name + ' has been added',
+                error: 'Error when trying to add the word ' + e.name,
+                callback: e.callback
+            });
+        },
         getWords: function (id, languages) {
             var words;
             $.ajax({

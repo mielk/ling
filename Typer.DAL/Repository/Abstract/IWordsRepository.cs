@@ -11,6 +11,7 @@ namespace Typer.DAL.Repositories
         MetawordDto GetMetaword(string name);
 
         bool AddMetaword(MetawordDto metaword);
+        int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options);
 
         bool UpdateName(int id, string name);
         bool UpdateWeight(int id, int weight);

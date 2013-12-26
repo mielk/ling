@@ -80,6 +80,11 @@ namespace Typer.Domain.Services
             return _repository.AddMetaword(dto);
         }
 
+        public int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options)
+        {
+            return _repository.AddMetaword(name, wordtype, weight, categories, options);
+        }
+
         public IEnumerable<Word> GetWords(int metawordId)
         {
             var dataObjects = _repository.GetWords(metawordId);

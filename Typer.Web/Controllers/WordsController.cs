@@ -132,6 +132,15 @@ namespace Typer.Web.Controllers
 
             [HttpPost]
             [AllowAnonymous]
+            public ActionResult Add(string name, int wordtype, int weight, int[] categories, string[] added)
+            {
+                var id = _service.AddMetaword(name, wordtype, weight, categories, added);
+                return Json(id > 0 ? true : false);
+            }
+
+
+            [HttpPost]
+            [AllowAnonymous]
             public ActionResult Deactivate(int id)
             {
                 var value = _service.Deactivate(id);

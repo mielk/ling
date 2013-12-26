@@ -52,7 +52,13 @@ ListManager.prototype.createListItem = function() {
     alert('Must be defined in implementing class');
 }; 
 ListManager.prototype.createNewItem = function () {
+    var self = this;
     var item = this.emptyItem();
+    item.bind({
+        add: function () {
+            self.filterManager.filter({});
+        }
+    });
     item.edit();
 };
 ListManager.prototype.emptyItem = function () {
@@ -85,7 +91,8 @@ WordListManager.prototype.emptyItem = function () {
         IsApprover: false,
         Positive: 0,
         Negative: 0,
-        Categories: (filters.categories && filters.categories.length === 1 ? filters.categories : [])
+        Categories: (filters.categories && filters.categories.length === 1 ? filters.categories : []),
+        'new': true
     });
 };
 
@@ -114,7 +121,8 @@ QuestionListManager.prototype.emptyItem = function () {
         IsApprover: false,
         Positive: 0,
         Negative: 0,
-        Categories: (filters.categories && filters.categories.length === 1 ? filters.categories : [])
+        Categories: (filters.categories && filters.categories.length === 1 ? filters.categories : []),
+        'new': true
     });
 };
 
@@ -272,9 +280,9 @@ function ListPager(controller, properties) {
 
         // ReSharper disable UnusedLocals
         var first = element('first', 'First', function () { self.controller.moveToPage(1); });
-        var previous = element('previous', 'Previous', function () { self.controller.moveToPage(self.currentPage - 1); });
+        var previous = element('previous', 'Previous', function () { self.controller.moveToPage(self.page - 1); });
         var current = element('current', '', function () { });
-        var next = element('next', 'Next', function () { self.controller.moveToPage(self.currentPage + 1); });
+        var next = element('next', 'Next', function () { self.controller.moveToPage(self.page + 1); });
         var last = element('last', 'Last', function () { self.controller.moveToPage(self.totalPages); });
         // ReSharper restore UnusedLocals
 
@@ -496,6 +504,7 @@ function Entity(properties) {
     this.positive = properties.Positive || 0;
     this.negative = properties.Negative || 0;
     this.categories = this.loadCategories(properties.Categories) || [];
+    this.new = properties.new || false;
 
     this.eventHandler = new EventHandler();
 
@@ -689,57 +698,79 @@ Metaword.prototype.update = function (properties) {
         (removed && removed.length) ||
         (edited && edited.length) ||
         (added && added.length)) {
-        var result = this.service.update({
-            word: self,
-            name: name,
-            weight: weight,
-            wordtype: wordtype,
-            removed: removed,
-            edited: edited,
-            added: added,
-            categories: my.categories.toIntArray(categories),
-            callback: function (result) {
-                if (result !== false) {
 
-                    //Name.
-                    if (name) {
-                        self.name = name;
+        if (self.new) {
+
+            var result = this.service.add({
+                word: self,
+                name: name,
+                weight: weight,
+                wordtype: wordtype,
+                added: added,
+                categories: my.categories.toIntArray(categories),
+                callback: function (result) {
+                    if (result !== false) {
                         self.trigger({
-                            type: 'changeName',
-                            name: name
+                            type: 'add'
                         });
                     }
-
-                    //Wordtype.
-                    if (wordtype) {
-                        self.wordtype = properties.wordtype;
-                        self.trigger({
-                            type: 'changeWordtype',
-                            wordtype: self.wordtype
-                        });
-                    }
-
-                    //Weight.
-                    if (weight) {
-                        self.weight = weight;
-                        self.trigger({
-                            type: 'changeWeight',
-                            weight: weight
-                        });
-                    }
-
-                    //Categories.
-                    if (categories && categories.length) {
-                        self.categories = categories;
-                        self.trigger({
-                            type: 'changeCategories',
-                            categories: categories
-                        });
-                    }
-
                 }
-            }
-        });
+            });
+
+        } else {
+            var result = this.service.update({
+                word: self,
+                name: name,
+                weight: weight,
+                wordtype: wordtype,
+                removed: removed,
+                edited: edited,
+                added: added,
+                categories: my.categories.toIntArray(categories),
+                callback: function (result) {
+                    if (result !== false) {
+
+                        //Name.
+                        if (name) {
+                            self.name = name;
+                            self.trigger({
+                                type: 'changeName',
+                                name: name
+                            });
+                        }
+
+                        //Wordtype.
+                        if (wordtype) {
+                            self.wordtype = properties.wordtype;
+                            self.trigger({
+                                type: 'changeWordtype',
+                                wordtype: self.wordtype
+                            });
+                        }
+
+                        //Weight.
+                        if (weight) {
+                            self.weight = weight;
+                            self.trigger({
+                                type: 'changeWeight',
+                                weight: weight
+                            });
+                        }
+
+                        //Categories.
+                        if (categories && categories.length) {
+                            self.categories = categories;
+                            self.trigger({
+                                type: 'changeCategories',
+                                categories: categories
+                            });
+                        }
+
+                    }
+                }
+            });
+        }
+
     }
     
 };

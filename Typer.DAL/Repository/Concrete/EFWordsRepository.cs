@@ -391,6 +391,66 @@ namespace Typer.DAL.Repositories
             return Context.Words.Where(o => o.MetawordId == metawordId && o.IsActive && languages.Contains(o.LanguageId));
         }
 
+        public int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options)
+        {
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                var result = true;
+                var metaword = new MetawordDto
+                {
+                    CreateDate = DateTime.Now,
+                    CreatorId = 1,
+                    Name = name,
+                    Type = wordtype,
+                    Weight = weight,
+                    IsActive = true
+                };
+
+                Context.Metawords.Add(metaword);
+                Context.SaveChanges();
+                var id = metaword.Id;
+
+                if (id > 0)
+                {
+
+                    try{
+
+                        result = UpdateCategories(id, categories);
+
+
+                        //Added
+                        if (options != null)
+                        {
+                            for (var i = 0; i < options.Length; i++)
+                            {
+                                var s = options[i];
+                                var _result = AddOption(s, id);
+                                if (!_result) result = false;
+                            }
+                        }
+
+                        if (result)
+                        {
+                            Context.SaveChanges();
+                            scope.Complete();
+                            return id;
+                        }
+
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+
+                }
+
+                scope.Dispose();
+                return 0;
+
+                }
+   
+            }
 
     }
 }
