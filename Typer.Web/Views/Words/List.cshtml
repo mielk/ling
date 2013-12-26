@@ -11,29 +11,3 @@
     @Scripts.Render("~/bundles/categories")
     @Scripts.Render("~/bundles/search")
 }
-
-@*@Html.Partial("SearchPanel", Model.SearchInfo)
-
-<div class="word header">
-    <div class="id">Id</div>
-    <div class="name">Name</div>
-    <div class="weight">Weight</div>
-    <div class="type">Type</div>
-    <div class="categories">Categories</div>
-</div>
-
-
-@foreach (var m in Model.Metawords) {
-    Html.RenderPartial("Metaword", m);
-}
-
-
-
-<div id="add-button-container">
-    <a id="add-item" class="add">Add</a> 
-</div>
-
-
-<div class="pager">
-    @Html.PageLinks(Model.PagingInfo, x => Url.Action("List", new {page = x}))
-</div>*@

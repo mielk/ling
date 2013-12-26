@@ -4,7 +4,6 @@
     ViewBag.Title = "List";
     Layout = "~/Views/Shared/_Layout.cshtml";
     @Styles.Render("~/Content/question")
-    //@Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/lists")
@@ -12,28 +11,3 @@
     @Scripts.Render("~/bundles/categories")
     @Scripts.Render("~/bundles/search")
 }
-
-@*
-<div class="question header">
-    <div class="id">Id</div>
-    <div class="name">Name</div>
-    <div class="weight">Weight</div>
-    <div class="categories">Categories</div>
-</div>
-
-
-@foreach (var q in Model.Questions) {
-    Html.RenderPartial("Question", q);
-}
-
-
-<div id="add-button-container">
-    <a id="add-item" class="add">Add</a> 
-</div>
-
-
-
-
-<div class="pager">
-    @Html.PageLinks(Model.PagingInfo, x => Url.Action("List", new {page = x}))
-</div>*@
