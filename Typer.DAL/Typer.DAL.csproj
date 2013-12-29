@@ -69,6 +69,7 @@
     <Compile Include="TransferObjects\QuestionDto.cs" />
     <Compile Include="TransferObjects\UserDto.cs" />
     <Compile Include="TransferObjects\UserLanguageDto.cs" />
+    <Compile Include="TransferObjects\WordtypePropertyDto.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

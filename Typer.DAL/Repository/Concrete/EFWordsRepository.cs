@@ -321,6 +321,10 @@ namespace Typer.DAL.Repositories
             return Context.MatchWordCategory.Where(m => m.MetawordId == metawordId);
         }
 
+        public IEnumerable<WordtypePropertyDto> GetProperties(int languageId, int wordtypeId)
+        {
+            return Context.WordtypeProperties.Where(wp => wp.LanguageId == languageId && wp.WordtypeId == wordtypeId);
+        }
 
         public bool Activate(int id)
         {

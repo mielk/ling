@@ -22,5 +22,6 @@ namespace Typer.Domain.Services
         IEnumerable<Word> GetWords(int metawordId, int[] languages);
         IEnumerable<Category> GetCategories(int metawordId);
         IEnumerable<Metaword> Filter(int wordType, int lowWeight, int upWeight, int[] categories, string text);
+        IEnumerable<WordtypeProperty> GetProperties(int languageId, int wordtypeId);
     }
 }

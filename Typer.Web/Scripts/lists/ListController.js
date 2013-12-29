@@ -1238,6 +1238,13 @@ OptionEditEntity.prototype.addLog = function (log) {
 OptionEditEntity.prototype.editItem = function () {
     alert('Must be defined by implementing class');
 };
+OptionEditEntity.prototype.createPropertyManager = function () {
+    alert('Must be defined by implementing class');
+};
+OptionEditEntity.prototype.createDetailsManager = function () {
+    alert('Must be defined by implementing class');
+};
+
 
 
 function WordOptionEditEntity(properties) {
@@ -1245,12 +1252,119 @@ function WordOptionEditEntity(properties) {
     this.WordOptionEditEntity = true;
 }
 extend(OptionEditEntity, WordOptionEditEntity);
+WordOptionEditEntity.prototype.createPropertyManager = function () {
+    return new WordPropertyManager(this, {});
+};
+WordOptionEditEntity.prototype.createDetailsManager = function () {
+    return new GrammarManager(this, {});
+};
+
+
+
+
+
+
+
+
+
+
+
+
 
 function QuestionOptionEditEntity(properties) {
     OptionEditEntity.call(this, properties);
     this.QuestionOptionEditEntity = true;
 }
 extend(OptionEditEntity, QuestionOptionEditEntity);
+QuestionOptionEditEntity.prototype.createPropertyManager = function () {
+    alert('Not implemented yet');
+};
+QuestionOptionEditEntity.prototype.createDetailsManager = function () {
+    alert('Not implemented yet');
+};
+
+
+
+
+
+function PropertyManager(object, properties) {
+    this.PropertyManager = true;
+    var self = this;
+    this.object = object;
+    this.items = new HashTable(null);
+
+    this.ui = (function () {
+        var container = jQuery('<div/>', {
+            'class': 'option-details-container'
+        });
+
+        return {
+            view: function () {
+                return container;
+            }
+        }
+
+    })();
+
+
+    //return {
+    //    addProperty: function (property) {
+    //        controls.setItem(property.id, property);
+    //        $(property.view()).appendTo($(container));
+    //    },
+    //    getProperty: function (key) {
+    //        return controls.getItem(key);
+    //    }
+    //};
+
+}
+PropertyManager.prototype.view = function () {
+    return this.ui.view();
+};
+
+
+function WordPropertyManager(object, properties) {
+    PropertyManager.call(this, object, properties);
+    this.WordPropertyManager = true;
+}
+extend(PropertyManager, WordPropertyManager);
+
+
+
+
+
+function DetailsManager(object, properties) {
+    this.DetailsManager = true;
+    var self = this;
+    this.object = object;
+
+    this.ui = (function () {
+        var container = jQuery('<div/>', {
+            'class': 'option-details-container'
+        });
+
+        return {
+            view: function () {
+                return container;
+            }
+        }
+
+    })();
+}
+DetailsManager.prototype.view = function () {
+    return this.ui.view();
+};
+
+
+function GrammarManager(object, properties) {
+    DetailsManager.call(this, object, properties);
+    this.GrammerManager = true;
+
+    this.forms = new HashTable(null);
+
+}
+extend(DetailsManager, GrammarManager);
+
 
 
 
@@ -2226,10 +2340,6 @@ WordtypePanel.prototype.injectEditLine = function (editLine) {
 
 
 
-
-
-
-
 function EditOptionPanel(object, editObject, properties) {
     this.EditOptionPanel = true;
     var self = this;
@@ -2237,7 +2347,6 @@ function EditOptionPanel(object, editObject, properties) {
     this.editObject = editObject;
     this.line = properties.line;
     this.languagePanel = (this.line ? this.line.parent : properties.languagePanel);
-
 
     this.validator = (function () {
         var invalid = new HashTable(null);
@@ -2324,6 +2433,12 @@ function EditOptionPanel(object, editObject, properties) {
 
     })();
 
+    this.properties = this.editObject.createPropertyManager();
+    this.ui.append(this.properties.view());
+
+    this.details = this.editObject.createDetailsManager();
+    this.ui.append(this.details.view());
+
     this.buttons = (function () {
         var panel = jQuery('<div/>', {
             'class': 'edit-buttons-panel'
@@ -2369,6 +2484,9 @@ function EditOptionPanel(object, editObject, properties) {
 
     this.generalRender();
 
+
+    //Rendering//
+    //this.loadProperties();
 
     this.object.bind({
         update: function (e) {
@@ -2417,6 +2535,9 @@ EditOptionPanel.prototype.generalRender = function () {
     }));
 
 };
+//EditOptionPanel.prototype.loadProperties = function () {
+//    alert('Must be defined by implementing class');
+//};
 
 function WordOptionEditPanel(object, editObject, line) {
     EditOptionPanel.call(this, object, editObject, line);
@@ -2424,6 +2545,30 @@ function WordOptionEditPanel(object, editObject, line) {
     var self = this;
 }
 extend(EditOptionPanel, WordOptionEditPanel);
+//WordOptionEditPanel.prototype.loadProperties = function () {
+//    var languageId = this.languagePanel.language.id;
+//    var wordtypeId = this.object.parent.wordtype ? this.object.parent.wordtype.id : 0;
+//    var properties;
+//    $.ajax({
+//        url: '/Words/GetProperties',
+//        type: 'GET',
+//        data: {
+//            'languageId': languageId,
+//            'wordtypeId': wordtypeId
+//        },
+//        datatype: "json",
+//        async: false,
+//        cache: false,
+//        success: function (result) {
+//            properties = result;
+//        },
+//        error: function (msg) {
+//            alert(msg.status + " | " + msg.statusText);
+//            return null;
+//        }
+//    });
+
+//};
 
 
 
@@ -2433,3 +2578,5 @@ function QuestionOptionEditPanel(object, editObject, line) {
     var self = this;
 }
 extend(EditOptionPanel, QuestionOptionEditPanel);
+//QuestionOptionEditPanel.prototype.loadProperties = function () {
+//};

@@ -18,6 +18,7 @@ namespace Typer.DAL.Infrastructure
         public DbSet<CategoryDto> Categories { get; set; }
         public DbSet<WordCategoryDto> MatchWordCategory { get; set; }
         public DbSet<QuestionCategoryDto> MatchQuestionCategory { get; set; }
+        public DbSet<WordtypePropertyDto> WordtypeProperties { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -31,6 +32,7 @@ namespace Typer.DAL.Infrastructure
             modelBuilder.Entity<CategoryDto>().ToTable("Categories");
             modelBuilder.Entity<WordCategoryDto>().ToTable("MatchWordCategory");
             modelBuilder.Entity<QuestionCategoryDto>().ToTable("MatchQuestionCategory");
+            modelBuilder.Entity<WordtypePropertyDto>().ToTable("WordtypeProperties");
         }
 
 

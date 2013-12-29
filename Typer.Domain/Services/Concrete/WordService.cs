@@ -112,6 +112,12 @@ namespace Typer.Domain.Services
             return dtos.Select(dto => _categoryService.GetCategory(dto.CategoryId)).ToList();
         }
 
+        public IEnumerable<WordtypeProperty> GetProperties(int languageId, int wordtypeId)
+        {
+            var dtos = _repository.GetProperties(languageId, wordtypeId);
+            return dtos.Select(WordtypePropertyFromDto).ToList();
+        }
+
         public IEnumerable<Metaword> Filter(int wordType, int lowWeight, int upWeight, int[] categories, string text)
         {
             var dtos = _repository.GetMetawords();
@@ -143,6 +149,32 @@ namespace Typer.Domain.Services
                 Positive = dto.Positive,
                 Weight = dto.Weight,
                 Type = (WordType) dto.Type
+            };
+        }
+
+        private static WordtypePropertyDto WordtypePropertyToDto(WordtypeProperty property)
+        {
+            return new WordtypePropertyDto
+            {
+                Details = property.Details,
+                Id = property.Id,
+                LanguageId = property.LanguageId,
+                Name = property.Name,
+                Type = property.Type,
+                WordtypeId = property.WordtypeId
+            };
+        }
+
+        private static WordtypeProperty WordtypePropertyFromDto(WordtypePropertyDto dto)
+        {
+            return new WordtypeProperty
+            {
+                Details = dto.Details,
+                Id = dto.Id,
+                LanguageId = dto.LanguageId,
+                Name = dto.Name,
+                Type = dto.Type,
+                WordtypeId = dto.WordtypeId
             };
         }
 

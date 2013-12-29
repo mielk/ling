@@ -1031,3 +1031,13 @@ a.checked
     background-color: rgb(255, 242, 181) !important;
     color: #444;
 }
+
+
+.option-details-container {
+    display: block;
+    position: relative;
+    width: 100%;
+    border-top: 1px solid #777;
+    margin-top: 6px;
+    padding: 6px 0;
+}

@@ -1,0 +1,369 @@
+CREATE TABLE [dbo].[WordTypes] (
+    [Id]   INT            NOT NULL,
+    [Name] NVARCHAR (255) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+
+
+CREATE TABLE [dbo].[Countries] (
+    [Id]        INT            IDENTITY (1, 1) NOT NULL,
+    [ShortName] NVARCHAR (3)   NOT NULL,
+    [Name]      NVARCHAR (100) NOT NULL,
+    [FlagTop]   INT            NULL,
+    [FlagLeft]  INT            NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+
+
+CREATE TABLE [dbo].[Users] (
+    [UserId]           INT            IDENTITY (1, 1) NOT NULL,
+    [Username]         NVARCHAR (50)  NOT NULL,
+    [Password]         NVARCHAR (MAX) NOT NULL,
+    [FirstName]        NVARCHAR (100) NULL,
+    [LastName]         NVARCHAR (100) NULL,
+    [CountryId]        INT            NULL,
+    [DateOfBirth]      DATETIME       NULL,
+    [RegistrationDate] DATETIME       DEFAULT (getdate()) NOT NULL,
+    [Email]            NVARCHAR (50)  NOT NULL,
+    [IsActive]         BIT            DEFAULT ((1)) NOT NULL,
+    [MailVerified]     BIT            DEFAULT ((0)) NOT NULL,
+    [VerificationCode] NVARCHAR (MAX) NULL,
+    [VerificationDate] DATETIME       NULL,
+    PRIMARY KEY CLUSTERED ([UserId] ASC),
+    CONSTRAINT [Unique_Username] UNIQUE NONCLUSTERED ([Username] ASC),
+    CONSTRAINT [Unique_Mail] UNIQUE NONCLUSTERED ([Email] ASC),
+    CONSTRAINT [FK_User_Country] FOREIGN KEY ([CountryId]) REFERENCES [dbo].[Countries] ([Id])
+);
+
+
+
+CREATE TABLE [dbo].[Categories] (
+    [Id]         INT            IDENTITY (1, 1) NOT NULL,
+    [Name]       NVARCHAR (255) NOT NULL,
+    [ParentId]   INT            NULL,
+    [IsActive]   BIT            DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT            NOT NULL,
+    [CreateDate] DATETIME       DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT            DEFAULT ((0)) NOT NULL,
+    [Positive]   INT            DEFAULT ((0)) NOT NULL,
+    [Negative]   INT            DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([ParentId]) REFERENCES [dbo].[Categories] ([Id])
+);
+
+
+CREATE TABLE [dbo].[Languages] (
+    [Id]           INT           IDENTITY (1, 1) NOT NULL,
+    [Name]         VARCHAR (255) NOT NULL,
+    [Flag]         VARCHAR (MAX) NULL,
+    [IsActive]     BIT           DEFAULT ((1)) NOT NULL,
+    [OriginalName] VARCHAR (255) NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+
+
+CREATE TABLE [dbo].[UserLanguages] (
+    [Id]         INT IDENTITY (1, 1) NOT NULL,
+    [UserId]     INT NOT NULL,
+    [LanguageId] INT NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [Unique_Set] UNIQUE NONCLUSTERED ([UserId] ASC, [LanguageId] ASC),
+    CONSTRAINT [FK_Language] FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id])
+);
+
+
+
+
+
+
+CREATE TABLE [dbo].[Metawords] (
+    [Id]         INT            IDENTITY (1, 1) NOT NULL,
+    [Name]       NVARCHAR (255) NOT NULL,
+    [Type]       INT            NOT NULL,
+    [Weight]     INT            DEFAULT ((1)) NOT NULL,
+    [IsActive]   BIT            DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT            NOT NULL,
+    [CreateDate] DATETIME       DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT            DEFAULT ((0)) NOT NULL,
+    [Positive]   INT            DEFAULT ((0)) NOT NULL,
+    [Negative]   INT            DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    UNIQUE NONCLUSTERED ([Name] ASC),
+    CONSTRAINT [FK_WordType] FOREIGN KEY ([Type]) REFERENCES [dbo].[WordTypes] ([Id]),
+    CONSTRAINT [Check_Metaword_Weight] CHECK ([Weight]>(0) AND [Weight]<=(10))
+);
+
+
+
+CREATE TABLE [dbo].[Words] (
+    [Id]         INT            IDENTITY (1, 1) NOT NULL,
+    [MetawordId] INT            NOT NULL,
+    [LanguageId] INT            NOT NULL,
+    [Name]       NVARCHAR (255) NOT NULL,
+    [Weight]     INT            DEFAULT ((1)) NOT NULL,
+    [IsActive]   BIT            DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT            NOT NULL,
+    [CreateDate] DATETIME       DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT            DEFAULT ((0)) NOT NULL,
+    [Positive]   INT            DEFAULT ((0)) NOT NULL,
+    [Negative]   INT            DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [Word_Unique_Content] UNIQUE NONCLUSTERED ([MetawordId] ASC, [Name] ASC, [LanguageId] ASC),
+    FOREIGN KEY ([MetawordId]) REFERENCES [dbo].[Metawords] ([Id]),
+    FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id]),
+    CONSTRAINT [Check_Word_Weight] CHECK ([Weight]>(0) AND [Weight]<=(10))
+);
+
+
+
+
+CREATE TABLE [dbo].[WordtypeProperties] (
+    [Id]         INT            IDENTITY (1, 1) NOT NULL,
+    [LanguageId] INT            NOT NULL,
+    [WordtypeId] INT            NOT NULL,
+    [Name]       NVARCHAR (255) NOT NULL,
+    [Type]       NVARCHAR (255) NOT NULL,
+    [Details]    NVARCHAR (255) NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id]),
+    FOREIGN KEY ([WordtypeId]) REFERENCES [dbo].[WordTypes] ([Id])
+);
+
+
+CREATE TABLE [dbo].[WordsProperties] (
+    [Id]         INT            IDENTITY (1, 1) NOT NULL,
+    [IdWord]     INT            NOT NULL,
+    [IdProperty] INT            NOT NULL,
+    [Value]      NVARCHAR (255) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([IdWord]) REFERENCES [dbo].[Words] ([Id]),
+    FOREIGN KEY ([IdProperty]) REFERENCES [dbo].[WordtypeProperties] ([Id])
+);
+
+
+
+CREATE TABLE [dbo].[MatchWordCategory] (
+    [Id]         INT      IDENTITY (1, 1) NOT NULL,
+    [MetawordId] INT      NOT NULL,
+    [CategoryId] INT      NOT NULL,
+    [IsActive]   BIT      DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT      NOT NULL,
+    [CreateDate] DATETIME DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT      DEFAULT ((0)) NOT NULL,
+    [Positive]   INT      DEFAULT ((0)) NOT NULL,
+    [Negative]   INT      DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([MetawordId]) REFERENCES [dbo].[Metawords] ([Id])
+);
+
+
+
+
+
+CREATE TABLE [dbo].[Questions] (
+    [Id]         INT           IDENTITY (1, 1) NOT NULL,
+    [Name]       VARCHAR (255) NOT NULL,
+    [Weight]     INT           DEFAULT ((0)) NOT NULL,
+    [IsActive]   BIT           DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT           NOT NULL,
+    [CreateDate] DATETIME      DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT           DEFAULT ((0)) NOT NULL,
+    [Positive]   INT           DEFAULT ((0)) NOT NULL,
+    [Negative]   INT           DEFAULT ((0)) NOT NULL,
+    [IsComplex]  BIT           DEFAULT ((1)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [Unique_Name] UNIQUE NONCLUSTERED ([Name] ASC),
+    CONSTRAINT [Check_Weight] CHECK ([Weight]>(0) AND [Weight]<=(10))
+);
+
+
+
+
+CREATE TABLE [dbo].[MatchQuestionCategory] (
+    [Id]         INT      IDENTITY (1, 1) NOT NULL,
+    [QuestionId] INT      NOT NULL,
+    [CategoryId] INT      NOT NULL,
+    [IsActive]   BIT      DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT      NOT NULL,
+    [CreateDate] DATETIME DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT      DEFAULT ((0)) NOT NULL,
+    [Positive]   INT      DEFAULT ((0)) NOT NULL,
+    [Negative]   INT      DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([QuestionId]) REFERENCES [dbo].[Questions] ([Id])
+);
+
+
+
+CREATE TABLE [dbo].[QuestionOptions] (
+    [Id]         INT            IDENTITY (1, 1) NOT NULL,
+    [QuestionId] INT            NOT NULL,
+    [LanguageId] INT            NOT NULL,
+    [Content]    NVARCHAR (255) NOT NULL,
+    [Weight]     INT            DEFAULT ((1)) NOT NULL,
+    [IsActive]   BIT            DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT            NOT NULL,
+    [CreateDate] DATETIME       DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT            DEFAULT ((0)) NOT NULL,
+    [Positive]   INT            DEFAULT ((0)) NOT NULL,
+    [Negative]   INT            DEFAULT ((0)) NOT NULL,
+    [IsComplex]  BIT            DEFAULT ((1)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [QuestionOption_Unique_Name] UNIQUE NONCLUSTERED ([QuestionId] ASC, [Content] ASC, [LanguageId] ASC),
+    CONSTRAINT [FK_QuestionId] FOREIGN KEY ([QuestionId]) REFERENCES [dbo].[Questions] ([Id]),
+    CONSTRAINT [FK_QuestionOption_Creator] FOREIGN KEY ([CreatorId]) REFERENCES [dbo].[Users] ([UserId]),
+    CONSTRAINT [FK_QuestionLanguage] FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id]),
+    CONSTRAINT [QuestionOption_Check_Weight] CHECK ([Weight]>(0) AND [Weight]<=(10))
+);
+
+
+
+
+CREATE TABLE [dbo].[VariantSets] (
+    [Id]               INT            IDENTITY (1, 1) NOT NULL,
+    [QuestionOptionId] INT            NOT NULL,
+    [VariantTag]       NVARCHAR (255) NOT NULL,
+    [IsActive]         BIT            DEFAULT ((1)) NOT NULL,
+    [CreatorId]        INT            NOT NULL,
+    [CreateDate]       DATETIME       DEFAULT (getdate()) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [Unique_Variant_Tag] UNIQUE NONCLUSTERED ([QuestionOptionId] ASC, [VariantTag] ASC),
+    FOREIGN KEY ([QuestionOptionId]) REFERENCES [dbo].[QuestionOptions] ([Id])
+);
+
+
+
+CREATE TABLE [dbo].[Variants] (
+    [Id]           INT            IDENTITY (1, 1) NOT NULL,
+    [VariantSetId] INT            NOT NULL,
+    [Key]          NVARCHAR (255) NOT NULL,
+    [Content]      NVARCHAR (255) NOT NULL,
+    [IsActive]     BIT            DEFAULT ((1)) NOT NULL,
+    [CreatorId]    INT            NOT NULL,
+    [CreateDate]   DATETIME       DEFAULT (getdate()) NOT NULL,
+    [IsApproved]   BIT            DEFAULT ((0)) NOT NULL,
+    [Positive]     INT            DEFAULT ((0)) NOT NULL,
+    [Negative]     INT            DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [Unique_Variant_Content] UNIQUE NONCLUSTERED ([VariantSetId] ASC, [Key] ASC),
+    FOREIGN KEY ([VariantSetId]) REFERENCES [dbo].[VariantSets] ([Id])
+);
+
+
+
+CREATE TABLE [dbo].[VariantLimits] (
+    [Id]                 INT      IDENTITY (1, 1) NOT NULL,
+    [VariantId]          INT      NOT NULL,
+    [ConnectedVariantId] INT      NOT NULL,
+    [IsActive]           BIT      DEFAULT ((1)) NOT NULL,
+    [CreatorId]          INT      NOT NULL,
+    [CreateDate]         DATETIME DEFAULT (getdate()) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [Unique_Variant_Limit] UNIQUE NONCLUSTERED ([VariantId] ASC, [ConnectedVariantId] ASC),
+    FOREIGN KEY ([VariantId]) REFERENCES [dbo].[Variants] ([Id]),
+    FOREIGN KEY ([ConnectedVariantId]) REFERENCES [dbo].[Variants] ([Id]),
+    CONSTRAINT [Different_Limits] CHECK ([VariantId]<>[ConnectedVariantId])
+);
+
+
+
+
+CREATE TABLE [dbo].[VariantConnections] (
+    [Id]             INT      IDENTITY (1, 1) NOT NULL,
+    [VariantSetId]   INT      NOT NULL,
+    [ConnectedSetId] INT      NOT NULL,
+    [IsActive]       BIT      DEFAULT ((1)) NOT NULL,
+    [CreatorId]      INT      NOT NULL,
+    [CreateDate]     DATETIME DEFAULT (getdate()) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [Unique_Variant_Connection] UNIQUE NONCLUSTERED ([VariantSetId] ASC, [ConnectedSetId] ASC),
+    FOREIGN KEY ([VariantSetId]) REFERENCES [dbo].[VariantSets] ([Id]),
+    FOREIGN KEY ([ConnectedSetId]) REFERENCES [dbo].[VariantSets] ([Id]),
+    CONSTRAINT [Different_Variants] CHECK ([VariantSetId]<>[ConnectedSetId])
+);
+
+
+
+
+CREATE TABLE [dbo].[Grammar] (
+    [Id]         INT            IDENTITY (1, 1) NOT NULL,
+    [WordId]     INT            NOT NULL,
+    [Content]    NVARCHAR (255) NOT NULL,
+    [Definition] NVARCHAR (255) NOT NULL,
+    [IsActive]   BIT            DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT            NOT NULL,
+    [CreateDate] DATETIME       DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT            DEFAULT ((0)) NOT NULL,
+    [Positive]   INT            DEFAULT ((0)) NOT NULL,
+    [Negative]   INT            DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [Unique_Grammar_Form] UNIQUE NONCLUSTERED ([WordId] ASC, [Definition] ASC),
+    FOREIGN KEY ([WordId]) REFERENCES [dbo].[Words] ([Id])
+);
+
+
+
+SET IDENTITY_INSERT [dbo].[Categories] ON
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (1, N'root', NULL, 1, 1, N'2013-12-03 00:17:43', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (2, N'Geografia', 1, 1, 1, N'2013-12-03 00:17:56', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (3, N'Pañstwa', 2, 1, 1, N'2013-12-03 00:18:09', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (4, N'Europa', 3, 1, 1, N'2013-12-03 00:18:21', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (5, N'Ameryka Pó³nocna', 3, 1, 1, N'2013-12-03 00:18:32', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (6, N'Ameryka Po³udniowa', 3, 1, 1, N'2013-12-03 00:18:38', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (7, N'Afryka', 3, 1, 1, N'2013-12-03 00:18:45', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (8, N'Azja', 3, 1, 1, N'2013-12-03 00:18:51', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (9, N'Oceania', 3, 1, 1, N'2013-12-03 00:18:56', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (10, N'Miasta', 2, 1, 0, N'2013-12-04 22:25:23', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (11, N'Rzeki', 2, 1, 0, N'2013-12-04 22:32:33', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (12, N'Góry', 2, 1, 0, N'2013-12-04 22:34:25', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (13, N'Morza', 2, 1, 0, N'2013-12-04 22:34:32', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (14, N'Przyroda', 1, 1, 0, N'2013-12-04 22:38:35', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (15, N'Roœliny', 14, 1, 0, N'2013-12-04 22:38:44', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (16, N'Zwierzêta', 14, 1, 0, N'2013-12-04 22:38:50', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (17, N'Ptaki', 16, 1, 0, N'2013-12-04 22:38:59', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (18, N'Domowe', 16, 1, 0, N'2013-12-04 22:39:04', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (19, N'Gospodarcze', 16, 1, 0, N'2013-12-04 22:39:10', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (20, N'Ryby', 16, 1, 0, N'2013-12-04 22:39:16', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (21, N'Owady', 16, 1, 0, N'2013-12-04 22:39:21', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (22, N'P³azy i gady', 16, 1, 0, N'2013-12-04 22:39:29', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (23, N'Egzotyczne', 16, 1, 0, N'2013-12-04 22:39:34', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (24, N'Owoce', 15, 1, 0, N'2013-12-04 22:39:41', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (25, N'Warzywa', 15, 1, 0, N'2013-12-04 22:39:45', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (26, N'Drzewa', 15, 1, 0, N'2013-12-04 22:39:47', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (27, N'Osoby', 1, 1, 0, N'2013-12-04 22:40:07', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (28, N'Profesje', 27, 1, 0, N'2013-12-04 22:40:12', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (29, N'Narodowoœci', 27, 1, 0, N'2013-12-04 22:40:17', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (30, N'Rodzina', 27, 1, 0, N'2013-12-04 22:40:20', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (31, N'Przedmioty', 1, 1, 0, N'2013-12-04 22:40:53', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (32, N'Domowe', 31, 1, 0, N'2013-12-04 22:40:56', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (33, N'Kuchenne', 31, 1, 0, N'2013-12-04 22:40:59', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (39, N'aaa', 1, 0, 0, N'2013-12-04 22:54:42', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (40, N'bbb', 1, 0, 0, N'2013-12-14 04:59:15', 0, 0, 0)
+INSERT INTO [dbo].[Categories] ([Id], [Name], [ParentId], [IsActive], [CreatorId], [CreateDate], [IsApproved], [Positive], [Negative]) VALUES (41, N'Kontynenty', 2, 1, 0, N'2013-12-14 14:51:43', 0, 0, 0)
+SET IDENTITY_INSERT [dbo].[Categories] OFF
+
+
+
+SET IDENTITY_INSERT [dbo].[Languages] ON
+INSERT INTO [dbo].[Languages] ([Id], [Name], [Flag], [IsActive], [OriginalName]) VALUES (1, N'polski', N'pol', 1, N'Polski')
+INSERT INTO [dbo].[Languages] ([Id], [Name], [Flag], [IsActive], [OriginalName]) VALUES (2, N'angielski', N'gbr', 1, N'English')
+INSERT INTO [dbo].[Languages] ([Id], [Name], [Flag], [IsActive], [OriginalName]) VALUES (3, N'hiszpanski', N'esp', 1, N'Espanol')
+INSERT INTO [dbo].[Languages] ([Id], [Name], [Flag], [IsActive], [OriginalName]) VALUES (4, N'wloski', N'ita', 1, N'Italiano')
+SET IDENTITY_INSERT [dbo].[Languages] OFF
+
+
+SET IDENTITY_INSERT [dbo].[UserLanguages] ON
+INSERT INTO [dbo].[UserLanguages] ([Id], [UserId], [LanguageId]) VALUES (1, 1, 1)
+INSERT INTO [dbo].[UserLanguages] ([Id], [UserId], [LanguageId]) VALUES (2, 1, 2)
+INSERT INTO [dbo].[UserLanguages] ([Id], [UserId], [LanguageId]) VALUES (3, 1, 3)
+INSERT INTO [dbo].[UserLanguages] ([Id], [UserId], [LanguageId]) VALUES (4, 1, 4)
+SET IDENTITY_INSERT [dbo].[UserLanguages] OFF
+
+
+
+SET IDENTITY_INSERT [dbo].[Users] ON
+INSERT INTO [dbo].[Users] ([UserId], [Username], [Password], [FirstName], [LastName], [CountryId], [DateOfBirth], [RegistrationDate], [Email], [IsActive], [MailVerified], [VerificationCode], [VerificationDate]) VALUES (1, N'mielk', N'a7e8363bba55ff817479fe761befa5169e9bec4b', N'Tomasz', N'Mielniczek', 1, N'1984-04-21 00:00:00', N'2013-10-21 00:00:00', N'mielk@o2.pl', 1, 1, N'ae44c2397f6f49c888e157aa2b50123e', N'2013-10-21 00:00:00')
+SET IDENTITY_INSERT [dbo].[Users] OFF
+
+
+

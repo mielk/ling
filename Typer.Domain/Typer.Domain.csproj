@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\Category.cs" />
+    <Compile Include="Entities\WordtypeProperty.cs" />
     <Compile Include="Entities\Word.cs" />
     <Compile Include="Entities\Metaword.cs" />
     <Compile Include="Entities\Language.cs" />
