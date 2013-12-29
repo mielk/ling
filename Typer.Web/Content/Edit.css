@@ -945,15 +945,15 @@ a.checked
 }
 
 .pl {
-    background-image: url('images/Polska.png') !important;
+    background-image: url('images/pol.png') !important;
 }
 
 .uk {
-    background-image: url('images/esp.png') !important;
+    background-image: url('images/gbr.png') !important;
 }
 
 .es {
-    background-image: url('images/UnitedKingdom.png') !important;
+    background-image: url('images/esp.png') !important;
 }
 
 .it {
