@@ -1330,6 +1330,45 @@ function WordPropertyManager(object, properties) {
 extend(PropertyManager, WordPropertyManager);
 
 
+function WordProperty(params) {
+    this.WordProperty = true;
+    this.eventHandler = new EventHandler();
+    var self = this;
+
+    var ui = (function () {
+        var container = jQuery('<div/>', {            
+            'class': 'property-container'
+        });
+
+        var input = (function() {
+            switch (params.type) {
+                case 'radio':
+                    return my.ui.radio({
+                        container: container,
+                        name: params.name
+                    });
+                case 'boolean':
+                    return my.ui.checkbox({                        
+                        container: container,
+                        name: params.name
+                    });
+            }
+        });
+
+        return {
+            view: function() {
+                return container;
+            }
+        };
+
+    })();
+
+}
+WordProperty.prototype.view = function() {
+    return this.ui.view();
+};
+
+
 
 
 
