@@ -1,39 +1,23 @@
-﻿function BaseClass(properties) {
-    this.a = properties.a;
-    this.b = properties.b;
-}
-BaseClass.prototype.funkcja = function () {
-    return 'funkcja A';
-};
+﻿$(function () {
 
-//var animal = { eats: true }
-//var rabbit = { jumps: true }
-//rabbit.__proto__ = animal  // inherit
-//alert(rabbit.eats) // true
+    var container = $('#test-container')[0];
+    var result = $('#result')[0];
 
-
-
-function InheritedClass(properties) {
-    
-}
-InheritedClass.prototype = BaseClass;
-InheritedClass.prototype.funkcja = function () {
-    return 'funkcja B';
-};
-
-
-$(function () {
-    var a = new BaseClass({
-        a: 1,
-        b: 2
+    var radio = my.ui.radio({
+        container: container,
+        name: 'test',
+        options: {
+            a: { key: 'a', value: 1 },
+            b: { key: 'b', value: 2, checked: true },
+            c: { key: 'c', value: 3 },
+            d: { key: 'd', value: 4 }
+        }
     });
 
-    var b = new InheritedClass({
-        a: 5,
-        b: 6
+    radio.bind({        
+        click: function(e) {
+            $(result).html(e.caption);
+        }
     });
-
-    alert(a.funkcja());
-    alert(b.funkcja());
 
 });

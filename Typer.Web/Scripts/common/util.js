@@ -238,8 +238,77 @@ my.ui = (function () {
             topLayer--;
         },
         
-        display: function(div, value) {
-                    $(div).css({ 'display': (value ? 'block' : 'none') });
+        display: function (div, value) {
+            $(div).css({ 'display': (value ? 'block' : 'none') });
+        },
+        
+        radio: function(params) {
+            var name = params.name;
+            var options = [];
+            var eventHandler = new EventHandler();
+            var panel = jQuery('<div/>').css({
+                'display': 'block',
+                'position': 'relative',
+                'float': 'left',
+                'width': '100%',
+                'height': '100%',
+                'padding': '6px'
+            }).appendTo($(params.container));
+            
+            //Create items.
+            var total = Object.keys(params.options).length;
+            var option = function ($key, $object) {
+                var caption = $key;
+                var object = $object;
+                var container = jQuery('<div/>').css({
+                    'width': (100 / total) + '%',
+                    'float': 'left'
+                }).appendTo(panel);
+
+                var input = jQuery('<input/>', {
+                    type: 'radio',
+                    name: name,
+                    value: $key,
+                    checked: $object.checked ? true : false,
+                    'class': 'radio-option'
+                }).css({
+                    'float': 'left',
+                    'margin-right': '6px',
+                    'border': 'none'
+                }).bind({                    
+                   'click': function() {
+                       eventHandler.trigger({
+                           type: 'click',
+                           caption: caption,
+                           object: object
+                       });
+                   } 
+                });
+                
+                var label = jQuery('<label>').
+                    attr('for', input).
+                    text(caption);
+                input.appendTo(label);
+                label.appendTo(container);
+                
+            };
+            
+
+            for (var key in params.options) {
+                if (params.options.hasOwnProperty(key)) {
+                    options.push(option(key, params.options[key]));
+                }
+            }
+
+            return {
+                bind: function(e) {
+                    eventHandler.bind(e);
+                },
+                trigger: function(e) {
+                    eventHandler.trigger(e);
+                }
+            };
+
         }
     };
 
@@ -379,12 +448,26 @@ my.array = (function () {
 /* Funkcje daty i czasu */
 my.dates = (function () {
 
+    var $timeband = {
+        D: { name: 'day', period: 1 },
+        W: { name: 'week', period: 7 },
+        M: { name: 'month', period: 30 }
+    };
+    
+    function daysDifference(start, end) {
+        var milisInDay = 86400000;
+        var startDay = Math.floor(start.getTime() / milisInDay);
+        var endDay = Math.floor(end.getTime() / milisInDay);
+        return (endDay - startDay);
+    }
+
+    function weeksDifference(start, end) {
+        var result = Math.floor(daysDifference(start, end) / 7);
+        return (end.getDay() < start.getDay() ? result : result);
+    }
+
     return {        
-        TIMEBAND: {
-            D: { name: 'day', period: 1 },
-            W: { name: 'week', period: 7 },
-            M: { name: 'month', period: 30 }
-        },
+        TIMEBAND: $timeband,
 
         /*   Funkcja:    dateDifference
         *    Opis:       Funkcja zwraca różnicę pomiędzy datami [start] i [end],
@@ -392,14 +475,14 @@ my.dates = (function () {
         */
         dateDifference: function(timeband, start, end) {
             switch (timeband) {
-            case TIMEBAND.D:
-                return this.daysDifference(start, end);
-            case TIMEBAND.W:
-                return this.weeksDifference(start, end);
-            case TIMEBAND.M:
-                return this.monthsDifference(start, end);
-            default:
-                return 0;
+                case $timeband.D:
+                    return this.daysDifference(start, end);
+                case $timeband.W:
+                    return this.weeksDifference(start, end);
+                case $timeband.M:
+                    return this.monthsDifference(start, end);
+                default:
+                    return 0;
             }
         },
 
@@ -412,10 +495,7 @@ my.dates = (function () {
         *                wyrażoną w dniach.
         */
         daysDifference: function(start, end) {
-            var milisInDay = 86400000;
-            var startDay = Math.floor(start.getTime() / milisInDay);
-            var endDay = Math.floor(end.getTime() / milisInDay);
-            return (endDay - startDay);
+            return daysDifference(start, end);
         },
 
 
@@ -427,8 +507,7 @@ my.dates = (function () {
         *                wyrażoną w tygodniach.
         */
         weeksDifference: function(start, end) {
-            var result = Math.floor(daysDifference(start, end) / 7);
-            return (end.getDay() < start.getDay() ? result : result);
+            return weeksDifference(start, end);
         },
 
 
