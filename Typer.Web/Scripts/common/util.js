@@ -309,7 +309,63 @@ my.ui = (function () {
                 }
             };
 
+        },
+        
+        checkbox: function(params) {
+            var name = params.name;
+            var caption = params.caption || name;
+            var checked = params.checked ? true : false;
+            var eventHandler = new EventHandler();
+            var panel = jQuery('<div/>').css({
+                'display': 'block',
+                'position': 'relative',
+                'float': 'left',
+                'width': '100%',
+                'height': '100%',
+                'padding': '6px'
+            }).appendTo($(params.container));
+
+            var box = jQuery('<input/>', {
+                type: 'checkbox',
+                checked: checked
+            }).css({
+                'float': 'left',
+                'margin-right': '6px',
+                'border': 'none'
+            }).bind({                
+               'click': function() {
+                   checked = !checked;
+                   eventHandler.trigger({
+                       type: 'click',
+                       value: checked
+                   });
+               } 
+            });
+
+            eventHandler.bind({                
+               click: function(e) {
+                   $(box).prop('checked', e.value);
+               } 
+            });
+            
+            var label = jQuery('<label>').
+                attr('for', box).
+                text(caption);
+
+            box.appendTo(label);
+            label.appendTo(panel);
+
+            return {
+                bind: function (e) {
+                    eventHandler.bind(e);
+                },
+                trigger: function (e) {
+                    eventHandler.trigger(e);
+                }
+            };
+
         }
+
     };
 
 })();
