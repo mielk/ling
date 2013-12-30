@@ -34,7 +34,7 @@ WORDTYPE = {
         }
         return null;
     },
-    getValues: function (value) {
+    getValues: function () {
         var array = [];
         for (var key in this) {
             if (this.hasOwnProperty(key)) {
@@ -361,7 +361,7 @@ my.array = (function () {
         },
         remove: function (array, item) {
             var after = [];
-            if (!array || !array.length) return;
+            if (!array || !array.length) return array;
 
             for (var i = 0; i < array.length; i++) {
                 var object = array[i];
@@ -533,7 +533,6 @@ my.values = (function () {
 
 function Language(properties) {
     this.Language = true;
-    var self = this;
     this.id = properties.id;
     this.name = properties.name;
     this.flag = properties.flag;
@@ -567,7 +566,7 @@ my.languages = (function () {
                     used.push(language);
                 }
             },
-            error: function (msg) {
+            error: function () {
                 my.notify.display('Error when trying to load user languages', false);
             }
         });
@@ -577,13 +576,13 @@ my.languages = (function () {
     }
 
     return {
-        userLanguages: function () {
+        userLanguages: function() {
             if (!used) {
                 loadLanguages();
             }
             return used;
         },
-        get: function (id) {
+        get: function(id) {
             if (!used) {
                 loadLanguages();
             }
@@ -598,7 +597,7 @@ my.languages = (function () {
             return null;
 
         }
-    }
+    };
 
 })();
 
@@ -606,9 +605,9 @@ my.user = (function () {
     var currentUserId = 1;
 
     return {
-        id: function () {
+        id: function() {
             return currentUserId;
         }
-    }
+    };
 
 })();

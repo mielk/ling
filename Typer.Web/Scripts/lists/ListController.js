@@ -37,7 +37,7 @@ ListManager.prototype.moveToPage = function (page) {
 ListManager.prototype.newItem = function () {
     var e = this.filterValues;
     e.Categories = [];
-    e.UserLanguages = getLanguages();
+    e.UserLanguages = my.languages.userLanguages();
 
     return this.creator(e);
 
@@ -520,14 +520,16 @@ Entity.prototype.loadCategories = function (categories) {
     for (var i = 0; i < categories.length; i++) {
         var object = categories[i];
 
+        var category;
+
         if (object.Category) {
             array.push(object);
         } else if (object.Id) {
             var id = categories[i].Id;
-            var category = my.categories.getCategory(id);
+            category = my.categories.getCategory(id);
             array.push(category);
         } else if ($.isNumeric(object)) {
-            var category = my.categories.getCategory(object);
+            category = my.categories.getCategory(object);
             array.push(category);
         }
     }
@@ -539,7 +541,7 @@ Entity.prototype.setWeight = function(weight) {
 
     var self = this;
     this.weight = Math.max(Math.min(weight, 10), 1);
-    var result = this.service.updateWeight({
+    this.service.updateWeight({
         id: self.id,
         weight: weight,
         name: self.name,
@@ -577,7 +579,7 @@ Entity.prototype.activate = function (value) {
     }
 
 };
-Entity.prototype.editPanel = function (editItem) {
+Entity.prototype.editPanel = function () {
     alert('Must be defined by implementing class');
 };
 Entity.prototype.editItem = function () {
@@ -607,7 +609,7 @@ Entity.prototype.checkName = function (name) {
     }
 
 };
-Entity.prototype.update = function (properties) {
+Entity.prototype.update = function () {
     alert('Must by defined by implementing class');
 };
 Entity.prototype.injectListItem = function (item) {
@@ -624,7 +626,7 @@ Entity.prototype.removedLogs = function (logs) {
     for (var i = 0; i < logs.length; i++) {
         var log = logs[i];
         if (log.event === tag && log.item && log.item.id) {
-            array.push(log.item.id)
+            array.push(log.item.id);
         }
     }
     return array;
@@ -637,7 +639,7 @@ Entity.prototype.editedLogs = function (logs) {
         var item = log.item;
         if (log.event === tag && item && item.id) {
             var text = item.id + '|' + item.name + '|' + item.weight;
-            array.push(text)
+            array.push(text);
         }
     }
     return array;
@@ -650,7 +652,7 @@ Entity.prototype.addedLogs = function (logs) {
         var item = log.item;
         if (log.event === tag && item) {
             var text = item.languageId + '|' + item.name + '|' + item.weight;
-            array.push(text)
+            array.push(text);
         }
     }
     return array;
@@ -701,7 +703,7 @@ Metaword.prototype.update = function (properties) {
 
         if (self.new) {
 
-            var result = this.service.add({
+            this.service.add({
                 word: self,
                 name: name,
                 weight: weight,
@@ -718,7 +720,8 @@ Metaword.prototype.update = function (properties) {
             });
 
         } else {
-            var result = this.service.update({
+
+            this.service.update({
                 word: self,
                 name: name,
                 weight: weight,
@@ -820,7 +823,8 @@ Question.prototype.update = function (properties) {
     //Check if there are any changes.
     if (name || weight || (categories && categories.length) || (removed && removed.length) ||
             (edited && edited.length) || (added && added.length)) {
-        var result = this.service.update({
+
+        this.service.update({
             question: self,
             name: name,
             weight: weight,
@@ -898,13 +902,13 @@ EditEntity.prototype.setWeight = function (value) {
         weight: value
     });
 };
-EditEntity.prototype.setCategories = function (categories) {
+EditEntity.prototype.setCategories = function(categories) {
     this.categories = categories;
     this.trigger({
         type: 'changeCategories',
         categories: categories
     });
-}
+};
 EditEntity.prototype.addLog = function (log) {
     this.logs.push(log);
 };
@@ -1014,7 +1018,6 @@ QuestionEditEntity.prototype.newItem = function (languageId) {
 
 function LanguageEntity(parent, language) {
     this.LanguageEntity = true;
-    var self = this;
     this.parent = parent;
     this.language = language;
     this.items = [];
@@ -1091,7 +1094,7 @@ OptionEntity.prototype.edit = function (properties) {
     var editPanel = this.editOptionPanel(editItem, properties);
     editPanel.display();
 };
-OptionEntity.prototype.editOptionPanel = function (line) {
+OptionEntity.prototype.editOptionPanel = function () {
     alert('Must be defined in implementing class');
 };
 OptionEntity.prototype.checkName = function (name) {
@@ -1160,7 +1163,6 @@ OptionEntity.prototype.update = function (properties) {
 function Word(metaword, properties) {
     OptionEntity.call(this, metaword, properties);
     this.Word = true;
-    var self = this;
     this.service = my.words;
 }
 extend(OptionEntity, Word);
@@ -1181,7 +1183,6 @@ Word.prototype.editItem = function () {
 function Option(question, properties) {
     OptionEntity.call(this, question, properties);
     this.Option = true;
-    var self = this;
     this.service = my.questions;
 }
 extend(OptionEntity, Option);
@@ -1289,7 +1290,6 @@ QuestionOptionEditEntity.prototype.createDetailsManager = function () {
 
 function PropertyManager(object, properties) {
     this.PropertyManager = true;
-    var self = this;
     this.object = object;
     this.items = new HashTable(null);
 
@@ -1299,10 +1299,10 @@ function PropertyManager(object, properties) {
         });
 
         return {
-            view: function () {
+            view: function() {
                 return container;
             }
-        }
+        };
 
     })();
 
@@ -1335,7 +1335,6 @@ extend(PropertyManager, WordPropertyManager);
 
 function DetailsManager(object, properties) {
     this.DetailsManager = true;
-    var self = this;
     this.object = object;
 
     this.ui = (function () {
@@ -1344,10 +1343,10 @@ function DetailsManager(object, properties) {
         });
 
         return {
-            view: function () {
+            view: function() {
                 return container;
             }
-        }
+        };
 
     })();
 }
@@ -1417,6 +1416,7 @@ function EditPanel(object, editObject) {
             'class': 'edit-container'
         }).appendTo($(frame));
 
+        // ReSharper disable once UnusedLocals
         var close = jQuery('<div/>', {
             'class': 'edit-close'
         }).bind({
@@ -1426,24 +1426,24 @@ function EditPanel(object, editObject) {
         }).appendTo($(frame));
 
         return {
-            display: function () {
+            display: function() {
                 $(background).css({
                     'visibility': 'visible',
                     'z-index': my.ui.addTopLayer()
                 });
             },
-            hide: function () {
+            hide: function() {
                 $(background).css({
                     'visibility': 'hidden'
                 });
             },
-            destroy: function () {
+            destroy: function() {
                 $(background).remove();
             },
-            append: function (element) {
+            append: function(element) {
                 $(element).appendTo($(container));
             }
-        }
+        };
 
     })();
 
@@ -1502,6 +1502,7 @@ function EditPanel(object, editObject) {
             }
         }).appendTo($(container));
 
+        // ReSharper disable once UnusedLocals
         var cancel = jQuery('<input/>', {
             'class': 'edit-button',
             'type': 'submit',
@@ -1656,7 +1657,7 @@ function EditDataLine(panel, properties) {
 
     this.ui = (function () {
         var timer;
-        var panel;
+        var valuePanel;
 
         var container = jQuery('<div/>', {
             'class': 'field-line'
@@ -1684,10 +1685,10 @@ function EditDataLine(panel, properties) {
 
 
         if (properties.panel) {
-            panel = $(properties.panel);
-            $(panel).appendTo($(container));
+            valuePanel = $(properties.panel);
+            $(valuePanel).appendTo($(container));
         } else if (properties.editable) {
-            panel = jQuery('<input/>', {
+            valuePanel = jQuery('<input/>', {
                 'class': 'field default',
                 'type': 'text'
             }).bind({
@@ -1723,36 +1724,36 @@ function EditDataLine(panel, properties) {
                 }
             });
 
-            $(panel).val(properties.value);
+            $(valuePanel).val(properties.value);
 
             //Append panel to span to center it vertically.
             var span = jQuery('<span/>').
             bind({
                 'click': function () {
-                    $(panel).focus();
+                    $(valuePanel).focus();
                 }
             }).appendTo($(container));
 
-            panel.appendTo($(span));
+            valuePanel.appendTo($(span));
 
         } else {
-            panel = jQuery('<label/>', {
+            valuePanel = jQuery('<label/>', {
                 'class': 'value',
                 html: properties.value
             }).appendTo($(container));
         }
 
         if (properties.inputCss) {
-            $(panel).css(properties.inputCss);
+            $(valuePanel).css(properties.inputCss);
         }
 
         function format(value) {
             if (value === true) {
-                $(panel).removeClass('invalid').addClass('valid');
+                $(valuePanel).removeClass('invalid').addClass('valid');
                 $(errorContainer).css({ 'display': 'none' });
                 $(errorIcon).removeClass('iconInvalid').addClass('iconValid');
             } else {
-                $(panel).removeClass('valid').addClass('invalid');
+                $(valuePanel).removeClass('valid').addClass('invalid');
                 $(errorContainer).css({ 'display': 'table' });
                 $(errorIcon).removeClass('iconValid').addClass('iconInvalid');
                 $(error).text(value);
@@ -1761,10 +1762,10 @@ function EditDataLine(panel, properties) {
 
         return {
             focus: function () {
-                $(panel).focus();
+                $(valuePanel).focus();
             },
             value: function(){
-                return $(panel).val();
+                return $(valuePanel).val();
             },
             format: function (value) {
                 format(value);
@@ -1857,6 +1858,7 @@ function LanguagePanel(item, panel, languageEntity) {
         }).appendTo($(container));
 
 
+        // ReSharper disable once UnusedLocals
         var collapseButton = jQuery('<div/>', {
             'class': 'collapse'
         }).bind({
@@ -1869,11 +1871,12 @@ function LanguagePanel(item, panel, languageEntity) {
             }
         }).appendTo($(info));
 
-
+        // ReSharper disable once UnusedLocals
         var flag = jQuery('<div/>', {
             'class': 'flag ' + self.language.flag,
         }).appendTo($(info));
 
+        // ReSharper disable once UnusedLocals
         var name = jQuery('<div/>', {
             'class': 'name',
             'html': self.language.name
@@ -1893,6 +1896,7 @@ function LanguagePanel(item, panel, languageEntity) {
             'class': 'buttons'
         }).appendTo($(container));
 
+        // ReSharper disable once UnusedLocals
         var add = jQuery('<input/>', {
             'class': 'button add',
             'type': 'submit',
@@ -1930,17 +1934,17 @@ function LanguagePanel(item, panel, languageEntity) {
         }
 
         return {
-            view: function () {
+            view: function() {
                 return container;
             },
-            addOption: function (option) {
+            addOption: function(option) {
                 $(option).appendTo($(options));
                 showOptionsPanel();
             },
-            refresh: function () {
+            refresh: function() {
                 showOptionsPanel();
             }
-        }
+        };
 
     })();
 
@@ -1989,6 +1993,7 @@ function OptionPanel(item, parent) {
 
         var container = jQuery('<div/>', { 'class': 'option' });
         
+        // ReSharper disable once UnusedLocals
         var deleteButton = jQuery('<div/>', {
             'class': 'button delete',
             'title': 'Delete this option'
@@ -1998,6 +2003,7 @@ function OptionPanel(item, parent) {
             }
         }).appendTo($(container));
 
+        // ReSharper disable once UnusedLocals
         var edit = jQuery('<div/>', {
             'class': 'button edit',
             'title': 'Edit this option'
@@ -2018,17 +2024,17 @@ function OptionPanel(item, parent) {
         }).appendTo($(container));
 
         return {
-            view: function () {
+            view: function() {
                 return container;
             },
-            destroy: function(){
+            destroy: function() {
                 $(container).remove();
             },
-            update: function($content, $weight){
+            update: function($content, $weight) {
                 $(content).html(self.contentToHtml($content));
                 $(weight).html($weight);
             }
-        }
+        };
 
     })();
 
@@ -2046,7 +2052,7 @@ OptionPanel.prototype.delete = function () {
     this.item.delete();
     this.parent.remove(this.item);
 };
-OptionPanel.prototype.isUniqueContent = function (content) {
+OptionPanel.prototype.isUniqueContent = function () {
 //!Inherited
     //return this.language.isUnique(content.trim(), this.id);
 };
@@ -2103,9 +2109,9 @@ function WeightPanel(line, object, properties) {
             'position': 'relative',
             'height': '100%',
             'float': 'left',
-            '-moz-box-sizing': 'box-border',
-            '-webkit-box-sizing': 'box-border',
-            'box-sizing': 'box-border',
+            '-moz-box-sizing': 'border-box',
+            '-webkit-box-sizing': 'border-box',
+            'box-sizing': 'border-box',
             'width': '210px',
             'margin': '0 18px'
         });
@@ -2183,7 +2189,7 @@ WeightPanel.prototype.view = function(){
 };
 
 
-function CategoryPanel(line, object, properties) {
+function CategoryPanel(line, object) {
     var self = this;
     this.CategoryPanel = true;
     this.line = line;
@@ -2194,6 +2200,7 @@ function CategoryPanel(line, object, properties) {
 
         var container = jQuery('<span/>');
 
+        // ReSharper disable once UnusedLocals
         var editButton = jQuery('<input/>', {
             'id': 'select-categories',
             'class': 'select-categories-button',
@@ -2215,13 +2222,13 @@ function CategoryPanel(line, object, properties) {
 
 
         return {
-            refresh: function () {
+            refresh: function() {
                 $(value).html(my.categories.toString(self.categories));
             },
-            view: function () {
+            view: function() {
                 return container;
             }
-        }
+        };
 
     })();
 
@@ -2275,7 +2282,7 @@ CategoryPanel.prototype.view = function () {
     return this.ui.view();
 };
 
-function WordtypePanel(line, object, properties) {
+function WordtypePanel(line, object) {
     var self = this;
     this.WordtypePanel = true;
     this.line = line;
@@ -2321,10 +2328,10 @@ function WordtypePanel(line, object, properties) {
 
 
         return {
-            view: function () {
+            view: function() {
                 return container;
             }
-        }
+        };
 
     })();
 
@@ -2383,6 +2390,7 @@ function EditOptionPanel(object, editObject, properties) {
             'class': 'edit-container'
         }).appendTo($(frame));
 
+        // ReSharper disable once UnusedLocals
         var close = jQuery('<div/>', {
             'class': 'edit-close'
         }).bind({
@@ -2392,24 +2400,24 @@ function EditOptionPanel(object, editObject, properties) {
         }).appendTo($(frame));
 
         return {
-            display: function () {
+            display: function() {
                 $(background).css({
                     'visibility': 'visible',
                     'z-index': my.ui.addTopLayer()
                 });
             },
-            hide: function () {
+            hide: function() {
                 $(background).css({
                     'visibility': 'hidden'
                 });
             },
-            destroy: function () {
+            destroy: function() {
                 $(background).remove();
             },
-            append: function (element) {
+            append: function(element) {
                 $(element).appendTo($(container));
             }
-        }
+        };
 
     })();
 
@@ -2458,6 +2466,7 @@ function EditOptionPanel(object, editObject, properties) {
             }
         }).appendTo($(container));
 
+        // ReSharper disable once UnusedLocals
         var cancel = jQuery('<input/>', {
             'class': 'edit-button',
             'type': 'submit',
@@ -2542,7 +2551,6 @@ EditOptionPanel.prototype.generalRender = function () {
 function WordOptionEditPanel(object, editObject, line) {
     EditOptionPanel.call(this, object, editObject, line);
     this.WordOptionEditPanel = true;
-    var self = this;
 }
 extend(EditOptionPanel, WordOptionEditPanel);
 //WordOptionEditPanel.prototype.loadProperties = function () {
@@ -2575,7 +2583,6 @@ extend(EditOptionPanel, WordOptionEditPanel);
 function QuestionOptionEditPanel(object, editObject, line) {
     EditOptionPanel.call(this, object, editObject, line);
     this.QuestionOptionEditPanel = true;
-    var self = this;
 }
 extend(EditOptionPanel, QuestionOptionEditPanel);
 //QuestionOptionEditPanel.prototype.loadProperties = function () {
