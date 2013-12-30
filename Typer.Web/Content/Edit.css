@@ -945,19 +945,19 @@ a.checked
 }
 
 .pl {
-    background-image: url('images/pol.png') !important;
+    background-image: url('images/flags/pol.png') !important;
 }
 
 .uk {
-    background-image: url('images/gbr.png') !important;
+    background-image: url('images/flags/gbr.png') !important;
 }
 
 .es {
-    background-image: url('images/esp.png') !important;
+    background-image: url('images/flags/esp.png') !important;
 }
 
 .it {
-    background-image: url('images/ita.png') !important;
+    background-image: url('images/flags/ita.png') !important;
 }
 
 .language .name

@@ -175,9 +175,12 @@
     <Content Include="Content\images\close-image-36.png" />
     <Content Include="Content\images\close-image-24.png" />
     <Content Include="Content\images\close.png" />
+    <Content Include="Content\images\close2.png" />
     <Content Include="Content\images\delete-node.png" />
     <Content Include="Content\images\delete.png" />
     <Content Include="Content\images\edit.png" />
+    <Content Include="Content\images\GBR.png" />
+    <Content Include="Content\images\POL.png" />
     <Content Include="Content\images\gold_star.png" />
     <Content Include="Content\images\gray_star.png" />
     <Content Include="Content\images\icon_invalid.png" />
