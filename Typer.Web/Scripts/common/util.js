@@ -253,6 +253,7 @@ my.ui = (function () {
                 'width': '100%',
                 'height': '100%'
             }).appendTo($(params.container));
+            var value;
             
             //Create items.
             var total = Object.keys(params.options).length;
@@ -279,11 +280,16 @@ my.ui = (function () {
                        eventHandler.trigger({
                            type: 'click',
                            caption: caption,
-                           object: object
+                           object: object,
+                           value: object.value
                        });
                    } 
                 });
                 
+                if ($object.checked) {
+                    value = $object.value;
+                }
+
                 var label = jQuery('<label>').
                     attr('for', input).
                     css({ 'height': 'auto'}).
@@ -300,12 +306,21 @@ my.ui = (function () {
                 }
             }
 
+            eventHandler.bind({
+                click: function(e) {
+                    self.value = e.object.value;
+                }
+            });
+
             return {
                 bind: function(e) {
                     eventHandler.bind(e);
                 },
                 trigger: function(e) {
                     eventHandler.trigger(e);
+                },
+                value: function() {
+                    return value;
                 }
             };
 
@@ -361,6 +376,9 @@ my.ui = (function () {
                 },
                 trigger: function (e) {
                     eventHandler.trigger(e);
+                },
+                value: function() {
+                    return checked;
                 }
             };
 

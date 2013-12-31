@@ -11,6 +11,15 @@ header, footer, nav, section {
 }
 
 
+div {
+    outline-style: none;
+    -moz-box-sizing: border-box !important;    
+    -webkit-box-sizing: border-box !important;    
+    box-sizing: border-box !important;
+}
+
+
+
 .row, .col { overflow: hidden; position: absolute; }
 .row { left: 0; right: 0; }
 .col { top: 0; bottom: 0; }

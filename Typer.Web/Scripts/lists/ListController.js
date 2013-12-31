@@ -1259,8 +1259,8 @@ extend(OptionEditEntity, WordOptionEditEntity);
 WordOptionEditEntity.prototype.createPropertyManager = function () {
     return new WordPropertyManager(this, {});
 };
-WordOptionEditEntity.prototype.createDetailsManager = function () {
-    return new GrammarManager(this, {});
+WordOptionEditEntity.prototype.createDetailsManager = function (params) {
+    return new GrammarManager(this, params);
 };
 
 
@@ -1274,7 +1274,7 @@ extend(OptionEditEntity, QuestionOptionEditEntity);
 QuestionOptionEditEntity.prototype.createPropertyManager = function () {
     alert('Not implemented yet');
 };
-QuestionOptionEditEntity.prototype.createDetailsManager = function () {
+QuestionOptionEditEntity.prototype.createDetailsManager = function (params) {
     alert('Not implemented yet');
 };
 
@@ -1387,9 +1387,13 @@ function WordProperty(params) {
                     return null;
             }
         })();
+
+        self.value = input.value();
+
         input.bind({
-            click: function(e) {
-                alert('Parameter changed');
+            click: function (e) {
+                self.value = e.value;
+                self.trigger(e);
             }
         });
 
@@ -1427,10 +1431,15 @@ WordProperty.prototype.parseToRadioOptions = function(str) {
     return options;
 
 };
+WordProperty.prototype.bind = function (e) {
+    this.eventHandler.bind(e);
+};
+WordProperty.prototype.trigger = function (e) {
+    this.eventHandler.trigger(e);
+};
 WordProperty.prototype.setValue = function(value) {
 
 };
-
 
 
 
@@ -1452,6 +1461,7 @@ function GrammarManager(object, properties) {
     DetailsManager.call(this, object, properties);
     this.GrammerManager = true;
     var self = this;
+    this.propertiesManager = properties.propertiesManager;
 
     this.groups = new HashTable(null);
 
@@ -1532,8 +1542,6 @@ function GrammarForm(manager, params) {
     this.manager = manager;
     this.id = params.Id;
     this.key = params.Key;
-    this.languageId = params.LanguageId;
-    this.wordtypeId = params.WordtypeId;
     this.name = params.Name;
     this.params = params.Params;
     this.groupIndex = my.text.substring(params.Group, '[', ']');
@@ -1554,7 +1562,12 @@ function GrammarForm(manager, params) {
         manager.groups.setItem(self.group.name, self.group);
     }
     this.group.add(this);
-
+    
+    //Bind listeners.
+    if (this.inactiveRules) {
+        this.setListeners();
+    }
+    
 }
 GrammarForm.prototype.view = function () {
     var self = this;
@@ -1579,6 +1592,32 @@ GrammarForm.prototype.view = function () {
 
     return this.panel;
 
+};
+GrammarForm.prototype.setListeners = function () {
+    var self = this;
+    var rules = this.inactiveRules.split('|');
+    for (var i = 0; i < rules.length; i++) {
+        var rule = rules[i];
+        var key = Number(my.text.substring(rule, '', ':'));
+        var value = my.text.substring(rule, ':', '');
+
+        var property = this.manager.propertiesManager.items.getItem(key);
+        if (property) {
+            self.activate(property.value != value);
+            property.bind({
+                click: function (e) {
+                    self.activate(e.value != value);
+                }
+            });
+        }
+    }
+};
+GrammarForm.prototype.activate = function(value) {
+    if (value) {
+        this.view().removeAttr('disabled');
+    } else {
+        this.view().attr('disabled', 'disabled');
+    }
 };
 
 function GrammarGroup(params) {
@@ -2707,7 +2746,7 @@ function EditOptionPanel(object, editObject, properties) {
     this.properties = this.editObject.createPropertyManager();
     this.ui.append(this.properties.view());
 
-    this.details = this.editObject.createDetailsManager();
+    this.details = this.editObject.createDetailsManager({ propertiesManager: self.properties });
     this.ui.append(this.details.view());
 
     this.buttons = (function () {

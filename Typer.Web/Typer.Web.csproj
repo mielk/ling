@@ -195,9 +195,7 @@
     <Content Include="Content\images\flags\ITA.png" />
     <Content Include="Content\login.css" />
     <Content Include="Content\normalize.css" />
-    <Content Include="Content\question.css" />
     <Content Include="Content\unittests\qunit-1.12.0.css" />
-    <Content Include="Content\words.css" />
     <Content Include="Content\test.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />

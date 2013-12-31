@@ -74,17 +74,11 @@ namespace Typer.Web
             bundles.Add(new StyleBundle("~/Content/tree").Include(
                         "~/Content/tree.css"));
 
-            bundles.Add(new StyleBundle("~/Content/word").Include(
-                        "~/Content/edit.css",
-                        "~/Content/question.css",
-                        "~/Content/words.css"));
+            bundles.Add(new StyleBundle("~/Content/edit").Include(
+                        "~/Content/edit.css"));
 
             bundles.Add(new StyleBundle("~/Content/dropdown").Include(
                                     "~/Content/dropdown.css"));
-
-            bundles.Add(new StyleBundle("~/Content/question").Include(
-                                    "~/Content/edit.css",
-                                    "~/Content/question.css"));
 
             bundles.Add(new StyleBundle("~/Content/test").Include(
                         "~/Content/test.css"));
