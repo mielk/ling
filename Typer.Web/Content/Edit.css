@@ -302,9 +302,6 @@ input[type=submit] {
     -ms-box-shadow: 1px 1px 0 0 rgba(255,255,255,0.25);
     box-shadow: 1px 1px 0 0 #ffffff;
     box-shadow: 1px 1px 0 0 rgba(255,255,255,0.25);
-    outline-width: 1px;
-    outline-style: dotted;
-    outline-color: invert;
     background-color: rgb(65, 218, 101);
     color: white;
     font-weight: bold;
