@@ -159,16 +159,20 @@ namespace Typer.Domain.Services
             };
         }
 
-        private static WordtypePropertyDto WordtypePropertyToDto(WordtypeProperty property)
+        private static GrammarDefinition GrammarDefinitionFromDto(GrammarDefinitonDto dto)
         {
-            return new WordtypePropertyDto
+            return new GrammarDefinition
             {
-                Details = property.Details,
-                Id = property.Id,
-                LanguageId = property.LanguageId,
-                Name = property.Name,
-                Type = property.Type,
-                WordtypeId = property.WordtypeId
+                Group = dto.Group,
+                Header = dto.Header,
+                Id = dto.Id,
+                InactiveRules = dto.InactiveRules,
+                Index = dto.Index,
+                Key = dto.Key,
+                LanguageId = dto.LanguageId,
+                Name = dto.Name,
+                Params = dto.Params,
+                WordtypeId = dto.WordtypeId
             };
         }
 

@@ -177,7 +177,7 @@ namespace Typer.DAL.Repositories
         public bool Update(int id, string name, int wordtype, int weight, int[] categories, int[] removed, string[] edited, string[] added)
         {
 
-            using (TransactionScope scope = new TransactionScope())
+            using (var scope = new TransactionScope())
             {
                 var result = true;
                 var metaword = GetMetaword(id);
@@ -200,8 +200,14 @@ namespace Typer.DAL.Repositories
                             {
                                 var _id = removed[i];
                                 var word = GetWord(_id);
-                                if (word == null) result = false;
-                                word.IsActive = false;
+                                if (word != null)
+                                {
+                                    word.IsActive = false;
+                                }
+                                else
+                                {
+                                    result = false;
+                                }
                             }
                         }
 
@@ -212,8 +218,7 @@ namespace Typer.DAL.Repositories
                             for (var i = 0; i < edited.Length; i++)
                             {
                                 var s = edited[i];
-                                var _result = UpdateWord(s);
-                                if (!_result) result = false;
+                                if (!UpdateWord(s)) result = false;
                             }
                         }
 
@@ -224,8 +229,7 @@ namespace Typer.DAL.Repositories
                             for (var i = 0; i < added.Length; i++)
                             {
                                 var s = added[i];
-                                var _result = AddOption(s, id);
-                                if (!_result) result = false;
+                                if (!AddOption(s, id)) result = false;
                             }
                         }
 
@@ -258,14 +262,14 @@ namespace Typer.DAL.Repositories
             string[] parameters = s.Split('|');
 
             //Id.
-            var id = 0;
+            int id;
             Int32.TryParse(parameters[0], out id);
 
             //Name.
             var name = parameters[1];
 
             //Weight.
-            var weight = 1;
+            int weight;
             Int32.TryParse(parameters[2], out weight);
 
             var option = GetWord(id);
@@ -283,14 +287,14 @@ namespace Typer.DAL.Repositories
             string[] parameters = s.Split('|');
 
             //Language Id.
-            var languageId = 0;
+            int languageId;
             Int32.TryParse(parameters[0], out languageId);
 
             //Name.
             var name = parameters[1];
 
             //Weight.
-            var weight = 1;
+            int weight;
             Int32.TryParse(parameters[2], out weight);
 
             var word = new WordDto
@@ -306,7 +310,6 @@ namespace Typer.DAL.Repositories
                 MetawordId = id,
                 LanguageId = languageId
             };
-            if (word == null) return false;
 
             Context.Words.Add(word);
 
@@ -328,7 +331,7 @@ namespace Typer.DAL.Repositories
 
         public IEnumerable<GrammarDefinitonDto> GetGrammarDefinitions(int languageId, int wordtypeId)
         {
-            
+            return Context.GrammarDefinitions.Where(gd => gd.LanguageId == languageId && gd.WordtypeId == wordtypeId);
         }
 
         public bool Activate(int id)
@@ -403,7 +406,7 @@ namespace Typer.DAL.Repositories
         public int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options)
         {
 
-            using (TransactionScope scope = new TransactionScope())
+            using (var scope = new TransactionScope())
             {
                 var result = true;
                 var metaword = new MetawordDto

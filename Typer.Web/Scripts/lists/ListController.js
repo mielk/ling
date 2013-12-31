@@ -1367,6 +1367,7 @@ function WordProperty(params) {
             'class': 'property-container'
         });
 
+
         var input = (function() {
             switch (params.Type) {
                 case 'radio':
@@ -1386,6 +1387,11 @@ function WordProperty(params) {
                     return null;
             }
         })();
+        input.bind({
+            click: function(e) {
+                alert('Parameter changed');
+            }
+        });
 
         return {
             view: function() {
@@ -1428,38 +1434,199 @@ WordProperty.prototype.setValue = function(value) {
 
 
 
-function DetailsManager(object, properties) {
+function DetailsManager(object) {
     this.DetailsManager = true;
     this.object = object;
 
-    this.ui = (function () {
-        var container = jQuery('<div/>', {
-            'class': 'option-details-container'
-        });
+    this.container = jQuery('<div/>', {
+        'class': 'option-details-container'
+    });
 
-        return {
-            view: function() {
-                return container;
-            }
-        };
-
-    })();
 }
 DetailsManager.prototype.view = function () {
-    return this.ui.view();
+    return this.container;
 };
 
 
 function GrammarManager(object, properties) {
     DetailsManager.call(this, object, properties);
     this.GrammerManager = true;
+    var self = this;
 
-    this.forms = new HashTable(null);
+    this.groups = new HashTable(null);
+
+    this.ui = (function () {
+        // ReSharper disable once UnusedLocals
+        var searchPanel = jQuery('<div/>', {
+            'class': 'grammar-search-panel'
+        }).appendTo(self.container);
+
+        var formsPanel = jQuery('<div/>', {
+            'class': 'grammar-forms-panel'
+        }).appendTo(self.container);
+
+        var formsList = jQuery('<ul/>').appendTo(formsPanel);
+
+        return {
+            addGroup: function(view) {
+                $(view).appendTo($(formsList));
+            }
+        };
+
+    })();
+
+    this.loadForms();
+    this.render();
 
 }
 extend(DetailsManager, GrammarManager);
+GrammarManager.prototype.loadForms = function() {
+    var word = this.object.object;
+    var metaword = word.parent;
+    var languageId = word.languageId;
+    var wordtypeId = metaword.wordtype.id;
+
+    var $forms = this.getDefinitionsFromRepository(languageId, wordtypeId);
+    for (var i = 0; i < $forms.length; i++) {
+        // ReSharper disable once UnusedLocals
+        var form = new GrammarForm(this, $forms[i]);
+    }
+
+};
+GrammarManager.prototype.getDefinitionsFromRepository = function(languageId, wordtypeId) {
+    return my.db.fetch('Words', 'GetGrammarDefinitions', { 'languageId': languageId, 'wordtypeId': wordtypeId });
+};
+GrammarManager.prototype.render = function () {
+    var sorted = this.sorted();
+    for (var i = 0; i < sorted.length; i++) {
+        var group = sorted[i];
+        group.render();
+    }
+};
+GrammarManager.prototype.sorted = function() {
+    var array = this.groups.values();
+    array.sort(function(a, b) {
+        return a < b ? -1 : 1;
+    });
+    
+    //Sorted forms inside groups.
+    for (var i = 0; i < array.length; i++) {
+        var group = array[i];
+        if (!group.GrammarGroup) {
+            alert('This item is not of a GrammarGroup type');
+        } else {
+            group.sort();
+        }
+    }
+
+    return array;
+};
+GrammarManager.prototype.addGroupView = function (view) {
+    this.ui.addGroup(view);
+};
 
 
+function GrammarForm(manager, params) {
+    this.GrammarForm = true;
+    var self = this;
+    this.manager = manager;
+    this.id = params.Id;
+    this.key = params.Key;
+    this.languageId = params.LanguageId;
+    this.wordtypeId = params.WordtypeId;
+    this.name = params.Name;
+    this.params = params.Params;
+    this.groupIndex = my.text.substring(params.Group, '[', ']');
+    this.groupName = my.text.substring(params.Group, ']', '');
+    this.header = params.Header;
+    this.inactiveRules = params.InactiveRules;
+    this.index = params.Index;
+
+    //Add to proper group (create if it doesn't exist yet).
+    this.group = manager.groups.getItem(this.groupName);
+    if (!this.group) {
+        this.group = new GrammarGroup({
+            index: self.groupIndex,
+            name: self.groupName,
+            manager: self.manager,
+            header: self.header
+        });
+        manager.groups.setItem(self.group.name, self.group);
+    }
+    this.group.add(this);
+
+}
+GrammarForm.prototype.view = function () {
+    var self = this;
+    if (!this.panel) {
+        
+        if (this.header) {
+            this.panel = jQuery('<div/>', {
+                'class': 'grammar-form',
+                html: self.name
+            }).css({                
+                'border': 'none',
+                'text-align': 'right'
+            });
+        } else {
+            this.panel = jQuery('<input/>', {
+                'type': 'text',
+                'class': 'grammar-form'
+            });
+        }
+
+    }
+
+    return this.panel;
+
+};
+
+function GrammarGroup(params) {
+    this.GrammarGroup = true;
+    this.manager = params.manager;
+    this.index = params.index;
+    this.name = params.name;
+    this.header = params.header;
+    this.forms = [];
+}
+GrammarGroup.prototype.add = function(form) {
+    this.forms.push(form);
+};
+GrammarGroup.prototype.sort = function() {
+    this.forms.sort(function(a, b) {
+        return a.index < b.index ? -1 : 1;
+    });
+};
+GrammarGroup.prototype.render = function () {
+    var self = this;
+    var listWrapper = jQuery('<li/>').
+        css({
+            'width': (100 / self.manager.groups.size()) + '%'
+        });
+
+    var container = jQuery('<div/>', {
+        'class': 'grammar-group'
+    }).appendTo($(listWrapper));
+
+    //Render header.
+    var header = jQuery('<div/>', {
+        'class': 'grammar-form grammar-header',
+        html: self.name
+    }).css({
+        'visibility': (self.header ? 'hidden' : 'visible')
+    });
+    $(header).appendTo($(container));
+
+    //Insert forms.
+    for (var i = 0; i < this.forms.length; i++) {
+        var form = this.forms[i];
+        var view = form.view();
+        $(view).appendTo($(container));
+    }
+
+    this.manager.addGroupView(listWrapper);
+
+};
 
 
 /*

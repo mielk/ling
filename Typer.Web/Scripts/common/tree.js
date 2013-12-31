@@ -6,31 +6,31 @@
 
 
 
-$(function () {
-    //Switching off selecting text.
-    $(document).
-        bind({
-            'mousedown': function (e) {
-                var $this = $(this);
-                e.preventDefault();
+//$(function () {
+//    //Switching off selecting text.
+//    $(document).
+//        bind({
+//            'mousedown': function (e) {
+//                var $this = $(this);
+//                e.preventDefault();
 
-                // Make every element on page unselectable
-                //$('*').addClass('unselectable');
-                $(document.body).addClass('unselectable');
+//                // Make every element on page unselectable
+//                //$('*').addClass('unselectable');
+//                $(document.body).addClass('unselectable');
 
-                // Some setup here, like remembering the original location, etc
-                $(window).on('mousemove', function () {
-                    // Do the thing!
-                    $this.on('mouseup', function () {
-                        $(document.body).removeClass('unselectable');
-                        //$('*').removeClass('unselectable');
-                        // Other clean-up tasks here
-                    });
-                });
-            }
-        });
+//                // Some setup here, like remembering the original location, etc
+//                $(window).on('mousemove', function () {
+//                    // Do the thing!
+//                    $this.on('mouseup', function () {
+//                        $(document.body).removeClass('unselectable');
+//                        //$('*').removeClass('unselectable');
+//                        // Other clean-up tasks here
+//                    });
+//                });
+//            }
+//        });
 
-});
+//});
 
 
 

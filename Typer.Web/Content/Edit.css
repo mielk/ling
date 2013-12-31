@@ -1059,3 +1059,71 @@ a.checked
     border-bottom: none;
     padding-bottom: 6px;
 }
+
+.grammar-search-panel {
+    display: block;
+    position: relative;
+    float: left;
+    width: 100%;
+    height: 36px;
+    border-bottom: 1px solid #CCC;
+    background-color: #999;
+    margin: 6px 0;
+}
+
+.grammar-forms-panel {
+    display: block;
+    position: relative;
+    float: left;
+    width: 100%;
+    overflow: auto;
+    padding: 6px;
+    white-space: nowrap;
+}
+
+.grammar-forms-panel ul {
+    padding: 0;
+}
+
+.grammar-forms-panel li {
+    display: inline-block;
+    *display: inline;/*For IE7*/
+    *zoom: 1;/*For IE7*/
+    vertical-align: top;
+    width: auto;
+    white-space: normal;    
+    -moz-min-width: 200px;
+    -ms-min-width: 200px;
+    -o-min-width: 200px;
+    -webkit-min-width: 200px;
+    min-width: 200px;
+    padding: 0 6px;
+}
+
+.grammar-group {
+    display: block;
+    position: relative;
+    float: left;
+    padding: 0 3px;
+    width: 100%;
+}
+
+.grammar-form {
+    display: block;
+    position: relative;
+    float: left;
+    width: 100%;
+    height: 36px;
+    border: 1px solid #999;
+    margin: 3px 0;
+    padding: 6px;
+    line-height: 22px;
+}
+
+.grammar-header {
+    font-weight: bold;
+    margin-bottom: 3px;
+    text-align: center;
+    font-size: 14px;
+    border: 1px solid transparent;
+}
