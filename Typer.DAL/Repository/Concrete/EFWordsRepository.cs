@@ -334,6 +334,11 @@ namespace Typer.DAL.Repositories
             return Context.GrammarDefinitions.Where(gd => gd.LanguageId == languageId && gd.WordtypeId == wordtypeId);
         }
 
+        public IEnumerable<WordtypePropertyValueDto> GetPropertyValues(int wordId)
+        {
+            return Context.WordtypePropertyValues.Where(wpv => wpv.WordId == wordId);
+        }
+
         public bool Activate(int id)
         {
             var metaword = GetMetaword(id);

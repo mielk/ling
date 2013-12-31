@@ -228,5 +228,15 @@ namespace Typer.Web.Controllers
             }
 
 
+            [HttpGet]
+            [AllowAnonymous]
+            public ActionResult GetPropertyValues(int wordId)
+            {
+                var properties = _service.GetPropertyValues(wordId);
+                return Json(properties, JsonRequestBehavior.AllowGet);
+            }
+            
+
+
         }
 }

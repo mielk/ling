@@ -31,5 +31,6 @@ namespace Typer.DAL.Repositories
         IEnumerable<WordtypePropertyDto> GetProperties(int languageId, int wordtypeId);
 
         IEnumerable<GrammarDefinitonDto> GetGrammarDefinitions(int languageId, int wordtypeId);
+        IEnumerable<WordtypePropertyValueDto> GetPropertyValues(int wordId);
     }
 }

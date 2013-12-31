@@ -367,21 +367,30 @@ SET IDENTITY_INSERT [dbo].[Users] OFF
 
 
 
-
-
 CREATE TABLE [dbo].[GrammarDefinitions] (
-    [Id]         INT            IDENTITY (1, 1) NOT NULL,
-    [Key]        VARCHAR (10)   NOT NULL,
-    [LanguageId] INT            NOT NULL,
-    [WordtypeId] INT            NOT NULL,
-    [Name]       NVARCHAR (255) NOT NULL,
-    [Params]     NVARCHAR (255) NULL,
-    [Group]      NVARCHAR (255) NULL,
-    [Header]     BIT            NOT NULL,
-    [InactiveRules]   VARCHAR (255)  NULL,
-    [Index]      INT            NOT NULL,
+    [Id]            INT            IDENTITY (1, 1) NOT NULL,
+    [Key]           VARCHAR (10)   NOT NULL,
+    [LanguageId]    INT            NOT NULL,
+    [WordtypeId]    INT            NOT NULL,
+    [Name]          NVARCHAR (255) NOT NULL,
+    [Params]        NVARCHAR (255) NULL,
+    [Group]         NVARCHAR (255) NULL,
+    [Header]        BIT            NOT NULL,
+    [InactiveRules] VARCHAR (255)  NULL,
+    [Index]         INT            NOT NULL,
     PRIMARY KEY CLUSTERED ([Id] ASC),
     FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id]),
     FOREIGN KEY ([WordtypeId]) REFERENCES [dbo].[WordTypes] ([Id])
 );
 
+
+CREATE TABLE [dbo].[WordsProperties] (
+    [Id]         INT            IDENTITY (1, 1) NOT NULL,
+    [WordId]     INT            NOT NULL,
+    [PropertyId] INT            NOT NULL,
+    [Value]      NVARCHAR (255) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+	CONSTRAINT [Unique_Set_Word_Property] UNIQUE NONCLUSTERED ([WordId] ASC, [PropertyId] ASC),
+    FOREIGN KEY ([WordId]) REFERENCES [dbo].[Words] ([Id]),
+    FOREIGN KEY ([PropertyId]) REFERENCES [dbo].[WordtypeProperties] ([Id])
+);

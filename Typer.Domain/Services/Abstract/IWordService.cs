@@ -24,5 +24,6 @@ namespace Typer.Domain.Services
         IEnumerable<Metaword> Filter(int wordType, int lowWeight, int upWeight, int[] categories, string text);
         IEnumerable<WordtypeProperty> GetProperties(int languageId, int wordtypeId);
         IEnumerable<GrammarDefinition> GetGrammarDefinitions(int languageId, int wordtypeId);
+        IEnumerable<WordtypePropertyValue> GetPropertyValues(int wordId);
     }
 }

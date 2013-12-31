@@ -244,7 +244,7 @@ my.ui = (function () {
         
         radio: function(params) {
             var name = params.name;
-            var options = [];
+            var options = new HashTable(null);
             var eventHandler = new EventHandler();
             var panel = jQuery('<div/>').css({
                 'display': 'block',
@@ -258,7 +258,8 @@ my.ui = (function () {
             //Create items.
             var total = Object.keys(params.options).length;
             var option = function ($key, $object) {
-                var caption = $key;
+                var key = $key;
+                var caption = $object.name || $object.caption || $object.key;
                 var object = $object;
                 var container = jQuery('<div/>').css({
                     'width': (100 / total) + '%',
@@ -296,13 +297,29 @@ my.ui = (function () {
                     text(caption);
                 input.appendTo(label);
                 label.appendTo(container);
-                
+
+                return {                    
+                    select: function () {
+                        input.checked = true;
+                        eventHandler.trigger({
+                            type: 'click',
+                            caption: caption,
+                            object: object,
+                            value: object.value
+                        });
+                    },
+                    key: function() {
+                        return key;
+                    }
+                };
+
             };
             
 
-            for (var key in params.options) {
-                if (params.options.hasOwnProperty(key)) {
-                    options.push(option(key, params.options[key]));
+            for (var k in params.options) {
+                if (params.options.hasOwnProperty(k)) {
+                    var $option = option(k, params.options[k]);
+                    options.setItem($option.key(), $option);
                 }
             }
 
@@ -321,6 +338,12 @@ my.ui = (function () {
                 },
                 value: function() {
                     return value;
+                },
+                change: function($value) {
+                    var selected = options.getItem($value);
+                    if (selected) {
+                        selected.select();
+                    }
                 }
             };
 
@@ -370,6 +393,16 @@ my.ui = (function () {
             $(box).appendTo(label);
             $(label).appendTo(panel);
 
+            function change(value) {
+                if (checked !== value) {
+                    checked = value;
+                    eventHandler.trigger({
+                        type: 'click',
+                        value: checked
+                    });
+                }
+            }
+
             return {
                 bind: function (e) {
                     eventHandler.bind(e);
@@ -379,6 +412,13 @@ my.ui = (function () {
                 },
                 value: function() {
                     return checked;
+                },
+                change: function (value) {
+                    if (value === false) {
+                        change(false);
+                    } else if (value === true) {
+                        change(true);
+                    }
                 }
             };
 

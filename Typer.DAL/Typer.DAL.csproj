@@ -71,6 +71,7 @@
     <Compile Include="TransferObjects\UserDto.cs" />
     <Compile Include="TransferObjects\UserLanguageDto.cs" />
     <Compile Include="TransferObjects\WordtypePropertyDto.cs" />
+    <Compile Include="TransferObjects\WordtypePropertyValueDto.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

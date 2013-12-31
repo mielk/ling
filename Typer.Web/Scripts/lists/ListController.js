@@ -1324,6 +1324,7 @@ function WordPropertyManager(object) {
     PropertyManager.call(this, object);
     this.WordPropertyManager = true;
     this.loadProperties();
+    this.loadValues();
 }
 extend(PropertyManager, WordPropertyManager);
 WordPropertyManager.prototype.loadProperties = function () {
@@ -1347,7 +1348,10 @@ WordPropertyManager.prototype.loadValues = function() {
     var word = this.object.object;
     var $values = this.getValuesFromRepository(word.id);
     for (var i = 0; i < $values.length; i++) {
-        //Load single value.
+        var set = $values[i];
+        var id = set.PropertyId;
+        var property = this.items.getItem(id);
+        property.setValue(set.Value);
     }
 };
 WordPropertyManager.prototype.getValuesFromRepository = function (wordId) {
@@ -1361,6 +1365,7 @@ function WordProperty(params) {
     this.id = params.Id;
     this.name = params.Name;
     this.value = params.Value;
+    this.originalValue = params.Type === 'boolean' ? false : 0;
     
     this.ui = (function () {
         var container = jQuery('<div/>', {            
@@ -1400,6 +1405,11 @@ function WordProperty(params) {
         return {
             view: function() {
                 return container;
+            },
+            change: function (value) {
+                if (input.change) {
+                    input.change(value);
+                }
             }
         };
 
@@ -1414,8 +1424,8 @@ WordProperty.prototype.parseToRadioOptions = function(str) {
     var options = {};
     for (var i = 0; i < $options.length; i++) {
         var text = $options[i];
-        var key = my.text.substring(text, '', '(').trim();
-        var value = Number(my.text.substring(text, '(', ')'));
+        var value = my.text.substring(text, '', '(').trim();
+        var key = Number(my.text.substring(text, '(', ')'));
         var checked = (text.indexOf('*') >= 0 ? true : false);
 
         var option = {
@@ -1437,10 +1447,11 @@ WordProperty.prototype.bind = function (e) {
 WordProperty.prototype.trigger = function (e) {
     this.eventHandler.trigger(e);
 };
-WordProperty.prototype.setValue = function(value) {
-
+WordProperty.prototype.setValue = function (value) {
+    this.originalValue = $.isNumeric(value) ? Number(value) : value;
+    this.value = this.originalValue;
+    this.ui.change(this.value);
 };
-
 
 
 function DetailsManager(object) {
