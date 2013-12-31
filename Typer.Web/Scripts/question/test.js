@@ -10,7 +10,7 @@
         checked: true
     });
 
-    checkbox.bind({        
+    checkbox.bind({
         click: function(e) {
             $(result).css({                
                 'background-color': e.value ? 'red' : 'green'
@@ -34,6 +34,5 @@
     //        $(result).html(e.caption);
     //    }
     //});
-
 
 });

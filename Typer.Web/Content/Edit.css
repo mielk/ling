@@ -1036,8 +1036,26 @@ a.checked
 .option-details-container {
     display: block;
     position: relative;
+    float: left;
     width: 100%;
+    height: auto;
     border-top: 1px solid #777;
     margin-top: 6px;
-    padding: 6px 0;
+    padding: 0;
+}
+
+
+.property-container {
+    display: block;
+    position: relative;
+    float: left;
+    width: 100%;
+    height: auto;
+    padding: 12px 0;
+    border-bottom: 1px solid #CCC;
+}
+
+.option-details-container .property-container:last-child {  
+    border-bottom: none;
+    padding-bottom: 6px;
 }

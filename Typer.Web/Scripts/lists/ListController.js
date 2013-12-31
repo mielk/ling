@@ -1176,7 +1176,8 @@ Word.prototype.editItem = function () {
         name: self.name,
         weight: self.weight,
         isActive: self.isActive,
-        languageId: self.languageId
+        languageId: self.languageId,
+        object: self
     });
 };
 
@@ -1196,7 +1197,8 @@ Option.prototype.editItem = function () {
         name: self.name,
         weight: self.weight,
         isActive: self.isActive,
-        languageId: self.languageId
+        languageId: self.languageId,
+        object: self
     });
 };
 
@@ -1207,6 +1209,7 @@ function OptionEditEntity(properties) {
     this.name = properties.name;
     this.weight = properties.weight;
     this.isActive = properties.isActive;
+    this.object = properties.object;
     this.languageId = properties.languageId;
     this.isActive = properties.isActive || true;
 
@@ -1263,15 +1266,6 @@ WordOptionEditEntity.prototype.createDetailsManager = function () {
 
 
 
-
-
-
-
-
-
-
-
-
 function QuestionOptionEditEntity(properties) {
     OptionEditEntity.call(this, properties);
     this.QuestionOptionEditEntity = true;
@@ -1288,7 +1282,7 @@ QuestionOptionEditEntity.prototype.createDetailsManager = function () {
 
 
 
-function PropertyManager(object, properties) {
+function PropertyManager(object) {
     this.PropertyManager = true;
     this.object = object;
     this.items = new HashTable(null);
@@ -1301,6 +1295,9 @@ function PropertyManager(object, properties) {
         return {
             view: function() {
                 return container;
+            },
+            append: function(element) {
+                $(element).appendTo($(container));
             }
         };
 
@@ -1323,37 +1320,72 @@ PropertyManager.prototype.view = function () {
 };
 
 
-function WordPropertyManager(object, properties) {
-    PropertyManager.call(this, object, properties);
+function WordPropertyManager(object) {
+    PropertyManager.call(this, object);
     this.WordPropertyManager = true;
+    this.loadProperties();
 }
 extend(PropertyManager, WordPropertyManager);
+WordPropertyManager.prototype.loadProperties = function () {
+    var word = this.object.object;
+    var metaword = word.parent;
+    var languageId = word.languageId;
+    var wordtypeId = metaword.wordtype.id;
 
+    var $properties = this.getPropertiesFromRepository(languageId, wordtypeId);
+    for (var i = 0; i < $properties.length; i++) {
+        var property = new WordProperty($properties[i]);
+        this.items.setItem(property.id, property);
+        this.ui.append(property.view());
+    }
+
+};
+WordPropertyManager.prototype.getPropertiesFromRepository = function (languageId, wordtypeId) {
+    return my.db.fetch('Words', 'GetProperties', { 'languageId': languageId, 'wordtypeId': wordtypeId });
+};
+WordPropertyManager.prototype.loadValues = function() {
+    var word = this.object.object;
+    var $values = this.getValuesFromRepository(word.id);
+    for (var i = 0; i < $values.length; i++) {
+        //Load single value.
+    }
+};
+WordPropertyManager.prototype.getValuesFromRepository = function (wordId) {
+    return my.db.fetch('Words', 'GetPropertyValues', { 'wordId': wordId });
+};
 
 function WordProperty(params) {
     this.WordProperty = true;
     this.eventHandler = new EventHandler();
     var self = this;
-
-    var ui = (function () {
+    this.id = params.Id;
+    this.name = params.Name;
+    this.value = params.Value;
+    
+    this.ui = (function () {
         var container = jQuery('<div/>', {            
             'class': 'property-container'
         });
 
         var input = (function() {
-            switch (params.type) {
+            switch (params.Type) {
                 case 'radio':
                     return my.ui.radio({
                         container: container,
-                        name: params.name
+                        name: self.name,
+                        options: self.parseToRadioOptions(params.Details)
                     });
                 case 'boolean':
                     return my.ui.checkbox({                        
                         container: container,
-                        name: params.name
+                        name: params.Name,
+                        caption: params.Name,
+                        checked: params.Details.indexOf('*') >= 0 ? true : false
                     });
+                default:
+                    return null;
             }
-        });
+        })();
 
         return {
             view: function() {
@@ -1367,7 +1399,31 @@ function WordProperty(params) {
 WordProperty.prototype.view = function() {
     return this.ui.view();
 };
+WordProperty.prototype.parseToRadioOptions = function(str) {
+    var $options = str.split('|');
+    var options = {};
+    for (var i = 0; i < $options.length; i++) {
+        var text = $options[i];
+        var key = my.text.substring(text, '', '(').trim();
+        var value = Number(my.text.substring(text, '(', ')'));
+        var checked = (text.indexOf('*') >= 0 ? true : false);
 
+        var option = {
+            key: key,
+            value: value,
+            checked: checked
+        };
+
+        options[key] = option;
+
+    }
+
+    return options;
+
+};
+WordProperty.prototype.setValue = function(value) {
+
+};
 
 
 
@@ -1702,6 +1758,7 @@ function EditDataLine(panel, properties) {
             'class': 'field-line'
         });
 
+        // ReSharper disable once UnusedLocals
         var label = jQuery('<label/>', {
             'class': 'label',
             html: properties.label

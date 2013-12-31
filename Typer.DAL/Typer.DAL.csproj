@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Infrastructure\EFDbContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TransferObjects\GrammarDefinitonDto.cs" />
     <Compile Include="Repository\Abstract\ICategoryRepository.cs" />
     <Compile Include="Repository\Abstract\IWordsRepository.cs" />
     <Compile Include="Repository\Abstract\ILanguageRepository.cs" />

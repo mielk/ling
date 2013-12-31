@@ -118,6 +118,12 @@ namespace Typer.Domain.Services
             return dtos.Select(WordtypePropertyFromDto).ToList();
         }
 
+        public IEnumerable<GrammarDefinition> GetGrammarDefinitions(int languageId, int wordtypeId)
+        {
+            var dtos = _repository.GetGrammarDefinitions(languageId, wordtypeId);
+            return dtos.Select(GrammarDefinitionFromDto).ToList();
+        }
+
         public IEnumerable<Metaword> Filter(int wordType, int lowWeight, int upWeight, int[] categories, string text)
         {
             var dtos = _repository.GetMetawords();
@@ -134,6 +140,7 @@ namespace Typer.Domain.Services
             return dtos.Select(MetawordFromDto).ToList();
 
         }
+
 
         private static Metaword MetawordFromDto(MetawordDto dto)
         {

@@ -135,7 +135,7 @@ namespace Typer.Web.Controllers
             public ActionResult Add(string name, int wordtype, int weight, int[] categories, string[] added)
             {
                 var id = _service.AddMetaword(name, wordtype, weight, categories, added);
-                return Json(id > 0 ? true : false);
+                return Json(id > 0);
             }
 
 
@@ -204,7 +204,7 @@ namespace Typer.Web.Controllers
 
             [HttpGet]
             [AllowAnonymous]
-            public ActionResult getWords(int id, int[] languages)
+            public ActionResult GetWords(int id, int[] languages)
             {
                 var words = _service.GetWords(id, languages);
                 return Json(words, JsonRequestBehavior.AllowGet);
@@ -216,6 +216,14 @@ namespace Typer.Web.Controllers
             public ActionResult GetProperties(int languageId, int wordtypeId)
             {
                 var properties = _service.GetProperties(languageId, wordtypeId);
+                return Json(properties, JsonRequestBehavior.AllowGet);
+            }
+
+            [HttpGet]
+            [AllowAnonymous]
+            public ActionResult GetGrammarDefinitions(int languageId, int wordtypeId)
+            {
+                var properties = _service.GetGrammarDefinitions(languageId, wordtypeId);
                 return Json(properties, JsonRequestBehavior.AllowGet);
             }
 

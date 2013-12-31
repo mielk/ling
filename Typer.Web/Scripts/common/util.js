@@ -251,8 +251,7 @@ my.ui = (function () {
                 'position': 'relative',
                 'float': 'left',
                 'width': '100%',
-                'height': '100%',
-                'padding': '6px'
+                'height': '100%'
             }).appendTo($(params.container));
             
             //Create items.
@@ -287,6 +286,7 @@ my.ui = (function () {
                 
                 var label = jQuery('<label>').
                     attr('for', input).
+                    css({ 'height': 'auto'}).
                     text(caption);
                 input.appendTo(label);
                 label.appendTo(container);
@@ -321,8 +321,7 @@ my.ui = (function () {
                 'position': 'relative',
                 'float': 'left',
                 'width': '100%',
-                'height': '100%',
-                'padding': '6px'
+                'height': '100%'
             }).appendTo($(params.container));
 
             var box = jQuery('<input/>', {
@@ -350,10 +349,11 @@ my.ui = (function () {
             
             var label = jQuery('<label>').
                 attr('for', box).
+                css({ 'height': 'auto' }).
                 text(caption);
 
-            box.appendTo(label);
-            label.appendTo(panel);
+            $(box).appendTo(label);
+            $(label).appendTo(panel);
 
             return {
                 bind: function (e) {
@@ -745,4 +745,30 @@ my.user = (function () {
         }
     };
 
+})();
+
+
+my.db = (function() {
+    return {        
+        fetch: function (controller, method, params, traditional) {
+            var $result;
+            $.ajax({
+                url: '/' + controller + '/' + method,
+                type: "GET",
+                data: params,
+                datatype: "json",
+                async: false,
+                cache: false,
+                traditional: (traditional ? true : false),
+                success: function (result) {
+                    $result = result;
+                },
+                error: function (msg) {
+                    alert(msg.status + " | " + msg.statusText);
+                }
+            });
+
+            return $result;
+        }
+    };
 })();

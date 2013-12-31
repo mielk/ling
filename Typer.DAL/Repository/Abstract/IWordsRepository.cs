@@ -30,5 +30,6 @@ namespace Typer.DAL.Repositories
         IEnumerable<int> GetMetawordsIdsByCategories(int[] categories);
         IEnumerable<WordtypePropertyDto> GetProperties(int languageId, int wordtypeId);
 
+        IEnumerable<GrammarDefinitonDto> GetGrammarDefinitions(int languageId, int wordtypeId);
     }
 }
