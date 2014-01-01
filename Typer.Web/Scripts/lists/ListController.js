@@ -657,6 +657,40 @@ Entity.prototype.addedLogs = function (logs) {
     }
     return array;
 };
+Entity.prototype.propertiesLogs = function (logs) {
+    var tag = 'properties';
+    var array = [];
+    for (var i = 0; i < logs.length; i++) {
+        var log = logs[i];
+        if (log.event === tag && log.properties) {
+            var wordId = log.wordId;
+            var properties = log.properties;
+            for (var i = 0; i < properties.length; i++) {
+                var item = properties[i];
+                var propertyId = my.text.substring(item, '', ':');
+                var value = my.text.substring(item, ':', '');
+                var text = wordId + '|' + propertyId + '|' + value;
+                array.push(text);
+            }
+        }
+    }
+    return array;
+};
+Entity.prototype.detailsLogs = function (logs) {
+    var tag = 'details';
+    if (!logs) return [];
+
+    var array = [];
+    for (var i = 0; i < logs.length; i++) {
+        var log = logs[i];
+        var item = log.item;
+        if (log.event === tag && item) {
+            var text = item.languageId + '|' + item.name + '|' + item.weight;
+            array.push(text);
+        }
+    }
+    return array;
+};
 
 
 function Metaword(properties) {
@@ -692,14 +726,17 @@ Metaword.prototype.update = function (properties) {
     var removed = this.removedLogs(properties.logs);
     var edited = this.editedLogs(properties.logs);
     var added = this.addedLogs(properties.logs);
-
+    var properties = this.propertiesLogs(properties.logs);
+    var details = this.detailsLogs(properties.logs);
 
     //Check if there are any changes.
     if (name || weight || wordtype ||
         (categories && categories.length) ||
         (removed && removed.length) ||
         (edited && edited.length) ||
-        (added && added.length)) {
+        (added && added.length) ||
+        (properties && properties.length) ||
+        (details && details.length)){
 
         if (self.new) {
 
@@ -709,6 +746,8 @@ Metaword.prototype.update = function (properties) {
                 weight: weight,
                 wordtype: wordtype,
                 added: added,
+                properties: properties,
+                details: details,
                 categories: my.categories.toIntArray(categories),
                 callback: function (result) {
                     if (result !== false) {
@@ -729,6 +768,8 @@ Metaword.prototype.update = function (properties) {
                 removed: removed,
                 edited: edited,
                 added: added,
+                properties: properties,
+                details: details,
                 categories: my.categories.toIntArray(categories),
                 callback: function (result) {
                     if (result !== false) {
@@ -818,7 +859,8 @@ Question.prototype.update = function (properties) {
     var removed = this.removedLogs(properties.logs);
     var edited = this.editedLogs(properties.logs);
     var added = this.addedLogs(properties.logs);
-
+    var properties = this.propertiesLogs(properties.logs);
+    var details = this.detailsLogs(properties.logs);
 
     //Check if there are any changes.
     if (name || weight || (categories && categories.length) || (removed && removed.length) ||
@@ -1112,15 +1154,17 @@ OptionEntity.prototype.checkName = function (name) {
     }
     return true;
 };
-OptionEntity.prototype.update = function (properties) {
-    if (!properties.OptionEditEntity) {
+OptionEntity.prototype.update = function (params, properties, details) {
+    if (!params.OptionEditEntity) {
         alert('Illegal argument passed to function Metaword.update');
         return;
     }
 
     var self = this;
-    var name = (this.name === properties.name ? '' : properties.name);
-    var weight = (this.weight === properties.weight ? 0 : properties.weight);
+    var name = (this.name === params.name ? '' : params.name);
+    var weight = (this.weight === params.weight ? 0 : params.weight);
+    var propertiesChanges = this.propertiesChanges(properties);
+    var detailsChanges = this.detailsChanges(details);
 
     //Check if there are any changes.
     if (name || weight) {
@@ -1157,6 +1201,32 @@ OptionEntity.prototype.update = function (properties) {
 
     }
 
+
+    //Check if there are any changes in properties.
+    if (propertiesChanges.length) {
+        this.parent.addLog({
+            event: 'properties',
+            wordId: self.id,
+            properties: propertiesChanges
+        });
+    }
+
+
+    if (detailsChanges.length) {
+        this.parent.addLog({
+            event: 'details',
+            wordId: self.id,
+            properties: detailsChanges
+        });
+    }
+
+
+};
+OptionEntity.prototype.propertiesChanges = function () {
+    alert('Must be defined in implementing class');
+};
+OptionEntity.prototype.detailsChanges = function () {
+    alert('Must be defined in implementing class');
 };
 
 
@@ -1180,6 +1250,20 @@ Word.prototype.editItem = function () {
         object: self
     });
 };
+Word.prototype.propertiesChanges = function (properties) {
+    var changes = [];
+    properties.items.each(function (key, value) {
+        if (value.originalValue != value.value) {
+            var log = value.id + ':' + value.value;
+            changes.push(log);
+        }
+    });
+    return changes;
+};
+Word.prototype.detailsChanges = function (details) {
+    return [];
+};
+
 
 function Option(question, properties) {
     OptionEntity.call(this, question, properties);
@@ -1200,6 +1284,12 @@ Option.prototype.editItem = function () {
         languageId: self.languageId,
         object: self
     });
+};
+Option.prototype.propertiesChanges = function (properties) {
+
+};
+Option.prototype.detailsChanges = function (details) {
+
 };
 
 
@@ -1424,13 +1514,14 @@ WordProperty.prototype.parseToRadioOptions = function(str) {
     var options = {};
     for (var i = 0; i < $options.length; i++) {
         var text = $options[i];
-        var value = my.text.substring(text, '', '(').trim();
+        var caption = my.text.substring(text, '', '(').trim();
         var key = Number(my.text.substring(text, '(', ')'));
         var checked = (text.indexOf('*') >= 0 ? true : false);
 
         var option = {
             key: key,
-            value: value,
+            value: key,
+            caption: caption,
             checked: checked
         };
 
@@ -1555,8 +1646,8 @@ function GrammarForm(manager, params) {
     this.key = params.Key;
     this.name = params.Name;
     this.params = params.Params;
-    this.groupIndex = my.text.substring(params.Group, '[', ']');
-    this.groupName = my.text.substring(params.Group, ']', '');
+    this.groupIndex = my.text.substring(params.Group, '(', ')');
+    this.groupName = my.text.substring(params.Group, ')', '');
     this.header = params.Header;
     this.inactiveRules = params.InactiveRules;
     this.index = params.Index;
@@ -1570,7 +1661,7 @@ function GrammarForm(manager, params) {
             manager: self.manager,
             header: self.header
         });
-        manager.groups.setItem(self.group.name, self.group);
+        manager.groups.setItem(self.groupName, self.group);
     }
     this.group.add(this);
     
@@ -2827,7 +2918,7 @@ EditOptionPanel.prototype.cancel = function () {
     this.ui.destroy();
 };
 EditOptionPanel.prototype.confirm = function () {
-    this.object.update(this.editObject);
+    this.object.update(this.editObject, this.properties, this.details);
     this.ui.destroy();
 };
 EditOptionPanel.prototype.start = function () {

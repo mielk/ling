@@ -80,9 +80,9 @@ namespace Typer.Domain.Services
             return _repository.AddMetaword(dto);
         }
 
-        public int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options)
+        public int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options, string[] properties)
         {
-            return _repository.AddMetaword(name, wordtype, weight, categories, options);
+            return _repository.AddMetaword(name, wordtype, weight, categories, options, properties);
         }
 
         public IEnumerable<Word> GetWords(int metawordId)
@@ -101,9 +101,10 @@ namespace Typer.Domain.Services
             return _repository.UpdateCategories(id, categoriesId);
         }
 
-        public bool Update(int id, string name, int wordtype, int weight, int[] categories, int[] removed, string[] edited, string[] added)
+        public bool Update(int id, string name, int wordtype, int weight, int[] categories, int[] removed, 
+                    string[] edited, string[] added, string[] properties)
         {
-            return _repository.Update(id, name, wordtype, weight, categories, removed, edited, added);
+            return _repository.Update(id, name, wordtype, weight, categories, removed, edited, added, properties);
         }
 
         public IEnumerable<Category> GetCategories(int metawordId)

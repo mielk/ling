@@ -113,8 +113,10 @@
                     'wordtype': e.wordtype,
                     'removed': e.removed,
                     'edited': e.edited,
-                    'added': e.added
-                },traditional: true,
+                    'added': e.added,
+                    'properties': e.properties
+                },
+                traditional: true,
                 success: 'Word ' + e.word.name + ' has been updated',
                 error: 'Error when trying to update the word ' + e.word.name,
                 callback: e.callback
@@ -128,7 +130,8 @@
                     'weight': e.weight,
                     'categories': e.categories,
                     'wordtype': e.wordtype,
-                    'added': e.added
+                    'added': e.added,
+                    'properties': e.properties
                 }, traditional: true,
                 success: 'Word ' + e.name + ' has been added',
                 error: 'Error when trying to add the word ' + e.name,

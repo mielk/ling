@@ -293,7 +293,7 @@ my.ui = (function () {
 
                 var label = jQuery('<label>').
                     attr('for', input).
-                    css({ 'height': 'auto'}).
+                    css({ 'height': 'auto', 'width': 'auto'}).
                     text(caption);
                 input.appendTo(label);
                 label.appendTo(container);

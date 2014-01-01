@@ -123,18 +123,18 @@ namespace Typer.Web.Controllers
             [HttpPost]
             [AllowAnonymous]
             public ActionResult Update(int id, string name, int wordtype, int weight, int[] categories, int[] removed, 
-                string[] edited, string[] added)
+                string[] edited, string[] added, string[] properties)
             {
-                var result = _service.Update(id, name, wordtype, weight, categories, removed, edited, added);
+                var result = _service.Update(id, name, wordtype, weight, categories, removed, edited, added, properties);
                 return Json(result);
             }
 
 
             [HttpPost]
             [AllowAnonymous]
-            public ActionResult Add(string name, int wordtype, int weight, int[] categories, string[] added)
+            public ActionResult Add(string name, int wordtype, int weight, int[] categories, string[] added, string[] properties)
             {
-                var id = _service.AddMetaword(name, wordtype, weight, categories, added);
+                var id = _service.AddMetaword(name, wordtype, weight, categories, added, properties);
                 return Json(id > 0);
             }
 

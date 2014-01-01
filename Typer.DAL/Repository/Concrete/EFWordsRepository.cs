@@ -174,7 +174,8 @@ namespace Typer.DAL.Repositories
 
         }
 
-        public bool Update(int id, string name, int wordtype, int weight, int[] categories, int[] removed, string[] edited, string[] added)
+        public bool Update(int id, string name, int wordtype, int weight, int[] categories, int[] removed, 
+            string[] edited, string[] added, string[] properties)
         {
 
             using (var scope = new TransactionScope())
@@ -233,7 +234,15 @@ namespace Typer.DAL.Repositories
                             }
                         }
 
-
+                        //Properties
+                        if (properties != null)
+                        {
+                            for (var i = 0; i < properties.Length; i++)
+                            {
+                                var s = properties[i];
+                                if (!AddWordProperty(s)) result = false;
+                            }
+                        }
 
                         if (result)
                         {
@@ -281,6 +290,42 @@ namespace Typer.DAL.Repositories
 
         }
 
+
+        private bool AddWordProperty(string s)
+        {
+            var x = s;
+            var parameters = s.Split('|');
+
+            //Word Id.
+            int wordId;
+            Int32.TryParse(parameters[0], out wordId);
+
+            //Property Id.
+            int propertyId;
+            Int32.TryParse(parameters[1], out propertyId);
+
+            //Value
+            string value = parameters[2];
+
+            //Dto object.
+            WordtypePropertyValueDto dto = GetPropertyValue(wordId, propertyId);
+            if (dto != null)
+            {
+                dto.Value = value;
+            }
+            else
+            {
+                dto = new WordtypePropertyValueDto
+                {
+                    PropertyId = propertyId,
+                    WordId = wordId,
+                    Value = value
+                };
+                Context.WordtypePropertyValues.Add(dto);
+            }
+
+            return true;
+        }
 
         private bool AddOption(string s, int id)
         {
@@ -337,6 +382,11 @@ namespace Typer.DAL.Repositories
         public IEnumerable<WordtypePropertyValueDto> GetPropertyValues(int wordId)
         {
             return Context.WordtypePropertyValues.Where(wpv => wpv.WordId == wordId);
+        }
+
+        public WordtypePropertyValueDto GetPropertyValue(int wordId, int propertyId)
+        {
+            return Context.WordtypePropertyValues.SingleOrDefault(wpv => wpv.WordId == wordId && wpv.PropertyId == propertyId);
         }
 
         public bool Activate(int id)
@@ -408,7 +458,7 @@ namespace Typer.DAL.Repositories
             return Context.Words.Where(o => o.MetawordId == metawordId && o.IsActive && languages.Contains(o.LanguageId));
         }
 
-        public int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options)
+        public int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options, string[] properties)
         {
 
             using (var scope = new TransactionScope())
