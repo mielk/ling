@@ -114,7 +114,8 @@
                     'removed': e.removed,
                     'edited': e.edited,
                     'added': e.added,
-                    'properties': e.properties
+                    'properties': e.properties,
+                    'forms': e.details
                 },
                 traditional: true,
                 success: 'Word ' + e.word.name + ' has been updated',

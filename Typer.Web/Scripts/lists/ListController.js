@@ -662,16 +662,12 @@ Entity.prototype.propertiesLogs = function (logs) {
     var array = [];
     for (var i = 0; i < logs.length; i++) {
         var log = logs[i];
-        if (log.event === tag && log.properties) {
+        if (log.event === tag) {
             var wordId = log.wordId;
-            var properties = log.properties;
-            for (var i = 0; i < properties.length; i++) {
-                var item = properties[i];
-                var propertyId = my.text.substring(item, '', ':');
-                var value = my.text.substring(item, ':', '');
-                var text = wordId + '|' + propertyId + '|' + (value === 'true' ? '*' : (value === 'false' ? '' : value));
-                array.push(text);
-            }
+            var propertyId = log.propertyId;
+            var value = log.value;
+            var text = wordId + '|' + propertyId + '|' + (value === 'true' ? '*' : (value === 'false' ? '' : value));
+            array.push(text);
         }
     }
     return array;
@@ -683,9 +679,8 @@ Entity.prototype.detailsLogs = function (logs) {
     var array = [];
     for (var i = 0; i < logs.length; i++) {
         var log = logs[i];
-        var item = log.item;
-        if (log.event === tag && item) {
-            var text = item.languageId + '|' + item.name + '|' + item.weight;
+        if (log.event === tag) {
+            var text = log.wordId + '|' + log.form + '|' + log.value;
             array.push(text);
         }
     }
@@ -726,7 +721,7 @@ Metaword.prototype.update = function (properties) {
     var removed = this.removedLogs(properties.logs);
     var edited = this.editedLogs(properties.logs);
     var added = this.addedLogs(properties.logs);
-    var properties = this.propertiesLogs(properties.logs);
+    var parameters = this.propertiesLogs(properties.logs);
     var details = this.detailsLogs(properties.logs);
 
     //Check if there are any changes.
@@ -735,7 +730,7 @@ Metaword.prototype.update = function (properties) {
         (removed && removed.length) ||
         (edited && edited.length) ||
         (added && added.length) ||
-        (properties && properties.length) ||
+        (parameters && parameters.length) ||
         (details && details.length)){
 
         if (self.new) {
@@ -746,7 +741,7 @@ Metaword.prototype.update = function (properties) {
                 weight: weight,
                 wordtype: wordtype,
                 added: added,
-                properties: properties,
+                properties: parameters,
                 details: details,
                 categories: my.categories.toIntArray(categories),
                 callback: function (result) {
@@ -768,7 +763,7 @@ Metaword.prototype.update = function (properties) {
                 removed: removed,
                 edited: edited,
                 added: added,
-                properties: properties,
+                properties: parameters,
                 details: details,
                 categories: my.categories.toIntArray(categories),
                 callback: function (result) {
@@ -1108,10 +1103,6 @@ function OptionEntity(entity, properties) {
     this.eventHandler = new EventHandler();
     this.language = null; //LanguageEntity
 
-    //Details
-    this.properties = new HashTable(null);
-    this.details = new HashTable(null);
-
 }
 OptionEntity.prototype.bind = function (e) {
     this.eventHandler.bind(e);
@@ -1136,9 +1127,22 @@ OptionEntity.prototype.delete = function () {
 
 };
 OptionEntity.prototype.edit = function (properties) {
+
+    //Load properties and details of this entity.
+    if (!this.properties) this.loadProperties();
+    if (!this.details) this.loadDetails();
+
+    //Create edit object bound to this entity and display edit form.
     var editItem = this.editItem();
     var editPanel = this.editOptionPanel(editItem, properties);
     editPanel.display();
+
+};
+OptionEntity.prototype.loadProperties = function () {
+    alert('Must be defined in implementing class');
+};
+OptionEntity.prototype.loadDetails = function () {
+    alert('Must be defined in implementing class');
 };
 OptionEntity.prototype.editOptionPanel = function () {
     alert('Must be defined in implementing class');
@@ -1167,8 +1171,6 @@ OptionEntity.prototype.update = function (params, properties, details) {
     var self = this;
     var name = (this.name === params.name ? undefined : params.name);
     var weight = (this.weight === params.weight ? undefined : params.weight);
-    var propertiesChanges = this.propertiesChanges(properties);
-    var detailsChanges = this.detailsChanges(details);
 
     //Check if there are any changes.
     if (name || weight) {
@@ -1206,30 +1208,25 @@ OptionEntity.prototype.update = function (params, properties, details) {
     }
 
 
-    //Check if there are any changes in properties.
-    if (propertiesChanges.length) {
-        this.parent.addLog({
-            event: 'properties',
-            wordId: self.id,
-            properties: propertiesChanges
-        });
-    }
+    //Update properties and details.
+    this.updateProperties(properties);
+    this.updateDetails(details);
 
 
-    if (detailsChanges.length) {
-        this.parent.addLog({
-            event: 'details',
-            wordId: self.id,
-            properties: detailsChanges
-        });
-    }
+    //if (detailsChanges.length) {
+    //    this.parent.addLog({
+    //        event: 'details',
+    //        wordId: self.id,
+    //        properties: detailsChanges
+    //    });
+    //}
 
 
 };
-OptionEntity.prototype.propertiesChanges = function () {
+OptionEntity.prototype.updateProperties = function () {
     alert('Must be defined in implementing class');
 };
-OptionEntity.prototype.detailsChanges = function () {
+OptionEntity.prototype.updateDetails = function () {
     alert('Must be defined in implementing class');
 };
 
@@ -1254,29 +1251,82 @@ Word.prototype.editItem = function () {
         object: self
     });
 };
-Word.prototype.propertiesChanges = function (properties) {
-    var changes = [];
-    properties.items.each(function (key, value) {
-        if (value.originalValue !== value.value) {
-            var log = value.id + ':' + value.value;
-            changes.push(log);
-        }
-    });
-    return changes;
-};
-Word.prototype.detailsChanges = function (forms) {
-    var changes = [];
-    forms.forms.each(function (key, value) {
-        if (!value.header) {
-            if (value.value !== undefined && value.originalValue !== value.value) {
-                var log = value.id + ':' + value.value;
-                changes.push(log);
-            }
-        }
-    });
-    return changes;
-};
+Word.prototype.updateProperties = function (properties) {
+    var self = this;
+    properties.items.each(function (key, object) {
 
+        var property = self.properties.getItem(key);
+        if (!property || object.isChanged()) {
+            property = {
+                id: object.id,
+                value: object.value
+            };
+            self.properties.setItem(property.id, property);
+
+            self.parent.addLog({
+                event: 'properties',
+                wordId: self.id,
+                propertyId: property.id,
+                value: property.value
+            });
+        }
+
+    });
+
+};
+Word.prototype.updateDetails = function (forms) {
+    var self = this;
+    forms.forms.each(function (key, object) {
+
+        var form = self.details.getItem(key);
+        if (object.isChanged()) {
+            form = {
+                id: object.key,
+                value: object.value
+            };
+            self.details.setItem(form.id, form);
+
+            self.parent.addLog({
+                event: 'details',
+                wordId: self.id,
+                form: form.id,
+                value: form.value
+            });
+        }
+
+    });
+
+};
+Word.prototype.loadProperties = function () {
+    this.properties = new HashTable(null);
+    var $values = this.getPropertiesFromRepository(this.id);
+    for (var i = 0; i < $values.length; i++) {
+        var set = $values[i];
+        var property = {
+            id: set.PropertyId,
+            value: (set.Value === '*' ? true : ($.isNumeric(set.Value) ? Number(set.Value) : set.Value))
+        };
+        this.properties.setItem(property.id, property);
+    };
+};
+Word.prototype.getPropertiesFromRepository = function (wordId) {
+    return my.db.fetch('Words', 'GetPropertyValues', { 'wordId': wordId });
+};
+Word.prototype.loadDetails = function () {
+    this.details = new HashTable(null);
+    var $values = this.getFormsFromRepository(this.id);
+    for (var i = 0; i < $values.length; i++) {
+        var set = $values[i];
+        var form = {
+            id: set.Definition,
+            value: set.Content
+        };
+        this.details.setItem(form.id, form);
+    };
+};
+Word.prototype.getFormsFromRepository = function (wordId) {
+    return my.db.fetch('Words', 'GetGrammarForms', { 'wordId': wordId });
+};
 
 function Option(question, properties) {
     OptionEntity.call(this, question, properties);
@@ -1298,10 +1348,16 @@ Option.prototype.editItem = function () {
         object: self
     });
 };
-Option.prototype.propertiesChanges = function (properties) {
+Option.prototype.updateProperties = function (properties) {
 
 };
-Option.prototype.detailsChanges = function (details) {
+Option.prototype.updateDetails = function (details) {
+
+};
+Option.prototype.loadProperties = function () {
+
+};
+Option.prototype.loadDetails = function () {
 
 };
 
@@ -1387,7 +1443,8 @@ QuestionOptionEditEntity.prototype.createDetailsManager = function (params) {
 
 function PropertyManager(object) {
     this.PropertyManager = true;
-    this.object = object;
+    this.editObject = object;
+    this.entity = object.object;
     this.items = new HashTable(null);
 
     this.ui = (function () {
@@ -1406,34 +1463,22 @@ function PropertyManager(object) {
 
     })();
 
-
-    //return {
-    //    addProperty: function (property) {
-    //        controls.setItem(property.id, property);
-    //        $(property.view()).appendTo($(container));
-    //    },
-    //    getProperty: function (key) {
-    //        return controls.getItem(key);
-    //    }
-    //};
-
 }
 PropertyManager.prototype.view = function () {
     return this.ui.view();
 };
 
 
-function WordPropertyManager(object) {
-    PropertyManager.call(this, object);
+function WordPropertyManager(editObject) {
+    PropertyManager.call(this, editObject);
     this.WordPropertyManager = true;
     this.loadProperties();
     this.loadValues();
 }
 extend(PropertyManager, WordPropertyManager);
 WordPropertyManager.prototype.loadProperties = function () {
-    var word = this.object.object;
-    var metaword = word.parent;
-    var languageId = word.languageId;
+    var metaword = this.entity.parent;
+    var languageId = this.entity.languageId;
     var wordtypeId = metaword.wordtype.id;
 
     var $properties = this.getPropertiesFromRepository(languageId, wordtypeId);
@@ -1448,18 +1493,14 @@ WordPropertyManager.prototype.getPropertiesFromRepository = function (languageId
     return my.db.fetch('Words', 'GetProperties', { 'languageId': languageId, 'wordtypeId': wordtypeId });
 };
 WordPropertyManager.prototype.loadValues = function() {
-    var word = this.object.object;
-    var $values = this.getValuesFromRepository(word.id);
-    for (var i = 0; i < $values.length; i++) {
-        var set = $values[i];
-        var id = set.PropertyId;
-        var property = this.items.getItem(id);
-        var value = (set.Value === '*' ? true : ($.isNumeric(set.Value) ? Number(set.Value) : set.Value));
-        property.setValue(value);
-    }
-};
-WordPropertyManager.prototype.getValuesFromRepository = function (wordId) {
-    return my.db.fetch('Words', 'GetPropertyValues', { 'wordId': wordId });
+    var self = this;
+    this.entity.properties.each(function(key, object){
+        var property = self.items.getItem(key);
+        if (property){
+            property.setValue(object.value);
+        }
+    });
+
 };
 
 
@@ -1502,8 +1543,13 @@ function WordProperty(params) {
 
         input.bind({
             click: function (e) {
-                self.value = e.value;
-                self.trigger(e);
+                if (e.value !== self.value) {
+                    self.value = e.value;
+                    self.trigger({
+                        type: 'change',
+                        value: self.value
+                    });
+                }
             }
         });
 
@@ -1558,11 +1604,14 @@ WordProperty.prototype.setValue = function (value) {
     this.value = this.originalValue;
     this.ui.change(this.value);
 };
-
+WordProperty.prototype.isChanged = function () {
+    return (this.originalValue !== this.value);
+};
 
 function DetailsManager(object) {
     this.DetailsManager = true;
-    this.object = object;
+    this.editObject = object;
+    this.entity = object.object;
 
     this.container = jQuery('<div/>', {
         'class': 'option-details-container'
@@ -1610,9 +1659,8 @@ function GrammarManager(object, properties) {
 }
 extend(DetailsManager, GrammarManager);
 GrammarManager.prototype.loadForms = function() {
-    var word = this.object.object;
-    var metaword = word.parent;
-    var languageId = word.languageId;
+    var metaword = this.entity.parent;
+    var languageId = this.entity.languageId;
     var wordtypeId = metaword.wordtype.id;
 
     var $forms = this.getDefinitionsFromRepository(languageId, wordtypeId);
@@ -1654,20 +1702,13 @@ GrammarManager.prototype.addGroupView = function (view) {
     this.ui.addGroup(view);
 };
 GrammarManager.prototype.loadValues = function () {
-    var word = this.object.object;
-    var $values = this.getValuesFromRepository(word.id);
-    for (var i = 0; i < $values.length; i++) {
-        var set = $values[i];
-        var id = set.Definition;
-        var property = this.forms.getItem(id);
-        var value = set.Content;
-        if (property && property.setValue) {
-            property.setValue(value);
+    var self = this;
+    this.entity.details.each(function (key, object) {
+        var form = self.forms.getItem(key);
+        if (form) {
+            form.setValue(object.value);
         }
-    }
-};
-GrammarManager.prototype.getValuesFromRepository = function (wordId) {
-    return my.db.fetch('Words', 'GetGrammarForms', { 'wordId': wordId });
+    });
 };
 GrammarManager.prototype.addForm = function (form) {
     //Add to proper group (create if it doesn't exist yet).
@@ -1753,7 +1794,7 @@ GrammarForm.prototype.setListeners = function () {
         if (property) {
             self.activate(property.value != value);
             property.bind({
-                click: function (e) {
+                change: function (e) {
                     self.activate(e.value != value);
                 }
             });
@@ -1775,7 +1816,7 @@ GrammarForm.prototype.setValue = function (value) {
     }
 };
 GrammarForm.prototype.isChanged = function () {
-    return (this.value && this.originalValue !== this.value);
+    return (this.value !== undefined && this.originalValue !== this.value);
 };
 
 function GrammarGroup(params) {
