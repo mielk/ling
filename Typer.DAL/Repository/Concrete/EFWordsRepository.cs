@@ -175,7 +175,7 @@ namespace Typer.DAL.Repositories
         }
 
         public bool Update(int id, string name, int wordtype, int weight, int[] categories, int[] removed, 
-            string[] edited, string[] added, string[] properties)
+            string[] edited, string[] added, string[] properties, string[] forms)
         {
 
             using (var scope = new TransactionScope())
@@ -244,6 +244,17 @@ namespace Typer.DAL.Repositories
                             }
                         }
 
+                        //Forms
+                        if (forms != null)
+                        {
+                            for (var i = 0; i < forms.Length; i++)
+                            {
+                                var s = forms[i];
+                                if (!AddGrammarForm(s)) result = false;
+                            }
+                        }
+
+
                         if (result)
                         {
                             Context.SaveChanges();
@@ -293,7 +304,6 @@ namespace Typer.DAL.Repositories
 
         private bool AddWordProperty(string s)
         {
-            var x = s;
             var parameters = s.Split('|');
 
             //Word Id.
@@ -307,11 +317,41 @@ namespace Typer.DAL.Repositories
             //Value
             string value = parameters[2];
 
+            return AddWordProperty(wordId, propertyId, value);
+
+        }
+
+        private bool AddWordProperty(int id, string s)
+        {
+            var parameters = s.Split('|');
+
+            //Word Id.
+            int wordId = id;
+
+            //Property Id.
+            int propertyId;
+            Int32.TryParse(parameters[1], out propertyId);
+
+            //Value
+            string value = parameters[2];
+
+            return AddWordProperty(wordId, propertyId, value);
+        }
+
+        private bool AddWordProperty(int wordId, int propertyId, string value)
+        {
             //Dto object.
             WordtypePropertyValueDto dto = GetPropertyValue(wordId, propertyId);
             if (dto != null)
             {
-                dto.Value = value;
+                if (value.Length == 0)
+                {
+                    Context.WordtypePropertyValues.Remove(dto);
+                }
+                else
+                {
+                    dto.Value = value;
+                }
             }
             else
             {
@@ -325,6 +365,71 @@ namespace Typer.DAL.Repositories
             }
 
             return true;
+        }
+
+        private bool AddGrammarForm(string s)
+        {
+            var parameters = s.Split('|');
+
+            //Word Id.
+            int wordId;
+            Int32.TryParse(parameters[0], out wordId);
+
+            //Property Id.
+            string key = parameters[1];
+
+            //Value
+            string value = parameters[2];
+
+            return AddGrammarForm(wordId, key, value);
+
+        }
+
+        private bool AddGrammarForm(int wordId, string s)
+        {
+            var parameters = s.Split('|');
+
+            //Property Id.
+            string key = parameters[1];
+
+            //Value
+            string value = parameters[2];
+
+            return AddGrammarForm(wordId, key, value);
+        }
+
+        private bool AddGrammarForm(int wordId, string key, string value)
+        {
+
+            //Dto object.
+            GrammarFormDto dto = GetGrammarForm(wordId, key);
+            if (dto != null)
+            {
+                if (value.Length == 0)
+                {
+                    Context.GrammarForms.Remove(dto);
+                }
+                else
+                {
+                    dto.Content = value;
+                }
+            }
+            else
+            {
+                dto = new GrammarFormDto
+                {
+                    WordId = wordId,
+                    Content = value,
+                    Definition = key,
+                    CreatorId = 1,
+                    CreateDate = DateTime.Now,
+                    IsActive = true
+                };
+                Context.GrammarForms.Add(dto);
+            }
+
+            return true;
+
         }
 
         private bool AddOption(string s, int id)
@@ -379,6 +484,11 @@ namespace Typer.DAL.Repositories
             return Context.GrammarDefinitions.Where(gd => gd.LanguageId == languageId && gd.WordtypeId == wordtypeId);
         }
 
+        public IEnumerable<GrammarFormDto> GetGrammarForms(int wordId)
+        {
+            return Context.GrammarForms.Where(gf => gf.WordId == wordId && gf.IsActive);
+        }
+
         public IEnumerable<WordtypePropertyValueDto> GetPropertyValues(int wordId)
         {
             return Context.WordtypePropertyValues.Where(wpv => wpv.WordId == wordId);
@@ -387,6 +497,11 @@ namespace Typer.DAL.Repositories
         public WordtypePropertyValueDto GetPropertyValue(int wordId, int propertyId)
         {
             return Context.WordtypePropertyValues.SingleOrDefault(wpv => wpv.WordId == wordId && wpv.PropertyId == propertyId);
+        }
+
+        public GrammarFormDto GetGrammarForm(int wordId, string key)
+        {
+            return Context.GrammarForms.SingleOrDefault(gf => gf.WordId == wordId && gf.Definition == key);
         }
 
         public bool Activate(int id)
@@ -458,7 +573,7 @@ namespace Typer.DAL.Repositories
             return Context.Words.Where(o => o.MetawordId == metawordId && o.IsActive && languages.Contains(o.LanguageId));
         }
 
-        public int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options, string[] properties)
+        public int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options, string[] properties, string[] forms)
         {
 
             using (var scope = new TransactionScope())
@@ -494,6 +609,27 @@ namespace Typer.DAL.Repositories
                                 var s = options[i];
                                 var _result = AddOption(s, id);
                                 if (!_result) result = false;
+                            }
+                        }
+
+
+                        //Properties
+                        if (properties != null)
+                        {
+                            for (var i = 0; i < properties.Length; i++)
+                            {
+                                var s = properties[i];
+                                if (!AddWordProperty(id, s)) result = false;
+                            }
+                        }
+
+                        //Forms
+                        if (forms != null)
+                        {
+                            for (var i = 0; i < forms.Length; i++)
+                            {
+                                var s = forms[i];
+                                if (!AddGrammarForm(id, s)) result = false;
                             }
                         }
 

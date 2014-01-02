@@ -62,6 +62,7 @@
     <Compile Include="Repository\Concrete\EFUsersRepository.cs" />
     <Compile Include="Infrastructure\RepositoryFactory.cs" />
     <Compile Include="TransferObjects\CategoryDto.cs" />
+    <Compile Include="TransferObjects\GrammarFormDto.cs" />
     <Compile Include="TransferObjects\QuestionCategoryDto.cs" />
     <Compile Include="TransferObjects\MetawordDto.cs" />
     <Compile Include="TransferObjects\WordCategoryDto.cs" />

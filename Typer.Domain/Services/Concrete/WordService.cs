@@ -80,9 +80,9 @@ namespace Typer.Domain.Services
             return _repository.AddMetaword(dto);
         }
 
-        public int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options, string[] properties)
+        public int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options, string[] properties, string[] forms)
         {
-            return _repository.AddMetaword(name, wordtype, weight, categories, options, properties);
+            return _repository.AddMetaword(name, wordtype, weight, categories, options, properties, forms);
         }
 
         public IEnumerable<Word> GetWords(int metawordId)
@@ -101,10 +101,10 @@ namespace Typer.Domain.Services
             return _repository.UpdateCategories(id, categoriesId);
         }
 
-        public bool Update(int id, string name, int wordtype, int weight, int[] categories, int[] removed, 
-                    string[] edited, string[] added, string[] properties)
+        public bool Update(int id, string name, int wordtype, int weight, int[] categories, int[] removed,
+                    string[] edited, string[] added, string[] properties, string[] forms)
         {
-            return _repository.Update(id, name, wordtype, weight, categories, removed, edited, added, properties);
+            return _repository.Update(id, name, wordtype, weight, categories, removed, edited, added, properties, forms);
         }
 
         public IEnumerable<Category> GetCategories(int metawordId)
@@ -129,6 +129,12 @@ namespace Typer.Domain.Services
         {
             var dtos = _repository.GetPropertyValues(wordId);
             return dtos.Select(WordtypePropertyValueFromDto).ToList();
+        }
+
+        public IEnumerable<GrammarForm> GetGrammarForms(int wordId)
+        {
+            var dtos = _repository.GetGrammarForms(wordId);
+            return dtos.Select(GrammarFormFromDto).ToList();
         }
 
         public IEnumerable<Metaword> Filter(int wordType, int lowWeight, int upWeight, int[] categories, string text)
@@ -202,6 +208,23 @@ namespace Typer.Domain.Services
             {
                 PropertyId = dto.PropertyId,
                 Value = dto.Value,
+                WordId = dto.WordId
+            };
+        }
+
+        private static GrammarForm GrammarFormFromDto(GrammarFormDto dto)
+        {
+            return new GrammarForm
+            {
+                Content = dto.Content,
+                CreateDate = dto.CreateDate,
+                CreatorId = dto.CreatorId,
+                Definition = dto.Definition,
+                Id = dto.Id,
+                IsActive = dto.IsActive,
+                IsApproved = dto.IsApproved,
+                Negative = dto.Negative,
+                Positive = dto.Positive,
                 WordId = dto.WordId
             };
         }

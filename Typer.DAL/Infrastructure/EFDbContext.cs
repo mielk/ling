@@ -21,6 +21,7 @@ namespace Typer.DAL.Infrastructure
         public DbSet<WordtypePropertyDto> WordtypeProperties { get; set; }
         public DbSet<GrammarDefinitonDto> GrammarDefinitions { get; set; }
         public DbSet<WordtypePropertyValueDto> WordtypePropertyValues { get; set; }
+        public DbSet<GrammarFormDto> GrammarForms { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -37,6 +38,7 @@ namespace Typer.DAL.Infrastructure
             modelBuilder.Entity<WordtypePropertyDto>().ToTable("WordtypeProperties");
             modelBuilder.Entity<GrammarDefinitonDto>().ToTable("GrammarDefinitions");
             modelBuilder.Entity<WordtypePropertyValueDto>().ToTable("WordsProperties");
+            modelBuilder.Entity<GrammarFormDto>().ToTable("GrammarForms");
         }
 
 

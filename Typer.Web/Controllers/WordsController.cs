@@ -122,19 +122,19 @@ namespace Typer.Web.Controllers
 
             [HttpPost]
             [AllowAnonymous]
-            public ActionResult Update(int id, string name, int wordtype, int weight, int[] categories, int[] removed, 
-                string[] edited, string[] added, string[] properties)
+            public ActionResult Update(int id, string name, int wordtype, int weight, int[] categories, int[] removed,
+                string[] edited, string[] added, string[] properties, string[] forms)
             {
-                var result = _service.Update(id, name, wordtype, weight, categories, removed, edited, added, properties);
+                var result = _service.Update(id, name, wordtype, weight, categories, removed, edited, added, properties, forms);
                 return Json(result);
             }
 
 
             [HttpPost]
             [AllowAnonymous]
-            public ActionResult Add(string name, int wordtype, int weight, int[] categories, string[] added, string[] properties)
+            public ActionResult Add(string name, int wordtype, int weight, int[] categories, string[] added, string[] properties, string[] forms)
             {
-                var id = _service.AddMetaword(name, wordtype, weight, categories, added, properties);
+                var id = _service.AddMetaword(name, wordtype, weight, categories, added, properties, forms);
                 return Json(id > 0);
             }
 
@@ -235,8 +235,16 @@ namespace Typer.Web.Controllers
                 var properties = _service.GetPropertyValues(wordId);
                 return Json(properties, JsonRequestBehavior.AllowGet);
             }
-            
 
+
+            [HttpGet]
+            [AllowAnonymous]
+            public ActionResult GetGrammarForms(int wordId)
+            {
+                var forms = _service.GetGrammarForms(wordId);
+                return Json(forms, JsonRequestBehavior.AllowGet);
+            }
+            
 
         }
 }

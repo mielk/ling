@@ -300,7 +300,7 @@ my.ui = (function () {
 
                 return {                    
                     select: function () {
-                        input.checked = true;
+                        $(input).prop('checked', true);
                         eventHandler.trigger({
                             type: 'click',
                             caption: caption,

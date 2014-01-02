@@ -669,7 +669,7 @@ Entity.prototype.propertiesLogs = function (logs) {
                 var item = properties[i];
                 var propertyId = my.text.substring(item, '', ':');
                 var value = my.text.substring(item, ':', '');
-                var text = wordId + '|' + propertyId + '|' + value;
+                var text = wordId + '|' + propertyId + '|' + (value === 'true' ? '*' : (value === 'false' ? '' : value));
                 array.push(text);
             }
         }
@@ -1108,6 +1108,10 @@ function OptionEntity(entity, properties) {
     this.eventHandler = new EventHandler();
     this.language = null; //LanguageEntity
 
+    //Details
+    this.properties = new HashTable(null);
+    this.details = new HashTable(null);
+
 }
 OptionEntity.prototype.bind = function (e) {
     this.eventHandler.bind(e);
@@ -1161,15 +1165,15 @@ OptionEntity.prototype.update = function (params, properties, details) {
     }
 
     var self = this;
-    var name = (this.name === params.name ? '' : params.name);
-    var weight = (this.weight === params.weight ? 0 : params.weight);
+    var name = (this.name === params.name ? undefined : params.name);
+    var weight = (this.weight === params.weight ? undefined : params.weight);
     var propertiesChanges = this.propertiesChanges(properties);
     var detailsChanges = this.detailsChanges(details);
 
     //Check if there are any changes.
     if (name || weight) {
-        this.name = name;
-        this.weight = weight;
+        this.name = (name === undefined ? this.name : name);
+        this.weight = (weight === undefined ? this.weight : weight);
 
 
         if (this.new) {
@@ -1192,8 +1196,8 @@ OptionEntity.prototype.update = function (params, properties, details) {
 
             this.trigger({
                 type: 'update',
-                name: name,
-                weight: weight
+                name: self.name,
+                weight: self.weight
             });
 
 
@@ -1253,15 +1257,24 @@ Word.prototype.editItem = function () {
 Word.prototype.propertiesChanges = function (properties) {
     var changes = [];
     properties.items.each(function (key, value) {
-        if (value.originalValue != value.value) {
+        if (value.originalValue !== value.value) {
             var log = value.id + ':' + value.value;
             changes.push(log);
         }
     });
     return changes;
 };
-Word.prototype.detailsChanges = function (details) {
-    return [];
+Word.prototype.detailsChanges = function (forms) {
+    var changes = [];
+    forms.forms.each(function (key, value) {
+        if (!value.header) {
+            if (value.value !== undefined && value.originalValue !== value.value) {
+                var log = value.id + ':' + value.value;
+                changes.push(log);
+            }
+        }
+    });
+    return changes;
 };
 
 
@@ -1441,12 +1454,14 @@ WordPropertyManager.prototype.loadValues = function() {
         var set = $values[i];
         var id = set.PropertyId;
         var property = this.items.getItem(id);
-        property.setValue(set.Value);
+        var value = (set.Value === '*' ? true : ($.isNumeric(set.Value) ? Number(set.Value) : set.Value));
+        property.setValue(value);
     }
 };
 WordPropertyManager.prototype.getValuesFromRepository = function (wordId) {
     return my.db.fetch('Words', 'GetPropertyValues', { 'wordId': wordId });
 };
+
 
 function WordProperty(params) {
     this.WordProperty = true;
@@ -1539,7 +1554,7 @@ WordProperty.prototype.trigger = function (e) {
     this.eventHandler.trigger(e);
 };
 WordProperty.prototype.setValue = function (value) {
-    this.originalValue = $.isNumeric(value) ? Number(value) : value;
+    this.originalValue = value;
     this.value = this.originalValue;
     this.ui.change(this.value);
 };
@@ -1566,6 +1581,7 @@ function GrammarManager(object, properties) {
     this.propertiesManager = properties.propertiesManager;
 
     this.groups = new HashTable(null);
+    this.forms = new HashTable(null);
 
     this.ui = (function () {
         // ReSharper disable once UnusedLocals
@@ -1588,6 +1604,7 @@ function GrammarManager(object, properties) {
     })();
 
     this.loadForms();
+    this.loadValues();
     this.render();
 
 }
@@ -1636,7 +1653,41 @@ GrammarManager.prototype.sorted = function() {
 GrammarManager.prototype.addGroupView = function (view) {
     this.ui.addGroup(view);
 };
+GrammarManager.prototype.loadValues = function () {
+    var word = this.object.object;
+    var $values = this.getValuesFromRepository(word.id);
+    for (var i = 0; i < $values.length; i++) {
+        var set = $values[i];
+        var id = set.Definition;
+        var property = this.forms.getItem(id);
+        var value = set.Content;
+        if (property && property.setValue) {
+            property.setValue(value);
+        }
+    }
+};
+GrammarManager.prototype.getValuesFromRepository = function (wordId) {
+    return my.db.fetch('Words', 'GetGrammarForms', { 'wordId': wordId });
+};
+GrammarManager.prototype.addForm = function (form) {
+    //Add to proper group (create if it doesn't exist yet).
+    var self = this;
+    var group = this.groups.getItem(form.groupName);
+    if (!group) {
+        group = new GrammarGroup({
+            index: form.groupIndex,
+            name: form.groupName,
+            manager: self,
+            header: form.header
+        });
+        self.groups.setItem(form.groupName, group);
+    }
+    group.add(form);
 
+    //Add to flyweight map of forms.
+    this.forms.setItem(form.key, form);
+
+};
 
 function GrammarForm(manager, params) {
     this.GrammarForm = true;
@@ -1651,19 +1702,10 @@ function GrammarForm(manager, params) {
     this.header = params.Header;
     this.inactiveRules = params.InactiveRules;
     this.index = params.Index;
+    this.originalValue = '';
+    this.value;
 
-    //Add to proper group (create if it doesn't exist yet).
-    this.group = manager.groups.getItem(this.groupName);
-    if (!this.group) {
-        this.group = new GrammarGroup({
-            index: self.groupIndex,
-            name: self.groupName,
-            manager: self.manager,
-            header: self.header
-        });
-        manager.groups.setItem(self.groupName, self.group);
-    }
-    this.group.add(this);
+    manager.addForm(this);
     
     //Bind listeners.
     if (this.inactiveRules) {
@@ -1687,6 +1729,10 @@ GrammarForm.prototype.view = function () {
             this.panel = jQuery('<input/>', {
                 'type': 'text',
                 'class': 'grammar-form'
+            }).bind({
+                change: function (e) {
+                    self.value = $(this).val();
+                }
             });
         }
 
@@ -1720,6 +1766,16 @@ GrammarForm.prototype.activate = function(value) {
     } else {
         this.view().attr('disabled', 'disabled');
     }
+};
+GrammarForm.prototype.setValue = function (value) {
+    this.originalValue = value;
+    this.value = value;
+    if (!this.header) {
+        this.view().val(value);
+    }
+};
+GrammarForm.prototype.isChanged = function () {
+    return (this.value && this.originalValue !== this.value);
 };
 
 function GrammarGroup(params) {
