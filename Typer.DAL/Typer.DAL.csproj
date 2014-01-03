@@ -74,7 +74,12 @@
     <Compile Include="TransferObjects\WordtypePropertyDto.cs" />
     <Compile Include="TransferObjects\WordtypePropertyValueDto.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Typer.Common\Typer.Common.csproj">
+      <Project>{11b5fd2f-c19c-4377-9e1c-342d55156882}</Project>
+      <Name>Typer.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />

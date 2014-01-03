@@ -33,6 +33,29 @@ namespace Typer.Tests.UnitTests.Helpers
 
 
         [TestMethod]
+        public void CompareEnd_returns_0_if_strings_have_another_last_character()
+        {
+            string _base = "asasdfd";
+            Assert.Equals(0, _base.CompareEnd("sdfswe"));
+        }
+
+        [TestMethod]
+        public void CompareEnd_returns_1_if_strings_have_the_same_last_character_only()
+        {
+            string _base = "asasdfde";
+            Assert.Equals(1, _base.CompareEnd("sdfswe"));
+        }
+
+
+        [TestMethod]
+        public void CompareEnd_returns_5_if_strings_have_the_same_last_five_characters()
+        {
+            string _base = "asasdfdeaaaa";
+            Assert.Equals(5, _base.CompareEnd("sdfsweaaaa"));
+        }
+
+
+        [TestMethod]
         public void IsLegalMail_returns_false_for_illegal_mails()
         {
 

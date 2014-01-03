@@ -244,7 +244,15 @@ namespace Typer.Web.Controllers
                 var forms = _service.GetGrammarForms(wordId);
                 return Json(forms, JsonRequestBehavior.AllowGet);
             }
-            
+
+
+            [HttpGet]
+            [AllowAnonymous]
+            public ActionResult GetSimilarWords(int languageId, int wordtype, string word)
+            {
+                var words = _service.GetWords(languageId, wordtype, word);
+                return Json(words, JsonRequestBehavior.AllowGet);
+            }
 
         }
 }

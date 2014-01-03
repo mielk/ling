@@ -431,6 +431,29 @@ my.ui = (function () {
 /* Funkcje tekstowe */
 my.text = (function () {
 
+    function countMatchedEnd(base, compared) {
+        var counter = 0;
+        var baseLength = base.length;
+        var comparedLength = compared.length;
+        for (var i = 1; i < comparedLength; i++) {
+
+            if (i > baseLength) return counter;
+
+            var _base = base.charAt(baseLength - i);
+            var _compared = compared.charAt(comparedLength - i);
+
+            if (_base != _compared) {
+                return counter;
+            } else {
+                counter++;
+            }
+
+        }
+
+        return counter;
+
+    }
+
     return {
         /*  Funkcja:    onlyDigits
          *  Opis:       Funkcja usuwa z podanego stringa wszystkie
@@ -518,7 +541,24 @@ my.text = (function () {
             } else {
                 return value;
             }
+        },
+
+        matchEnd: function (base, compared) {
+            var counter = countMatchedEnd(base, compared);
+            if (counter === 0) return '';
+            return compared.substring(compared.length - counter, counter);
+
+        },
+
+        countMatchedEnd: function (base, compared) {
+            return countMatchedEnd(base, compared);
+        },
+
+        cut: function (base, chars) {
+            if (chars > base.length) return base;
+            return base.substring(0, base.length - chars);
         }
+
     };
 
 })();

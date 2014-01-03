@@ -1502,6 +1502,17 @@ WordPropertyManager.prototype.loadValues = function() {
     });
 
 };
+WordPropertyManager.prototype.copyDetails = function (id) {
+    var self = this;
+    var properties = this.entity.getPropertiesFromRepository(id);
+    for (var i = 0; i < properties.length; i++) {
+        var property = properties[i];
+        var def = self.items.getItem(property.PropertyId);
+        if (def) {
+            def.changeValue(my.text.parse(property.Value));
+        }
+    }
+};
 
 
 function WordProperty(params) {
@@ -1601,11 +1612,13 @@ WordProperty.prototype.trigger = function (e) {
 };
 WordProperty.prototype.setValue = function (value) {
     this.originalValue = value;
-    this.value = this.originalValue;
-    this.ui.change(this.value);
+    this.ui.change(value);
 };
 WordProperty.prototype.isChanged = function () {
     return (this.originalValue !== this.value);
+};
+WordProperty.prototype.changeValue = function (value) {
+    this.ui.change(value);
 };
 
 function DetailsManager(object) {
@@ -1647,17 +1660,60 @@ function GrammarManager(object, properties) {
         return {
             addGroup: function(view) {
                 $(view).appendTo($(formsList));
+            },
+            searchPanel: function(){
+                return searchPanel;
             }
         };
 
     })();
 
+    this.loadSearchPanel();
     this.loadForms();
     this.loadValues();
     this.render();
 
 }
 extend(DetailsManager, GrammarManager);
+GrammarManager.prototype.loadSearchPanel = function () {
+    var self = this;
+
+    var similarWords = my.db.fetch('Words', 'GetSimilarWords', {
+        'languageId': self.entity.languageId, 
+        'wordtype': self.entity.parent.wordtype.id, 
+        'word':  self.entity.name
+    });
+
+    var dropdown = new DropDown({
+        container: self.ui.searchPanel(),
+        data: self.convertSimilarWords(similarWords),
+        slots: 10,
+        caseSensitive: false,
+        confirmWithFirstClick: true
+    });
+
+    dropdown.bind({
+        select: function (e) {
+            self.propertiesManager.copyDetails(e.object.Id);
+            self.copyDetails(e.object.Name, e.object.Id);
+        }
+    });
+
+};
+GrammarManager.prototype.convertSimilarWords = function(words){
+    var data = [];
+    for (var i = 0; i < words.length; i++){
+        var word = words[i];
+        data.push({
+            key: word.Id,
+            name: word.Name,
+            object: word
+        });
+    }
+
+    return data;
+
+};
 GrammarManager.prototype.loadForms = function() {
     var metaword = this.entity.parent;
     var languageId = this.entity.languageId;
@@ -1728,6 +1784,22 @@ GrammarManager.prototype.addForm = function (form) {
     //Add to flyweight map of forms.
     this.forms.setItem(form.key, form);
 
+};
+GrammarManager.prototype.copyDetails = function (name, id) {
+    var self = this;
+    var matched = my.text.countMatchedEnd(this.entity.name, name);
+    var forms = this.entity.getFormsFromRepository(id);
+
+    for (var i = 0; i < forms.length; i++) {
+        var form = forms[i];
+        var def = self.forms.getItem(form.Definition);
+        if (def) {
+            def.changeValue(self.getProperForm(form.Content, my.text.cut(name, matched), my.text.cut(self.entity.name, matched)));
+        }
+    }
+};
+GrammarManager.prototype.getProperForm = function (form, baseValue, replace) {
+    return form.replace(baseValue, replace);
 };
 
 function GrammarForm(manager, params) {
@@ -1815,6 +1887,12 @@ GrammarForm.prototype.setValue = function (value) {
 };
 GrammarForm.prototype.isChanged = function () {
     return (this.value !== undefined && this.originalValue !== this.value);
+};
+GrammarForm.prototype.changeValue = function (value) {
+    this.value = value;
+    if (!this.header) {
+        this.view().val(value);
+    }
 };
 
 function GrammarGroup(params) {

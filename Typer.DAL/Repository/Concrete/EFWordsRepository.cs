@@ -4,6 +4,7 @@ using System.Linq;
 using System.Transactions;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.TransferObjects;
+using Typer.Common.Helpers;
 
 // ReSharper disable once CheckNamespace
 namespace Typer.DAL.Repositories
@@ -504,6 +505,8 @@ namespace Typer.DAL.Repositories
             return Context.GrammarForms.SingleOrDefault(gf => gf.WordId == wordId && gf.Definition == key);
         }
 
+
+
         public bool Activate(int id)
         {
             var metaword = GetMetaword(id);
@@ -571,6 +574,11 @@ namespace Typer.DAL.Repositories
         public IEnumerable<WordDto> GetWords(int metawordId, int[] languages)
         {
             return Context.Words.Where(o => o.MetawordId == metawordId && o.IsActive && languages.Contains(o.LanguageId));
+        }
+
+        public IEnumerable<WordDto> GetWords(int languageId, int wordtype, string word)
+        {
+            return Context.Words.Where(w => w.LanguageId == languageId && w.Name.EndsWith(word.Substring(word.Length - 2)) && !w.Name.Equals(word));
         }
 
         public int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options, string[] properties, string[] forms)

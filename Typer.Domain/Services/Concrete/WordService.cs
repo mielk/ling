@@ -155,6 +155,21 @@ namespace Typer.Domain.Services
         }
 
 
+        public IEnumerable<Word> GetWords(int languageId, int wordtype, string word)
+        {
+            var dtos = _repository.GetWords(languageId, wordtype, word);
+            List<WordSorter> sorters = new List<WordSorter>();
+            foreach (WordDto dto in dtos)
+            {
+                WordSorter sorter = WordSorterFromDto(dto, word);
+                sorters.Add(sorter);
+            }
+
+            return sorters.OrderByDescending(s => s.Match).Take(10).Select(s => s.Word).ToList();
+
+        }
+
+
         private static Metaword MetawordFromDto(MetawordDto dto)
         {
             return new Metaword
@@ -264,6 +279,20 @@ namespace Typer.Domain.Services
             };
         }
 
+        private static WordSorter WordSorterFromDto(WordDto dto, string compared)
+        {
+            return new WordSorter
+            {
+                Match = compared.CompareEnd(dto.Name),
+                Word = WordFromDto(dto)
+            };
+        }
+
+        private class WordSorter
+        {
+            public int Match { get; set; }
+            public Word Word { get; set; }
+        }
 
     }
 }
