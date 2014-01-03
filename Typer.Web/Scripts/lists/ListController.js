@@ -707,22 +707,22 @@ Metaword.prototype.editItem = function () {
         options: self.options
     });
 };
-Metaword.prototype.update = function (properties) {
-    if (!properties.WordEditEntity) {
+Metaword.prototype.update = function (params) {
+    if (!params.WordEditEntity) {
         alert('Illegal argument passed to function Metaword.update');
         return;
     }
 
     var self = this;
-    var name = (this.name === properties.name ? '' : properties.name);
-    var weight = (this.weight === properties.weight ? 0 : properties.weight);
-    var categories = (my.array.equal(properties.categories, this.categories) ? [] : properties.categories);
-    var wordtype = (this.wordtype === properties.wordtype ? 0 : properties.wordtype.id);
-    var removed = this.removedLogs(properties.logs);
-    var edited = this.editedLogs(properties.logs);
-    var added = this.addedLogs(properties.logs);
-    var parameters = this.propertiesLogs(properties.logs);
-    var details = this.detailsLogs(properties.logs);
+    var name = (this.name === params.name ? '' : params.name);
+    var weight = (this.weight === params.weight ? 0 : params.weight);
+    var categories = (my.array.equal(params.categories, this.categories) ? [] : params.categories);
+    var wordtype = (this.wordtype === params.wordtype ? 0 : params.wordtype.id);
+    var removed = this.removedLogs(params.logs);
+    var edited = this.editedLogs(params.logs);
+    var added = this.addedLogs(params.logs);
+    var properties = this.propertiesLogs(params.logs);
+    var details = this.detailsLogs(params.logs);
 
     //Check if there are any changes.
     if (name || weight || wordtype ||
@@ -730,7 +730,7 @@ Metaword.prototype.update = function (properties) {
         (removed && removed.length) ||
         (edited && edited.length) ||
         (added && added.length) ||
-        (parameters && parameters.length) ||
+        (properties && properties.length) ||
         (details && details.length)){
 
         if (self.new) {
@@ -741,7 +741,7 @@ Metaword.prototype.update = function (properties) {
                 weight: weight,
                 wordtype: wordtype,
                 added: added,
-                properties: parameters,
+                properties: properties,
                 details: details,
                 categories: my.categories.toIntArray(categories),
                 callback: function (result) {
@@ -763,7 +763,7 @@ Metaword.prototype.update = function (properties) {
                 removed: removed,
                 edited: edited,
                 added: added,
-                properties: parameters,
+                properties: properties,
                 details: details,
                 categories: my.categories.toIntArray(categories),
                 callback: function (result) {
@@ -780,7 +780,7 @@ Metaword.prototype.update = function (properties) {
 
                         //Wordtype.
                         if (wordtype) {
-                            self.wordtype = properties.wordtype;
+                            self.wordtype = params.wordtype;
                             self.trigger({
                                 type: 'changeWordtype',
                                 wordtype: self.wordtype
@@ -841,21 +841,21 @@ Question.prototype.editItem = function () {
         categories: self.categories
     });
 };
-Question.prototype.update = function (properties) {
-    if (!properties.QuestionEditEntity) {
+Question.prototype.update = function (params) {
+    if (!params.QuestionEditEntity) {
         alert('Illegal argument passed to function Metaword.update');
         return;
     }
 
     var self = this;
-    var name = (this.name === properties.name ? '' : properties.name);
-    var weight = (this.weight === properties.weight ? 0 : properties.weight);
-    var categories = (my.array.equal(properties.categories, this.categories) ? [] : properties.categories);
-    var removed = this.removedLogs(properties.logs);
-    var edited = this.editedLogs(properties.logs);
-    var added = this.addedLogs(properties.logs);
-    var properties = this.propertiesLogs(properties.logs);
-    var details = this.detailsLogs(properties.logs);
+    var name = (this.name === params.name ? '' : params.name);
+    var weight = (this.weight === params.weight ? 0 : params.weight);
+    var categories = (my.array.equal(params.categories, this.categories) ? [] : params.categories);
+    var removed = this.removedLogs(params.logs);
+    var edited = this.editedLogs(params.logs);
+    var added = this.addedLogs(params.logs);
+    var properties = this.propertiesLogs(params.logs);
+    var details = this.detailsLogs(params.logs);
 
     //Check if there are any changes.
     if (name || weight || (categories && categories.length) || (removed && removed.length) ||
@@ -1267,7 +1267,7 @@ Word.prototype.updateProperties = function (properties) {
                 event: 'properties',
                 wordId: self.id,
                 propertyId: property.id,
-                value: property.value
+                value: my.text.valueToText(property.value)
             });
         }
 
@@ -1304,7 +1304,7 @@ Word.prototype.loadProperties = function () {
         var set = $values[i];
         var property = {
             id: set.PropertyId,
-            value: (set.Value === '*' ? true : ($.isNumeric(set.Value) ? Number(set.Value) : set.Value))
+            value: my.text.parse(set.Value)
         };
         this.properties.setItem(property.id, property);
     };
@@ -1732,7 +1732,6 @@ GrammarManager.prototype.addForm = function (form) {
 
 function GrammarForm(manager, params) {
     this.GrammarForm = true;
-    var self = this;
     this.manager = manager;
     this.id = params.Id;
     this.key = params.Key;
@@ -1744,7 +1743,6 @@ function GrammarForm(manager, params) {
     this.inactiveRules = params.InactiveRules;
     this.index = params.Index;
     this.originalValue = '';
-    this.value;
 
     manager.addForm(this);
     
@@ -1771,7 +1769,7 @@ GrammarForm.prototype.view = function () {
                 'type': 'text',
                 'class': 'grammar-form'
             }).bind({
-                change: function (e) {
+                change: function () {
                     self.value = $(this).val();
                 }
             });
@@ -1839,6 +1837,8 @@ GrammarGroup.prototype.render = function () {
     var self = this;
     var listWrapper = jQuery('<li/>').
         css({
+            'display': 'block',
+            'float': 'left',
             'width': (100 / self.manager.groups.size()) + '%'
         });
 

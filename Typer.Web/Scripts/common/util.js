@@ -176,7 +176,7 @@ my.notify = (function() {
 
 
 })();
-    
+
 my.ui = (function () {
 
     var topLayer = 0;
@@ -496,6 +496,28 @@ my.text = (function () {
         startsWith: function(base, prefix) {
             var s = base.substr(0, prefix.length);
             return (s === prefix);
+        },
+        
+        parse: function(text) {
+            if (text === '*' || text === 'true') {
+                return true;
+            } else if (text === '' || text === 'false') {
+                return false;
+            } else if ($.isNumeric(text)) {
+                return Number(text);
+            } else {
+                return text;
+            }
+        },
+        
+        valueToText: function(value) {
+            if (value === true) {
+                return '*';
+            } else if (value === false) {
+                return '';
+            } else {
+                return value;
+            }
         }
     };
 
@@ -804,7 +826,6 @@ my.user = (function () {
     };
 
 })();
-
 
 my.db = (function() {
     return {        
