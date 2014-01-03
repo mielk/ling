@@ -1786,7 +1786,7 @@ GrammarForm.prototype.setListeners = function () {
     for (var i = 0; i < rules.length; i++) {
         var rule = rules[i];
         var key = Number(my.text.substring(rule, '', ':'));
-        var value = my.text.substring(rule, ':', '');
+        var value = my.text.parse(my.text.substring(rule, ':', ''));
 
         var property = this.manager.propertiesManager.items.getItem(key);
         if (property) {
