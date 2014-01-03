@@ -1683,7 +1683,7 @@ GrammarManager.prototype.render = function () {
 GrammarManager.prototype.sorted = function() {
     var array = this.groups.values();
     array.sort(function(a, b) {
-        return a < b ? -1 : 1;
+        return a.index < b.index ? -1 : 1;
     });
     
     //Sorted forms inside groups.
