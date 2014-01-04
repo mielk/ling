@@ -1675,27 +1675,35 @@ function GrammarManager(object, properties) {
 
 }
 extend(DetailsManager, GrammarManager);
-GrammarManager.prototype.loadSearchPanel = function () {
+GrammarManager.prototype.loadSearchPanel = function (name) {
     var self = this;
 
-    var similarWords = my.db.fetch('Words', 'GetSimilarWords', {
+    //Remove the previous dropdown if exists.
+    var container = self.ui.searchPanel();
+    $(container).empty();
+
+    my.db.fetch('Words', 'GetSimilarWords', {
         'languageId': self.entity.languageId, 
-        'wordtype': self.entity.parent.wordtype.id, 
-        'word':  self.entity.name
-    });
+        'wordtype': self.entity.parent.wordtype ? self.entity.parent.wordtype.id : 0, 
+        'word': name || self.entity.name
+    }, {
+        async: true,
+        callback: function (words) {
+            var dropdown = new DropDown({
+                container: self.ui.searchPanel(),
+                data: self.convertSimilarWords(words),
+                slots: 10,
+                caseSensitive: false,
+                confirmWithFirstClick: true
+            });
 
-    var dropdown = new DropDown({
-        container: self.ui.searchPanel(),
-        data: self.convertSimilarWords(similarWords),
-        slots: 10,
-        caseSensitive: false,
-        confirmWithFirstClick: true
-    });
+            dropdown.bind({
+                select: function (e) {
+                    self.propertiesManager.copyDetails(e.object.Id);
+                    self.copyDetails(e.object.Name, e.object.Id);
+                }
+            });
 
-    dropdown.bind({
-        select: function (e) {
-            self.propertiesManager.copyDetails(e.object.Id);
-            self.copyDetails(e.object.Name, e.object.Id);
         }
     });
 
@@ -3106,7 +3114,10 @@ EditOptionPanel.prototype.generalRender = function () {
     //[Name]
     this.meta.addLine(new EditDataLine(this, {
         property: 'name', label: 'Name', object: self.editObject, value: self.editObject.name,
-        callback: function (value) { self.editObject.name = value; },
+        callback: function (value) {
+            self.editObject.name = value;
+            self.details.loadSearchPanel(value);
+        },
         validation: function (params) {
             return self.object.checkName(params.value);
         },

@@ -869,18 +869,24 @@ my.user = (function () {
 
 my.db = (function() {
     return {        
-        fetch: function (controller, method, params, traditional) {
+        fetch: function (controller, method, data, params) {
             var $result;
+            var callback = (params && params.callback && typeof (params.callback) === 'function' ? params.callback : null);
+
             $.ajax({
                 url: '/' + controller + '/' + method,
                 type: "GET",
-                data: params,
+                data: data,
                 datatype: "json",
-                async: false,
+                async: (params && params.async ? true : false),
                 cache: false,
-                traditional: (traditional ? true : false),
+                traditional: (params && params.traditional ? true : false),
                 success: function (result) {
-                    $result = result;
+                    if (callback) {
+                        $result = callback(result);
+                    } else {
+                        $result = result;
+                    }
                 },
                 error: function (msg) {
                     alert(msg.status + " | " + msg.statusText);
