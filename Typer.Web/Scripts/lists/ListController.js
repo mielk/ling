@@ -651,7 +651,21 @@ Entity.prototype.addedLogs = function (logs) {
         var log = logs[i];
         var item = log.item;
         if (log.event === tag && item) {
+            //metadata
             var text = item.languageId + '|' + item.name + '|' + item.weight;
+
+            //properties
+            text += '$';
+            item.properties.each(function (key, value) {
+                text += value.id + '|' + value.value + ';';
+            });
+
+            //details
+            text += '$';
+            item.details.each(function (key, value) {
+                text += value.id + '|' + value.value + ';';
+            });
+
             array.push(text);
         }
     }
@@ -1253,6 +1267,7 @@ Word.prototype.editItem = function () {
 };
 Word.prototype.updateProperties = function (properties) {
     var self = this;
+
     properties.items.each(function (key, object) {
 
         var property = self.properties.getItem(key);
@@ -1263,19 +1278,24 @@ Word.prototype.updateProperties = function (properties) {
             };
             self.properties.setItem(property.id, property);
 
-            self.parent.addLog({
-                event: 'properties',
-                wordId: self.id,
-                propertyId: property.id,
-                value: my.text.valueToText(property.value)
-            });
+            //If id is 0, this is a newly created word and its
+            //properties have to be uploaded other way.
+            if (self.id) {
+                self.parent.addLog({
+                    event: 'properties',
+                    wordId: self.id,
+                    propertyId: property.id,
+                    value: my.text.valueToText(property.value)
+                });
+            }
         }
 
     });
 
 };
 Word.prototype.updateDetails = function (forms) {
-    var self = this;
+    var self = this;    
+
     forms.forms.each(function (key, object) {
 
         var form = self.details.getItem(key);
@@ -1286,12 +1306,17 @@ Word.prototype.updateDetails = function (forms) {
             };
             self.details.setItem(form.id, form);
 
-            self.parent.addLog({
-                event: 'details',
-                wordId: self.id,
-                form: form.id,
-                value: form.value
-            });
+            //If id is 0, this is a newly created word and its
+            //properties have to be uploaded other way.
+            if (self.id) {
+                self.parent.addLog({
+                    event: 'details',
+                    wordId: self.id,
+                    form: form.id,
+                    value: form.value
+                });
+            }
+
         }
 
     });
@@ -1795,14 +1820,14 @@ GrammarManager.prototype.addForm = function (form) {
 };
 GrammarManager.prototype.copyDetails = function (name, id) {
     var self = this;
-    var matched = my.text.countMatchedEnd(this.entity.name, name);
+    var matched = my.text.countMatchedEnd(this.editObject.name, name);
     var forms = this.entity.getFormsFromRepository(id);
 
     for (var i = 0; i < forms.length; i++) {
         var form = forms[i];
         var def = self.forms.getItem(form.Definition);
         if (def) {
-            def.changeValue(self.getProperForm(form.Content, my.text.cut(name, matched), my.text.cut(self.entity.name, matched)));
+            def.changeValue(self.getProperForm(form.Content, my.text.cut(name, matched), my.text.cut(self.editObject.name, matched)));
         }
     }
 };
@@ -3023,6 +3048,10 @@ function EditOptionPanel(object, editObject, properties) {
             },
             getLine: function (key) {
                 return controls.getItem(key);
+            },
+            focus: function () {
+                var nameLine = controls.getItem('name');
+                if (nameLine) nameLine.focus();
             }
         };
 
@@ -3079,7 +3108,7 @@ function EditOptionPanel(object, editObject, properties) {
     })();
 
     this.generalRender();
-
+    this.meta.focus();
 
     //Rendering//
     //this.loadProperties();

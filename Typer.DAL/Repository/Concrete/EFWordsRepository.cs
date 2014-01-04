@@ -179,6 +179,7 @@ namespace Typer.DAL.Repositories
             string[] edited, string[] added, string[] properties, string[] forms)
         {
 
+            bool completed = false;
             using (var scope = new TransactionScope())
             {
                 var result = true;
@@ -197,7 +198,8 @@ namespace Typer.DAL.Repositories
 
 
                         //Removed
-                        if (removed != null){
+                        if (removed != null)
+                        {
                             for (var i = 0; i < removed.Length; i++)
                             {
                                 var _id = removed[i];
@@ -260,17 +262,25 @@ namespace Typer.DAL.Repositories
                         {
                             Context.SaveChanges();
                             scope.Complete();
+                            completed = true;
                             return true;
                         }
 
                     }
                     catch (Exception)
                     {
-                        
+
+                    }
+                    finally
+                    {
+                        if (!completed)
+                        {
+                            scope.Dispose();
+                        }
                     }
                 }
 
-                scope.Dispose();
+                
                 return false;
 
             }
@@ -433,7 +443,25 @@ namespace Typer.DAL.Repositories
 
         }
 
+
         private bool AddOption(string s, int id)
+        {
+
+            string[] paramGroups = s.Split('$');
+            
+            int idWord = AddOptionMetaData(paramGroups[0], id);
+
+            if (idWord == 0) return false;
+
+            if (!AddNewWordProperties(paramGroups[1], idWord)) return false;
+
+            if (!AddNewWordGrammarForms(paramGroups[2], idWord)) return false;
+
+            return true;
+
+        }
+
+        private int AddOptionMetaData(string s, int id)
         {
             string[] parameters = s.Split('|');
 
@@ -463,10 +491,58 @@ namespace Typer.DAL.Repositories
             };
 
             Context.Words.Add(word);
+            Context.SaveChanges();
 
-            return true;
+            return word.Id;
+        }
+
+        private bool AddNewWordProperties(string s, int id){
+            var properties = s.Split(';');
+            bool result = true;
+
+            foreach (string property in properties)
+            {
+                if (property.Length > 0)
+                {
+                    var parameters = property.Split('|');
+                    int key;
+                    Int32.TryParse(parameters[0], out key);
+
+                    string value = parameters[1];
+
+                    if (!AddWordProperty(id, key, value)) result = false;
+
+                }
+            }
+
+            return result;
 
         }
+
+        private bool AddNewWordGrammarForms(string s, int id){
+            var forms = s.Split(';');
+            bool result = true;
+
+            foreach (string form in forms)
+            {
+                if (form.Length > 0)
+                {
+                    var parameters = form.Split('|');
+                    string key = parameters[0];
+                    string value = parameters[1];
+
+                    if (!AddGrammarForm(id, key, value)) result = false;
+
+                }
+            }
+
+            return result;
+
+        }
+
+
+
+
 
 
 
@@ -584,6 +660,7 @@ namespace Typer.DAL.Repositories
         public int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options, string[] properties, string[] forms)
         {
 
+            bool completed = false;
             using (var scope = new TransactionScope())
             {
                 var result = true;
@@ -645,6 +722,7 @@ namespace Typer.DAL.Repositories
                         {
                             Context.SaveChanges();
                             scope.Complete();
+                            completed = true;
                             return id;
                         }
 
@@ -653,10 +731,16 @@ namespace Typer.DAL.Repositories
                     {
 
                     }
+                    finally
+                    {
+                        if (!completed)
+                        {
+                            scope.Dispose();
+                        }
+                    }
 
                 }
 
-                scope.Dispose();
                 return 0;
 
                 }
