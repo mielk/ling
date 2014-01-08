@@ -146,7 +146,7 @@ fieldset .centered
     text-align: center;
 }
 
-span
+span.block
 {
     display: block;
     overflow: hidden;

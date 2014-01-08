@@ -149,13 +149,12 @@
 
 })();
 
-
 $(function () {
     var manager = new QuestionListManager({
         pageItems: 10,
         currentPage: 1,
         columns: ['id', 'name', 'weight', 'categories'],
-        filters: ['weight', 'text', 'categories']
+        filters: ['weight', 'categories', 'text']
     });
     manager.start();
 });

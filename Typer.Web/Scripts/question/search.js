@@ -19,7 +19,7 @@
 
     this.left = jQuery('<div/>', { 'class': 'left' }).appendTo($(this.panel));
     this.buttons = jQuery('<div/>', { 'class': 'button' }).appendTo($(this.panel));
-    this.right = jQuery('<div/>', { 'class': 'right' }).appendTo(jQuery('<span/>', { 'class': 'full-height' }).appendTo($(this.panel)));
+    this.right = jQuery('<div/>', { 'class': 'right' }).appendTo(jQuery('<span/>', { 'class': 'full-height block' }).appendTo($(this.panel)));
 
     var criteria = ['wordtype', 'weight', 'categories', 'text', 'type'];
     this.total = (function() {
@@ -187,10 +187,10 @@ function WordTypeFilter(manager) {
     });
     this.dropdown = new DropDown({            
         container: me.container,
-        data: dropdownData,
-        slots: 4,
-        caseSensitive: false,
-        confirmWithFirstClick: true
+        data: dropdownData
+        //slots: 4,
+        //caseSensitive: false,
+        //confirmWithFirstClick: true
     });
 
     this.dropdown.bind({

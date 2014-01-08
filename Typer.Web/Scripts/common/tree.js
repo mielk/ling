@@ -5,35 +5,6 @@
 };
 
 
-
-//$(function () {
-//    //Switching off selecting text.
-//    $(document).
-//        bind({
-//            'mousedown': function (e) {
-//                var $this = $(this);
-//                e.preventDefault();
-
-//                // Make every element on page unselectable
-//                //$('*').addClass('unselectable');
-//                $(document.body).addClass('unselectable');
-
-//                // Some setup here, like remembering the original location, etc
-//                $(window).on('mousemove', function () {
-//                    // Do the thing!
-//                    $this.on('mouseup', function () {
-//                        $(document.body).removeClass('unselectable');
-//                        //$('*').removeClass('unselectable');
-//                        // Other clean-up tasks here
-//                    });
-//                });
-//            }
-//        });
-
-//});
-
-
-
 /* TreeView
    
    Events:
@@ -286,27 +257,23 @@ SearchPanel.prototype.show = function() {
 SearchPanel.prototype.activate = function () {
     var me = this;
     this.active = true;
-
+    
     this.dropdown = this.dropdown || new DropDown({
         container: me.container,
         data: this.tree.root.getNodesForSearching(),
-        slots: 10,
-        caseSensitive: false,
-        confirmWithFirstClick: true
+        placeholder: 'Select option',
+        allowClear: true
     });
     
     this.dropdown.bind({
-        'deactivate': function () {
-            me.deactivate();
-        },
-        'select': function (e) {
+        change: function (e) {
             me.select(e.object);
             me.dropdown.deactivate();
         }
     });
 
-    this.show();
-    this.dropdown.activate();
+    //this.show();
+    //this.dropdown.activate();
 
 };
 SearchPanel.prototype.deactivate = function() {

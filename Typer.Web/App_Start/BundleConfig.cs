@@ -20,12 +20,19 @@ namespace Typer.Web
 
             bundles.Add(new ScriptBundle("~/bundles/global").Include(
                         "~/Scripts/jquery.sizes.js",
-                        "~/Scripts/common/select2.min.js",
                         "~/Scripts/common/util.js",
+                        "~/Scripts/common/tree.js",
+                        "~/Scripts/common/dropdown.js",
                         "~/Scripts/app/global.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/select").Include(
                         "~/Scripts/common/select2.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/search").Include(
+                        "~/Scripts/question/search.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/lists").Include(
+                                    "~/Scripts/lists/ListController.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/notify").Include(
                         "~/Scripts/common/notify.js"));
@@ -74,18 +81,12 @@ namespace Typer.Web
                         "~/Content/normalize.css",
                         "~/Content/tree.css"));
 
-            bundles.Add(new StyleBundle("~/Content/word").Include(
-                        "~/Content/normalize.css",
-                        "~/Content/words.css"));
+            bundles.Add(new StyleBundle("~/Content/edit").Include(
+                        "~/Content/edit.css"));
 
             bundles.Add(new StyleBundle("~/Content/dropdown").Include(
                                     "~/Content/normalize.css",
                                     "~/Content/dropdown.css"));
-
-            bundles.Add(new StyleBundle("~/Content/question").Include(
-                                    "~/Content/normalize.css",
-                                    "~/Content/edit.css",
-                                    "~/Content/question.css"));
 
             bundles.Add(new StyleBundle("~/Content/test").Include(
                         "~/Content/normalize.css",

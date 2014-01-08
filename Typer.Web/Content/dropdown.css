@@ -161,3 +161,8 @@ span.dropdown-matched-text {
     border: 1px solid #c6c77a !important;
     display: inline !important;
 }
+
+
+.dropdown-select {    
+    width: 100%;
+}

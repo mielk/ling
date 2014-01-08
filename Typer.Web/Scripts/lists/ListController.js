@@ -2278,7 +2278,9 @@ function EditDataLine(panel, properties) {
         var label = jQuery('<label/>', {
             'class': 'label',
             html: properties.label
-        }).appendTo(jQuery('<span/>').css({
+        }).appendTo(jQuery('<span/>', {
+            'class': 'block'
+        }).css({
             'display': 'block',
             'float': 'left'
         }).appendTo($(container)));
@@ -2339,7 +2341,9 @@ function EditDataLine(panel, properties) {
             $(valuePanel).val(properties.value);
 
             //Append panel to span to center it vertically.
-            var span = jQuery('<span/>').
+            var span = jQuery('<span/>', {
+                'class': 'block'
+            }).
             bind({
                 'click': function () {
                     $(valuePanel).focus();
@@ -2810,7 +2814,9 @@ function CategoryPanel(line, object) {
 
     this.ui = (function () {
 
-        var container = jQuery('<span/>');
+        var container = jQuery('<span/>',{
+            'class': 'block'
+        });
 
         // ReSharper disable once UnusedLocals
         var editButton = jQuery('<input/>', {
@@ -2827,7 +2833,7 @@ function CategoryPanel(line, object) {
         }).appendTo($(container));
 
         var value = jQuery('<span/>', {
-            'class': 'selected-categories'
+            'class': 'selected-categories block'
         }).css({
             
         }).appendTo($(container));
