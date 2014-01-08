@@ -1,21 +1,28 @@
 ﻿@{
     ViewBag.Title = "Index2";
-    Layout = "~/Views/Shared/_Layout.cshtml";
     @Styles.Render("~/Content/tree")
     @Styles.Render("~/Content/dropdown")
     @Styles.Render("~/Content/question")
     @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/global")
+    @Scripts.Render("~/bundles/tree")
     @Scripts.Render("~/bundles/test")
-  //  @Scripts.Render("~/bundles/tree")
-  //  @Scripts.Render("~/bundles/dropdown")
-//    @Scripts.Render("~/bundles/question")
+    @Scripts.Render("~/bundles/dropdown")
+    @Scripts.Render("~/bundles/select")
+    @Scripts.Render("~/bundles/question")
 }
 
-<div id="test-container" class="container">
-    
-</div>
+<h2>Index2</h2>
 
-<div id="result" class="container">
-    
-</div>
+<head>
+    <script>
+        $(document).ready(function () { $("#e1").select2(); });
+    </script>
+</head>
+<body>
+    <select id="e1">
+        <option value="AL">Alabama</option>
+        <option value="WY">Wyoming</option>
+    </select>
+</body>

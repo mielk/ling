@@ -1,6 +1,6 @@
-﻿using System.Web.Optimization;
+﻿using System.Web;
+using System.Web.Optimization;
 
-// ReSharper disable once CheckNamespace
 namespace Typer.Web
 {
     public class BundleConfig
@@ -20,10 +20,12 @@ namespace Typer.Web
 
             bundles.Add(new ScriptBundle("~/bundles/global").Include(
                         "~/Scripts/jquery.sizes.js",
+                        "~/Scripts/common/select2.min.js",
                         "~/Scripts/common/util.js",
-                        "~/Scripts/app/global.js",
-                        "~/Scripts/common/tree.js",
-                        "~/Scripts/common/dropdown.js"));
+                        "~/Scripts/app/global.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/select").Include(
+                        "~/Scripts/common/select2.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/notify").Include(
                         "~/Scripts/common/notify.js"));
@@ -35,29 +37,25 @@ namespace Typer.Web
                         "~/Scripts/authentication/register.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/test").Include(
-                                    "~/Scripts/question/test.js"));
+                                    "~/Scripts/test/test.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/resend").Include(
                         "~/Scripts/authentication/mailValidation.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/tree").Include(
+                        "~/Scripts/common/tree.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/dropdown").Include(
+                                    "~/Scripts/common/dropdown.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/question").Include(
                                     "~/Scripts/question/question.js"));
-
-            bundles.Add(new ScriptBundle("~/bundles/lists").Include(
-                                "~/Scripts/lists/ListController.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/words").Include(
                                     "~/Scripts/question/word.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/categories").Include(
                                     "~/Scripts/categories/categories.js"));
-
-            bundles.Add(new ScriptBundle("~/bundles/unittests").Include(
-                                    "~/Scripts/unittests/qunit-1.12.0.js", 
-                                    "~/Scripts/unittests/tests.js"));
-
-            bundles.Add(new ScriptBundle("~/bundles/search").Include(
-                                                "~/Scripts/question/search.js"));
 
             // Use the development version of Modernizr to develop with and learn from. Then, when you're
             // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
@@ -66,33 +64,42 @@ namespace Typer.Web
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                         "~/Content/normalize.css",
+                        "~/Content/select2.css",
                         "~/Content/site.css"));
 
             bundles.Add(new StyleBundle("~/Content/categories").Include(
                                     "~/Content/categories.css"));
 
             bundles.Add(new StyleBundle("~/Content/tree").Include(
+                        "~/Content/normalize.css",
                         "~/Content/tree.css"));
 
-            bundles.Add(new StyleBundle("~/Content/edit").Include(
-                        "~/Content/edit.css"));
+            bundles.Add(new StyleBundle("~/Content/word").Include(
+                        "~/Content/normalize.css",
+                        "~/Content/words.css"));
 
             bundles.Add(new StyleBundle("~/Content/dropdown").Include(
+                                    "~/Content/normalize.css",
                                     "~/Content/dropdown.css"));
 
+            bundles.Add(new StyleBundle("~/Content/question").Include(
+                                    "~/Content/normalize.css",
+                                    "~/Content/edit.css",
+                                    "~/Content/question.css"));
+
             bundles.Add(new StyleBundle("~/Content/test").Include(
+                        "~/Content/normalize.css",
                         "~/Content/test.css"));
 
             bundles.Add(new StyleBundle("~/Content/user").Include(
                                     "~/Content/userPanel.css"));
 
-            bundles.Add(new StyleBundle("~/Content/unittests").Include(
-                                    "~/Content/unittests/qunit-1.12.0.css"));
-
             bundles.Add(new StyleBundle("~/Content/login").Include(
+                        "~/Content/normalize.css",
                         "~/Content/login.css"));
 
             bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(
+                        "~/Content/normalize.css",
                         "~/Content/themes/base/jquery.ui.core.css",
                         "~/Content/themes/base/jquery.ui.resizable.css",
                         "~/Content/themes/base/jquery.ui.selectable.css",

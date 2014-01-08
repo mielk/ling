@@ -190,11 +190,15 @@
     <Content Include="Content\images\last_node.png" />
     <Content Include="Content\images\line.png" />
     <Content Include="Content\images\node.png" />
+    <Content Include="Content\images\select2-spinner.gif" />
+    <Content Include="Content\images\select2.png" />
+    <Content Include="Content\images\select2x2.png" />
     <Content Include="Content\images\white_star.png" />
     <Content Include="Content\images\flags\ESP.png" />
     <Content Include="Content\images\flags\ITA.png" />
     <Content Include="Content\login.css" />
     <Content Include="Content\normalize.css" />
+    <Content Include="Content\select2.css" />
     <Content Include="Content\unittests\qunit-1.12.0.css" />
     <Content Include="Content\test.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
@@ -258,6 +262,7 @@
     <Compile Include="App_Start\NinjectWebCommon.Bindings.cs" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\categories\categories.js" />
+    <Content Include="Scripts\common\select2.js" />
     <Content Include="Scripts\common\tree.js" />
     <Content Include="Scripts\common\dropdown.js" />
     <Content Include="Scripts\common\notify.js" />
