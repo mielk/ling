@@ -495,7 +495,6 @@ div.pager a.selected {
 }
 
 .filter-panel {
-    display: block;
     position: relative;
     float: left;
     width: 100%;
