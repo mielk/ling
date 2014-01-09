@@ -285,7 +285,7 @@ CREATE TABLE [dbo].[VariantConnections] (
 
 
 
-CREATE TABLE [dbo].[Grammar] (
+CREATE TABLE [dbo].[GrammarForms] (
     [Id]         INT            IDENTITY (1, 1) NOT NULL,
     [WordId]     INT            NOT NULL,
     [Content]    NVARCHAR (255) NOT NULL,

@@ -421,6 +421,8 @@ function ListItemView(item) {
     
     this.categories = jQuery('<div/>', { 'class': 'categories', html: my.categories.toString(self.object.categories) }).appendTo($(this.container));
 
+    this.detailsPreview = this.createDetailsPreviews();
+
     this.edit = jQuery('<div/>', { 'class': 'edit-item' }).
         bind({ click: function () { self.object.edit(); } }).
         appendTo($(this.container));
@@ -457,6 +459,9 @@ ListItemView.prototype.activate = function (value) {
         $(this.container).addClass('inactive');
     }
 };
+ListItemView.prototype.createDetailsPreview = function() {
+    alert('Must be defined in implemented class');
+};
 
 
 function WordListItemView(item) {
@@ -476,6 +481,8 @@ function WordListItemView(item) {
 
 }
 extend(ListItemView, WordListItemView);
+WordListItemView.prototype.createDetailsPreview = function() {
+};
 
 
 function QuestionListItemView(item) {
@@ -483,7 +490,8 @@ function QuestionListItemView(item) {
     this.QuestionListItemView = true;
 }
 extend(ListItemView, QuestionListItemView);
-
+QuestionListItemView.prototype.createDetailsPreview = function () {
+};
 
 
 

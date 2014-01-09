@@ -22,6 +22,7 @@ namespace Typer.Web
                         "~/Scripts/jquery.sizes.js",
                         "~/Scripts/common/util.js",
                         "~/Scripts/common/tree.js",
+                        "~/Scripts/common/spin.js",
                         "~/Scripts/common/dropdown.js",
                         "~/Scripts/app/global.js"));
 
