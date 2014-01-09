@@ -176,7 +176,6 @@
     <Content Include="Content\images\close-image-24.png" />
     <Content Include="Content\images\close.png" />
     <Content Include="Content\images\close2.png" />
-    <Content Include="Content\images\complete.png" />
     <Content Include="Content\images\delete-node.png" />
     <Content Include="Content\images\delete.png" />
     <Content Include="Content\images\edit.png" />
@@ -184,14 +183,15 @@
     <Content Include="Content\images\flags\POL.png" />
     <Content Include="Content\images\gold_star.png" />
     <Content Include="Content\images\gray_star.png" />
+    <Content Include="Content\images\green.png" />
     <Content Include="Content\images\icon_invalid.png" />
     <Content Include="Content\images\icon_invalid2.png" />
     <Content Include="Content\images\icon_valid.png" />
     <Content Include="Content\images\icon_valid2.png" />
-    <Content Include="Content\images\incomplete.png" />
     <Content Include="Content\images\last_node.png" />
     <Content Include="Content\images\line.png" />
     <Content Include="Content\images\node.png" />
+    <Content Include="Content\images\red.png" />
     <Content Include="Content\images\select2-spinner.gif" />
     <Content Include="Content\images\select2.png" />
     <Content Include="Content\images\select2x2.png" />
