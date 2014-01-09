@@ -4,4 +4,12 @@
 
     var spinner = new SpinnerWrapper(container);
 
+    $(container).bind({
+        click: function() {
+            spinner.stop();
+        }
+    });
+
+    
+
 });

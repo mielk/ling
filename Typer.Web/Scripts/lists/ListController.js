@@ -17,7 +17,7 @@ function ListManager(properties) {
         items: self.itemsManager.view(),
         pager: self.pagerManager.view()
     });
-    
+
 }
 ListManager.prototype.bind = function(e) {
     this.eventHandler.bind(e);
@@ -360,26 +360,36 @@ ListItemsManager.prototype.refresh = function (items) {
         item.appendTo($(this.container));
         this.items[i] = item;
     }
+
+    this.loadDetails();
+
 };
 ListItemsManager.prototype.clear = function() {
     for (var i = 0; i < this.items.length; i++) {
         this.items[i].remove();
     }
 };
-
-
+ListItemsManager.prototype.loadDetails = function() {
+    for (var i = 0; i < this.items.length; i++) {
+        var item = this.items[i];
+        item.loadDetails();
+    }
+};
 
 
 function ListItem(object) {
     this.ListItem = true;
     this.object = object;
 }
-ListItem.prototype.appendTo = function(parent) {
-    $(this.view.container).appendTo($(parent));
+ListItem.prototype.appendTo = function (parent) {
+    this.view.appendTo(parent);
 };
 ListItem.prototype.remove = function () {
     this.object = null;
     $(this.view.container).remove();
+};
+ListItem.prototype.loadDetails = function() {
+    this.view.loadDetails();
 };
 
 
@@ -421,7 +431,10 @@ function ListItemView(item) {
     
     this.categories = jQuery('<div/>', { 'class': 'categories', html: my.categories.toString(self.object.categories) }).appendTo($(this.container));
 
-    this.detailsPreview = this.createDetailsPreviews();
+    this.details = jQuery('<div/>', {
+        'class': 'list-item-details',
+        'id': 'details_' + self.object.id
+    }).appendTo(this.container);
 
     this.edit = jQuery('<div/>', { 'class': 'edit-item' }).
         bind({ click: function () { self.object.edit(); } }).
@@ -430,7 +443,6 @@ function ListItemView(item) {
     this.deactivate = jQuery('<a/>', { html: self.object.isActive ? 'Deactivate' : 'Activate' }).
         bind({ click: function () { self.object.activate(); } }).
         appendTo($(this.container));
-    
 
     //Events.
     this.object.bind({
@@ -459,9 +471,13 @@ ListItemView.prototype.activate = function (value) {
         $(this.container).addClass('inactive');
     }
 };
-ListItemView.prototype.createDetailsPreview = function() {
+ListItemView.prototype.loadDetails = function () {
     alert('Must be defined in implemented class');
 };
+ListItemView.prototype.appendTo = function(parent) {
+    $(this.container).appendTo($(parent));
+};
+
 
 
 function WordListItemView(item) {
@@ -481,7 +497,33 @@ function WordListItemView(item) {
 
 }
 extend(ListItemView, WordListItemView);
-WordListItemView.prototype.createDetailsPreview = function() {
+WordListItemView.prototype.loadDetails = function () {
+    var self = this;
+    var object = self.object;
+    var spinner = new SpinnerWrapper($(this.details));
+    var languages = my.languages.userLanguages();
+
+    $.ajax({
+        url: '/Words/GetWords',
+        type: "GET",
+        data: {
+            'id': object.id,
+            'languages': languages
+        },
+        datatype: "json",
+        async: true,
+        traditional: false,
+        success: function (result) {
+            //words = result;
+            spinner.stop();
+        },
+        error: function (msg) {
+            alert("[register.js::nameAlreadyExists] " + msg.status + " | " + msg.statusText);
+        }
+    });
+
+    
+
 };
 
 
@@ -490,7 +532,8 @@ function QuestionListItemView(item) {
     this.QuestionListItemView = true;
 }
 extend(ListItemView, QuestionListItemView);
-QuestionListItemView.prototype.createDetailsPreview = function () {
+QuestionListItemView.prototype.loadDetails = function () {
+
 };
 
 
