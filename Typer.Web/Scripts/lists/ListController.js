@@ -1195,6 +1195,7 @@ function OptionEntity(entity, properties) {
     this.name = properties.Name || properties.Content || '';
     this.weight = properties.Weight || 1;
     this.languageId = properties.LanguageId;
+    this.isCompleted = properties.IsCompleted || false;
     this.isActive = properties.IsActive || true;
     this.creatorId = properties.CreatorId || 1;
     this.createDate = properties.CreateDate || new Date().getDate;
@@ -1388,7 +1389,8 @@ Word.prototype.updateDetails = function (forms) {
 
     forms.forms.each(function (key, object) {
 
-        var form = self.details.getItem(key);
+        var form;
+        //var form = self.details.getItem(key);
         if (object.isChanged()) {
             form = {
                 id: object.key,
@@ -2728,6 +2730,11 @@ function OptionPanel(item, parent) {
             'class': 'weight',
             'html': self.item.weight
         }).appendTo($(container));
+
+        var completness = jQuery('<div/>', {
+            'class': 'completness ' + (item.isCompleted ? 'complete' : 'incomplete')
+        }).appendTo($(container));
+
 
         return {
             view: function() {
