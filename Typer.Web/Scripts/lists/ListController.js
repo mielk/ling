@@ -413,7 +413,7 @@ function WordListItem(manager, properties) {
     this.WordListItem = true;
     var self = this;
     this.name = 'word';
-    this.view = new WordListItemView(self);
+    this.view = new WordListItemView(self.manager, self);
 }
 extend(ListItem, WordListItem);
 
