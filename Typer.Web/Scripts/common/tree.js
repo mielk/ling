@@ -272,7 +272,7 @@ SearchPanel.prototype.activate = function () {
         }
     });
 
-    //this.show();
+    this.show();
     //this.dropdown.activate();
 
 };

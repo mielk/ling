@@ -262,7 +262,7 @@ namespace Typer.Domain.Services
                 CreatorId = dto.CreatorId,
                 Id = dto.Id,
                 IsActive = dto.IsActive,
-                IsCompleted = dto.IsCompleted,
+                IsCompleted = dto.GrammarCompleted,
                 IsApproved = dto.IsApproved,
                 LanguageId = dto.LanguageId,
                 MetawordId = dto.MetawordId,

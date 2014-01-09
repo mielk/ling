@@ -1800,8 +1800,8 @@ GrammarManager.prototype.loadSearchPanel = function (name) {
     $(container).empty();
 
     my.db.fetch('Words', 'GetSimilarWords', {
-        'languageId': self.entity.languageId, 
-        'wordtype': self.entity.parent.wordtype ? self.entity.parent.wordtype.id : 0, 
+        'languageId': self.entity.languageId,
+        'wordtype': self.entity.parent.wordtype ? self.entity.parent.wordtype.id : 0,
         'word': name || self.entity.name
     }, {
         async: true,
@@ -1809,15 +1809,14 @@ GrammarManager.prototype.loadSearchPanel = function (name) {
             var dropdown = new DropDown({
                 container: self.ui.searchPanel(),
                 data: self.convertSimilarWords(words),
-                slots: 10,
-                caseSensitive: false,
-                confirmWithFirstClick: true
+                placeholder: 'Select word to copy grammar forms',
+                allowClear: true
             });
 
             dropdown.bind({
-                select: function (e) {
-                    self.propertiesManager.copyDetails(e.object.Id);
-                    self.copyDetails(e.object.Name, e.object.Id);
+                change: function (e) {
+                    self.propertiesManager.copyDetails(e.item.object.Id);
+                    self.copyDetails(e.item.object.Name, e.item.object.Id);
                 }
             });
 
@@ -1825,6 +1824,7 @@ GrammarManager.prototype.loadSearchPanel = function (name) {
     });
 
 };
+
 GrammarManager.prototype.convertSimilarWords = function(words){
     var data = [];
     for (var i = 0; i < words.length; i++){
@@ -2449,6 +2449,10 @@ function EditDataLine(panel, properties) {
                 'class': 'value',
                 html: properties.value
             }).appendTo($(container));
+        }
+
+        if (properties.controlBinding) {
+            $(valuePanel).bind(properties.controlBinding);
         }
 
         if (properties.inputCss) {
@@ -3248,7 +3252,12 @@ EditOptionPanel.prototype.generalRender = function () {
         property: 'name', label: 'Name', object: self.editObject, value: self.editObject.name,
         callback: function (value) {
             self.editObject.name = value;
-            self.details.loadSearchPanel(value);
+        },
+        controlBinding: {
+            blur: function (e) {
+                var value = e.target.value;
+                self.details.loadSearchPanel(value);
+            }
         },
         validation: function (params) {
             return self.object.checkName(params.value);
