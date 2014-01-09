@@ -158,15 +158,8 @@ namespace Typer.Domain.Services
         public IEnumerable<Word> GetWords(int languageId, int wordtype, string word)
         {
             var dtos = _repository.GetWords(languageId, wordtype, word);
-            List<WordSorter> sorters = new List<WordSorter>();
-            foreach (WordDto dto in dtos)
-            {
-                WordSorter sorter = WordSorterFromDto(dto, word);
-                sorters.Add(sorter);
-            }
-
+            var sorters = dtos.Select(dto => WordSorterFromDto(dto, word)).ToList();
             return sorters.OrderByDescending(s => s.Match).Take(10).Select(s => s.Word).ToList();
-
         }
 
 
@@ -269,6 +262,7 @@ namespace Typer.Domain.Services
                 CreatorId = dto.CreatorId,
                 Id = dto.Id,
                 IsActive = dto.IsActive,
+                IsCompleted = dto.IsCompleted,
                 IsApproved = dto.IsApproved,
                 LanguageId = dto.LanguageId,
                 MetawordId = dto.MetawordId,

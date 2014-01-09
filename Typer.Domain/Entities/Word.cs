@@ -10,6 +10,7 @@ namespace Typer.Domain.Entities
         public int LanguageId { get; set; }
         public string Name { get; set; }
         public int Weight { get; set; }
+        public bool IsCompleted { get; set; }
         public bool IsActive { get; set; }
         public int CreatorId { get; set; }
         public DateTime CreateDate { get; set; }
