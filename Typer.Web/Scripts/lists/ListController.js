@@ -64,6 +64,20 @@ ListManager.prototype.createNewItem = function () {
 ListManager.prototype.emptyItem = function () {
     alert('Must be defined in implementing class');
 };
+ListManager.prototype.getLanguages = function() {
+    if (!this.languages) {
+        this.languages = my.languages.userLanguages();
+    }
+    return this.languages;
+};
+ListManager.prototype.getLanguagesIds = function () {
+    if (!this.languagesIds)
+    {
+        this.languagesIds = my.languages.userLanguagesId();
+    }
+    return this.languagesIds;
+};
+
 
 //Implementations of ListManager.
 function WordListManager(properties) {
@@ -76,7 +90,7 @@ WordListManager.prototype.createObject = function (properties) {
     return new Metaword(properties);
 };
 WordListManager.prototype.createListItem = function (object) {
-    return new WordListItem(object);
+    return new WordListItem(this, object);
 };
 WordListManager.prototype.emptyItem = function () {
     var filters = this.filterManager.filters;
@@ -107,7 +121,7 @@ QuestionListManager.prototype.createObject = function (properties) {
     return new Question(properties);
 };
 QuestionListManager.prototype.createListItem = function (object) {
-    return new QuestionListItem(object);
+    return new QuestionListItem(this, object);
 };
 QuestionListManager.prototype.emptyItem = function () {
     var filters = this.filterManager.filters;
@@ -377,8 +391,9 @@ ListItemsManager.prototype.loadDetails = function() {
 };
 
 
-function ListItem(object) {
+function ListItem(manager, object) {
     this.ListItem = true;
+    this.manager = manager;
     this.object = object;
 }
 ListItem.prototype.appendTo = function (parent) {
@@ -393,8 +408,8 @@ ListItem.prototype.loadDetails = function() {
 };
 
 
-function WordListItem(properties) {
-    ListItem.call(this, properties);
+function WordListItem(manager, properties) {
+    ListItem.call(this, manager, properties);
     this.WordListItem = true;
     var self = this;
     this.name = 'word';
@@ -403,20 +418,21 @@ function WordListItem(properties) {
 extend(ListItem, WordListItem);
 
 
-function QuestionListItem(properties) {
-    ListItem.call(this, properties);
+function QuestionListItem(manager, properties) {
+    ListItem.call(this, manager, properties);
     this.QuestionListItem = true;
     var self = this;
     this.name = 'question';
-    this.view = new QuestionListItemView(self, { className: this.name });
+    this.view = new QuestionListItemView(self.manager, self, { className: this.name });
 }
 extend(ListItem, QuestionListItem);
 
 
 
-function ListItemView(item) {
+function ListItemView(manager, item) {
     this.ListItemView = true;
     var self = this;
+    this.manager = manager;
     this.item = item;
     this.object = this.item.object;
     
@@ -480,8 +496,8 @@ ListItemView.prototype.appendTo = function(parent) {
 
 
 
-function WordListItemView(item) {
-    ListItemView.call(this, item);
+function WordListItemView(manager, item) {
+    ListItemView.call(this, manager, item);
     this.WordListItemView = true;
     var self = this;
 
@@ -501,7 +517,7 @@ WordListItemView.prototype.loadDetails = function () {
     var self = this;
     var object = self.object;
     var spinner = new SpinnerWrapper($(this.details));
-    var languages = my.languages.userLanguages();
+    var languages = my.languages.userLanguagesId();
 
     $.ajax({
         url: '/Words/GetWords',
@@ -512,23 +528,33 @@ WordListItemView.prototype.loadDetails = function () {
         },
         datatype: "json",
         async: true,
-        traditional: false,
+        traditional: true,
         success: function (result) {
-            //words = result;
+            self.renderItems(result);
             spinner.stop();
         },
         error: function (msg) {
-            alert("[register.js::nameAlreadyExists] " + msg.status + " | " + msg.statusText);
+            spinner.stop();
+            //self.loadDetails();
         }
     });
 
+};
+WordListItemView.prototype.renderItems = function(words) {
+    var s = '';
     
+    for (var i = 0; i < words.length; i++) {
+        var word = words[i];
+        s += word.Name + ' | ';
+    }
+
+    $(this.details).html(s);
 
 };
 
 
-function QuestionListItemView(item) {
-    ListItemView.call(this, item);
+function QuestionListItemView(manager, item) {
+    ListItemView.call(this, manager, item);
     this.QuestionListItemView = true;
 }
 extend(ListItemView, QuestionListItemView);

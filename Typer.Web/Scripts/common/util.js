@@ -837,6 +837,19 @@ my.languages = (function () {
             }
             return used;
         },
+        userLanguagesId: function() {
+            if (!used) {
+                loadLanguages();
+            }
+
+            var ids = [];
+            for (var i = 0; i < used.length; i++) {
+                var language = used[i];
+                ids.push(language.id);
+            }
+
+            return ids;
+        },
         get: function(id) {
             if (!used) {
                 loadLanguages();
@@ -852,6 +865,8 @@ my.languages = (function () {
             return null;
 
         }
+        
+        
     };
 
 })();
