@@ -303,10 +303,15 @@ namespace Typer.DAL.Repositories
             int weight;
             Int32.TryParse(parameters[2], out weight);
 
+            //Complete.
+            bool complete;
+            Boolean.TryParse(parameters[3], out complete);
+
             var option = GetWord(id);
             if (option == null) return false;
             option.Name = name;
             option.Weight = weight;
+            option.GrammarCompleted = complete;
 
             return true;
 
@@ -476,12 +481,18 @@ namespace Typer.DAL.Repositories
             int weight;
             Int32.TryParse(parameters[2], out weight);
 
+            //Completed
+            bool completed;
+            Boolean.TryParse(parameters[3], out completed);
+
+
             var word = new WordDto
             {
                 Name = name,
                 Weight = weight,
                 CreateDate = DateTime.Now,
                 CreatorId = 1,
+                GrammarCompleted = completed,
                 IsActive = true,
                 Negative = 0,
                 Positive = 0,

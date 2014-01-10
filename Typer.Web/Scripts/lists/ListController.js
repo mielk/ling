@@ -470,6 +470,9 @@ function ListItemView(manager, item) {
         },
         changeCategories: function (e) {
             self.categories.html(my.categories.toString(e.categories));
+        },
+        change: function () {
+            self.refreshItems();
         }
     });
 
@@ -492,6 +495,10 @@ ListItemView.prototype.loadDetails = function () {
 };
 ListItemView.prototype.appendTo = function(parent) {
     $(this.container).appendTo($(parent));
+};
+ListItemView.prototype.refreshItems = function () {
+    $(this.details).empty();
+    this.loadDetails();
 };
 
 
@@ -527,6 +534,7 @@ WordListItemView.prototype.loadDetails = function () {
         },
         datatype: "json",
         async: true,
+        cache: false,
         traditional: true,
         success: function (result) {
             self.renderItems(result);
@@ -728,7 +736,7 @@ Entity.prototype.editedLogs = function (logs) {
         var log = logs[i];
         var item = log.item;
         if (log.event === tag && item && item.id) {
-            var text = item.id + '|' + item.name + '|' + item.weight;
+            var text = item.id + '|' + item.name + '|' + item.weight + '|' + item.isCompleted;
             array.push(text);
         }
     }
@@ -742,7 +750,7 @@ Entity.prototype.addedLogs = function (logs) {
         var item = log.item;
         if (log.event === tag && item) {
             //metadata
-            var text = item.languageId + '|' + item.name + '|' + item.weight;
+            var text = item.languageId + '|' + item.name + '|' + item.weight + '|' + item.isCompleted;
 
             //properties
             text += '$';
@@ -912,6 +920,11 @@ Metaword.prototype.update = function (params) {
                     }
                 }
             });
+
+            this.trigger({
+                type: 'change'
+            });
+
         }
 
     }
@@ -1267,18 +1280,20 @@ OptionEntity.prototype.checkName = function (name) {
     }
     return true;
 };
-OptionEntity.prototype.update = function (params, properties, details) {
+OptionEntity.prototype.update = function (params, properties, details, complete) {
     if (!params.OptionEditEntity) {
         alert('Illegal argument passed to function Metaword.update');
         return;
     }
 
     var self = this;
+    var completed = (this.isCompleted === complete ? undefined : complete);
     var name = (this.name === params.name ? undefined : params.name);
     var weight = (this.weight === params.weight ? undefined : params.weight);
 
     //Check if there are any changes.
-    if (name || weight) {
+    if (completed !== undefined || name || weight) {
+        this.isCompleted = complete;
         this.name = (name === undefined ? this.name : name);
         this.weight = (weight === undefined ? this.weight : weight);
 
@@ -1304,7 +1319,8 @@ OptionEntity.prototype.update = function (params, properties, details) {
             this.trigger({
                 type: 'update',
                 name: self.name,
-                weight: self.weight
+                weight: self.weight,
+                complete: self.isCompleted
             });
 
 
@@ -1316,16 +1332,6 @@ OptionEntity.prototype.update = function (params, properties, details) {
     //Update properties and details.
     this.updateProperties(properties);
     this.updateDetails(details);
-
-
-    //if (detailsChanges.length) {
-    //    this.parent.addLog({
-    //        event: 'details',
-    //        wordId: self.id,
-    //        properties: detailsChanges
-    //    });
-    //}
-
 
 };
 OptionEntity.prototype.updateProperties = function () {
@@ -1940,6 +1946,7 @@ function GrammarForm(manager, params) {
     this.inactiveRules = params.InactiveRules;
     this.index = params.Index;
     this.originalValue = '';
+    this.active = true;
 
     manager.addForm(this);
     
@@ -1996,7 +2003,8 @@ GrammarForm.prototype.setListeners = function () {
         }
     }
 };
-GrammarForm.prototype.activate = function(value) {
+GrammarForm.prototype.activate = function (value) {
+    this.active = value;
     if (value) {
         this.view().removeAttr('disabled');
     } else {
@@ -2747,9 +2755,11 @@ function OptionPanel(item, parent) {
             destroy: function() {
                 $(container).remove();
             },
-            update: function($content, $weight) {
+            update: function($content, $weight, $complete) {
                 $(content).html(self.contentToHtml($content));
                 $(weight).html($weight);
+                $(completness).addClass($complete ? 'complete' : 'incomplete');
+                $(completness).removeClass($complete ? 'incomplete' : 'complete');
             }
         };
 
@@ -2773,8 +2783,8 @@ OptionPanel.prototype.isUniqueContent = function () {
 //!Inherited
     //return this.language.isUnique(content.trim(), this.id);
 };
-OptionPanel.prototype.update = function (content, weight) {
-    this.ui.update(content, weight);
+OptionPanel.prototype.update = function (content, weight, complete) {
+    this.ui.update(content, weight, complete);
 };
 OptionPanel.prototype.toHtml = function () {
     var content = this.item.name;
@@ -3222,7 +3232,7 @@ function EditOptionPanel(object, editObject, properties) {
 
     this.object.bind({
         update: function (e) {
-            self.line.update(e.name, e.weight);
+            self.line.update(e.name, e.weight, e.complete);
         },
         add: function (e) {
             self.languagePanel.add(e.item);
@@ -3237,8 +3247,18 @@ EditOptionPanel.prototype.cancel = function () {
     this.ui.destroy();
 };
 EditOptionPanel.prototype.confirm = function () {
-    this.object.update(this.editObject, this.properties, this.details);
+    this.object.update(this.editObject, this.properties, this.details, this.isComplete());
     this.ui.destroy();
+};
+EditOptionPanel.prototype.isComplete = function () {
+    var forms = this.details.forms;
+    var complete = true;
+    forms.each(function (key, value) {
+        if (complete && value.active && !value.header && !value.value) {
+            complete = false;
+        }
+    });
+    return complete;
 };
 EditOptionPanel.prototype.start = function () {
     this.display();
