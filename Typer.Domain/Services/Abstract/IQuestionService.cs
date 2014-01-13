@@ -22,5 +22,10 @@ namespace Typer.Domain.Services
         IEnumerable<QuestionOption> GetOptions(int questionId, int[] languages);
         IEnumerable<Category> GetCategories(int questionId);
         IEnumerable<Question> Filter(int lowWeight, int upWeight, int[] categories, string text);
+
+
+        //Variants
+
+
     }
 }

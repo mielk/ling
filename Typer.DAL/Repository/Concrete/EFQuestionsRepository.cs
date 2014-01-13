@@ -37,6 +37,130 @@ namespace Typer.DAL.Repositories
             return dtos.Select(dto => dto.QuestionId).ToList();
         }
 
+        public IEnumerable<VariantSetDto> GetVariantSets(int questionId)
+        {
+            return Context.VariantSets.Where(vs => vs.QuestionId == questionId);
+        }
+
+        public IEnumerable<VariantSetDto> GetVariantSets(int questionId, int languageId)
+        {
+            return Context.VariantSets.Where(vs => vs.QuestionId == questionId && vs.LanguageId == languageId);
+        }
+
+        public IEnumerable<VariantSetDto> GetVariantSets(int questionId, int[] languagesIds)
+        {
+            return Context.VariantSets.Where(vs => vs.QuestionId == questionId && languagesIds.Contains(vs.LanguageId));
+        }
+
+        public IEnumerable<VariantDto> GetVariants(int questionId, int languageId)
+        {
+            var sets = GetVariantSets(questionId, languageId);
+            var list = new List<VariantDto>();
+
+            foreach (var l in sets.Select(set => GetVariants(set.Id)))
+            {
+                list.AddRange(l);
+            }
+
+            return list;
+
+        }
+
+        public IEnumerable<VariantDto> GetVariants(int questionId, int[] languagesIds)
+        {
+            var sets = GetVariantSets(questionId, languagesIds);
+            var list = new List<VariantDto>();
+
+            foreach (var l in sets.Select(set => GetVariants(set.Id)))
+            {
+                list.AddRange(l);
+            }
+
+            return list;
+        }
+
+        public IEnumerable<VariantDto> GetVariants(int variantSetId)
+        {
+            return Context.Variants.Where(v => v.VariantSetId == variantSetId);
+        }
+
+        public IEnumerable<VariantLinkDto> GetVariantLinks(int questionId, int languageId)
+        {
+
+            var variantSets = GetVariantSets(questionId, languageId);
+            var results = new List<VariantLinkDto>();
+
+            foreach (var id in variantSets.Select(set => set.Id))
+            {
+                results.AddRange(Context.VariantLinks.Where(vl => vl.VariantSetId == id));
+            }
+
+            return results.ToList();
+
+        }
+
+        public IEnumerable<VariantLinkDto> GetVariantLinks(int questionId, int[] languagesIds)
+        {
+            var variantSets = GetVariantSets(questionId, languagesIds);
+            var results = new List<VariantLinkDto>();
+
+            foreach (var id in variantSets.Select(set => set.Id))
+            {
+                results.AddRange(Context.VariantLinks.Where(vl => vl.VariantSetId == id));
+            }
+
+            return results.ToList();
+        }
+
+        public IEnumerable<VariantLinkDto> GetVariantLinks(int variantSetId)
+        {
+            return Context.VariantLinks.Where(vl => vl.VariantSetId == variantSetId);
+        }
+
+        public IEnumerable<VariantConstraintDto> GetVariantConstraints(int questionId, int languageId)
+        {
+            var variants = GetVariants(questionId, languageId);
+            var results = new List<VariantConstraintDto>();
+
+            foreach (var id in variants.Select(variant => variant.Id))
+            {
+                results.AddRange(Context.VariantConstraints.Where(vc => vc.VariantId == id));
+            }
+
+            return results.ToList();
+        }
+
+        public IEnumerable<VariantConstraintDto> GetVariantConstraints(int questionId, int[] languagesIds)
+        {
+            var variants = GetVariants(questionId, languagesIds);
+            var results = new List<VariantConstraintDto>();
+
+            foreach (var id in variants.Select(variant => variant.Id))
+            {
+                results.AddRange(Context.VariantConstraints.Where(vc => vc.VariantId == id));
+            }
+
+            return results.ToList();
+        }
+
+        public IEnumerable<VariantConstraintDto> GetVariantConstraints(int variantSetId)
+        {
+            var variants = GetVariants(variantSetId);
+            var results = new List<VariantConstraintDto>();
+
+            foreach (var id in variants.Select(variant => variant.Id))
+            {
+                results.AddRange(Context.VariantConstraints.Where(vc => vc.VariantId == id));
+            }
+
+            return results.ToList();
+
+        }
+
+        public IEnumerable<VariantConstraintDto> GetVariantConstraintsForVariant(int variantId)
+        {
+            return Context.VariantConstraints.Where(vc => vc.VariantId == variantId);
+        }
 
 
         public bool AddQuestion(QuestionDto question)
@@ -251,7 +375,7 @@ namespace Typer.DAL.Repositories
             string[] parameters = s.Split('|');
 
             //Id.
-            var id = 0;
+            int id;
             Int32.TryParse(parameters[0], out id);
 
             //Name.

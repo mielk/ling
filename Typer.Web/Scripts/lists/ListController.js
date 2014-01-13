@@ -542,7 +542,7 @@ WordListItemView.prototype.loadDetails = function () {
         },
         error: function () {
             spinner.stop();
-            //self.loadDetails();
+            self.loadDetails();
         }
     });
 
@@ -580,6 +580,54 @@ function QuestionListItemView(manager, item) {
 }
 extend(ListItemView, QuestionListItemView);
 QuestionListItemView.prototype.loadDetails = function () {
+    var self = this;
+    var object = self.object;
+    var spinner = new SpinnerWrapper($(this.details));
+
+    $.ajax({
+        url: '/Questions/GetOptions',
+        type: "GET",
+        data: {
+            'id': object.id,
+            'languages': self.manager.getLanguagesIds()
+        },
+        datatype: "json",
+        async: true,
+        cache: false,
+        traditional: true,
+        success: function (result) {
+            self.renderItems(result);
+            spinner.stop();
+        },
+        error: function () {
+            spinner.stop();
+            self.loadDetails();
+        }
+    });
+};
+QuestionListItemView.prototype.renderItems = function (options) {
+    var self = this;
+    var languages = self.manager.getLanguages();
+    var columns = {};
+
+    for (var i = 0; i < languages.length; i++) {
+        var language = languages[i];
+        var column = jQuery('<div/>', {
+            'class': 'details-column'
+        }).appendTo(self.details);
+        columns[language.id] = column;
+    }
+
+    for (var j = 0; j < options.length; j++) {
+        var option = options[j];
+        var languageId = option.LanguageId;
+        var languageColumn = columns[languageId];
+        var icon = jQuery('<div/>', {
+            'class': 'details-icon',
+            title: option.Name
+        }).appendTo(languageColumn);
+        $(icon).addClass(option.IsCompleted ? 'complete' : 'incomplete');
+    }
 
 };
 
@@ -971,7 +1019,6 @@ Question.prototype.update = function (params) {
     var removed = this.removedLogs(params.logs);
     var edited = this.editedLogs(params.logs);
     var added = this.addedLogs(params.logs);
-    var properties = this.propertiesLogs(params.logs);
     var details = this.detailsLogs(params.logs);
 
     //Check if there are any changes.
@@ -1451,6 +1498,13 @@ Word.prototype.getFormsFromRepository = function (wordId) {
     return my.db.fetch('Words', 'GetGrammarForms', { 'wordId': wordId });
 };
 
+
+
+
+
+
+
+
 function Option(question, properties) {
     OptionEntity.call(this, question, properties);
     this.Option = true;
@@ -1471,8 +1525,8 @@ Option.prototype.editItem = function () {
         object: self
     });
 };
-Option.prototype.updateProperties = function (properties) {
-
+Option.prototype.updateProperties = function () {
+    
 };
 Option.prototype.updateDetails = function (details) {
 
@@ -1554,10 +1608,10 @@ function QuestionOptionEditEntity(properties) {
 }
 extend(OptionEditEntity, QuestionOptionEditEntity);
 QuestionOptionEditEntity.prototype.createPropertyManager = function () {
-    alert('Not implemented yet');
+    return new QuestionPropertyManager(this, {});
 };
 QuestionOptionEditEntity.prototype.createDetailsManager = function (params) {
-    alert('Not implemented yet');
+    return new OptionManager(this, params);
 };
 
 
@@ -1578,6 +1632,9 @@ function PropertyManager(object) {
         return {
             view: function() {
                 return container;
+            },
+            hide: function() {
+                $(container).css('display', 'none');
             },
             append: function(element) {
                 $(element).appendTo($(container));
@@ -1636,7 +1693,6 @@ WordPropertyManager.prototype.copyDetails = function (id) {
         }
     }
 };
-
 
 function WordProperty(params) {
     this.WordProperty = true;
@@ -1744,6 +1800,16 @@ WordProperty.prototype.changeValue = function (value) {
     this.ui.change(value);
 };
 
+
+
+function QuestionPropertyManager(editObject) {
+    PropertyManager.call(this, editObject);
+    this.QuestionPropertyManager = true;
+    this.ui.hide();
+}
+extend(PropertyManager, QuestionPropertyManager);
+
+
 function DetailsManager(object) {
     this.DetailsManager = true;
     this.editObject = object;
@@ -1830,7 +1896,6 @@ GrammarManager.prototype.loadSearchPanel = function (name) {
     });
 
 };
-
 GrammarManager.prototype.convertSimilarWords = function(words){
     var data = [];
     for (var i = 0; i < words.length; i++){
@@ -2078,13 +2143,57 @@ GrammarGroup.prototype.render = function () {
 };
 
 
+
+
+function OptionManager(object, properties) {
+    DetailsManager.call(this, object, properties);
+    this.GrammerManager = true;
+    var self = this;
+    this.propertiesManager = properties.propertiesManager;
+
+    this.groups = new HashTable(null);
+    this.forms = new HashTable(null);
+
+    this.ui = (function () {
+        // ReSharper disable once UnusedLocals
+        var searchPanel = jQuery('<div/>', {
+            'class': 'grammar-search-panel'
+        }).appendTo(self.container);
+
+        var formsPanel = jQuery('<div/>', {
+            'class': 'grammar-forms-panel'
+        }).appendTo(self.container);
+
+        var formsList = jQuery('<ul/>').appendTo(formsPanel);
+
+        return {
+            addGroup: function (view) {
+                $(view).appendTo($(formsList));
+            },
+            searchPanel: function () {
+                return searchPanel;
+            }
+        };
+
+    })();
+
+    //this.loadSearchPanel();
+    //this.loadForms();
+    //this.loadValues();
+    //this.render();
+    
+}
+extend(DetailsManager, OptionManager);
+
+
+
 /*
- * Class:           EditPanel
- * Description:     Responsible for displaying properties of the 
- *                  given object in a separate modal window.
- * Parameters:      
- *  ListItem item   List item that the object edited is assigned to.
- */
+    * Class:           EditPanel
+    * Description:     Responsible for displaying properties of the 
+    *                  given object in a separate modal window.
+    * Parameters:      
+    *  ListItem item   List item that the object edited is assigned to.
+    */
 function EditPanel(object, editObject) {
     this.EditPanel = true;
     var self = this;
@@ -2409,7 +2518,7 @@ function EditDataLine(panel, properties) {
                 'keydown': function (e) {
                     if (e.which === 13) {
                         /* Jeżeli to nie jest ustawione, w IE 9 focus przeskakuje od razu
-                         * na przycisk [Select categories] i wywołuje jego kliknięcie. */
+                            * na przycisk [Select categories] i wywołuje jego kliknięcie. */
                         e.preventDefault();
                         e.stopPropagation();
                     }
@@ -2780,7 +2889,7 @@ OptionPanel.prototype.delete = function () {
     this.parent.remove(this.item);
 };
 OptionPanel.prototype.isUniqueContent = function () {
-//!Inherited
+    //!Inherited
     //return this.language.isUnique(content.trim(), this.id);
 };
 OptionPanel.prototype.update = function (content, weight, complete) {
@@ -3276,7 +3385,7 @@ EditOptionPanel.prototype.generalRender = function () {
         controlBinding: {
             blur: function (e) {
                 var value = e.target.value;
-                self.details.loadSearchPanel(value);
+                if (self.details.loadSearchPanel) self.details.loadSearchPanel(value);
             }
         },
         validation: function (params) {
@@ -3295,39 +3404,12 @@ EditOptionPanel.prototype.generalRender = function () {
     }));
 
 };
-//EditOptionPanel.prototype.loadProperties = function () {
-//    alert('Must be defined by implementing class');
-//};
 
 function WordOptionEditPanel(object, editObject, line) {
     EditOptionPanel.call(this, object, editObject, line);
     this.WordOptionEditPanel = true;
 }
 extend(EditOptionPanel, WordOptionEditPanel);
-//WordOptionEditPanel.prototype.loadProperties = function () {
-//    var languageId = this.languagePanel.language.id;
-//    var wordtypeId = this.object.parent.wordtype ? this.object.parent.wordtype.id : 0;
-//    var properties;
-//    $.ajax({
-//        url: '/Words/GetProperties',
-//        type: 'GET',
-//        data: {
-//            'languageId': languageId,
-//            'wordtypeId': wordtypeId
-//        },
-//        datatype: "json",
-//        async: false,
-//        cache: false,
-//        success: function (result) {
-//            properties = result;
-//        },
-//        error: function (msg) {
-//            alert(msg.status + " | " + msg.statusText);
-//            return null;
-//        }
-//    });
-
-//};
 
 
 
@@ -3336,5 +3418,3 @@ function QuestionOptionEditPanel(object, editObject, line) {
     this.QuestionOptionEditPanel = true;
 }
 extend(EditOptionPanel, QuestionOptionEditPanel);
-//QuestionOptionEditPanel.prototype.loadProperties = function () {
-//};

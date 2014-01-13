@@ -22,6 +22,10 @@ namespace Typer.DAL.Infrastructure
         public DbSet<GrammarDefinitonDto> GrammarDefinitions { get; set; }
         public DbSet<WordtypePropertyValueDto> WordtypePropertyValues { get; set; }
         public DbSet<GrammarFormDto> GrammarForms { get; set; }
+        public DbSet<VariantSetDto> VariantSets { get; set; }
+        public DbSet<VariantDto> Variants { get; set; }
+        public DbSet<VariantLinkDto> VariantLinks { get; set; }
+        public DbSet<VariantConstraintDto> VariantConstraints { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -39,6 +43,10 @@ namespace Typer.DAL.Infrastructure
             modelBuilder.Entity<GrammarDefinitonDto>().ToTable("GrammarDefinitions");
             modelBuilder.Entity<WordtypePropertyValueDto>().ToTable("WordsProperties");
             modelBuilder.Entity<GrammarFormDto>().ToTable("GrammarForms");
+            modelBuilder.Entity<VariantSetDto>().ToTable("VariantSets");
+            modelBuilder.Entity<VariantDto>().ToTable("Variants");
+            modelBuilder.Entity<VariantConstraintDto>().ToTable("VariantLimits");
+            modelBuilder.Entity<VariantLinkDto>().ToTable("VariantConnections");
         }
 
 
@@ -53,5 +61,7 @@ namespace Typer.DAL.Infrastructure
         {
             return _instance ?? (_instance = new EFDbContext());
         }
+
+
     }
 }

@@ -394,3 +394,44 @@ CREATE TABLE [dbo].[WordsProperties] (
     FOREIGN KEY ([WordId]) REFERENCES [dbo].[Words] ([Id]),
     FOREIGN KEY ([PropertyId]) REFERENCES [dbo].[WordtypeProperties] ([Id])
 );
+
+
+
+
+
+'===================
+CREATE TABLE [dbo].[VariantSets] (
+    [Id]               INT            IDENTITY (1, 1) NOT NULL,
+    [QuestionId]	   INT            NOT NULL,
+	[LanguageId]	   INT			  NOT NULL,
+    [VariantTag]       NVARCHAR(255)  NOT NULL,
+	[Params]		   NVARCHAR(255)  NOT NULL,
+    [IsActive]         BIT            DEFAULT ((1)) NOT NULL,
+    [CreatorId]        INT            NOT NULL,
+    [CreateDate]       DATETIME       DEFAULT (getdate()) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [Unique_Variant_Tag] UNIQUE NONCLUSTERED ([QuestionId] ASC, [VariantTag] ASC),
+    FOREIGN KEY ([QuestionId]) REFERENCES [dbo].[Questions] ([Id]),
+	FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id])
+);
+
+
+
+
+CREATE TABLE [dbo].[Variants] (
+    [Id]           INT            IDENTITY (1, 1) NOT NULL,
+    [VariantSetId] INT            NOT NULL,
+    [Key]          NVARCHAR (255) NOT NULL,
+    [Content]      NVARCHAR (255) NOT NULL,
+	[WordId]	   INT			  NULL,
+    [IsActive]     BIT            DEFAULT ((1)) NOT NULL,
+    [CreatorId]    INT            NOT NULL,
+    [CreateDate]   DATETIME       DEFAULT (getdate()) NOT NULL,
+    [IsApproved]   BIT            DEFAULT ((0)) NOT NULL,
+    [Positive]     INT            DEFAULT ((0)) NOT NULL,
+    [Negative]     INT            DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [Unique_Variant_Content] UNIQUE NONCLUSTERED ([VariantSetId] ASC, [Key] ASC),
+    FOREIGN KEY ([VariantSetId]) REFERENCES [dbo].[VariantSets] ([Id]),
+	FOREIGN KEY ([WordId]) REFERENCES [dbo].[Words] ([Id])
+);
