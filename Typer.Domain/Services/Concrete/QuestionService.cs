@@ -128,6 +128,50 @@ namespace Typer.Domain.Services
 
         }
 
+        public IEnumerable<VariantSet> GetVariantSets(int questionId)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IEnumerable<VariantSet> GetVariantSets(int questionId, int languageId)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IEnumerable<VariantSet> GetVariantSets(int questionId, int[] languagesIds)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IEnumerable<Variant> GetVariants(int questionId, int languageId)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IEnumerable<Variant> GetVariants(int questionId, int[] languagesIds)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IEnumerable<Variant> GetVariants(int variantSetId)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IEnumerable<Variant> GetVariantsWithDetails(int variantSetId)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IEnumerable<Variant> GetVariantsWithDetails(int questionId, int languageId)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IEnumerable<Variant> GetVariantsWithDetails(int questionId, int[] languagesIds)
+        {
+            throw new System.NotImplementedException();
+        }
 
 
         private static Question QuestionFromDto(QuestionDto dto)
@@ -164,7 +208,6 @@ namespace Typer.Domain.Services
             };
         }
 
-
         private static QuestionOption OptionFromDto(QuestionOptionDto dto)
         {
             return new QuestionOption
@@ -184,27 +227,38 @@ namespace Typer.Domain.Services
             };
         }
 
-/*
-        private static QuestionOptionDto OptionToDto(QuestionOption option)
+        private static Variant VariantFromDto(VariantDto dto)
         {
-            return new QuestionOptionDto
+            return new Variant
             {
-                Content = option.Content,
-                CreateDate = option.CreateDate,
-                CreatorId = option.CreatorId,
-                Id = option.Id,
-                IsActive = option.IsActive,
-                IsApproved = option.IsApproved,
-                IsComplex = option.IsComplex,
-                LanguageId = option.LanguageId,
-                Negative = option.Negative,
-                Positive = option.Positive,
-                QuestionId = option.QuestionId,
-                Weight = option.Weight
+                Content = dto.Content,
+                CreateDate = dto.CreateDate,
+                CreatorId = dto.CreatorId,
+                Id = dto.Id,
+                IsActive = dto.IsActive,
+                IsApproved = dto.IsApproved,
+                Key = dto.Key,
+                Negative = dto.Negative,
+                Positive = dto.Positive,
+                VariantSetId = dto.VariantSetId,
+                WordId = dto.WordId
             };
         }
-*/
 
+        private static VariantSet VariantSetFromDto(VariantSetDto dto)
+        {
+            return new VariantSet
+            {
+                CreateDate = dto.CreateDate,
+                CreatorId = dto.CreatorId,
+                Id = dto.Id,
+                IsActive = dto.IsActive,
+                LanguageId = dto.LanguageId,
+                Params = dto.Params,
+                QuestionId = dto.QuestionId,
+                VariantTag = dto.VariantTag
+            };
+        }
 
     }
 }
