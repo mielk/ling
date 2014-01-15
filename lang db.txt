@@ -440,16 +440,16 @@ CREATE TABLE [dbo].[Variants] (
 
 CREATE TABLE [dbo].[VariantDependences] (
     [Id]             INT      IDENTITY (1, 1) NOT NULL,
-    [VariantSetId]   INT      NOT NULL,
-    [DependentSetId] INT      NOT NULL,
+    [MainSetId]   INT      NOT NULL,
+    [DependantSetId] INT      NOT NULL,
     [IsActive]       BIT      DEFAULT ((1)) NOT NULL,
     [CreatorId]      INT      NOT NULL,
     [CreateDate]     DATETIME DEFAULT (getdate()) NOT NULL,
     PRIMARY KEY CLUSTERED ([Id] ASC),
-    CONSTRAINT [Dependent_Unique_Variant_Connection] UNIQUE NONCLUSTERED ([VariantSetId] ASC, [DependentSetId] ASC),
-    FOREIGN KEY ([VariantSetId]) REFERENCES [dbo].[VariantSets] ([Id]),
-    FOREIGN KEY ([DependentSetId]) REFERENCES [dbo].[VariantSets] ([Id]),
-    CONSTRAINT [Dependence_Different_Variants] CHECK ([VariantSetId]<>[DependentSetId])
+    CONSTRAINT [Dependent_Unique_Variant_Connection] UNIQUE NONCLUSTERED ([MainSetId] ASC, [DependantSetId] ASC),
+    FOREIGN KEY ([MainSetId]) REFERENCES [dbo].[VariantSets] ([Id]),
+    FOREIGN KEY ([DependantSetId]) REFERENCES [dbo].[VariantSets] ([Id]),
+    CONSTRAINT [Dependence_Different_Variants] CHECK ([MainSetId]<>[DependantSetId])
 );
 
 

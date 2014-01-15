@@ -160,18 +160,49 @@ namespace Typer.Domain.Services
 
 
             //Load limits
-            var limits = _repository.GetVariantConstraintsForVariant()
-            if (!CategoriesMap.ContainsKey(RootID)) return;
-            Category root;
-            if (!CategoriesMap.TryGetValue(RootID, out root)) return;
-            Root = root;
-            
+            var limits = _repository.GetVariantLimits(questionId);
+            foreach (var limit in limits)
+            {
+                Variant limited;
+                Variant limiting;
+
+                if (!variantMap.TryGetValue(limit.VariantId, out limited)) continue;
+                if (!variantMap.TryGetValue(limit.ConnectedVariantId, out limiting)) continue;
+
+                limited.AddExcluded(limiting);
+                limiting.AddExcluded(limited);
+
+            }
+
+
             //Load dependencies
+            var setsIds = sets.Select(s => s.Id).ToArray();
+            var dependencies = _repository.GetVariantDependencies(setsIds);
+            foreach (var dependency in dependencies)
+            {
+                VariantSet parent;
+                VariantSet dependant;
+                if (!setMap.TryGetValue(dependency.MainSetId, out parent)) continue;
+                if (!setMap.TryGetValue(dependency.DependantSetId, out dependant)) continue;
 
+                parent.AddDependant(dependant);
+                dependant.Parent = parent;
 
-            //Load relations
+            }
 
+            //Load connections
+            var connections = _repository.GetVariantConnections(setsIds);
+            foreach (var connection in connections)
+            {
+                VariantSet connected;
+                VariantSet connecting;
+                if (!setMap.TryGetValue(connection.VariantSetId, out connected)) continue;
+                if (!setMap.TryGetValue(connection.ConnectedSetId, out connecting)) continue;
 
+                connected.AddRelated(connecting);
+                connecting.AddRelated(connected);
+
+            }
 
             return sets;
 

@@ -19,6 +19,11 @@ namespace Typer.Domain.Entities
         public int Positive { get; set; }
         public List<Variant> Excluded { get; set; }
 
+        public Variant()
+        {
+            Excluded = new List<Variant>();
+        }
+
         public void AddExcluded(Variant variant)
         {
             Excluded.Add(variant);

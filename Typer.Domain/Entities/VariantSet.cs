@@ -20,6 +20,12 @@ namespace Typer.Domain.Entities
         public List<VariantSet> Dependants { get; set; }
         public VariantSet Parent { get; set; }
 
+        public VariantSet()
+        {
+            Variants = new List<Variant>();
+            Related = new List<VariantSet>();
+            Dependants = new List<VariantSet>();
+        }
 
         public void AddVariant(Variant variant)
         {
@@ -34,12 +40,6 @@ namespace Typer.Domain.Entities
         public void AddDependant(VariantSet set)
         {
             Dependants.Add(set);
-        }
-
-
-        public void LoadVariants()
-        {
-            Variants = QuestionServicesFactory.Instance().GetService().GetVariants(Id);
         }
 
 
