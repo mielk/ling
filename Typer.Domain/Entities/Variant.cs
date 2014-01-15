@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Typer.Domain.Entities
 {
@@ -20,6 +17,13 @@ namespace Typer.Domain.Entities
         public bool IsApproved { get; set; }
         public int Negative { set; get; }
         public int Positive { get; set; }
+        public List<Variant> Excluded { get; set; }
+
+        public void AddExcluded(Variant variant)
+        {
+            Excluded.Add(variant);
+        }
+
 
     }
 }

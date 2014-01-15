@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Typer.Domain.Services;
 
 namespace Typer.Domain.Entities
 {
@@ -17,7 +15,33 @@ namespace Typer.Domain.Entities
         public bool IsActive { get; set; }
         public int CreatorId { get; set; }
         public DateTime CreateDate { get; set; }
-        public IEnumerable<Variant> Variants { get; set; }
+        public List<Variant> Variants { get; set; }
+        public List<VariantSet> Related { get; set; }
+        public List<VariantSet> Dependants { get; set; }
+        public VariantSet Parent { get; set; }
+
+
+        public void AddVariant(Variant variant)
+        {
+            Variants.Add(variant);
+        }
+
+        public void AddRelated(VariantSet set)
+        {
+            Related.Add(set);
+        }
+
+        public void AddDependant(VariantSet set)
+        {
+            Dependants.Add(set);
+        }
+
+
+        public void LoadVariants()
+        {
+            Variants = QuestionServicesFactory.Instance().GetService().GetVariants(Id);
+        }
+
 
     }
 }

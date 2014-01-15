@@ -144,7 +144,32 @@
 
             return options;
 
+        },
+        getVariantSets: function (id, languages) {
+            var sets;
+            $.ajax({
+                url: '/Questions/GetVariantSets',
+                type: "GET",
+                data: {
+                    'id': id,
+                    'languages': languages
+                },
+                datatype: "json",
+                async: false,
+                cache: false,
+                traditional: true,
+                success: function (result) {
+                    sets = result;
+                },
+                error: function (msg) {
+                    alert("[register.js::nameAlreadyExists] " + msg.status + " | " + msg.statusText);
+                }
+            });
+
+            return sets;
+
         }
+        
     };
 
 })();

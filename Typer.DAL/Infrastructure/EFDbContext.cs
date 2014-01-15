@@ -24,8 +24,9 @@ namespace Typer.DAL.Infrastructure
         public DbSet<GrammarFormDto> GrammarForms { get; set; }
         public DbSet<VariantSetDto> VariantSets { get; set; }
         public DbSet<VariantDto> Variants { get; set; }
-        public DbSet<VariantLinkDto> VariantLinks { get; set; }
-        public DbSet<VariantConstraintDto> VariantConstraints { get; set; }
+        public DbSet<VariantConnectionDto> VariantConnections { get; set; }
+        public DbSet<VariantLimitDto> VariantLimits { get; set; }
+        public DbSet<VariantDependencyDto> VariantDependencies { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -45,8 +46,9 @@ namespace Typer.DAL.Infrastructure
             modelBuilder.Entity<GrammarFormDto>().ToTable("GrammarForms");
             modelBuilder.Entity<VariantSetDto>().ToTable("VariantSets");
             modelBuilder.Entity<VariantDto>().ToTable("Variants");
-            modelBuilder.Entity<VariantConstraintDto>().ToTable("VariantLimits");
-            modelBuilder.Entity<VariantLinkDto>().ToTable("VariantConnections");
+            modelBuilder.Entity<VariantLimitDto>().ToTable("VariantLimits");
+            modelBuilder.Entity<VariantConnectionDto>().ToTable("VariantConnections");
+            modelBuilder.Entity<VariantDependencyDto>().ToTable("VariantDependences");
         }
 
 

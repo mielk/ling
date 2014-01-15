@@ -32,16 +32,10 @@ namespace Typer.DAL.Repositories
         IEnumerable<VariantSetDto> GetVariantSets(int questionId);
         IEnumerable<VariantSetDto> GetVariantSets(int questionId, int languageId);
         IEnumerable<VariantSetDto> GetVariantSets(int questionId, int[] languagesIds);
-        IEnumerable<VariantDto> GetVariants(int questionId, int languageId);
-        IEnumerable<VariantDto> GetVariants(int questionId, int[] languagesIds);
         IEnumerable<VariantDto> GetVariants(int variantSetId);
-        IEnumerable<VariantLinkDto> GetVariantLinks(int questionId, int languageId);
-        IEnumerable<VariantLinkDto> GetVariantLinks(int questionId, int[] languagesIds);
-        IEnumerable<VariantLinkDto> GetVariantLinks(int variantSetId);
-        IEnumerable<VariantConstraintDto> GetVariantConstraints(int questionId, int languageId);
-        IEnumerable<VariantConstraintDto> GetVariantConstraints(int questionId, int[] languagesIds);
-        IEnumerable<VariantConstraintDto> GetVariantConstraints(int variantSetId);
-        IEnumerable<VariantConstraintDto> GetVariantConstraintsForVariant(int variantId);
+        IEnumerable<VariantConnectionDto> GetVariantConnections(int[] sets);
+        IEnumerable<VariantLimitDto> GetVariantLimits(int questionId);
+        IEnumerable<VariantDependencyDto> GetVariantDependencies(int[] sets);
 
     }
 }

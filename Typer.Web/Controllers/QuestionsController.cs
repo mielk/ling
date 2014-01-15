@@ -178,7 +178,7 @@ namespace Typer.Web.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult GetVariants(int id, int[] languages)
+        public ActionResult GetVariantSets(int id, int[] languages)
         {
             var words = _service.GetVariantsWithDetails(id, languages);
             return Json(words, JsonRequestBehavior.AllowGet);

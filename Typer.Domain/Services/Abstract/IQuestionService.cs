@@ -24,15 +24,16 @@ namespace Typer.Domain.Services
         IEnumerable<Question> Filter(int lowWeight, int upWeight, int[] categories, string text);
 
         //Variants
-        IEnumerable<VariantSet> GetVariantSets(int questionId);
-        IEnumerable<VariantSet> GetVariantSets(int questionId, int languageId);
-        IEnumerable<VariantSet> GetVariantSets(int questionId, int[] languagesIds);
-        IEnumerable<Variant> GetVariants(int questionId, int languageId);
-        IEnumerable<Variant> GetVariants(int questionId, int[] languagesIds);
+        IEnumerable<VariantSet> GetVariantSets(int questionId, int[] languages);
         IEnumerable<Variant> GetVariants(int variantSetId);
-        IEnumerable<Variant> GetVariantsWithDetails(int variantSetId);
-        IEnumerable<Variant> GetVariantsWithDetails(int questionId, int languageId);
-        IEnumerable<Variant> GetVariantsWithDetails(int questionId, int[] languagesIds);
+        //IEnumerable<VariantSet> GetVariantSetsWithDetails(int questionId);
+        //IEnumerable<VariantSet> GetVariantSetsWithDetails(int questionId, int languageId);
+        //IEnumerable<VariantSet> GetVariantSetsWithDetails(int questionId, int[] languagesIds);
+        //IEnumerable<Variant> GetVariants(int questionId, int languageId);
+        //IEnumerable<Variant> GetVariants(int questionId, int[] languagesIds);
+        //IEnumerable<Variant> GetVariantsWithDetails(int variantSetId);
+        //IEnumerable<Variant> GetVariantsWithDetails(int questionId, int languageId);
+        //IEnumerable<Variant> GetVariantsWithDetails(int questionId, int[] languagesIds);
 
     }
 }

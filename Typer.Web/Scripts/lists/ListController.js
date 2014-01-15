@@ -1210,7 +1210,7 @@ QuestionEditEntity.prototype.loadOptions = function () {
     }
 };
 QuestionEditEntity.prototype.loadVariants = function () {
-    var variants = my.questions.getVariants(this.id, this.getLanguagesIds());
+    var variants = my.questions.getVariantSets(this.id, this.getLanguagesIds());
     for (var i = 0; i < variants.length; i++) {
         var object = variants[i];
         var variant = new Variant(this, object);

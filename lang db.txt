@@ -451,3 +451,19 @@ CREATE TABLE [dbo].[VariantDependences] (
     FOREIGN KEY ([DependentSetId]) REFERENCES [dbo].[VariantSets] ([Id]),
     CONSTRAINT [Dependence_Different_Variants] CHECK ([VariantSetId]<>[DependentSetId])
 );
+
+
+CREATE TABLE [dbo].[VariantLimits] (
+    [Id]                 INT      IDENTITY (1, 1) NOT NULL,
+    [QuestionId]	 INT	  NOT NULL,
+    [VariantId]          INT      NOT NULL,
+    [ConnectedVariantId] INT      NOT NULL,
+    [IsActive]           BIT      DEFAULT ((1)) NOT NULL,
+    [CreatorId]          INT      NOT NULL,
+    [CreateDate]         DATETIME DEFAULT (getdate()) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [Unique_Variant_Limit] UNIQUE NONCLUSTERED ([VariantId] ASC, [ConnectedVariantId] ASC),
+    FOREIGN KEY ([VariantId]) REFERENCES [dbo].[Variants] ([Id]),
+    FOREIGN KEY ([ConnectedVariantId]) REFERENCES [dbo].[Variants] ([Id]),
+    CONSTRAINT [Different_Limits] CHECK ([VariantId]<>[ConnectedVariantId])
+);

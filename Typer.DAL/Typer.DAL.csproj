@@ -65,9 +65,10 @@
     <Compile Include="TransferObjects\GrammarFormDto.cs" />
     <Compile Include="TransferObjects\QuestionCategoryDto.cs" />
     <Compile Include="TransferObjects\MetawordDto.cs" />
-    <Compile Include="TransferObjects\VariantConstraintDto.cs" />
+    <Compile Include="TransferObjects\VariantDependencyDto.cs" />
+    <Compile Include="TransferObjects\VariantLimitDto.cs" />
     <Compile Include="TransferObjects\VariantDto.cs" />
-    <Compile Include="TransferObjects\VariantLinkDto.cs" />
+    <Compile Include="TransferObjects\VariantConnectionDto.cs" />
     <Compile Include="TransferObjects\VariantSetDto.cs" />
     <Compile Include="TransferObjects\WordCategoryDto.cs" />
     <Compile Include="TransferObjects\WordDto.cs" />

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.Repositories;
@@ -128,35 +129,6 @@ namespace Typer.Domain.Services
 
         }
 
-        public IEnumerable<VariantSet> GetVariantSets(int questionId)
-        {
-            var dtos = _repository.GetVariantSets(questionId);
-            return dtos.Select(VariantSetFromDto).ToList();
-        }
-
-        public IEnumerable<VariantSet> GetVariantSets(int questionId, int languageId)
-        {
-            var dtos = _repository.GetVariantSets(questionId, languageId);
-            return dtos.Select(VariantSetFromDto).ToList();
-        }
-
-        public IEnumerable<VariantSet> GetVariantSets(int questionId, int[] languagesIds)
-        {
-            var dtos = _repository.GetVariantSets(questionId, languagesIds);
-            return dtos.Select(VariantSetFromDto).ToList();
-        }
-
-        public IEnumerable<Variant> GetVariants(int questionId, int languageId)
-        {
-            var dtos = _repository.GetVariants(questionId, languageId);
-            return dtos.Select(VariantFromDto).ToList();
-        }
-
-        public IEnumerable<Variant> GetVariants(int questionId, int[] languagesIds)
-        {
-            var dtos = _repository.GetVariants(questionId, languagesIds);
-            return dtos.Select(VariantFromDto).ToList();
-        }
 
         public IEnumerable<Variant> GetVariants(int variantSetId)
         {
@@ -164,20 +136,48 @@ namespace Typer.Domain.Services
             return dtos.Select(VariantFromDto).ToList();
         }
 
-        public IEnumerable<Variant> GetVariantsWithDetails(int variantSetId)
+
+        public IEnumerable<VariantSet> GetVariantSets(int questionId, int[] languages)
         {
-            throw new System.NotImplementedException();
+            var dtos = _repository.GetVariantSets(questionId, languages);
+            var setMap = new Dictionary<int, VariantSet>();
+            var sets = new List<VariantSet>();
+            var variantMap = new Dictionary<int, Variant>();
+            
+            foreach (var set in dtos.Select(VariantSetFromDto))
+            {
+                var variants = GetVariants(set.Id);
+
+                foreach (var variant in variants)
+                {
+                    variantMap.Add(variant.Id, variant);
+                    set.AddVariant(variant);
+                }
+
+                sets.Add(set);
+                setMap.Add(set.Id, set);
+            }
+
+
+            //Load limits
+            var limits = _repository.GetVariantConstraintsForVariant()
+            if (!CategoriesMap.ContainsKey(RootID)) return;
+            Category root;
+            if (!CategoriesMap.TryGetValue(RootID, out root)) return;
+            Root = root;
+            
+            //Load dependencies
+
+
+            //Load relations
+
+
+
+            return sets;
+
         }
 
-        public IEnumerable<Variant> GetVariantsWithDetails(int questionId, int languageId)
-        {
-            throw new System.NotImplementedException();
-        }
 
-        public IEnumerable<Variant> GetVariantsWithDetails(int questionId, int[] languagesIds)
-        {
-            throw new System.NotImplementedException();
-        }
 
 
         private static Question QuestionFromDto(QuestionDto dto)
