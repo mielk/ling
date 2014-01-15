@@ -1196,8 +1196,11 @@ function QuestionEditEntity(properties) {
 }
 extend(EditEntity, QuestionEditEntity);
 QuestionEditEntity.prototype.loadItems = function () {
+    this.loadOptions();
+    this.loadVariants();
+};
+QuestionEditEntity.prototype.loadOptions = function () {
     var options = my.questions.getOptions(this.id, this.getLanguagesIds());
-
     for (var i = 0; i < options.length; i++) {
         var object = options[i];
         var option = new Option(this, object);
@@ -1205,7 +1208,16 @@ QuestionEditEntity.prototype.loadItems = function () {
         var language = this.languages.getItem(languageId);
         language.addItem(option);
     }
-
+};
+QuestionEditEntity.prototype.loadVariants = function () {
+    var variants = my.questions.getVariants(this.id, this.getLanguagesIds());
+    for (var i = 0; i < variants.length; i++) {
+        var object = variants[i];
+        var variant = new Variant(this, object);
+        var languageId = variant.getLanguageId();
+        var language = this.languages.getItem(languageId);
+        language.addVariant(variant);
+    }
 };
 QuestionEditEntity.prototype.newItem = function (languageId) {
     return new Option(this, {
@@ -1222,6 +1234,7 @@ function LanguageEntity(parent, language) {
     this.parent = parent;
     this.language = language;
     this.items = [];
+    this.variants = [];
 }
 LanguageEntity.prototype.addItem = function (option) {
     this.items.push(option);

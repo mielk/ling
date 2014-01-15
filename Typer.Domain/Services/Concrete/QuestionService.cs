@@ -130,32 +130,38 @@ namespace Typer.Domain.Services
 
         public IEnumerable<VariantSet> GetVariantSets(int questionId)
         {
-            throw new System.NotImplementedException();
+            var dtos = _repository.GetVariantSets(questionId);
+            return dtos.Select(VariantSetFromDto).ToList();
         }
 
         public IEnumerable<VariantSet> GetVariantSets(int questionId, int languageId)
         {
-            throw new System.NotImplementedException();
+            var dtos = _repository.GetVariantSets(questionId, languageId);
+            return dtos.Select(VariantSetFromDto).ToList();
         }
 
         public IEnumerable<VariantSet> GetVariantSets(int questionId, int[] languagesIds)
         {
-            throw new System.NotImplementedException();
+            var dtos = _repository.GetVariantSets(questionId, languagesIds);
+            return dtos.Select(VariantSetFromDto).ToList();
         }
 
         public IEnumerable<Variant> GetVariants(int questionId, int languageId)
         {
-            throw new System.NotImplementedException();
+            var dtos = _repository.GetVariants(questionId, languageId);
+            return dtos.Select(VariantFromDto).ToList();
         }
 
         public IEnumerable<Variant> GetVariants(int questionId, int[] languagesIds)
         {
-            throw new System.NotImplementedException();
+            var dtos = _repository.GetVariants(questionId, languagesIds);
+            return dtos.Select(VariantFromDto).ToList();
         }
 
         public IEnumerable<Variant> GetVariants(int variantSetId)
         {
-            throw new System.NotImplementedException();
+            var dtos = _repository.GetVariants(variantSetId);
+            return dtos.Select(VariantFromDto).ToList();
         }
 
         public IEnumerable<Variant> GetVariantsWithDetails(int variantSetId)

@@ -167,16 +167,22 @@ namespace Typer.Web.Controllers
         }
 
 
-
-
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult getOptions(int id, int[] languages)
+        public ActionResult GetOptions(int id, int[] languages)
         {
             var words = _service.GetOptions(id, languages);
             return Json(words, JsonRequestBehavior.AllowGet);
         }
 
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult GetVariants(int id, int[] languages)
+        {
+            var words = _service.GetVariantsWithDetails(id, languages);
+            return Json(words, JsonRequestBehavior.AllowGet);
+        }
         
 
     }
