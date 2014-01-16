@@ -186,7 +186,7 @@ namespace Typer.Domain.Services
                 if (!setMap.TryGetValue(dependency.DependantSetId, out dependant)) continue;
 
                 parent.AddDependant(dependant);
-                dependant.Parent = parent;
+                dependant.ParentId = parent.Id;
 
             }
 
@@ -278,7 +278,7 @@ namespace Typer.Domain.Services
                 Negative = dto.Negative,
                 Positive = dto.Positive,
                 VariantSetId = dto.VariantSetId,
-                WordId = dto.WordId
+                WordId = dto.WordId ?? 0
             };
         }
 

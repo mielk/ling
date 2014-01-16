@@ -1210,14 +1210,23 @@ QuestionEditEntity.prototype.loadOptions = function () {
     }
 };
 QuestionEditEntity.prototype.loadVariants = function () {
+    this.variants = new HashTable(null);
+    
     var variants = my.questions.getVariantSets(this.id, this.getLanguagesIds());
     for (var i = 0; i < variants.length; i++) {
         var object = variants[i];
-        var variant = new Variant(this, object);
-        var languageId = variant.getLanguageId();
+        var variantSet = new VariantSet(this, object);
+        this.variants.setItem(variantSet.id, variantSet);
+        //Add to proper language.
+        var languageId = variantSet.getLanguageId();
         var language = this.languages.getItem(languageId);
-        language.addVariant(variant);
+        language.addVariantSet(variantSet);
     }
+
+    this.variants.each(function(key, value) {
+        value.createDetails();
+    });
+
 };
 QuestionEditEntity.prototype.newItem = function (languageId) {
     return new Option(this, {
@@ -1226,6 +1235,38 @@ QuestionEditEntity.prototype.newItem = function (languageId) {
     });
 };
 
+
+
+
+function VariantSet(editEntity, properties) {
+    this.VariantSet = true;
+    var self = this;
+    self.editEntity = editEntity;
+    self.id = properties.Id;
+    self.languageId = properties.LanguageId;
+    self.tag = properties.VariantTag;
+    self.params = properties.Params;
+
+    self.raw = {
+        variants: properties.Variants,
+        related: properties.Related,
+        dependants: properties.Dependants
+    };
+
+}
+VariantSet.prototype.createDetails = function() {
+
+};
+VariantSet.prototype.getLanguageId = function() {
+    return this.languageId;
+};
+
+
+
+
+function Variant(editEntity, properties) {
+    
+}
 
 
 
@@ -1239,6 +1280,9 @@ function LanguageEntity(parent, language) {
 LanguageEntity.prototype.addItem = function (option) {
     this.items.push(option);
     option.injectLanguageEntity(this);
+};
+LanguageEntity.prototype.addVariantSet = function(variantSet) {
+    this.variants.push(variantSet);
 };
 LanguageEntity.prototype.remove = function (item) {
     this.items = my.array.remove(this.items, item);
@@ -1541,7 +1585,7 @@ Option.prototype.editItem = function () {
 Option.prototype.updateProperties = function () {
     
 };
-Option.prototype.updateDetails = function (details) {
+Option.prototype.updateDetails = function () {
 
 };
 Option.prototype.loadProperties = function () {

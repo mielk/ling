@@ -16,15 +16,18 @@ namespace Typer.Domain.Entities
         public int CreatorId { get; set; }
         public DateTime CreateDate { get; set; }
         public List<Variant> Variants { get; set; }
-        public List<VariantSet> Related { get; set; }
-        public List<VariantSet> Dependants { get; set; }
-        public VariantSet Parent { get; set; }
+        //public List<VariantSet> Related { get; set; }
+        public List<int> Related { get; set; } 
+        //public List<VariantSet> Dependants { get; set; }
+        public List<int> Dependants { get; set; }
+        //public VariantSet Parent { get; set; }
+        public int ParentId { get; set; }
 
         public VariantSet()
         {
             Variants = new List<Variant>();
-            Related = new List<VariantSet>();
-            Dependants = new List<VariantSet>();
+            Related = new List<int>();
+            Dependants = new List<int>();
         }
 
         public void AddVariant(Variant variant)
@@ -34,12 +37,12 @@ namespace Typer.Domain.Entities
 
         public void AddRelated(VariantSet set)
         {
-            Related.Add(set);
+            Related.Add(set.Id);
         }
 
         public void AddDependant(VariantSet set)
         {
-            Dependants.Add(set);
+            Dependants.Add(set.Id);
         }
 
 

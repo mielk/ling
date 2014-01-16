@@ -17,16 +17,17 @@ namespace Typer.Domain.Entities
         public bool IsApproved { get; set; }
         public int Negative { set; get; }
         public int Positive { get; set; }
-        public List<Variant> Excluded { get; set; }
+        //public List<Variant> Excluded { get; set; }
+        public List<int> Excluded { get; set; }
 
         public Variant()
         {
-            Excluded = new List<Variant>();
+            Excluded = new List<int>();
         }
 
         public void AddExcluded(Variant variant)
         {
-            Excluded.Add(variant);
+            Excluded.Add(variant.Id);
         }
 
 
