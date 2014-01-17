@@ -858,6 +858,7 @@ extend(Entity, Metaword);
 Metaword.prototype.editItem = function () {
     var self = this;
     return new WordEditEntity({
+        object: self,
         id: self.id,
         name: self.name,
         wordtype: self.wordtype,
@@ -999,6 +1000,7 @@ extend(Entity, Question);
 Question.prototype.editItem = function () {
     var self = this;
     return new QuestionEditEntity({
+        object: self,
         id: self.id,
         name: self.name,
         weight: self.weight,
@@ -1076,6 +1078,7 @@ Question.prototype.editPanel = function (editItem) {
 
 function EditEntity(properties) {
     this.EditEntity = true;
+    this.object = properties.object;
     this.id = properties.id;
     this.name = properties.name;
     this.weight = properties.weight;
@@ -1237,6 +1240,14 @@ QuestionEditEntity.prototype.newItem = function (languageId) {
 };
 QuestionEditEntity.prototype.getVariantSet = function(key) {
     return this.variantsSets.getItem(key);
+};
+QuestionEditEntity.prototype.editVariants = function () {
+    var self = this;
+    var variantPanel = new VariantPanel({        
+        question: self.object,
+        editQuestion: self
+    });
+    variantPanel.display();
 };
 
 
@@ -2577,7 +2588,9 @@ QuestionEditPanel.prototype.render = function () {
     });
     this.meta.addLine(variantLine);
 };
-
+QuestionEditPanel.prototype.editVariants = function () {
+    this.editObject.editVariants();
+};
 
    
 function EditDataLine(panel, properties) {
@@ -3317,8 +3330,8 @@ function VariantButtonsPanel(object) {
         }).appendTo(container);
 
         button.bind({
-            click: function(e) {
-                alert('Variants edit');
+            click: function () {
+                self.object.editVariants();
             }
         });
 
@@ -3578,5 +3591,143 @@ extend(EditOptionPanel, QuestionOptionEditPanel);
 function VariantPanel(properties) {
     this.VariantPanel = true;
     var self = this;
-    self.edit = properties.question;
+    self.question = properties.question;
+    self.editQuestion = properties.editQuestion;
+    
+    this.validator = (function () {
+        var invalid = new HashTable(null);
+
+        return {
+            validation: function (e) {
+                if (e.status) {
+                    invalid.removeItem(e.id);
+                } else {
+                    invalid.setItem(e.id, e.id);
+                }
+
+                self.editQuestion.trigger({
+                    type: 'variantsValidation',
+                    status: invalid.size() === 0
+                });
+
+            }
+        };
+
+    })();
+
+    this.ui = (function () {
+        var background = jQuery('<div/>', {
+            'class': 'edit-background',
+            'z-index': my.ui.addTopLayer()
+        }).appendTo($(document.body));
+
+        var frame = jQuery('<div/>', {
+            'class': 'edit-frame'
+        }).appendTo($(background));
+
+        var container = jQuery('<div/>', {
+            'class': 'edit-container'
+        }).appendTo($(frame));
+
+        // ReSharper disable once UnusedLocals
+        var close = jQuery('<div/>', {
+            'class': 'edit-close'
+        }).bind({
+            'click': function () {
+                self.cancel();
+            }
+        }).appendTo($(frame));
+
+        return {
+            display: function () {
+                $(background).css({
+                    'visibility': 'visible',
+                    'z-index': my.ui.addTopLayer()
+                });
+            },
+            hide: function () {
+                $(background).css({
+                    'visibility': 'hidden'
+                });
+            },
+            destroy: function () {
+                $(background).remove();
+            },
+            append: function (element) {
+                $(element).appendTo($(container));
+            }
+        };
+
+    })();
+
+    //content
+
+    this.buttons = (function () {
+        var panel = jQuery('<div/>', {
+            'class': 'edit-buttons-panel'
+        });
+
+        var container = jQuery('<div/>', {
+            'class': 'edit-buttons-container'
+        }).appendTo($(panel));
+
+        var ok = jQuery('<input/>', {
+            'class': 'edit-button',
+            'type': 'submit',
+            'value': 'OK'
+        }).bind({
+            'click': function () {
+                self.confirm();
+            }
+        }).appendTo($(container));
+
+        // ReSharper disable once UnusedLocals
+        var cancel = jQuery('<input/>', {
+            'class': 'edit-button',
+            'type': 'submit',
+            'value': 'Cancel'
+        }).bind({
+            'click': function () {
+                self.cancel();
+            }
+        }).appendTo($(container));
+
+        self.ui.append(panel);
+
+        self.editQuestion.bind({
+            variantsValidation: function (e) {
+                if (e.status) {
+                    $(ok).removeAttr('disabled');
+                } else {
+                    $(ok).attr('disabled', 'disabled');
+                }
+            }
+        });
+
+    })();
+
+
 }
+VariantPanel.prototype.display = function () {
+    this.ui.display();
+};
+VariantPanel.prototype.cancel = function () {
+    this.ui.destroy();
+};
+VariantPanel.prototype.confirm = function () {
+    //this.object.update(this.editObject, this.properties, this.details, this.isComplete());
+    this.ui.destroy();
+};
+VariantPanel.prototype.isComplete = function () {
+    //var forms = this.details.forms;
+    //var complete = true;
+    //forms.each(function (key, value) {
+    //    if (complete && value.active && !value.header && !value.value) {
+    //        complete = false;
+    //    }
+    //});
+    //return complete;
+};
+VariantPanel.prototype.start = function () {
+    this.display();
+};
