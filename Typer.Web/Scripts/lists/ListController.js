@@ -1355,9 +1355,6 @@ LanguageEntity.prototype.remove = function (item) {
 
 
 
-
-
-
 function OptionEntity(entity, properties) {
     this.OptionEntity = true;
     this.service = null;
@@ -2572,7 +2569,13 @@ function QuestionEditPanel(object, editObject) {
 }
 extend(EditPanel, QuestionEditPanel);
 QuestionEditPanel.prototype.render = function () {
-    //alert('Not implemented yet');
+    //[Button for running variant panel]
+    var variantButtonsPanel = new VariantButtonsPanel(this, self.editObject);
+    var variantLine = new EditDataLine(this, {
+        property: 'editVariants', label: '', 
+        panel: variantButtonsPanel.view(), editable: true
+    });
+    this.meta.addLine(variantLine);
 };
 
 
@@ -3232,6 +3235,8 @@ CategoryPanel.prototype.view = function () {
     return this.ui.view();
 };
 
+
+
 function WordtypePanel(line, object) {
     var self = this;
     this.WordtypePanel = true;
@@ -3292,6 +3297,43 @@ WordtypePanel.prototype.view = function () {
 WordtypePanel.prototype.injectEditLine = function (editLine) {
     this.line = editLine;
     this.line.value = this.value;
+};
+
+
+function VariantButtonsPanel(object) {
+    var self = this;
+    self.VariantButtonsPanel = true;
+    self.object = object;
+
+    self.ui = (function () {
+        var container = jQuery('<div/>', {
+            'class': 'variant-button-edit-container'
+        });
+
+        var button = jQuery('<input/>', {
+            'class': 'variant-button-edit',
+            'type': 'submit',
+            'value': 'Edit variants'
+        }).appendTo(container);
+
+        button.bind({
+            click: function(e) {
+                alert('Variants edit');
+            }
+        });
+
+
+        return {
+            view: function () {
+                return container;
+            }
+        };
+
+    })();
+
+}
+VariantButtonsPanel.prototype.view = function () {
+    return this.ui.view();
 };
 
 
@@ -3530,3 +3572,11 @@ function QuestionOptionEditPanel(object, editObject, line) {
     this.QuestionOptionEditPanel = true;
 }
 extend(EditOptionPanel, QuestionOptionEditPanel);
+
+
+
+function VariantPanel(properties) {
+    this.VariantPanel = true;
+    var self = this;
+    self.edit = properties.question;
+}

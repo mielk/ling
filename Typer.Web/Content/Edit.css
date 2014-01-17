@@ -1241,8 +1241,27 @@ label.value {
 }
 
 
+.variant-button-edit-container {
+    display: block;
+    float: left;
+    height: 34px;
+    width: 200px;
+    overflow: hidden;
+    background-color: green;
+    padding: 0;
+    border: 1px solid #777;
+}
 
-
+input[type=submit].variant-button-edit {
+    display: block;
+    float: left;
+    height: 100%;
+    width: 100%;
+    padding: 10px;
+    margin: 0;
+    line-height: 14px;
+    border: none;
+}
 
 /*label {
         display: table-cell;    width: 120px;    height: 34px;    line-height: 100%;    font-size: 13px;    font-weight: bold;    padding-left: 12px;    vertical-align: middle;
