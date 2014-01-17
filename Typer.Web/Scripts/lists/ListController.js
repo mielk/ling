@@ -1210,20 +1210,21 @@ QuestionEditEntity.prototype.loadOptions = function () {
     }
 };
 QuestionEditEntity.prototype.loadVariants = function () {
-    this.variants = new HashTable(null);
+    this.variantsSets = new HashTable(null);
     
-    var variants = my.questions.getVariantSets(this.id, this.getLanguagesIds());
-    for (var i = 0; i < variants.length; i++) {
-        var object = variants[i];
+    var variantsSets = my.questions.getVariantSets(this.id, this.getLanguagesIds());
+    for (var i = 0; i < variantsSets.length; i++) {
+        var object = variantsSets[i];
         var variantSet = new VariantSet(this, object);
-        this.variants.setItem(variantSet.id, variantSet);
+        this.variantsSets.setItem(variantSet.id, variantSet);
         //Add to proper language.
         var languageId = variantSet.getLanguageId();
         var language = this.languages.getItem(languageId);
+        variantSet.language = language;
         language.addVariantSet(variantSet);
     }
 
-    this.variants.each(function(key, value) {
+    this.variantsSets.each(function (key, value) {
         value.createDetails();
     });
 
@@ -1234,8 +1235,9 @@ QuestionEditEntity.prototype.newItem = function (languageId) {
         'new': true
     });
 };
-
-
+QuestionEditEntity.prototype.getVariantSet = function(key) {
+    return this.variantsSets.getItem(key);
+};
 
 
 function VariantSet(editEntity, properties) {
@@ -1246,7 +1248,7 @@ function VariantSet(editEntity, properties) {
     self.languageId = properties.LanguageId;
     self.tag = properties.VariantTag;
     self.params = properties.Params;
-
+    
     self.raw = {
         variants: properties.Variants,
         related: properties.Related,
@@ -1254,20 +1256,66 @@ function VariantSet(editEntity, properties) {
     };
 
 }
-VariantSet.prototype.createDetails = function() {
-
+VariantSet.prototype.createDetails = function () {
+    this.loadVariants(this.raw.variants);
+    this.loadConnections(this.raw.related);
+    this.loadDependants(this.raw.dependants);
+    this.variants.each(function(key, value) {
+        value.loadLimits();
+    });
+};
+VariantSet.prototype.loadVariants = function (variants) {
+    var self = this;
+    this.variants = new HashTable(null);
+    for (var i = 0; i < variants.length; i++) {
+        var object = variants[i];
+        var variant = new Variant(self.editEntity, self, object);
+        self.variants.setItem(variant.id, variant);
+        self.language.addVariant(variant);
+    }
+};
+VariantSet.prototype.loadConnections = function (connections) {
+    this.connections = new HashTable(null);
+    for (var i = 0; i < connections.length; i++) {
+        var connection = this.editEntity.getVariantSet(connections[i]);
+        if (connection) {
+            this.connections.setItem(connection.id, connection);
+        }
+    }
+};
+VariantSet.prototype.loadDependants = function (dependants) {
+    var self = this;
+    self.dependants = new HashTable(null);
+    for (var i = 0; i < dependants.length; i++) {
+        var dependant = self.editEntity.getVariantSet(dependants[i]);
+        if (dependant) {
+            self.dependants.setItem(dependant.id, dependant);
+            dependant.setParent(self);
+        }
+    }
+};
+VariantSet.prototype.setParent = function(set) {
+    this.parent = set;
 };
 VariantSet.prototype.getLanguageId = function() {
     return this.languageId;
 };
 
 
-
-
-function Variant(editEntity, properties) {
-    
+function Variant(editEntity, set, properties) {
+    this.Variant = true;
+    var self = this;
+    self.editEntity = editEntity;
+    self.set = set;
+    self.language = set.language;
+    self.id = properties.Id;
+    self.key = properties.Key;
+    self.content = properties.Content;
+    self.wordId = properties.wordId;
 }
-
+Variant.prototype.loadLimits = function() {
+    this.excluded = new HashTable(null);
+};
 
 
 function LanguageEntity(parent, language) {
@@ -1275,14 +1323,21 @@ function LanguageEntity(parent, language) {
     this.parent = parent;
     this.language = language;
     this.items = [];
-    this.variants = [];
+    this.variantSets = [];
+    this.variants = new HashTable(null);
 }
 LanguageEntity.prototype.addItem = function (option) {
     this.items.push(option);
     option.injectLanguageEntity(this);
 };
 LanguageEntity.prototype.addVariantSet = function(variantSet) {
-    this.variants.push(variantSet);
+    this.variantSets.push(variantSet);
+};
+LanguageEntity.prototype.addVariant = function(variant) {
+    this.variants.setItem(variant.id, variant);
+};
+LanguageEntity.prototype.getVariant = function(key) {
+    return this.variants.getItem(key);
 };
 LanguageEntity.prototype.remove = function (item) {
     this.items = my.array.remove(this.items, item);
