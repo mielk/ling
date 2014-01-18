@@ -467,3 +467,18 @@ CREATE TABLE [dbo].[VariantLimits] (
     FOREIGN KEY ([ConnectedVariantId]) REFERENCES [dbo].[Variants] ([Id]),
     CONSTRAINT [Different_Limits] CHECK ([VariantId]<>[ConnectedVariantId])
 );
+
+
+CREATE TABLE [dbo].[VariantConnections] (
+    [Id]             INT      IDENTITY (1, 1) NOT NULL,
+    [VariantSetId]   INT      NOT NULL,
+    [ConnectedSetId] INT      NOT NULL,
+    [IsActive]       BIT      DEFAULT ((1)) NOT NULL,
+    [CreatorId]      INT      NOT NULL,
+    [CreateDate]     DATETIME DEFAULT (getdate()) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [Unique_Variant_Connection] UNIQUE NONCLUSTERED ([VariantSetId] ASC, [ConnectedSetId] ASC),
+    FOREIGN KEY ([VariantSetId]) REFERENCES [dbo].[VariantSets] ([Id]),
+    FOREIGN KEY ([ConnectedSetId]) REFERENCES [dbo].[VariantSets] ([Id]),
+    CONSTRAINT [Different_Variants] CHECK ([VariantSetId]<>[ConnectedSetId])
+);

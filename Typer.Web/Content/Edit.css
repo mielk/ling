@@ -1361,8 +1361,19 @@ input[type=submit].variant-button-edit {
     border: 1px solid #777;
     padding: 2px;
     margin: 6px;
-    background-color: rgb(255, 217, 152);
+    background-color: rgb(255, 251, 210);
     cursor: pointer;
+}
+
+.variant-set-block-inactive {
+    background-color: rgba(255, 255, 255, 0.4);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    visibility: hidden;
 }
 
 .variant-block-mover {

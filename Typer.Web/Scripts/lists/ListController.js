@@ -3773,7 +3773,7 @@ function VariantSubpanel(parent, name) {
         }).appendTo(header);
         
         var name = jQuery('<div/>', {
-            'class': 'variant-subpanel-name',
+            'class': 'unselectable variant-subpanel-name',
             html: self.name
         }).appendTo(header);
 
@@ -3834,7 +3834,6 @@ function VariantConnectionsManager(parent) {
 
     //TODO
     /*
-        - żeby tagi variantsetów oraz nazwy kategorii nie zaznaczały się podczas przesuwania aktywnego seta
         - przy releasie aktywnego taga - jest wrzucany do aktywnej grupy, lub jeżeli jest pomiędzy grupami - nic się nie dzieje
         - wyświetlanie ikony krzyżyka, jeżeli aktywny tag znajduje się pomiędzy grupami.
         - jeżeli grupa miała tylko jeden tag i został on usunięty - grupa również jest usuwana
@@ -3855,6 +3854,7 @@ function VariantConnectionsManager(parent) {
             if (self.activeGroup) {
                 if (self.activeGroup.isHovered(x, y) === false) {
                     self.activeGroup.deactivate();
+                    self.activeBlock.overEmpty();
                 }
             } else {
                 self.groups.each(function (key, value) {
@@ -3863,10 +3863,10 @@ function VariantConnectionsManager(parent) {
                         var active = value.isHovered(x, y);
                         if (active) {
                             value.activate();
+                            self.activeBlock.overGroup();
                         }
                     }
                 });
-                //look for next active;
             }
 
         }
@@ -3906,11 +3906,11 @@ function VariantConnectionsManager(parent) {
             });
 
             var flag = jQuery('<div/>', {
-                'class': 'flag ' + set.language.language.flag + '-small'
+                'class': 'unselectable flag ' + set.language.language.flag + '-small'
             }).appendTo(container);
 
             var name = jQuery('<div/>', {
-                'class': 'name',
+                'class': 'unselectable name',
                 html: set.tag
             }).appendTo(container);
 
@@ -3959,14 +3959,25 @@ function VariantConnectionsManager(parent) {
                 'left': $left + 'px',
             }).appendTo(self.panel);
 
+            var content = jQuery('<div/>').
+                css({
+                    'position': 'relative',
+                    'width': '100%',
+                    'height': '100%'
+                }).appendTo(container);
+
             var flag = jQuery('<div/>', {
                 'class': 'flag ' + set.language.language.flag + '-small'
-            }).appendTo(container);
+            }).appendTo(content);
 
             var name = jQuery('<div/>', {
                 'class': 'name',
                 html: set.tag
-            }).appendTo(container);
+            }).appendTo(content);
+
+            var inactive = jQuery('<div/>', {
+                'class': 'variant-set-block-inactive'
+            }).appendTo(content);
 
             function refresh() {
                 $(container).css({
@@ -3985,6 +3996,16 @@ function VariantConnectionsManager(parent) {
                     $(container).css({
                         'top': top + 'px',
                         'left': left + 'px'
+                    });
+                },
+                overEmpty: function () {
+                    $(inactive).css({
+                        'visibility' : 'visible'
+                    });
+                },
+                overGroup: function () {
+                    $(inactive).css({
+                        'visibility': 'hidden'
                     });
                 }
             }
@@ -4006,6 +4027,12 @@ function VariantConnectionsManager(parent) {
             },
             release: function () {
                 ui.deactivate();
+            },
+            overEmpty: function () {
+                if (mover) mover.overEmpty();
+            },
+            overGroup: function () {
+                if (mover) mover.overGroup();
             }
         }
 
