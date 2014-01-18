@@ -179,8 +179,12 @@
     <Content Include="Content\images\delete-node.png" />
     <Content Include="Content\images\delete.png" />
     <Content Include="Content\images\edit.png" />
+    <Content Include="Content\images\flags\esp_small.png" />
     <Content Include="Content\images\flags\GBR.png" />
+    <Content Include="Content\images\flags\gbr_small.png" />
+    <Content Include="Content\images\flags\ita_small.png" />
     <Content Include="Content\images\flags\POL.png" />
+    <Content Include="Content\images\flags\POL_small.png" />
     <Content Include="Content\images\gold_star.png" />
     <Content Include="Content\images\gray_star.png" />
     <Content Include="Content\images\green.png" />

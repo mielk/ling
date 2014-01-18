@@ -3826,6 +3826,262 @@ function VariantConnectionsManager(parent) {
     VariantSubpanel.call(this, parent, 'Connections');
     this.VariantConnectionsManager = true;
     var self = this;
+    self.panel = self.ui.content;
+    self.groups = new HashTable(null);      //connection groups
+    self.assigned = new HashTable(null);    //variant sets already assigned to connection group
+    self.activeBlock = null;
+    self.activeGroup = null;
+
+    //TODO
+    /*
+        - żeby tagi variantsetów oraz nazwy kategorii nie zaznaczały się podczas przesuwania aktywnego seta
+        - przy releasie aktywnego taga - jest wrzucany do aktywnej grupy, lub jeżeli jest pomiędzy grupami - nic się nie dzieje
+        - wyświetlanie ikony krzyżyka, jeżeli aktywny tag znajduje się pomiędzy grupami.
+        - jeżeli grupa miała tylko jeden tag i został on usunięty - grupa również jest usuwana
+        - jeżeli jakiś tag został wyrzucony z grupy, tworzy się nowa grupa, zawierająca ten tag
+    */
+
+
+    $(self.panel).bind({
+        mousemove: function (e) {
+
+            if (!self.activeBlock) return;
+
+            var x = e.pageX;
+            var y = e.pageY;
+
+            self.activeBlock.move(x, y);
+
+            if (self.activeGroup) {
+                if (self.activeGroup.isHovered(x, y) === false) {
+                    self.activeGroup.deactivate();
+                }
+            } else {
+                self.groups.each(function (key, value) {
+                    var active = false;
+                    if (!active) {
+                        var active = value.isHovered(x, y);
+                        if (active) {
+                            value.activate();
+                        }
+                    }
+                });
+                //look for next active;
+            }
+
+        }
+    });
+
+    $(document).bind({
+        mouseup: function () {
+            if (self.activeBlock) {
+                self.activeBlock.release();
+            }
+
+            if (self.activeGroup) {
+                self.activeGroup.deactivate();
+            }
+
+        }
+    });
+
+
+    var setBlock = function (set) {
+        var group = null;
+        var $self = null;
+        var $set = set;
+        var $active = false;
+        var mover = null;
+
+        var ui = (function () {
+            var container = jQuery('<div/>', {
+                'class': 'variant-set-block'
+            });
+            container.bind({
+                mousedown: function (e) {
+                    $active = true;
+                    self.activeBlock = $self;
+                    refresh(e);
+                }
+            });
+
+            var flag = jQuery('<div/>', {
+                'class': 'flag ' + set.language.language.flag + '-small'
+            }).appendTo(container);
+
+            var name = jQuery('<div/>', {
+                'class': 'name',
+                html: set.tag
+            }).appendTo(container);
+
+            function refresh(e) {
+
+                $(container).css({
+                    'visibility': ($active ? 'hidden' : 'visible')
+                });
+
+                if ($active) {
+                    var blockOffset = $(container).offset();
+                    var panelOffset = $(self.panel).offset();
+                    var offset = {
+                        left: blockOffset.left - panelOffset.left,
+                        top: blockOffset.top - panelOffset.top
+                    };
+                    mover = shadow(e.pageX, e.pageY, offset);
+                } else {
+                    mover.destroy();
+                    mover = null;
+                }
+
+            }
+
+            return {
+                container: container,
+                deactivate: function () {
+                    $active = false;
+                    if (self.activeBlock === $self) self.activeBlock = null;
+                    refresh();
+                }
+            }
+
+        })();
+
+        var shadow = function (x, y, offset) {
+            var $x = x;
+            var $y = y;
+            var $top = offset.top;
+            var $left = offset.left;
+
+            var container = jQuery('<div/>', {
+                'class': 'variant-set-block variant-block-mover'
+            }).css({
+                'top': $top + 'px',
+                'left': $left + 'px',
+            }).appendTo(self.panel);
+
+            var flag = jQuery('<div/>', {
+                'class': 'flag ' + set.language.language.flag + '-small'
+            }).appendTo(container);
+
+            var name = jQuery('<div/>', {
+                'class': 'name',
+                html: set.tag
+            }).appendTo(container);
+
+            function refresh() {
+                $(container).css({
+                    'visibility': ($active ? 'hidden' : 'visible')
+                });
+            }
+
+            return {
+                container: container,
+                destroy: function () {
+                    $(container).remove();
+                },
+                move: function (x, y) {
+                    var left = $left + (x - $x);
+                    var top = $top + (y - $y);
+                    $(container).css({
+                        'top': top + 'px',
+                        'left': left + 'px'
+                    });
+                }
+            }
+        };
+
+        return {
+            selfinject: function (me) {
+                $self = me;
+            },
+            setGroup: function ($group) {
+                group = $group;
+            },
+            id: $set.id,
+            view: function () {
+                return ui.container;
+            },
+            move: function (x, y) {
+                mover.move(x, y);
+            },
+            release: function () {
+                ui.deactivate();
+            }
+        }
+
+    }
+
+    var connectionGroup = function (index) {
+        var $self = null;
+        var $index = index;
+        var $blocks = new HashTable(null);
+        var $active = false;
+
+        var container = jQuery('<div/>', {
+            'class': 'variant-connection-group'
+        }).appendTo(self.panel);
+
+
+        function refresh() {
+            if ($active) {
+                $(container).addClass('connection-group-active');
+            } else {
+                $(container).removeClass('connection-group-active');
+            }
+            
+        }
+
+        function isHovered(x, y){
+            var offset = $(container).offset();
+            var left = offset.left;
+            var top = offset.top;
+            var right = left + $(container).width();
+            var bottom = top + $(container).height();
+
+            return (x >= left && x <= right && y >= top && y <= bottom);
+
+        }
+
+        return {
+            selfinject: function (me) {
+                $self = me;
+            },
+            id: $index,
+            addBlock: function (block) {
+                $blocks.setItem(block.id, block);
+                block.setGroup($self);
+                block.view().appendTo(container);
+            },
+            activate: function () {
+                self.activeGroup = $self;
+                $active = true;
+                refresh();
+            },
+            deactivate: function () {
+                if (self.activeGroup === $self) {
+                    self.activeGroup = null;
+                    $active = false;
+                    refresh();
+                }
+            },
+            isHovered: function(x, y){
+                return isHovered(x, y);
+            }
+        }
+
+    }
+
+    self.editQuestion.variantsSets.each(function (key, value) {
+        var block = setBlock(value);
+        block.selfinject(block);
+        if (!self.assigned.hasItem(value.id)) {
+            var group = connectionGroup(value.id);
+            group.selfinject(group);
+            self.groups.setItem(group.id, group);
+            group.addBlock(block);
+        }
+    });
+
 }
 extend(VariantSubpanel, VariantConnectionsManager);
 

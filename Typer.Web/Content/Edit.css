@@ -943,16 +943,32 @@ a.checked
     background-image: url('images/flags/pol.png') !important;
 }
 
+.pl-small {
+    background-image: url('images/flags/pol_small.png') !important;
+}
+
 .uk {
     background-image: url('images/flags/gbr.png') !important;
+}
+
+.uk-small {
+    background-image: url('images/flags/gbr_small.png') !important;
 }
 
 .es {
     background-image: url('images/flags/esp.png') !important;
 }
 
+.es-small {
+    background-image: url('images/flags/esp_small.png') !important;
+}
+
 .it {
     background-image: url('images/flags/ita.png') !important;
+}
+
+.it-small {
+    background-image: url('images/flags/ita_small.png') !important;
 }
 
 .language .name
@@ -1273,11 +1289,13 @@ input[type=submit].variant-button-edit {
     margin-bottom: 12px;
     background-color: white;
     border: 1px solid #ccc;
+    overflow: hidden;
 }
 
 .variant-subpanel div {
     display: block;
     float: left;
+    position: relative;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -1310,7 +1328,58 @@ input[type=submit].variant-button-edit {
 }
 
 .variant-subpanel-content {
-    height: 40px;
+    height: auto;
     width: 100%;
-    background-color: red;
+    padding-bottom: 12px;
+    /*background-color: red;*/
+}
+
+.variant-connection-group {
+    height: auto;
+    width: 100%;
+    padding: 0;
+    margin: 6px 0;
+    border: 1px solid #999;
+    background-color: rgb(246, 246, 246);
+}
+
+.connection-group-active {
+    background-color: rgb(150, 255, 150);
+}
+
+.variant-subpanel-content .variant-connection-group:first-child {  
+    margin-top: 0;
+}
+
+.variant-subpanel-content .variant-connection-group:last-child {  
+    margin-bottom: 0;
+}
+
+.variant-set-block {
+    width: auto;
+    height: 28px;
+    border: 1px solid #777;
+    padding: 2px;
+    margin: 6px;
+    background-color: rgb(255, 217, 152);
+    cursor: pointer;
+}
+
+.variant-block-mover {
+    position: absolute !important;
+    opacity: 0.5;
+}
+
+.variant-set-block .flag {
+    height: 22px;
+    width: 32px;
+    border: 1px solid #999;
+}
+
+.variant-set-block .name {
+    height: 22px;
+    width: auto;
+    padding: 0 9px;
+    border: 1px solid transparent;
+    line-height: 20px;
 }
