@@ -1263,16 +1263,54 @@ input[type=submit].variant-button-edit {
     border: none;
 }
 
-/*label {
-        display: table-cell;    width: 120px;    height: 34px;    line-height: 100%;    font-size: 13px;    font-weight: bold;    padding-left: 12px;    vertical-align: middle;
-}
-/*input {
-    margin: 0;    
-    border: 1px solid #555;
-}*/
-
-/*span {
+.variant-subpanel {
     display: block;
-    overflow: hidden;
-    margin: 0;
-}*/
+    float: left;
+    height: auto;
+    width: 100%;
+    padding: 12px;
+    padding-bottom: 0;
+    margin-bottom: 12px;
+    background-color: white;
+    border: 1px solid #ccc;
+}
+
+.variant-subpanel div {
+    display: block;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.variant-subpanel-header {
+    height: auto;
+    width: 100%;
+    padding-bottom: 12px;
+}
+
+.variant-subpanel-expander {
+    float: left;
+    width: 34px;
+    height: 34px;
+    margin-right: 9px;
+    border: 1px solid #444;
+    background-color: #eee;
+}
+
+.variant-subpanel-name {
+    float: left;
+    width: auto;
+    height: 34px;
+    padding: 10px;
+    line-height: 14px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #333;
+}
+
+.variant-subpanel-content {
+    height: 40px;
+    width: 100%;
+    background-color: red;
+}

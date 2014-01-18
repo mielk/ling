@@ -3660,7 +3660,13 @@ function VariantPanel(properties) {
 
     })();
 
-    //content
+    this.options = new VariantOptionsManager(this);
+
+    this.connections = new VariantConnectionsManager(this);
+
+    this.limits = new VariantLimitsManager(this);
+
+    this.dependencies = new VariantDependenciesManager(this);
 
     this.buttons = (function () {
         var panel = jQuery('<div/>', {
@@ -3706,7 +3712,6 @@ function VariantPanel(properties) {
 
     })();
 
-
 }
 VariantPanel.prototype.display = function () {
     this.ui.display();
@@ -3731,3 +3736,111 @@ VariantPanel.prototype.isComplete = function () {
 VariantPanel.prototype.start = function () {
     this.display();
 };
+
+
+
+function VariantSubpanel(parent, name) {
+    this.VariantSubpanel = true;
+    var self = this;
+    self.name = name;
+    self.parent = parent;
+    self.question = parent.question;
+    self.editQuestion = parent.editQuestion;
+
+    self.ui = (function () {
+        var expanded = false;
+
+        var container = jQuery('<div/>', {
+            'class': 'variant-subpanel'
+        });
+        self.parent.ui.append(container);
+
+        var header = jQuery('<div/>', {
+            'class': 'variant-subpanel-header'
+        }).appendTo(container);
+
+        // ReSharper disable once UnusedLocals
+        var expander = jQuery('<div/>', {
+            'class': 'variant-subpanel-expander'
+        }).bind({
+            click: function () {
+                if (expanded === true) {
+                    collapse();
+                } else {
+                    expand();
+                }
+            }
+        }).appendTo(header);
+        
+        var name = jQuery('<div/>', {
+            'class': 'variant-subpanel-name',
+            html: self.name
+        }).appendTo(header);
+
+        var content = jQuery('<div/>', {
+            'class': 'variant-subpanel-content'
+        }).css({
+            'display': (expanded ? 'block' : 'none')
+        }).appendTo(container);
+
+
+        function collapse() {
+            expanded = false;
+            refresh();
+        }
+
+        function expand() {
+            expanded = true;
+            refresh();
+        }
+        
+        function refresh() {
+            $(content).css({
+                'display': (expanded ? 'block' : 'none')
+            });
+        }
+
+        return {
+            content: content
+        }
+
+    })();
+
+}
+VariantSubpanel.prototype.contentPanel = function () {
+    return this.ui.content;
+};
+
+
+
+
+function VariantOptionsManager(parent) {
+    VariantSubpanel.call(this, parent, 'Options');
+    this.VariantOptionsManager = true;
+    var self = this;
+}
+extend(VariantSubpanel, VariantOptionsManager);
+
+
+function VariantConnectionsManager(parent) {
+    VariantSubpanel.call(this, parent, 'Connections');
+    this.VariantConnectionsManager = true;
+    var self = this;
+}
+extend(VariantSubpanel, VariantConnectionsManager);
+
+
+function VariantLimitsManager(parent) {
+    VariantSubpanel.call(this, parent, 'Limits');
+    this.VariantLimitsManager = true;
+    var self = this;
+}
+extend(VariantSubpanel, VariantLimitsManager);
+
+
+function VariantDependenciesManager(parent) {
+    VariantSubpanel.call(this, parent, 'Dependencies');
+    this.VariantDependenciesManager = true;
+    var self = this;
+}
+extend(VariantSubpanel, VariantDependenciesManager);
