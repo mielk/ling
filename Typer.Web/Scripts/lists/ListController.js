@@ -3826,19 +3826,12 @@ function VariantConnectionsManager(parent) {
     VariantSubpanel.call(this, parent, 'Connections');
     this.VariantConnectionsManager = true;
     var self = this;
+    var groupsCounter = 0;
     self.panel = self.ui.content;
     self.groups = new HashTable(null);      //connection groups
     self.assigned = new HashTable(null);    //variant sets already assigned to connection group
     self.activeBlock = null;
     self.activeGroup = null;
-
-    //TODO
-    /*
-        - przy releasie aktywnego taga - jest wrzucany do aktywnej grupy, lub jeżeli jest pomiędzy grupami - nic się nie dzieje
-        - wyświetlanie ikony krzyżyka, jeżeli aktywny tag znajduje się pomiędzy grupami.
-        - jeżeli grupa miała tylko jeden tag i został on usunięty - grupa również jest usuwana
-        - jeżeli jakiś tag został wyrzucony z grupy, tworzy się nowa grupa, zawierająca ten tag
-    */
 
 
     $(self.panel).bind({
@@ -3894,25 +3887,38 @@ function VariantConnectionsManager(parent) {
         var mover = null;
 
         var ui = (function () {
-            var container = jQuery('<div/>', {
-                'class': 'variant-set-block'
-            });
-            container.bind({
-                mousedown: function (e) {
-                    $active = true;
-                    self.activeBlock = $self;
-                    refresh(e);
+
+            var container;
+            var flag;
+            var name;
+            
+            function render() {
+
+                if (container) {
+                    $(container).remove();
                 }
-            });
 
-            var flag = jQuery('<div/>', {
-                'class': 'unselectable flag ' + set.language.language.flag + '-small'
-            }).appendTo(container);
+                container = jQuery('<div/>', {
+                    'class': 'variant-set-block'
+                });
 
-            var name = jQuery('<div/>', {
-                'class': 'unselectable name',
-                html: set.tag
-            }).appendTo(container);
+                container.bind({
+                    mousedown: function (e) {
+                        $active = true;
+                        self.activeBlock = $self;
+                        refresh(e);
+                    }
+                });
+
+                flag = jQuery('<div/>', {
+                    'class': 'unselectable flag ' + set.language.language.flag + '-small'
+                }).appendTo(container);
+
+                name = jQuery('<div/>', {
+                    'class': 'unselectable name',
+                    html: set.tag
+                }).appendTo(container);
+            }
 
             function refresh(e) {
 
@@ -3936,12 +3942,15 @@ function VariantConnectionsManager(parent) {
             }
 
             return {
-                container: container,
+                container: function(){
+                    return container;
+                },
                 deactivate: function () {
                     $active = false;
                     if (self.activeBlock === $self) self.activeBlock = null;
                     refresh();
-                }
+                },
+                render: render
             }
 
         })();
@@ -3975,8 +3984,8 @@ function VariantConnectionsManager(parent) {
                 html: set.tag
             }).appendTo(content);
 
-            var inactive = jQuery('<div/>', {
-                'class': 'variant-set-block-inactive'
+            var cancel = jQuery('<div/>', {
+                'class': 'variant-set-block-cancel'
             }).appendTo(content);
 
             function refresh() {
@@ -3999,17 +4008,36 @@ function VariantConnectionsManager(parent) {
                     });
                 },
                 overEmpty: function () {
-                    $(inactive).css({
+                    $(cancel).css({
                         'visibility' : 'visible'
                     });
                 },
                 overGroup: function () {
-                    $(inactive).css({
+                    $(cancel).css({
                         'visibility': 'hidden'
                     });
                 }
             }
         };
+
+        function release() {
+            if (!self.activeGroup) {
+                if (group.only($self)) {
+                    ui.deactivate();
+                } else {
+                    group.removeBlock($self);
+                    createNewGroup($self);
+                    ui.deactivate();
+                }
+            } else if (self.activeGroup === group) {
+                ui.deactivate();
+            } else {
+                group.removeBlock($self);
+                group = self.activeGroup;
+                group.addBlock($self);
+                ui.deactivate();
+            }
+        }
 
         return {
             selfinject: function (me) {
@@ -4018,16 +4046,17 @@ function VariantConnectionsManager(parent) {
             setGroup: function ($group) {
                 group = $group;
             },
+            rerender: function () {
+                ui.render();
+            },
             id: $set.id,
             view: function () {
-                return ui.container;
+                return ui.container();
             },
             move: function (x, y) {
                 mover.move(x, y);
             },
-            release: function () {
-                ui.deactivate();
-            },
+            release: release,
             overEmpty: function () {
                 if (mover) mover.overEmpty();
             },
@@ -4069,6 +4098,18 @@ function VariantConnectionsManager(parent) {
 
         }
 
+        function removeBlock(block) {
+            $blocks.removeItem(block.id);
+            if ($blocks.size() === 0) {
+                destroy();
+            }
+        }
+
+        function destroy() {
+            self.groups.removeItem($index);
+            $(container).remove();
+        }
+
         return {
             selfinject: function (me) {
                 $self = me;
@@ -4077,8 +4118,10 @@ function VariantConnectionsManager(parent) {
             addBlock: function (block) {
                 $blocks.setItem(block.id, block);
                 block.setGroup($self);
+                block.rerender();
                 block.view().appendTo(container);
             },
+            removeBlock: removeBlock,
             activate: function () {
                 self.activeGroup = $self;
                 $active = true;
@@ -4093,6 +4136,9 @@ function VariantConnectionsManager(parent) {
             },
             isHovered: function(x, y){
                 return isHovered(x, y);
+            },
+            only: function(block){
+                return ($blocks.size() === 1 && $blocks.hasItem(block.id));
             }
         }
 
@@ -4102,12 +4148,16 @@ function VariantConnectionsManager(parent) {
         var block = setBlock(value);
         block.selfinject(block);
         if (!self.assigned.hasItem(value.id)) {
-            var group = connectionGroup(value.id);
-            group.selfinject(group);
-            self.groups.setItem(group.id, group);
-            group.addBlock(block);
+            createNewGroup(block);
         }
     });
+
+    function createNewGroup(block) {
+        var group = connectionGroup(groupsCounter++);
+        group.selfinject(group);
+        self.groups.setItem(group.id, group);
+        group.addBlock(block);
+    }
 
 }
 extend(VariantSubpanel, VariantConnectionsManager);
