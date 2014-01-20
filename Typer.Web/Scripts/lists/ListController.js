@@ -3608,9 +3608,14 @@ extend(EditOptionPanel, QuestionOptionEditPanel);
 function VariantPanel(properties) {
     this.VariantPanel = true;
     var self = this;
+    self.events = new EventHandler();
     self.question = properties.question;
     self.editQuestion = properties.editQuestion;
-    
+    self.groups = new HashTable(null);
+    self.counter = 0;
+
+    this.loadGroups();
+
     this.validator = (function () {
         var invalid = new HashTable(null);
 
@@ -3730,6 +3735,12 @@ function VariantPanel(properties) {
     })();
 
 }
+VariantPanel.prototype.trigger = function (e) {
+    this.events.trigger(e);
+};
+VariantPanel.prototype.bind = function (e) {
+    this.events.bind(e);
+};
 VariantPanel.prototype.display = function () {
     this.ui.display();
 };
@@ -3753,7 +3764,101 @@ VariantPanel.prototype.isComplete = function () {
 VariantPanel.prototype.start = function () {
     this.display();
 };
+VariantPanel.prototype.loadGroups = function () {
+    var self = this;
+    var groups = [];
+    var assigned = new HashTable(null);
 
+    function addSet(group, set) {
+        group.addSet(set);
+        assigned.setItem(set.id, set);
+    }
+
+    this.editQuestion.variantsSets.each(function (key, value) {
+        var id = value.id;
+        if (!assigned.hasItem(id)) {
+            var group = new VariantGroup({ id: ++self.counter });
+            group.bind({
+                remove: function () {
+                    if (group.isEmpty()) self.removeGroup(group);
+                }
+            });
+            addSet(group, value);
+            value.connections.each(function ($key, $value) {
+                addSet(group, $value);
+            });
+            self.groups.setItem(group.id, group);
+        }
+    });
+};
+VariantPanel.prototype.newGroup = function (set) {
+    var self = this;
+    var group = new VariantGroup({ id: ++self.counter });
+    group.addSet(set);
+
+    group.bind({
+        remove: function () {
+            if (group.isEmpty()) self.removeGroup(group);
+        }
+    });
+
+    group.trigger({
+        type: 'add',
+        set: set
+    });
+
+    this.events.trigger({
+        type: 'newGroup',
+        group: group
+    });
+
+};
+VariantPanel.prototype.removeGroup = function (group) {
+
+    this.groups.removeItem(group.id);
+
+    this.trigger({
+        type: 'removeGroup',
+        group: group
+    });
+
+    group = null;
+
+};
+
+
+function VariantGroup(properties) {
+    this.VariantGroup = true;
+    var self = this;
+    self.id = properties.id;
+    self.events = new EventHandler();
+    self.sets = new HashTable(null);
+
+    self.events.bind({
+        add: function (e) {
+            self.addSet(e.set);
+        },
+        remove: function (e) {
+            self.removeSet(e.set);
+        }
+    });
+
+}
+VariantGroup.prototype.trigger = function (e) {
+    this.events.trigger(e);
+};
+VariantGroup.prototype.bind = function (e) {
+    this.events.bind(e);
+};
+VariantGroup.prototype.addSet = function (set) {
+    this.sets.setItem(set.id, set);
+};
+VariantGroup.prototype.removeSet = function (set) {
+    this.sets.removeItem(set.id);
+};
+VariantGroup.prototype.isEmpty = function(){
+    return this.sets.size() === 0;
+};
 
 
 function VariantSubpanel(parent, name) {
@@ -3827,31 +3932,6 @@ function VariantSubpanel(parent, name) {
 VariantSubpanel.prototype.contentPanel = function () {
     return this.ui.content;
 };
-VariantSubpanel.prototype.groupsTable = function () {
-    var groups = [];
-    var assigned = new HashTable(null);
-
-    function addSet(group, set) {
-        group.push(set);
-        assigned.setItem(set.id, set);
-    }
-
-    this.editQuestion.variantsSets.each(function (key, value) {
-        var id = value.id;
-        if (!assigned.hasItem(id)) {
-            var group = [];
-            addSet(group, value);
-            value.connections.each(function ($key, $value) {
-                addSet(group, $value);
-            });
-            groups.push(group);
-        }
-    });
-
-    return groups;
-
-};
-
 
 
 function VariantOptionsManager(parent) {
@@ -3863,11 +3943,11 @@ function VariantOptionsManager(parent) {
     self.groups = new HashTable(null);      //connection groups
     self.activeGroup = null;
     
-    self.editQuestion.bind({
-        transfer: function (e) {
-            rerender(e.set, e.from, e.to);
-        }
-    });
+    //self.editQuestion.bind({
+    //    transfer: function (e) {
+    //        rerender(e.set, e.from, e.to);
+    //    }
+    //});
 
     var groupViews = (function () {
         var container = jQuery('<div/>', {
@@ -3930,11 +4010,12 @@ function VariantOptionsManager(parent) {
 
     }
 
-    var connectionGroup = function (index) {
+    var connectionGroup = function (group) {
         var $self = null;
-        var $index = index;
+        var $index = group.id;
         var $blocks = new HashTable(null);
         var $active = false;
+        var $group = group;
 
         var container = jQuery('<div/>', {
             'class': 'variant-options-group variant-connection-group'
@@ -3949,6 +4030,14 @@ function VariantOptionsManager(parent) {
             }
         }).appendTo(self.panel);
 
+
+        function createBlocks() {
+            group.sets.each(function (key, value) {
+                var block = setBlock(value);
+                block.selfinject(block);
+                addBlock(block);
+            });
+        }
 
         function refresh() {
             if ($active) {
@@ -3980,6 +4069,7 @@ function VariantOptionsManager(parent) {
                 $self = me;
             },
             id: $index,
+            createBlocks: createBlocks,
             addBlock: addBlock,
             removeBlock: removeBlock,
             getBlock: function (id) {
@@ -4004,66 +4094,33 @@ function VariantOptionsManager(parent) {
 
     }
 
-    function newGroup() {
-        var group = connectionGroup(groupsCounter++);
-        group.selfinject(group);
-        self.groups.setItem(group.id, group);
-        return group;
-    }
-
-    function createNewGroup(block) {
-        var group = newGroup();
-        group.addBlock(block);
-    }
-
-    function createNewGroupFromArray(sets) {
-        var group = newGroup();
-        for (var i = 0; i < sets.length; i++) {
-            var set = sets[i];
-            var block = setBlock(set);
-            block.selfinject(block);
-            group.addBlock(block);
-        }
-    }
-
     function renderGroups() {
         //Clear previous selections.
         groupViews.clear();
         self.activeGroup = null;
         self.groups = new HashTable(null);
 
-        var groups = self.groupsTable();
-        for (var i = 0; i < groups.length; i++) {
-            var group = groups[i];
-            createNewGroupFromArray(group);
-        }
-    }
-
-    function findGroup(setId){
-        var found = null;
-        self.groups.each(function(key, value){
-            if (!found){
-                if (value.hasSet(setId)){
-                    found = value;
-                }
-            }
+        self.parent.groups.each(function (key, value) {
+            var group = new connectionGroup(value);
+            group.selfinject(group);
+            group.createBlocks();
+            self.groups.setItem(group.id, group);
         });
-        return found;
     }
 
-    function rerender(set, from, to) {
-        var $from = findGroup(set.id);
-        var $to = findGroup(set.id);
-        var $block = $from.getBlock(set.id);
+    //function rerender(set, from, to) {
+    //    var $from = findGroup(set.id);
+    //    var $to = findGroup(set.id);
+    //    var $block = $from.getBlock(set.id);
 
-        if ($to) {
-            $to.addBlock($block);
-            $from.removeBlock($block);
-        } else {
-            //Tworzy nową grupę.
-        }
+    //    if ($to) {
+    //        $to.addBlock($block);
+    //        $from.removeBlock($block);
+    //    } else {
+    //        //Tworzy nową grupę.
+    //    }
 
-    }
+    //}
 
     renderGroups();
 
@@ -4208,7 +4265,10 @@ function VariantConnectionsManager(parent) {
                     if (self.activeBlock === $self) self.activeBlock = null;
                     refresh();
                 },
-                render: render
+                render: render,
+                destroy: function () {
+                    $(container).remove();
+                }
             }
 
         })();
@@ -4295,15 +4355,16 @@ function VariantConnectionsManager(parent) {
         function separate() {
             var previousGroup = $group;
             previousGroup.removeBlock($self);
-            createNewGroup($self);
             ui.deactivate();
 
-            self.editQuestion.trigger({
-                type: 'transfer',
-                set: $set,
-                from: previousGroup,
-                to: $group
+            previousGroup.group.trigger({
+                type: 'remove',
+                set: $set
             });
+
+            self.parent.newGroup(set);
+
+            ui.destroy();
 
         }
 
@@ -4311,14 +4372,17 @@ function VariantConnectionsManager(parent) {
             var previousGroup = $group;
             previousGroup.removeBlock($self);
             $group = group;
-            $group.addBlock($self, true);
+            $group.addBlock($self);
             ui.deactivate();
 
-            self.editQuestion.trigger({
-                type: 'transfer',
-                set: $set,
-                from: previousGroup,
-                to: $group
+            previousGroup.group.trigger({
+                type: 'remove',
+                set: $set
+            });
+
+            $group.group.trigger({
+                type: 'add',
+                set: $set
             });
 
         }
@@ -4352,16 +4416,25 @@ function VariantConnectionsManager(parent) {
 
     }
 
-    var connectionGroup = function (index) {
+    var connectionGroup = function (group) {
         var $self = null;
-        var $index = index;
+        var $index = group.id;
         var $blocks = new HashTable(null);
         var $active = false;
+        var $group = group;
 
         var container = jQuery('<div/>', {
             'class': 'variant-connection-group'
         }).appendTo(self.panel);
 
+
+        function createBlocks() {
+            group.sets.each(function (key, value) {
+                var block = setBlock(value);
+                block.selfinject(block);
+                addBlock(block);
+            });
+        }
 
         function refresh() {
             if ($active) {
@@ -4408,30 +4481,11 @@ function VariantConnectionsManager(parent) {
 
         }
 
-        function addBlock(block, trigger) {
-
-            //trigger events for each set in this group.
-            if (trigger) {
-                $blocks.each(function (key, value) {
-                    triggerAddConnectionEvent(value.set, block.set);
-                    triggerAddConnectionEvent(block.set, value.set);
-                });
-            }
-
-            function triggerAddConnectionEvent(base, added) {
-                if (base.VariantSet) {
-                    base.trigger({
-                        type: 'addConnection',
-                        set: added
-                    });
-                }
-            }
-
+        function addBlock(block) {
             $blocks.setItem(block.id, block);
             block.setGroup($self);
             block.rerender();
             block.view().appendTo(container);
-
         }
 
         function destroy() {
@@ -4444,6 +4498,8 @@ function VariantConnectionsManager(parent) {
                 $self = me;
             },
             id: $index,
+            group: $group,
+            createBlocks: createBlocks,
             addBlock: addBlock,
             removeBlock: removeBlock,
             getBlockByIndex: function (index) {
@@ -4471,34 +4527,26 @@ function VariantConnectionsManager(parent) {
 
     }
 
+
+    var events = (function () {
+        self.parent.bind({
+            newGroup: function (e) {
+                createNewGroup(e.group);
+            }
+        });
+    })();
+
+    var createNewGroup = function (group) {
+        var $group = connectionGroup(group);
+        $group.selfinject($group);
+        $group.createBlocks();
+        self.groups.setItem($group.id, $group);
+    }
+
     function initialize() {
-        var groups = self.groupsTable();
-        for (var i = 0; i < groups.length; i++) {
-            var array = groups[i];
-            createNewGroupFromArray(array);
-        }
-    }
-
-    function newGroup() {
-        var group = connectionGroup(groupsCounter++);
-        group.selfinject(group);
-        self.groups.setItem(group.id, group);
-        return group;
-    }
-
-    function createNewGroup(block) {
-        var group = newGroup();
-        group.addBlock(block);
-    }
-
-    function createNewGroupFromArray(sets) {
-        var group = newGroup();
-        for (var i = 0; i < sets.length; i++) {
-            var set = sets[i];
-            var block = setBlock(set);
-            block.selfinject(block);
-            group.addBlock(block);
-        }
+        self.parent.groups.each(function (key, value) {
+            createNewGroup(value);
+        });
     }
 
     initialize();
