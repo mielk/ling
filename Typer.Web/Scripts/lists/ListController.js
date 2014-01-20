@@ -3990,6 +3990,9 @@ function VariantOptionsManager(parent) {
             return {
                 container: function () {
                     return container;
+                },
+                destroy: function () {
+                    $(container).remove();
                 }
             }
 
@@ -4005,7 +4008,8 @@ function VariantOptionsManager(parent) {
             id: $set.id,
             view: function () {
                 return ui.container();
-            }
+            },
+            destroy: ui.destroy
         }
 
     }
@@ -4032,7 +4036,7 @@ function VariantOptionsManager(parent) {
 
 
         function createBlocks() {
-            group.sets.each(function (key, value) {
+            $group.sets.each(function (key, value) {
                 var block = setBlock(value);
                 block.selfinject(block);
                 addBlock(block);
@@ -4056,13 +4060,32 @@ function VariantOptionsManager(parent) {
 
         function removeBlock(block) {
             $blocks.removeItem(block.id);
+            block.destroy();
             if ($blocks.size() === 0) destroy();
+        }
+
+        function getBlock(id) {
+            return $blocks.getItem(id);
         }
 
         function destroy() {
             $(container).remove();
             self.groups.removeItem($index);
         }
+
+        var events = (function () {
+            $group.bind({
+                remove: function (e) {
+                    var block = getBlock(e.set.id);
+                    removeBlock(block);
+                },
+                add: function (e) {
+                    var block = setBlock(e.set);
+                    block.selfinject(block);
+                    addBlock(block);
+                }
+            });
+        })();
 
         return {
             selfinject: function (me) {
@@ -4072,9 +4095,7 @@ function VariantOptionsManager(parent) {
             createBlocks: createBlocks,
             addBlock: addBlock,
             removeBlock: removeBlock,
-            getBlock: function (id) {
-                return $blocks.getItem(id);
-            },
+            getBlock: getBlock,
             activate: function () {
                 self.activeGroup = $self;
                 $active = true;
@@ -4094,35 +4115,33 @@ function VariantOptionsManager(parent) {
 
     }
 
-    function renderGroups() {
+    var events = (function () {
+        self.parent.bind({
+            newGroup: function (e) {
+                createNewGroup(e.group);
+            }
+        });
+    })();
+
+    var createNewGroup = function (group) {
+        var $group = connectionGroup(group);
+        $group.selfinject($group);
+        $group.createBlocks();
+        self.groups.setItem($group.id, $group);
+    }
+
+    function initialize() {
         //Clear previous selections.
         groupViews.clear();
         self.activeGroup = null;
         self.groups = new HashTable(null);
 
         self.parent.groups.each(function (key, value) {
-            var group = new connectionGroup(value);
-            group.selfinject(group);
-            group.createBlocks();
-            self.groups.setItem(group.id, group);
+            createNewGroup(value);
         });
     }
 
-    //function rerender(set, from, to) {
-    //    var $from = findGroup(set.id);
-    //    var $to = findGroup(set.id);
-    //    var $block = $from.getBlock(set.id);
-
-    //    if ($to) {
-    //        $to.addBlock($block);
-    //        $from.removeBlock($block);
-    //    } else {
-    //        //Tworzy nową grupę.
-    //    }
-
-    //}
-
-    renderGroups();
+    initialize();
 
 }
 extend(VariantSubpanel, VariantOptionsManager);
@@ -4429,7 +4448,7 @@ function VariantConnectionsManager(parent) {
 
 
         function createBlocks() {
-            group.sets.each(function (key, value) {
+            $group.sets.each(function (key, value) {
                 var block = setBlock(value);
                 block.selfinject(block);
                 addBlock(block);
@@ -4526,7 +4545,6 @@ function VariantConnectionsManager(parent) {
         }
 
     }
-
 
     var events = (function () {
         self.parent.bind({
