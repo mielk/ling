@@ -1343,6 +1343,19 @@ input[type=submit].variant-button-edit {
     background-color: rgb(246, 246, 246);
 }
 
+.variant-options-groups {
+    height: auto;
+    width: 100%;
+    padding: 0;
+    background-color: red;
+}
+
+.variant-options-group {
+    width: auto;
+    margin: 0 6px;
+    cursor: pointer;
+}
+
 .connection-group-active {
     background-color: rgb(150, 255, 150);
 }
@@ -1353,6 +1366,14 @@ input[type=submit].variant-button-edit {
 
 .variant-subpanel-content .variant-connection-group:last-child {  
     margin-bottom: 0;
+}
+
+.variant-subpanel-content .variant-options-group:first-child {
+    margin-left: 0;
+}
+
+.variant-subpanel-content .variant-options-group:last-child {
+    margin-right: 0;
 }
 
 .variant-set-block {

@@ -1254,6 +1254,7 @@ QuestionEditEntity.prototype.editVariants = function () {
 function VariantSet(editEntity, properties) {
     this.VariantSet = true;
     var self = this;
+    self.eventHandler = new EventHandler();
     self.editEntity = editEntity;
     self.id = properties.Id;
     self.languageId = properties.LanguageId;
@@ -1266,7 +1267,23 @@ function VariantSet(editEntity, properties) {
         dependants: properties.Dependants
     };
 
+    //self.eventHandler.bind({
+    //    addConnection: function (e) {
+    //        my.notify.display('Added to ' + self.tag + ': ' + e.set.tag);
+    //    },
+    //    removeConnection: function (e) {
+    //        my.notify.display('Removed from ' + self.tag + ': ' + e.set.tag);
+    //    }
+    //});
+
+
 }
+VariantSet.prototype.bind = function (e) {
+    this.eventHandler.bind(e);
+};
+VariantSet.prototype.trigger = function (e) {
+    this.eventHandler.trigger(e);
+};
 VariantSet.prototype.createDetails = function () {
     this.loadVariants(this.raw.variants);
     this.loadConnections(this.raw.related);
@@ -3810,7 +3827,30 @@ function VariantSubpanel(parent, name) {
 VariantSubpanel.prototype.contentPanel = function () {
     return this.ui.content;
 };
+VariantSubpanel.prototype.groupsTable = function () {
+    var groups = [];
+    var assigned = new HashTable(null);
 
+    function addSet(group, set) {
+        group.push(set);
+        assigned.setItem(set.id, set);
+    }
+
+    this.editQuestion.variantsSets.each(function (key, value) {
+        var id = value.id;
+        if (!assigned.hasItem(id)) {
+            var group = [];
+            addSet(group, value);
+            value.connections.each(function ($key, $value) {
+                addSet(group, $value);
+            });
+            groups.push(group);
+        }
+    });
+
+    return groups;
+
+};
 
 
 
@@ -3818,9 +3858,220 @@ function VariantOptionsManager(parent) {
     VariantSubpanel.call(this, parent, 'Options');
     this.VariantOptionsManager = true;
     var self = this;
+    var groupsCounter = 0;
+    self.panel = self.ui.content;
+    self.groups = new HashTable(null);      //connection groups
+    self.activeGroup = null;
+    
+    self.editQuestion.bind({
+        transfer: function (e) {
+            rerender(e.set, e.from, e.to);
+        }
+    });
+
+    var groupViews = (function () {
+        var container = jQuery('<div/>', {
+            'class': 'variant-options-groups'
+        });
+
+        return {
+            clear: function () {
+                $(container).empty();
+            }
+        }
+
+    })();
+
+    var setBlock = function (set) {
+        var group = null;
+        var $self = null;
+        var $set = set;
+
+        var ui = (function () {
+            var container = jQuery('<div/>', {
+                'class': 'variant-set-block'
+            });
+
+            var flag = jQuery('<div/>', {
+                'class': 'unselectable flag ' + set.language.language.flag + '-small'
+            }).appendTo(container);
+
+            var name = jQuery('<div/>', {
+                'class': 'unselectable name',
+                html: set.tag
+            }).appendTo(container);
+
+            set.bind({
+                rename: function (e) {
+                    $(name).html(e.name);
+                }
+            });
+
+            return {
+                container: function () {
+                    return container;
+                }
+            }
+
+        })();
+
+        return {
+            selfinject: function (me) {
+                $self = me;
+            },
+            setGroup: function ($group) {
+                group = $group;
+            },
+            id: $set.id,
+            view: function () {
+                return ui.container();
+            }
+        }
+
+    }
+
+    var connectionGroup = function (index) {
+        var $self = null;
+        var $index = index;
+        var $blocks = new HashTable(null);
+        var $active = false;
+
+        var container = jQuery('<div/>', {
+            'class': 'variant-options-group variant-connection-group'
+        }).bind({
+            click: function () {
+                var previous = self.activeGroup;
+                if (previous === $self) return;
+                if (previous) {
+                    previous.deactivate();
+                }
+                $self.activate();
+            }
+        }).appendTo(self.panel);
+
+
+        function refresh() {
+            if ($active) {
+                $(container).addClass('connection-group-active');
+            } else {
+                $(container).removeClass('connection-group-active');
+            }
+
+        }
+
+        function addBlock(block) {
+            $blocks.setItem(block.id, block);
+            block.setGroup($self);
+            block.view().appendTo(container);
+        }
+
+        function removeBlock(block) {
+            $blocks.removeItem(block.id);
+            if ($blocks.size() === 0) destroy();
+        }
+
+        function destroy() {
+            $(container).remove();
+            self.groups.removeItem($index);
+        }
+
+        return {
+            selfinject: function (me) {
+                $self = me;
+            },
+            id: $index,
+            addBlock: addBlock,
+            removeBlock: removeBlock,
+            getBlock: function (id) {
+                return $blocks.getItem(id);
+            },
+            activate: function () {
+                self.activeGroup = $self;
+                $active = true;
+                refresh();
+            },
+            deactivate: function () {
+                if (self.activeGroup === $self) {
+                    self.activeGroup = null;
+                    $active = false;
+                    refresh();
+                }
+            },
+            hasSet: function(key){
+                return $blocks.hasItem(key);
+            }
+        }
+
+    }
+
+    function newGroup() {
+        var group = connectionGroup(groupsCounter++);
+        group.selfinject(group);
+        self.groups.setItem(group.id, group);
+        return group;
+    }
+
+    function createNewGroup(block) {
+        var group = newGroup();
+        group.addBlock(block);
+    }
+
+    function createNewGroupFromArray(sets) {
+        var group = newGroup();
+        for (var i = 0; i < sets.length; i++) {
+            var set = sets[i];
+            var block = setBlock(set);
+            block.selfinject(block);
+            group.addBlock(block);
+        }
+    }
+
+    function renderGroups() {
+        //Clear previous selections.
+        groupViews.clear();
+        self.activeGroup = null;
+        self.groups = new HashTable(null);
+
+        var groups = self.groupsTable();
+        for (var i = 0; i < groups.length; i++) {
+            var group = groups[i];
+            createNewGroupFromArray(group);
+        }
+    }
+
+    function findGroup(setId){
+        var found = null;
+        self.groups.each(function(key, value){
+            if (!found){
+                if (value.hasSet(setId)){
+                    found = value;
+                }
+            }
+        });
+        return found;
+    }
+
+    function rerender(set, from, to) {
+        var $from = findGroup(set.id);
+        var $to = findGroup(set.id);
+        var $block = $from.getBlock(set.id);
+
+        if ($to) {
+            $to.addBlock($block);
+            $from.removeBlock($block);
+        } else {
+            //Tworzy nową grupę.
+        }
+
+    }
+
+    renderGroups();
+
 }
 extend(VariantSubpanel, VariantOptionsManager);
 
+
+//Dodać klasę setGroup, która będzie używana równocześnie przez kilka podklas VariantSubpanel.
 
 function VariantConnectionsManager(parent) {
     VariantSubpanel.call(this, parent, 'Connections');
@@ -3829,7 +4080,6 @@ function VariantConnectionsManager(parent) {
     var groupsCounter = 0;
     self.panel = self.ui.content;
     self.groups = new HashTable(null);      //connection groups
-    self.assigned = new HashTable(null);    //variant sets already assigned to connection group
     self.activeBlock = null;
     self.activeGroup = null;
 
@@ -3879,8 +4129,9 @@ function VariantConnectionsManager(parent) {
     });
 
 
+
     var setBlock = function (set) {
-        var group = null;
+        var $group = null;
         var $self = null;
         var $set = set;
         var $active = false;
@@ -3918,6 +4169,13 @@ function VariantConnectionsManager(parent) {
                     'class': 'unselectable name',
                     html: set.tag
                 }).appendTo(container);
+
+                set.bind({
+                    rename: function (e) {
+                        $(name).html(e.name);
+                    }
+                });
+
             }
 
             function refresh(e) {
@@ -4022,29 +4280,56 @@ function VariantConnectionsManager(parent) {
 
         function release() {
             if (!self.activeGroup) {
-                if (group.only($self)) {
+                if ($group.only($self)) {
                     ui.deactivate();
                 } else {
-                    group.removeBlock($self);
-                    createNewGroup($self);
-                    ui.deactivate();
+                    separate();
                 }
-            } else if (self.activeGroup === group) {
+            } else if (self.activeGroup === $group) {
                 ui.deactivate();
             } else {
-                group.removeBlock($self);
-                group = self.activeGroup;
-                group.addBlock($self);
-                ui.deactivate();
+                moveToOtherGroup(self.activeGroup);
             }
+        }
+
+        function separate() {
+            var previousGroup = $group;
+            previousGroup.removeBlock($self);
+            createNewGroup($self);
+            ui.deactivate();
+
+            self.editQuestion.trigger({
+                type: 'transfer',
+                set: $set,
+                from: previousGroup,
+                to: $group
+            });
+
+        }
+
+        function moveToOtherGroup(group) {
+            var previousGroup = $group;
+            previousGroup.removeBlock($self);
+            $group = group;
+            $group.addBlock($self, true);
+            ui.deactivate();
+
+            self.editQuestion.trigger({
+                type: 'transfer',
+                set: $set,
+                from: previousGroup,
+                to: $group
+            });
+
         }
 
         return {
             selfinject: function (me) {
                 $self = me;
             },
-            setGroup: function ($group) {
-                group = $group;
+            set: $set,
+            setGroup: function (group) {
+                $group = group;
             },
             rerender: function () {
                 ui.render();
@@ -4084,10 +4369,10 @@ function VariantConnectionsManager(parent) {
             } else {
                 $(container).removeClass('connection-group-active');
             }
-            
+
         }
 
-        function isHovered(x, y){
+        function isHovered(x, y) {
             var offset = $(container).offset();
             var left = offset.left;
             var top = offset.top;
@@ -4103,6 +4388,50 @@ function VariantConnectionsManager(parent) {
             if ($blocks.size() === 0) {
                 destroy();
             }
+
+            //trigger events for each set in this group.
+            $blocks.each(function (key, value) {
+                if (value !== block) {
+                    triggerRemoveConnectionEvent(value.set, block.set);
+                    triggerRemoveConnectionEvent(block.set, value.set);
+                }
+            });
+
+            function triggerRemoveConnectionEvent(base, removed) {
+                if (base.VariantSet) {
+                    base.trigger({
+                        type: 'removeConnection',
+                        set: removed
+                    });
+                }
+            }
+
+        }
+
+        function addBlock(block, trigger) {
+
+            //trigger events for each set in this group.
+            if (trigger) {
+                $blocks.each(function (key, value) {
+                    triggerAddConnectionEvent(value.set, block.set);
+                    triggerAddConnectionEvent(block.set, value.set);
+                });
+            }
+
+            function triggerAddConnectionEvent(base, added) {
+                if (base.VariantSet) {
+                    base.trigger({
+                        type: 'addConnection',
+                        set: added
+                    });
+                }
+            }
+
+            $blocks.setItem(block.id, block);
+            block.setGroup($self);
+            block.rerender();
+            block.view().appendTo(container);
+
         }
 
         function destroy() {
@@ -4115,13 +4444,11 @@ function VariantConnectionsManager(parent) {
                 $self = me;
             },
             id: $index,
-            addBlock: function (block) {
-                $blocks.setItem(block.id, block);
-                block.setGroup($self);
-                block.rerender();
-                block.view().appendTo(container);
-            },
+            addBlock: addBlock,
             removeBlock: removeBlock,
+            getBlockByIndex: function (index) {
+                return 
+            },
             activate: function () {
                 self.activeGroup = $self;
                 $active = true;
@@ -4134,30 +4461,47 @@ function VariantConnectionsManager(parent) {
                     refresh();
                 }
             },
-            isHovered: function(x, y){
+            isHovered: function (x, y) {
                 return isHovered(x, y);
             },
-            only: function(block){
+            only: function (block) {
                 return ($blocks.size() === 1 && $blocks.hasItem(block.id));
             }
         }
 
     }
 
-    self.editQuestion.variantsSets.each(function (key, value) {
-        var block = setBlock(value);
-        block.selfinject(block);
-        if (!self.assigned.hasItem(value.id)) {
-            createNewGroup(block);
+    function initialize() {
+        var groups = self.groupsTable();
+        for (var i = 0; i < groups.length; i++) {
+            var array = groups[i];
+            createNewGroupFromArray(array);
         }
-    });
+    }
 
-    function createNewGroup(block) {
+    function newGroup() {
         var group = connectionGroup(groupsCounter++);
         group.selfinject(group);
         self.groups.setItem(group.id, group);
+        return group;
+    }
+
+    function createNewGroup(block) {
+        var group = newGroup();
         group.addBlock(block);
     }
+
+    function createNewGroupFromArray(sets) {
+        var group = newGroup();
+        for (var i = 0; i < sets.length; i++) {
+            var set = sets[i];
+            var block = setBlock(set);
+            block.selfinject(block);
+            group.addBlock(block);
+        }
+    }
+
+    initialize();
 
 }
 extend(VariantSubpanel, VariantConnectionsManager);
