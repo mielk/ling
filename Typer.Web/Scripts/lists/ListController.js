@@ -3941,22 +3941,22 @@ function VariantOptionsManager(parent) {
     var groupsCounter = 0;
     self.panel = self.ui.content;
     self.groups = new HashTable(null);      //connection groups
-    self.activeGroup = null;
-    
-    //self.editQuestion.bind({
-    //    transfer: function (e) {
-    //        rerender(e.set, e.from, e.to);
-    //    }
-    //});
+    self.activeGroup;
+    self.optionsManager;
+
 
     var groupViews = (function () {
         var container = jQuery('<div/>', {
             'class': 'variant-options-groups'
         });
+        $(container).appendTo(self.panel);
 
         return {
             clear: function () {
                 $(container).empty();
+            },
+            add: function (element) {
+                $(element).appendTo(container);
             }
         }
 
@@ -4020,6 +4020,7 @@ function VariantOptionsManager(parent) {
         var $blocks = new HashTable(null);
         var $active = false;
         var $group = group;
+        var $optionsManager;
 
         var container = jQuery('<div/>', {
             'class': 'variant-options-group variant-connection-group'
@@ -4032,8 +4033,8 @@ function VariantOptionsManager(parent) {
                 }
                 $self.activate();
             }
-        }).appendTo(self.panel);
-
+        });
+        groupViews.add(container);
 
         function createBlocks() {
             $group.sets.each(function (key, value) {
@@ -4073,6 +4074,35 @@ function VariantOptionsManager(parent) {
             self.groups.removeItem($index);
         }
 
+        function activate() {
+            self.activeGroup = $self;
+            $active = true;
+            refresh();
+
+            //Show options panel.
+            if (!$optionsManager) {
+                $optionsManager = new GroupOptionsManager({
+                    parent: self,
+                    group: $group
+                });
+            }
+            $optionsManager.show();
+
+        }
+
+        function deactivate() {
+            if (self.activeGroup === $self) {
+                self.activeGroup = null;
+                $active = false;
+                refresh();
+            }
+
+            if ($optionsManager && $optionsManager.visible) {
+                $optionsManager.hide();
+            }
+
+        }
+
         var events = (function () {
             $group.bind({
                 remove: function (e) {
@@ -4096,18 +4126,8 @@ function VariantOptionsManager(parent) {
             addBlock: addBlock,
             removeBlock: removeBlock,
             getBlock: getBlock,
-            activate: function () {
-                self.activeGroup = $self;
-                $active = true;
-                refresh();
-            },
-            deactivate: function () {
-                if (self.activeGroup === $self) {
-                    self.activeGroup = null;
-                    $active = false;
-                    refresh();
-                }
-            },
+            activate: activate,
+            deactivate: deactivate,
             hasSet: function(key){
                 return $blocks.hasItem(key);
             }
@@ -4147,7 +4167,47 @@ function VariantOptionsManager(parent) {
 extend(VariantSubpanel, VariantOptionsManager);
 
 
-//Dodać klasę setGroup, która będzie używana równocześnie przez kilka podklas VariantSubpanel.
+function GroupOptionsManager(properties) {
+    this.GroupOptionsManager = true;
+    var self = this;
+    self.parent = properties.parent;
+    self.group = properties.group;
+    self.visible = false;
+
+    self.ui = (function () {
+        var container = jQuery('<div/>', {
+            'class': 'group-options-container'
+        }).css({
+            'display' : 'none'
+        });
+        container.appendTo(self.parent.panel);
+
+        return {
+            hide: function () {
+                $(container).css({
+                    'display' : 'none'
+                });
+            },
+            show: function () {
+                $(container).css({
+                    'display' : 'block'
+                });
+            }
+        }
+
+    })();
+
+}
+GroupOptionsManager.prototype.show = function () {
+    this.visible = true;
+    this.ui.show();
+};
+GroupOptionsManager.prototype.hide = function () {
+    this.visible = false;
+    this.ui.hide();
+};
+
+
 
 function VariantConnectionsManager(parent) {
     VariantSubpanel.call(this, parent, 'Connections');

@@ -1347,7 +1347,6 @@ input[type=submit].variant-button-edit {
     height: auto;
     width: 100%;
     padding: 0;
-    background-color: red;
 }
 
 .variant-options-group {
@@ -1413,4 +1412,11 @@ input[type=submit].variant-button-edit {
     padding: 0 9px;
     border: 1px solid transparent;
     line-height: 20px;
+}
+
+.group-options-container {
+    margin-top: 12px;
+    height: 150px;
+    width: 100%;
+    border: 1px solid #777;
 }
