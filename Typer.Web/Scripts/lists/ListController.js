@@ -4103,19 +4103,36 @@ function VariantOptionsManager(parent) {
 
         }
 
+        function refreshOptionsManager() {
+            if ($optionsManager) {
+                var visible = $optionsManager.visible;
+                $optionsManager.destroy();
+                $optionsManager = new GroupOptionsManager({
+                    parent: self,
+                    group: $group
+                });
+                if (visible) $optionsManager.show();
+            }
+        }
+
         var events = (function () {
             $group.bind({
                 remove: function (e) {
                     var block = getBlock(e.set.id);
                     removeBlock(block);
+                    refreshOptionsManager();
                 },
                 add: function (e) {
                     var block = setBlock(e.set);
                     block.selfinject(block);
                     addBlock(block);
+                    refreshOptionsManager();
                 }
             });
         })();
+
+
+
 
         return {
             selfinject: function (me) {
@@ -4182,6 +4199,30 @@ function GroupOptionsManager(properties) {
         });
         container.appendTo(self.parent.panel);
 
+        var content = jQuery('<div/>', {
+            'class': 'group-options-content'
+        }).appendTo(container);
+
+        var contentInside = jQuery('<div/>').css({
+            'position': 'relative',
+            'width': '100%',
+            'height': '100%',
+            'margin': 0,
+            'padding' : 0
+        }).appendTo(content);
+
+        var keys = jQuery('<div/>', {
+            'class': 'keys-column'
+        }).appendTo(contentInside);
+
+        var groups = jQuery('<div/>', {
+            'class': 'group-options'
+        }).appendTo(contentInside);
+
+        var buttons = jQuery('<div/>', {
+            'class': 'group-options-buttons'
+        }).appendTo(container);
+
         return {
             hide: function () {
                 $(container).css({
@@ -4192,7 +4233,103 @@ function GroupOptionsManager(properties) {
                 $(container).css({
                     'display' : 'block'
                 });
+            },
+            appendKeys: function(element){
+                $(element).appendTo(keys);
+            },
+            appendGroup: function (element) {
+                $(element).appendTo(groups);
+            },
+            appendButton: function (element) {
+                $(element).appendTo(buttons);
+            },
+            destroy: function(){
+                $(container).remove();
             }
+        }
+
+    })();
+
+    self.keys = (function () {
+
+        var keys = [];
+
+        var ui = (function () {
+            var container = jQuery('<div/>', {
+                'class': 'fill'
+            });
+            self.ui.appendKeys(container);
+
+            var header = jQuery('<div/>', {
+                'class': 'column-header',
+                html: 'Keys'
+            }).css({
+                'border-color': 'transparent'
+            }).appendTo(container);
+
+        })();
+
+        function addKey(key) {
+            keys.push(key);
+        }
+
+        function getKey(index) {
+            if (index < 0 || index >= keys.length) return null;
+            return keys[index];
+        }
+
+        return {
+            addKey: addKey,
+            getKey: getKey
+        };
+
+    })();
+
+    self.columns = (function () {
+        var columns = new HashTable(null);
+        var size = self.group.sets.size();
+
+        function initialize() {
+            self.group.sets.each(function (key, set) {
+                var column = setColumn(set);
+                columns.setItem(column.id, column);
+            });
+        }
+
+        var setColumn = function (set) {
+            var $set = set;
+
+            var ui = (function () {
+                var container = jQuery('<div/>', {
+                    'class': 'group-column'
+                }).css({
+                    'width' : (100 / size).toFixed(2) + '%'
+                });
+                self.ui.appendGroup(container);
+
+                var header = jQuery('<div/>', {
+                    'class': 'column-header',
+                    html: $set.tag
+                }).bind({
+                    click: function () {
+                        alert('Edit ' + $set.tag);
+                    }
+                }).appendTo(container);
+
+
+
+            })();
+
+            return {
+                id: $set.id
+            }
+
+        };
+
+        initialize();
+
+        return {
+
         }
 
     })();
@@ -4206,7 +4343,9 @@ GroupOptionsManager.prototype.hide = function () {
     this.visible = false;
     this.ui.hide();
 };
-
+GroupOptionsManager.prototype.destroy = function(){
+    this.ui.destroy();
+};
 
 
 function VariantConnectionsManager(parent) {
