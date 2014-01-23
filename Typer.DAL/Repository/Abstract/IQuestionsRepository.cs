@@ -36,6 +36,7 @@ namespace Typer.DAL.Repositories
         IEnumerable<VariantConnectionDto> GetVariantConnections(int[] sets);
         IEnumerable<VariantLimitDto> GetVariantLimits(int questionId);
         IEnumerable<VariantDependencyDto> GetVariantDependencies(int[] sets);
+        IEnumerable<DependencyDefinitionDto> GetDependenciesDefinitions(int[] languages);
 
     }
 }

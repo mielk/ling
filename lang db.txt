@@ -482,3 +482,46 @@ CREATE TABLE [dbo].[VariantConnections] (
     FOREIGN KEY ([ConnectedSetId]) REFERENCES [dbo].[VariantSets] ([Id]),
     CONSTRAINT [Different_Variants] CHECK ([VariantSetId]<>[ConnectedSetId])
 );
+
+
+
+=======================
+[23.01.2014]
+CREATE TABLE [dbo].[VariantSets] (
+    [Id]         INT            IDENTITY (1, 1) NOT NULL,
+    [QuestionId] INT            NOT NULL,
+    [LanguageId] INT            NOT NULL,
+    [VariantTag] NVARCHAR (255) NOT NULL,
+	[SpeechPart] INT			NOT NULL,
+    [Params]     NVARCHAR (255) NOT NULL,
+    [IsActive]   BIT            DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT            NOT NULL,
+    [CreateDate] DATETIME       DEFAULT (getdate()) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [Unique_Variant_Tag] UNIQUE NONCLUSTERED ([QuestionId] ASC, [LanguageId] ASC, [VariantTag] ASC),
+    FOREIGN KEY ([QuestionId]) REFERENCES [dbo].[Questions] ([Id]),
+    FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id]),
+	FOREIGN KEY ([SpeechPart]) REFERENCES [dbo].[WordTypes] ([Id])
+);
+
+CREATE TABLE [dbo].[WordTypes] (
+    [Id]             INT            NOT NULL,
+    [Name]           NVARCHAR (255) NOT NULL,
+    [DisplayForWord] BIT            NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC)
+);
+
+
+CREATE TABLE [dbo].[VariantDependenciesDefinitions]
+(
+    [Id]                 INT IDENTITY (1, 1) NOT NULL,
+    [LanguageId]		 INT NOT NULL,
+	[MasterWordtypeId]	 INT NOT NULL,
+	[SlaveWordtypeId]	 INT NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+	CONSTRAINT [Different_Wordtypes] CHECK ([MasterWordtypeId] <> [SlaveWordtypeId]),
+    CONSTRAINT [Unique_Wordtypes] UNIQUE NONCLUSTERED ([MasterWordtypeId] ASC, [SlaveWordtypeId] ASC),
+    FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id]),
+	FOREIGN KEY ([MasterWordtypeId]) REFERENCES [dbo].[WordTypes] ([Id]),
+	FOREIGN KEY ([SlaveWordtypeId]) REFERENCES [dbo].[WordTypes] ([Id])
+)

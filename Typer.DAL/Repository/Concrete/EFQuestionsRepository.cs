@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Transactions;
 using Typer.DAL.Infrastructure;
@@ -417,5 +418,11 @@ namespace Typer.DAL.Repositories
         {
             return Context.MatchQuestionCategory.Where(m => m.QuestionId == questionId);
         }
+
+        public IEnumerable<DependencyDefinitionDto> GetDependenciesDefinitions(int[] languages)
+        {
+            return Context.DependenciesDefinitions.Where(dd => languages.Contains(dd.LanguageId));
+        }
+
     }
 }

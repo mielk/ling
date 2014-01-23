@@ -1380,7 +1380,10 @@ LanguageEntity.prototype.remove = function (item) {
     }
 
 };
-
+LanguageEntity.prototype.loadDependenciesDefinitions = function() {
+    var x = 1;
+    
+};
 
 
 function OptionEntity(entity, properties) {
@@ -3615,6 +3618,31 @@ function VariantPanel(properties) {
     self.counter = 0;
 
     this.loadGroups();
+
+    this.loadDependenciesDefinitions = (function () {
+        var languagesIds = self.editQuestion.getLanguagesIds();
+        $.ajax({
+            url: '/Questions/GetDependenciesDefinitions',
+            type: "GET",
+            data: {
+                'languages': languagesIds
+            },
+            traditional: true,
+            datatype: "json",
+            async: true,
+            cache: false,
+            success: function (result) {
+                self.editQuestion.languages.each(function (key, language) {
+                    language.loadDependenciesDefinitions();
+                });
+            },
+            error: function (msg) {
+                alert(msg.status + " | " + msg.statusText);
+                return null;
+            }
+        });
+
+    })();
 
     this.validator = (function () {
         var invalid = new HashTable(null);

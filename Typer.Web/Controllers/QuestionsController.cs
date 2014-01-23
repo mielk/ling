@@ -183,6 +183,14 @@ namespace Typer.Web.Controllers
             var words = _service.GetVariantSets(id, languages);
             return Json(words, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult GetDependenciesDefinitions(int[] languages)
+        {
+            var definitions = _service.GetDependenciesDefinitions(languages);
+            return Json(definitions, JsonRequestBehavior.AllowGet);
+        }
         
 
     }

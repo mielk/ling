@@ -210,6 +210,23 @@ namespace Typer.Domain.Services
 
 
 
+        public IEnumerable<DependencyDefinition> GetDependenciesDefinitions(int[] languages)
+        {
+            var dtos = _repository.GetDependenciesDefinitions(languages);
+            return dtos.Select(DependencyDefinitionFromDto).ToList();
+        }
+
+
+        private static DependencyDefinition DependencyDefinitionFromDto(DependencyDefinitionDto dto)
+        {
+            return new DependencyDefinition
+            {
+                Id = dto.Id,
+                LanguageId = dto.LanguageId,
+                MasterWordtypeId = dto.MasterWordtypeId,
+                SlaveWordtypeId = dto.SlaveWordtypeId
+            };
+        }
 
         private static Question QuestionFromDto(QuestionDto dto)
         {

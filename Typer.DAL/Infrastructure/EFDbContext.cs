@@ -27,6 +27,7 @@ namespace Typer.DAL.Infrastructure
         public DbSet<VariantConnectionDto> VariantConnections { get; set; }
         public DbSet<VariantLimitDto> VariantLimits { get; set; }
         public DbSet<VariantDependencyDto> VariantDependencies { get; set; }
+        public DbSet<DependencyDefinitionDto> DependenciesDefinitions { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -49,6 +50,7 @@ namespace Typer.DAL.Infrastructure
             modelBuilder.Entity<VariantLimitDto>().ToTable("VariantLimits");
             modelBuilder.Entity<VariantConnectionDto>().ToTable("VariantConnections");
             modelBuilder.Entity<VariantDependencyDto>().ToTable("VariantDependences");
+            modelBuilder.Entity<DependencyDefinitionDto>().ToTable("VariantDependenciesDefinitions");
         }
 
 
