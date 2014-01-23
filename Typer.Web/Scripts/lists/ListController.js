@@ -3766,7 +3766,6 @@ VariantPanel.prototype.start = function () {
 };
 VariantPanel.prototype.loadGroups = function () {
     var self = this;
-    var groups = [];
     var assigned = new HashTable(null);
 
     function addSet(group, set) {
@@ -3821,8 +3820,6 @@ VariantPanel.prototype.removeGroup = function (group) {
         type: 'removeGroup',
         group: group
     });
-
-    group = null;
 
 };
 
@@ -3894,7 +3891,9 @@ function VariantSubpanel(parent, name) {
             }
         }).appendTo(header);
         
-        var name = jQuery('<div/>', {
+
+        // ReSharper disable once UnusedLocals
+        var nameLabel = jQuery('<div/>', {
             'class': 'unselectable variant-subpanel-name',
             html: self.name
         }).appendTo(header);
@@ -3924,7 +3923,7 @@ function VariantSubpanel(parent, name) {
 
         return {
             content: content
-        }
+        };
 
     })();
 
@@ -3938,12 +3937,8 @@ function VariantOptionsManager(parent) {
     VariantSubpanel.call(this, parent, 'Options');
     this.VariantOptionsManager = true;
     var self = this;
-    var groupsCounter = 0;
     self.panel = self.ui.content;
     self.groups = new HashTable(null);      //connection groups
-    self.activeGroup;
-    self.optionsManager;
-
 
     var groupViews = (function () {
         var container = jQuery('<div/>', {
@@ -3952,26 +3947,27 @@ function VariantOptionsManager(parent) {
         $(container).appendTo(self.panel);
 
         return {
-            clear: function () {
+            clear: function() {
                 $(container).empty();
             },
-            add: function (element) {
+            add: function(element) {
                 $(element).appendTo(container);
             }
-        }
+        };
 
     })();
 
-    var setBlock = function (set) {
-        var group = null;
-        var $self = null;
+    var setBlock = function(set) {
+        var group;
+        var $self;
         var $set = set;
 
-        var ui = (function () {
+        var ui = (function() {
             var container = jQuery('<div/>', {
                 'class': 'variant-set-block'
             });
 
+            // ReSharper disable once UnusedLocals
             var flag = jQuery('<div/>', {
                 'class': 'unselectable flag ' + set.language.language.flag + '-small'
             }).appendTo(container);
@@ -3982,39 +3978,39 @@ function VariantOptionsManager(parent) {
             }).appendTo(container);
 
             set.bind({
-                rename: function (e) {
+                rename: function(e) {
                     $(name).html(e.name);
                 }
             });
 
             return {
-                container: function () {
+                container: function() {
                     return container;
                 },
-                destroy: function () {
+                destroy: function() {
                     $(container).remove();
                 }
-            }
+            };
 
         })();
 
         return {
-            selfinject: function (me) {
+            selfinject: function(me) {
                 $self = me;
             },
-            setGroup: function ($group) {
+            setGroup: function($group) {
                 group = $group;
             },
             id: $set.id,
-            view: function () {
+            view: function() {
                 return ui.container();
             },
             destroy: ui.destroy
-        }
+        };
 
-    }
+    };
 
-    var connectionGroup = function (group) {
+    var connectionGroup = function(group) {
         var $self = null;
         var $index = group.id;
         var $blocks = new HashTable(null);
@@ -4025,7 +4021,7 @@ function VariantOptionsManager(parent) {
         var container = jQuery('<div/>', {
             'class': 'variant-options-group variant-connection-group'
         }).bind({
-            click: function () {
+            click: function() {
                 var previous = self.activeGroup;
                 if (previous === $self) return;
                 if (previous) {
@@ -4037,7 +4033,7 @@ function VariantOptionsManager(parent) {
         groupViews.add(container);
 
         function createBlocks() {
-            $group.sets.each(function (key, value) {
+            $group.sets.each(function(key, value) {
                 var block = setBlock(value);
                 block.selfinject(block);
                 addBlock(block);
@@ -4115,14 +4111,16 @@ function VariantOptionsManager(parent) {
             }
         }
 
-        var events = (function () {
+
+        // ReSharper disable once UnusedLocals
+        var $events = (function() {
             $group.bind({
-                remove: function (e) {
+                remove: function(e) {
                     var block = getBlock(e.set.id);
                     removeBlock(block);
                     refreshOptionsManager();
                 },
-                add: function (e) {
+                add: function(e) {
                     var block = setBlock(e.set);
                     block.selfinject(block);
                     addBlock(block);
@@ -4132,10 +4130,8 @@ function VariantOptionsManager(parent) {
         })();
 
 
-
-
         return {
-            selfinject: function (me) {
+            selfinject: function(me) {
                 $self = me;
             },
             id: $index,
@@ -4145,13 +4141,15 @@ function VariantOptionsManager(parent) {
             getBlock: getBlock,
             activate: activate,
             deactivate: deactivate,
-            hasSet: function(key){
+            hasSet: function(key) {
                 return $blocks.hasItem(key);
             }
-        }
+        };
 
-    }
+    };
 
+
+    // ReSharper disable once UnusedLocals
     var events = (function () {
         self.parent.bind({
             newGroup: function (e) {
@@ -4160,12 +4158,12 @@ function VariantOptionsManager(parent) {
         });
     })();
 
-    var createNewGroup = function (group) {
+    var createNewGroup = function(group) {
         var $group = connectionGroup(group);
         $group.selfinject($group);
         $group.createBlocks();
         self.groups.setItem($group.id, $group);
-    }
+    };
 
     function initialize() {
         //Clear previous selections.
@@ -4224,29 +4222,29 @@ function GroupOptionsManager(properties) {
         }).appendTo(container);
 
         return {
-            hide: function () {
+            hide: function() {
                 $(container).css({
-                    'display' : 'none'
+                    'display': 'none'
                 });
             },
-            show: function () {
+            show: function() {
                 $(container).css({
-                    'display' : 'block'
+                    'display': 'block'
                 });
             },
-            appendKeys: function(element){
+            appendKeys: function(element) {
                 $(element).appendTo(keys);
             },
-            appendGroup: function (element) {
+            appendGroup: function(element) {
                 $(element).appendTo(groups);
             },
-            appendButton: function (element) {
+            appendButton: function(element) {
                 $(element).appendTo(buttons);
             },
-            destroy: function(){
+            destroy: function() {
                 $(container).remove();
             }
-        }
+        };
 
     })();
 
@@ -4254,18 +4252,22 @@ function GroupOptionsManager(properties) {
 
         var keys = [];
 
+        // ReSharper disable once UnusedLocals
         var ui = (function () {
             var container = jQuery('<div/>', {
                 'class': 'fill'
             });
             self.ui.appendKeys(container);
 
+
             var header = jQuery('<div/>', {
                 'class': 'column-header',
                 html: 'Keys'
-            }).css({
+            });
+            $(header).css({
                 'border-color': 'transparent'
-            }).appendTo(container);
+            });
+            $(header).appendTo(container);
 
         })();
 
@@ -4299,6 +4301,7 @@ function GroupOptionsManager(properties) {
         var setColumn = function (set) {
             var $set = set;
 
+            // ReSharper disable once UnusedLocals
             var ui = (function () {
                 var container = jQuery('<div/>', {
                     'class': 'group-column'
@@ -4307,30 +4310,32 @@ function GroupOptionsManager(properties) {
                 });
                 self.ui.appendGroup(container);
 
+                // ReSharper disable once UnusedLocals
                 var header = jQuery('<div/>', {
                     'class': 'column-header',
                     html: $set.tag
-                }).bind({
-                    click: function () {
+                });
+                $(header).bind({
+                    click: function() {
                         alert('Edit ' + $set.tag);
                     }
-                }).appendTo(container);
-
+                });
+                $(header).appendTo(container);
 
 
             })();
 
             return {
                 id: $set.id
-            }
+            };
 
         };
 
         initialize();
 
         return {
-
-        }
+            
+        };
 
     })();
 
@@ -4352,7 +4357,6 @@ function VariantConnectionsManager(parent) {
     VariantSubpanel.call(this, parent, 'Connections');
     this.VariantConnectionsManager = true;
     var self = this;
-    var groupsCounter = 0;
     self.panel = self.ui.content;
     self.groups = new HashTable(null);      //connection groups
     self.activeBlock = null;
@@ -4375,10 +4379,10 @@ function VariantConnectionsManager(parent) {
                     self.activeBlock.overEmpty();
                 }
             } else {
+                var active = false;
                 self.groups.each(function (key, value) {
-                    var active = false;
                     if (!active) {
-                        var active = value.isHovered(x, y);
+                        active = value.isHovered(x, y);
                         if (active) {
                             value.activate();
                             self.activeBlock.overGroup();
@@ -4404,20 +4408,19 @@ function VariantConnectionsManager(parent) {
     });
 
 
-
-    var setBlock = function (set) {
+    var setBlock = function(set) {
         var $group = null;
         var $self = null;
         var $set = set;
         var $active = false;
         var mover = null;
 
-        var ui = (function () {
+        var ui = (function() {
 
             var container;
             var flag;
             var name;
-            
+
             function render() {
 
                 if (container) {
@@ -4429,7 +4432,7 @@ function VariantConnectionsManager(parent) {
                 });
 
                 container.bind({
-                    mousedown: function (e) {
+                    mousedown: function(e) {
                         $active = true;
                         self.activeBlock = $self;
                         refresh(e);
@@ -4446,7 +4449,7 @@ function VariantConnectionsManager(parent) {
                 }).appendTo(container);
 
                 set.bind({
-                    rename: function (e) {
+                    rename: function(e) {
                         $(name).html(e.name);
                     }
                 });
@@ -4466,7 +4469,12 @@ function VariantConnectionsManager(parent) {
                         left: blockOffset.left - panelOffset.left,
                         top: blockOffset.top - panelOffset.top
                     };
-                    mover = shadow(e.pageX, e.pageY, offset);
+                    mover = shadow({
+                        x: e.pageX, 
+                        y: e.pageY, 
+                        left: offset.left,
+                        top: offset.top
+                    });
                 } else {
                     mover.destroy();
                     mover = null;
@@ -4475,27 +4483,27 @@ function VariantConnectionsManager(parent) {
             }
 
             return {
-                container: function(){
+                container: function() {
                     return container;
                 },
-                deactivate: function () {
+                deactivate: function() {
                     $active = false;
                     if (self.activeBlock === $self) self.activeBlock = null;
                     refresh();
                 },
                 render: render,
-                destroy: function () {
+                destroy: function() {
                     $(container).remove();
                 }
-            }
+            };
 
         })();
 
-        var shadow = function (x, y, offset) {
-            var $x = x;
-            var $y = y;
-            var $top = offset.top;
-            var $left = offset.left;
+        var shadow = function(position) {
+            var $x = position.x;
+            var $y = position.y;
+            var $top = position.top;
+            var $left = position.left;
 
             var container = jQuery('<div/>', {
                 'class': 'variant-set-block variant-block-mover'
@@ -4511,10 +4519,12 @@ function VariantConnectionsManager(parent) {
                     'height': '100%'
                 }).appendTo(container);
 
+            // ReSharper disable once UnusedLocals
             var flag = jQuery('<div/>', {
                 'class': 'flag ' + set.language.language.flag + '-small'
             }).appendTo(content);
 
+            // ReSharper disable once UnusedLocals
             var name = jQuery('<div/>', {
                 'class': 'name',
                 html: set.tag
@@ -4524,18 +4534,12 @@ function VariantConnectionsManager(parent) {
                 'class': 'variant-set-block-cancel'
             }).appendTo(content);
 
-            function refresh() {
-                $(container).css({
-                    'visibility': ($active ? 'hidden' : 'visible')
-                });
-            }
-
             return {
                 container: container,
-                destroy: function () {
+                destroy: function() {
                     $(container).remove();
                 },
-                move: function (x, y) {
+                move: function(x, y) {
                     var left = $left + (x - $x);
                     var top = $top + (y - $y);
                     $(container).css({
@@ -4543,17 +4547,17 @@ function VariantConnectionsManager(parent) {
                         'left': left + 'px'
                     });
                 },
-                overEmpty: function () {
+                overEmpty: function() {
                     $(cancel).css({
-                        'visibility' : 'visible'
+                        'visibility': 'visible'
                     });
                 },
-                overGroup: function () {
+                overGroup: function() {
                     $(cancel).css({
                         'visibility': 'hidden'
                     });
                 }
-            }
+            };
         };
 
         function release() {
@@ -4606,35 +4610,35 @@ function VariantConnectionsManager(parent) {
         }
 
         return {
-            selfinject: function (me) {
+            selfinject: function(me) {
                 $self = me;
             },
             set: $set,
-            setGroup: function (group) {
+            setGroup: function(group) {
                 $group = group;
             },
-            rerender: function () {
+            rerender: function() {
                 ui.render();
             },
             id: $set.id,
-            view: function () {
+            view: function() {
                 return ui.container();
             },
-            move: function (x, y) {
+            move: function(x, y) {
                 mover.move(x, y);
             },
             release: release,
-            overEmpty: function () {
+            overEmpty: function() {
                 if (mover) mover.overEmpty();
             },
-            overGroup: function () {
+            overGroup: function() {
                 if (mover) mover.overGroup();
             }
-        }
+        };
 
-    }
+    };
 
-    var connectionGroup = function (group) {
+    var connectionGroup = function(group) {
         var $self = null;
         var $index = group.id;
         var $blocks = new HashTable(null);
@@ -4647,7 +4651,7 @@ function VariantConnectionsManager(parent) {
 
 
         function createBlocks() {
-            $group.sets.each(function (key, value) {
+            $group.sets.each(function(key, value) {
                 var block = setBlock(value);
                 block.selfinject(block);
                 addBlock(block);
@@ -4681,7 +4685,7 @@ function VariantConnectionsManager(parent) {
             }
 
             //trigger events for each set in this group.
-            $blocks.each(function (key, value) {
+            $blocks.each(function(key, value) {
                 if (value !== block) {
                     triggerRemoveConnectionEvent(value.set, block.set);
                     triggerRemoveConnectionEvent(block.set, value.set);
@@ -4712,7 +4716,7 @@ function VariantConnectionsManager(parent) {
         }
 
         return {
-            selfinject: function (me) {
+            selfinject: function(me) {
                 $self = me;
             },
             id: $index,
@@ -4720,31 +4724,29 @@ function VariantConnectionsManager(parent) {
             createBlocks: createBlocks,
             addBlock: addBlock,
             removeBlock: removeBlock,
-            getBlockByIndex: function (index) {
-                return 
-            },
-            activate: function () {
+            activate: function() {
                 self.activeGroup = $self;
                 $active = true;
                 refresh();
             },
-            deactivate: function () {
+            deactivate: function() {
                 if (self.activeGroup === $self) {
                     self.activeGroup = null;
                     $active = false;
                     refresh();
                 }
             },
-            isHovered: function (x, y) {
+            isHovered: function(x, y) {
                 return isHovered(x, y);
             },
-            only: function (block) {
+            only: function(block) {
                 return ($blocks.size() === 1 && $blocks.hasItem(block.id));
             }
-        }
+        };
 
-    }
+    };
 
+    // ReSharper disable once UnusedLocals
     var events = (function () {
         self.parent.bind({
             newGroup: function (e) {
@@ -4753,12 +4755,12 @@ function VariantConnectionsManager(parent) {
         });
     })();
 
-    var createNewGroup = function (group) {
+    var createNewGroup = function(group) {
         var $group = connectionGroup(group);
         $group.selfinject($group);
         $group.createBlocks();
         self.groups.setItem($group.id, $group);
-    }
+    };
 
     function initialize() {
         self.parent.groups.each(function (key, value) {

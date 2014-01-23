@@ -1401,6 +1401,10 @@ input[type=submit].variant-button-edit {
     display: block;
     position: relative;
     float: left;
+    -moz-min-width: 250px;
+    -ms-min-width: 250px;
+    -o-min-width: 250px;
+    -webkit-min-width: 250px;
     min-width: 250px;
     max-width: 500px;
     height: 100%;
@@ -1430,6 +1434,7 @@ input[type=submit].variant-button-edit {
 
 .variant-block-mover {
     position: absolute !important;
+    -ms-opacity: 0.5;
     opacity: 0.5;
 }
 
@@ -1468,7 +1473,7 @@ input[type=submit].variant-button-edit {
     position: absolute !important;
     left: 6px;
     right: 6px;
-    bottom: 0px;
+    bottom: 0;
     height: 36px;
     padding: 6px 0;
 }
