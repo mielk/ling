@@ -1155,6 +1155,10 @@ EditEntity.prototype.getLanguagesIds = function () {
 EditEntity.prototype.newItem = function () {
     alert('Must be defined in implementing class');
 };
+EditEntity.prototype.getLanguage = function(id) {
+    if (!this.languages) return null;
+    return this.languages.getItem(id);
+};
 
 
 function WordEditEntity(properties) {
@@ -1353,6 +1357,7 @@ function LanguageEntity(parent, language) {
     this.items = [];
     this.variantSets = [];
     this.variants = new HashTable(null);
+    this.dependenciesDefinitions = [];
 }
 LanguageEntity.prototype.addItem = function (option) {
     this.items.push(option);
@@ -1380,9 +1385,8 @@ LanguageEntity.prototype.remove = function (item) {
     }
 
 };
-LanguageEntity.prototype.loadDependenciesDefinitions = function() {
-    var x = 1;
-    
+LanguageEntity.prototype.addDependencyDefinition = function(definition) {
+    this.dependenciesDefinitions.push(definition);
 };
 
 
@@ -3632,9 +3636,20 @@ function VariantPanel(properties) {
             async: true,
             cache: false,
             success: function (result) {
-                self.editQuestion.languages.each(function (key, language) {
-                    language.loadDependenciesDefinitions();
-                });
+                for (var i = 0; i < result.length; i++) {
+                    var definition = result[i];
+                    var languageId = definition.LanguageId;
+                    var masterId = definition.MasterWordtypeId;
+                    var slaveId = definition.SlaveWordtypeId;
+                    //Load this definition to the given language.
+                    var language = self.editQuestion.getLanguage(languageId);
+                    if (language) {
+                        language.addDependencyDefinition({
+                            master: masterId,
+                            slave: slaveId
+                        });
+                    }
+                }
             },
             error: function (msg) {
                 alert(msg.status + " | " + msg.statusText);
