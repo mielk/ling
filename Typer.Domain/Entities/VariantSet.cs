@@ -11,6 +11,7 @@ namespace Typer.Domain.Entities
         public int QuestionId { get; set; }
         public int LanguageId { get; set; }
         public string VariantTag { get; set; }
+        public int WordTypeId { get; set; }
         public string Params { get; set; }
         public bool IsActive { get; set; }
         public int CreatorId { get; set; }

@@ -1263,6 +1263,7 @@ function VariantSet(editEntity, properties) {
     self.id = properties.Id;
     self.languageId = properties.LanguageId;
     self.tag = properties.VariantTag;
+    
     self.params = properties.Params;
     
     self.raw = {
@@ -4829,5 +4830,37 @@ function VariantDependenciesManager(parent) {
     VariantSubpanel.call(this, parent, 'Dependencies');
     this.VariantDependenciesManager = true;
     var self = this;
+    self.panel = self.ui.content;
+    self.lines = new HashTable(null);
+    
+    // ReSharper disable once UnusedLocals
+    var events = (function () {
+        self.parent.bind({
+            
+        });
+    })();
+
+    var dependencyLine = (function (set) {
+
+    })();
+
+    function createNewLine(set) {
+        var line = dependencyLine(set);
+        line.selfinject(line);
+        line.createBlocks();
+        self.lines.setItem(line.id, line);
+    }
+
+    function initialize() {
+        self.parent.groups.each(function (groupKey, group) {
+            group.sets.each(function(setKey, set) {
+                var s = set;
+            });
+        });
+    }
+
+    initialize();
+
+
 }
 extend(VariantSubpanel, VariantDependenciesManager);

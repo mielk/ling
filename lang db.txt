@@ -492,7 +492,7 @@ CREATE TABLE [dbo].[VariantSets] (
     [QuestionId] INT            NOT NULL,
     [LanguageId] INT            NOT NULL,
     [VariantTag] NVARCHAR (255) NOT NULL,
-	[SpeechPart] INT			NOT NULL,
+    [WordType]	 INT            NOT NULL,
     [Params]     NVARCHAR (255) NOT NULL,
     [IsActive]   BIT            DEFAULT ((1)) NOT NULL,
     [CreatorId]  INT            NOT NULL,
@@ -501,8 +501,10 @@ CREATE TABLE [dbo].[VariantSets] (
     CONSTRAINT [Unique_Variant_Tag] UNIQUE NONCLUSTERED ([QuestionId] ASC, [LanguageId] ASC, [VariantTag] ASC),
     FOREIGN KEY ([QuestionId]) REFERENCES [dbo].[Questions] ([Id]),
     FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id]),
-	FOREIGN KEY ([SpeechPart]) REFERENCES [dbo].[WordTypes] ([Id])
+    FOREIGN KEY ([WordType]) REFERENCES [dbo].[WordTypes] ([Id])
 );
+
+
 
 CREATE TABLE [dbo].[WordTypes] (
     [Id]             INT            NOT NULL,
