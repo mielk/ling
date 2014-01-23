@@ -308,7 +308,7 @@ namespace Typer.Domain.Services
                 Id = dto.Id,
                 IsActive = dto.IsActive,
                 LanguageId = dto.LanguageId,
-                WordTypeId = dto.WordTypeId,
+                WordType = dto.WordType,
                 Params = dto.Params,
                 QuestionId = dto.QuestionId,
                 VariantTag = dto.VariantTag
