@@ -4,7 +4,6 @@ using System.Linq;
 using System.Transactions;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.TransferObjects;
-using Typer.Common.Helpers;
 
 // ReSharper disable once CheckNamespace
 namespace Typer.DAL.Repositories

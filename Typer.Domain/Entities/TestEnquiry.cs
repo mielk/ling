@@ -35,24 +35,22 @@ namespace Typer.Domain.Entities
             {
                 return options.Single();
             }
-            else
+
+            var weights = options.Sum(q => q.Weight);
+            var randomWeight = new Random().Next(1, weights + 1);
+            var current = 0;
+
+            foreach (var option in options)
             {
-                var weights = options.Sum(q => q.Weight);
-                var randomWeight = new Random().Next(1, weights + 1);
-                var current = 0;
-
-                foreach (var option in options)
+                current += option.Weight;
+                if (randomWeight <= current)
                 {
-                    current += option.Weight;
-                    if (randomWeight <= current)
-                    {
-                        return option;
-                    }
+                    return option;
                 }
-
-                return null;
-
             }
+
+            return null;
+
         }
 
 

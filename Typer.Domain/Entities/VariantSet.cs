@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Typer.Domain.Services;
 
 namespace Typer.Domain.Entities
 {

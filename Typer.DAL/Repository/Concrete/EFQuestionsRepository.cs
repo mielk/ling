@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 using System.Transactions;
 using Typer.DAL.Infrastructure;
@@ -227,8 +226,15 @@ namespace Typer.DAL.Repositories
                             {
                                 var _id = removed[i];
                                 var option = GetOption(_id);
-                                if (option == null) result = false;
-                                option.IsActive = false;
+                                if (option == null)
+                                {
+                                    result = false;
+                                }
+                                else
+                                {
+                                    option.IsActive = false;    
+                                }
+                                
                             }
                         }
 
@@ -294,7 +300,7 @@ namespace Typer.DAL.Repositories
             var name = parameters[1];
 
             //Weight.
-            var weight = 1;
+            int weight;
             Int32.TryParse(parameters[2], out weight);
 
             var option = GetOption(id);
@@ -311,14 +317,14 @@ namespace Typer.DAL.Repositories
             string[] parameters = s.Split('|');
 
             //Language Id.
-            var languageId = 0;
+            int languageId;
             Int32.TryParse(parameters[0], out languageId);
 
             //Name.
             var name = parameters[1];
 
             //Weight.
-            var weight = 1;
+            int weight;
             Int32.TryParse(parameters[2], out weight);
 
             var option = new QuestionOptionDto
@@ -334,7 +340,6 @@ namespace Typer.DAL.Repositories
                 QuestionId = id,
                 LanguageId = languageId
             };
-            if (option == null) return false;
 
             Context.QuestionOptions.Add(option);
 

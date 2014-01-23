@@ -1262,6 +1262,7 @@ function VariantSet(editEntity, properties) {
     self.editEntity = editEntity;
     self.id = properties.Id;
     self.languageId = properties.LanguageId;
+    self.wordtype = WORDTYPE.getItem(properties.WordType);
     self.tag = properties.VariantTag;
     
     self.params = properties.Params;
@@ -1358,7 +1359,7 @@ function LanguageEntity(parent, language) {
     this.items = [];
     this.variantSets = [];
     this.variants = new HashTable(null);
-    this.dependenciesDefinitions = [];
+    this.dependencies = new HashTable(null);
 }
 LanguageEntity.prototype.addItem = function (option) {
     this.items.push(option);
@@ -1386,8 +1387,18 @@ LanguageEntity.prototype.remove = function (item) {
     }
 
 };
-LanguageEntity.prototype.addDependencyDefinition = function(definition) {
-    this.dependenciesDefinitions.push(definition);
+LanguageEntity.prototype.addDependencyDefinition = function (definition) {
+    var slave = definition.slave;
+    var master = definition.master;
+    var dependencyGroup = this.dependencies.getItem(slave);
+    if (!dependencyGroup) {
+        dependencyGroup = [];
+        this.dependencies.setItem(slave, dependencyGroup);
+    }
+    dependencyGroup.push(master);
+};
+LanguageEntity.prototype.getMasters = function (wordtypeId) {
+    return this.dependencies.getItem(wordtypeId);
 };
 
 
@@ -3624,42 +3635,6 @@ function VariantPanel(properties) {
 
     this.loadGroups();
 
-    this.loadDependenciesDefinitions = (function () {
-        var languagesIds = self.editQuestion.getLanguagesIds();
-        $.ajax({
-            url: '/Questions/GetDependenciesDefinitions',
-            type: "GET",
-            data: {
-                'languages': languagesIds
-            },
-            traditional: true,
-            datatype: "json",
-            async: true,
-            cache: false,
-            success: function (result) {
-                for (var i = 0; i < result.length; i++) {
-                    var definition = result[i];
-                    var languageId = definition.LanguageId;
-                    var masterId = definition.MasterWordtypeId;
-                    var slaveId = definition.SlaveWordtypeId;
-                    //Load this definition to the given language.
-                    var language = self.editQuestion.getLanguage(languageId);
-                    if (language) {
-                        language.addDependencyDefinition({
-                            master: masterId,
-                            slave: slaveId
-                        });
-                    }
-                }
-            },
-            error: function (msg) {
-                alert(msg.status + " | " + msg.statusText);
-                return null;
-            }
-        });
-
-    })();
-
     this.validator = (function () {
         var invalid = new HashTable(null);
 
@@ -3733,6 +3708,43 @@ function VariantPanel(properties) {
     this.limits = new VariantLimitsManager(this);
 
     this.dependencies = new VariantDependenciesManager(this);
+
+    this.loadDependenciesDefinitions = (function () {
+        var languagesIds = self.editQuestion.getLanguagesIds();
+        $.ajax({
+            url: '/Questions/GetDependenciesDefinitions',
+            type: "GET",
+            data: {
+                'languages': languagesIds
+            },
+            traditional: true,
+            datatype: "json",
+            async: true,
+            cache: false,
+            success: function (result) {
+                for (var i = 0; i < result.length; i++) {
+                    var definition = result[i];
+                    var languageId = definition.LanguageId;
+                    var masterId = definition.MasterWordtypeId;
+                    var slaveId = definition.SlaveWordtypeId;
+                    //Load this definition to the given language.
+                    var language = self.editQuestion.getLanguage(languageId);
+                    if (language) {
+                        language.addDependencyDefinition({
+                            master: masterId,
+                            slave: slaveId
+                        });
+                    }
+                }
+                self.dependencies.initialize();
+            },
+            error: function (msg) {
+                alert(msg.status + " | " + msg.statusText);
+                return null;
+            }
+        });
+
+    })();
 
     this.buttons = (function () {
         var panel = jQuery('<div/>', {
@@ -4840,27 +4852,146 @@ function VariantDependenciesManager(parent) {
         });
     })();
 
-    var dependencyLine = (function (set) {
+    var dependencyLine = function (set) {
+        var $self;
+        var $set = set;
+        var $masters = new HashTable(null);
 
-    })();
+        var container = jQuery('<div/>', {
+            'class': 'variant-dependency-line'
+        });
+        $(container).appendTo(self.panel);
+
+        //Z lewej strony wrzuca [slave]
+        
+        //Z prawej wszystkie masters.
+        
+        //Po zmianach w strukturze setów, widok jest aktualizowany
+
+
+        //function createBlocks() {
+        //    $group.sets.each(function (key, value) {
+        //        var block = setBlock(value);
+        //        block.selfinject(block);
+        //        addBlock(block);
+        //    });
+        //}
+
+        //function refresh() {
+        //    if ($active) {
+        //        $(container).addClass('connection-group-active');
+        //    } else {
+        //        $(container).removeClass('connection-group-active');
+        //    }
+
+        //}
+
+        //function addBlock(block) {
+        //    $blocks.setItem(block.id, block);
+        //    block.setGroup($self);
+        //    block.view().appendTo(container);
+        //}
+
+        //function removeBlock(block) {
+        //    $blocks.removeItem(block.id);
+        //    block.destroy();
+        //    if ($blocks.size() === 0) destroy();
+        //}
+
+        //function getBlock(id) {
+        //    return $blocks.getItem(id);
+        //}
+
+        //function destroy() {
+        //    $(container).remove();
+        //    self.groups.removeItem($index);
+        //}
+
+        //function activate() {
+        //    self.activeGroup = $self;
+        //    $active = true;
+        //    refresh();
+
+        //    //Show options panel.
+        //    if (!$optionsManager) {
+        //        $optionsManager = new GroupOptionsManager({
+        //            parent: self,
+        //            group: $group
+        //        });
+        //    }
+        //    $optionsManager.show();
+
+        //}
+
+        //function deactivate() {
+        //    if (self.activeGroup === $self) {
+        //        self.activeGroup = null;
+        //        $active = false;
+        //        refresh();
+        //    }
+
+        //    if ($optionsManager && $optionsManager.visible) {
+        //        $optionsManager.hide();
+        //    }
+
+        //}
+
+        //function refreshOptionsManager() {
+        //    if ($optionsManager) {
+        //        var visible = $optionsManager.visible;
+        //        $optionsManager.destroy();
+        //        $optionsManager = new GroupOptionsManager({
+        //            parent: self,
+        //            group: $group
+        //        });
+        //        if (visible) $optionsManager.show();
+        //    }
+        //}
+
+
+        //// ReSharper disable once UnusedLocals
+        //var $events = (function () {
+        //    $group.bind({
+        //        remove: function (e) {
+        //            var block = getBlock(e.set.id);
+        //            removeBlock(block);
+        //            refreshOptionsManager();
+        //        },
+        //        add: function (e) {
+        //            var block = setBlock(e.set);
+        //            block.selfinject(block);
+        //            addBlock(block);
+        //            refreshOptionsManager();
+        //        }
+        //    });
+        //})();
+
+
+        return {
+            selfinject: function (me) {
+                $self = me;
+            },
+            id: $set.id
+        };
+    };
 
     function createNewLine(set) {
         var line = dependencyLine(set);
         line.selfinject(line);
-        line.createBlocks();
+        //line.createBlocks();
         self.lines.setItem(line.id, line);
     }
 
-    function initialize() {
-        self.parent.groups.each(function (groupKey, group) {
+    this.initialize = function() {
+        self.parent.groups.each(function(groupKey, group) {
             group.sets.each(function(setKey, set) {
-                var s = set;
+                var masters = set.language.getMasters(set.wordtype.id);
+                if (masters && masters.length) {
+                    createNewLine(set);
+                }
             });
         });
-    }
-
-    initialize();
-
+    };
 
 }
 extend(VariantSubpanel, VariantDependenciesManager);
