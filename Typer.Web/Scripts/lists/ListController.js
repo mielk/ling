@@ -4852,101 +4852,74 @@ function VariantDependenciesManager(parent) {
         });
     })();
 
+    
+
     var dependencyLine = function (set) {
         var $self;
         var $set = set;
+        var $slave;
         var $masters = new HashTable(null);
 
-        var container = jQuery('<div/>', {
-            'class': 'variant-dependency-line'
-        });
-        $(container).appendTo(self.panel);
+        var ui = (function() {
+            var container = jQuery('<div/>', {
+                'class': 'variant-dependency-line'
+            });
+            $(container).appendTo(self.panel);
 
-        //Z lewej strony wrzuca [slave]
+            var slaveContainer = jQuery('<div/>', {
+                'class': 'slave-container'
+            }).appendTo(container);
+
+            var masterContainer = jQuery('<div/>', {
+                'class': 'master-container'
+            }).appendTo(container);
+
+            return {
+                clear: function() {
+                    $(slaveContainer).empty();
+                    $(masterContainer).empty();
+                },
+                addSlave: function(block) {
+                    block.appendTo(slaveContainer);
+                },
+                addMaster: function(block) {
+                    block.appendTo(masterContainer);
+                }
+            };
+
+        })();
         
-        //Z prawej wszystkie masters.
-        
+        function loadMasters() {
+            var wordtypeId = $set.wordtype.id;
+            var mastersArray = $set.language.getMasters(wordtypeId);
+
+            self.editQuestion.variantsSets.each(function(key, variantSet) {
+                var setWordtype = variantSet.wordtype.id;
+                if (variantSet.languageId === $set.languageId && mastersArray.indexOf(setWordtype) >= 0) {
+                    var masterBlock = new setBlock(variantSet, true);
+                    $masters.setItem(masterBlock.id, masterBlock);
+                }
+            });
+
+        }
+
+        function render() {
+
+            ui.clear();
+
+            $slave = new setBlock(set, false);
+            ui.addSlave($slave.view());
+
+            loadMasters();
+            $masters.each(function(key, value) {
+                ui.addMaster(value.view());
+            });
+
+        }
+
+        render();
+
         //Po zmianach w strukturze setów, widok jest aktualizowany
-
-
-        //function createBlocks() {
-        //    $group.sets.each(function (key, value) {
-        //        var block = setBlock(value);
-        //        block.selfinject(block);
-        //        addBlock(block);
-        //    });
-        //}
-
-        //function refresh() {
-        //    if ($active) {
-        //        $(container).addClass('connection-group-active');
-        //    } else {
-        //        $(container).removeClass('connection-group-active');
-        //    }
-
-        //}
-
-        //function addBlock(block) {
-        //    $blocks.setItem(block.id, block);
-        //    block.setGroup($self);
-        //    block.view().appendTo(container);
-        //}
-
-        //function removeBlock(block) {
-        //    $blocks.removeItem(block.id);
-        //    block.destroy();
-        //    if ($blocks.size() === 0) destroy();
-        //}
-
-        //function getBlock(id) {
-        //    return $blocks.getItem(id);
-        //}
-
-        //function destroy() {
-        //    $(container).remove();
-        //    self.groups.removeItem($index);
-        //}
-
-        //function activate() {
-        //    self.activeGroup = $self;
-        //    $active = true;
-        //    refresh();
-
-        //    //Show options panel.
-        //    if (!$optionsManager) {
-        //        $optionsManager = new GroupOptionsManager({
-        //            parent: self,
-        //            group: $group
-        //        });
-        //    }
-        //    $optionsManager.show();
-
-        //}
-
-        //function deactivate() {
-        //    if (self.activeGroup === $self) {
-        //        self.activeGroup = null;
-        //        $active = false;
-        //        refresh();
-        //    }
-
-        //    if ($optionsManager && $optionsManager.visible) {
-        //        $optionsManager.hide();
-        //    }
-
-        //}
-
-        //function refreshOptionsManager() {
-        //    if ($optionsManager) {
-        //        var visible = $optionsManager.visible;
-        //        $optionsManager.destroy();
-        //        $optionsManager = new GroupOptionsManager({
-        //            parent: self,
-        //            group: $group
-        //        });
-        //        if (visible) $optionsManager.show();
-        //    }
-        //}
 
 
         //// ReSharper disable once UnusedLocals
@@ -4975,10 +4948,63 @@ function VariantDependenciesManager(parent) {
         };
     };
 
+    var setBlock = function (set, isMaster) {
+        var $line;
+        var $self;
+        var $set = set;
+        var $isMaster = isMaster;
+
+        var ui = (function () {
+            var container = jQuery('<div/>', {
+                'class': 'variant-set-block'
+            });
+
+            // ReSharper disable once UnusedLocals
+            var flag = jQuery('<div/>', {
+                'class': 'unselectable flag ' + set.language.language.flag + '-small'
+            }).appendTo(container);
+
+            var name = jQuery('<div/>', {
+                'class': 'unselectable name',
+                html: set.tag
+            }).appendTo(container);
+
+            set.bind({
+                rename: function (e) {
+                    $(name).html(e.name);
+                }
+            });
+
+            return {
+                container: function () {
+                    return container;
+                },
+                destroy: function () {
+                    $(container).remove();
+                }
+            };
+
+        })();
+
+        return {
+            selfinject: function (me) {
+                $self = me;
+            },
+            id: $set.id,
+            view: function () {
+                return ui.container();
+            },
+            destroy: ui.destroy,
+            setLine: function(line) {
+                $line = line;
+            }
+        };
+
+    };
+
     function createNewLine(set) {
         var line = dependencyLine(set);
         line.selfinject(line);
-        //line.createBlocks();
         self.lines.setItem(line.id, line);
     }
 

@@ -1501,7 +1501,25 @@ input[type=submit].variant-button-edit {
 
 .variant-dependency-line {
     width: 100%;
-    height: 36px;
+    height: auto;
     border: 1px solid #777;
-    background-color: blue;
+}
+
+.variant-dependency-line .slave-container {
+    width: auto;
+    height: auto;
+    padding: 6px 0;
+    margin-right: 60px;
+}
+
+.variant-dependency-line .variant-set-block {
+    margin: 0 6px;
+}
+
+.variant-dependency-line .master-container {
+    float: right;
+    width: auto;
+    height: auto;
+    padding: 6px;
+    background-color: red;
 }
