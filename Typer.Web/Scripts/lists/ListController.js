@@ -1352,6 +1352,10 @@ VariantSet.prototype.removeDependency = function (set) {
 VariantSet.prototype.getLanguageId = function() {
     return this.languageId;
 };
+VariantSet.prototype.edit = function () {
+    var panel = new VariantSetEditPanel(this);
+    panel.display();
+};
 
 
 function Variant(editEntity, set, properties) {
@@ -4390,8 +4394,8 @@ function GroupOptionsManager(properties) {
                     html: $set.tag
                 });
                 $(header).bind({
-                    click: function() {
-                        alert('Edit ' + $set.tag);
+                    click: function () {
+                        $set.edit();
                     }
                 });
                 $(header).appendTo(container);
@@ -4871,7 +4875,6 @@ function VariantDependenciesManager(parent) {
     })();
 
     
-
     var dependencyLine = function (set) {
         var $self;
         var $set = set;
@@ -5108,3 +5111,181 @@ function VariantDependenciesManager(parent) {
 
 }
 extend(VariantSubpanel, VariantDependenciesManager);
+
+
+
+
+function VariantSetEditPanel(set) {
+    this.VariantSetEditPanel = true;
+    var self = this;
+    self.set = set;
+
+    this.ui = (function () {
+        var background = jQuery('<div/>', {
+            'class': 'edit-background',
+            'z-index': my.ui.addTopLayer()
+        }).appendTo($(document.body));
+
+        var frame = jQuery('<div/>', {
+            'class': 'edit-frame'
+        }).appendTo($(background));
+
+        var container = jQuery('<div/>', {
+            'class': 'edit-container variant-set-edit-panel'
+        }).appendTo($(frame));
+
+        // ReSharper disable once UnusedLocals
+        var close = jQuery('<div/>', {
+            'class': 'edit-close'
+        }).bind({
+            'click': function () {
+                self.cancel();
+            }
+        }).appendTo($(frame));
+
+        return {
+            display: function () {
+                $(background).css({
+                    'visibility': 'visible',
+                    'z-index': my.ui.addTopLayer()
+                });
+            },
+            hide: function () {
+                $(background).css({
+                    'visibility': 'hidden'
+                });
+            },
+            destroy: function () {
+                $(background).remove();
+            },
+            append: function (element) {
+                $(element).appendTo($(container));
+            }
+        };
+
+    })();
+
+    this.meta = (function () {
+        var container = jQuery('<div/>', {
+            'class': 'meta-container'
+        });
+
+        self.ui.append(container);
+
+        var flag = jQuery('<div/>', {
+            'class': 'flag ' + set.language.language.flag
+        }).appendTo(container);
+
+        var errorContainer = jQuery('<div/>').addClass('error').appendTo($(container));
+        var error = jQuery('<div/>', { 'class': 'error_content' }).appendTo(errorContainer);
+        var errorIcon = jQuery('<span/>', { 'class': 'icon' }).appendTo($(container));
+
+        var name = jQuery('<input/>', {
+            'class': 'field default',
+            'type': 'text'
+        }).bind({
+            'keydown': function (e) {
+                if (e.which === 13) {
+                    /* Jeżeli to nie jest ustawione, w IE 9 focus przeskakuje od razu
+                        * na przycisk [Select categories] i wywołuje jego kliknięcie. */
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            },
+            'keyup': function () {
+                //var field = this;
+                //if (timer) {
+                //    clearTimeout(timer);
+                //}
+                //timer = setTimeout(function () {
+                //    self.validate($(field).val());
+                //}, 150);
+            },
+            'change': function () {
+                //self.validate($(this).val());
+            },
+            'mouseup': function (e) {
+                e.preventDefault();
+            },
+            'blur': function () {
+                //self.validate($(this).val());
+            }
+        }).on({
+            'focus': function () {
+                this.select();
+            }
+        });
+
+        $(name).val(set.tag);
+
+        //Append panel to span to center it vertically.
+        var span = jQuery('<span/>', {
+            'class': 'block'
+        }).bind({
+            'click': function () {
+                $(valuePanel).focus();
+            }
+        }).appendTo($(container));
+
+        $(name).appendTo($(span));
+
+
+        function format(value) {
+            if (value === true) {
+                $(name).removeClass('invalid').addClass('valid');
+                $(errorContainer).css({ 'display': 'none' });
+                $(errorIcon).removeClass('iconInvalid').addClass('iconValid');
+            } else {
+                $(name).removeClass('valid').addClass('invalid');
+                $(errorContainer).css({ 'display': 'table' });
+                $(errorIcon).removeClass('iconValid').addClass('iconInvalid');
+                $(error).text(value);
+            }
+        }
+
+    })();
+
+    this.buttons = (function () {
+        var panel = jQuery('<div/>', {
+            'class': 'edit-buttons-panel'
+        });
+
+        var container = jQuery('<div/>', {
+            'class': 'edit-buttons-container'
+        }).appendTo($(panel));
+
+        var ok = jQuery('<input/>', {
+            'class': 'edit-button',
+            'type': 'submit',
+            'value': 'OK'
+        }).bind({
+            'click': function () {
+                self.confirm();
+            }
+        }).appendTo($(container));
+
+        // ReSharper disable once UnusedLocals
+        var cancel = jQuery('<input/>', {
+            'class': 'edit-button',
+            'type': 'submit',
+            'value': 'Cancel'
+        }).bind({
+            'click': function () {
+                self.cancel();
+            }
+        }).appendTo($(container));
+
+        self.ui.append(panel);
+
+    })();
+
+}
+VariantSetEditPanel.prototype.display = function () {
+    this.ui.display();
+};
+VariantSetEditPanel.prototype.cancel = function () {
+    this.ui.destroy();
+};
+VariantSetEditPanel.prototype.confirm = function () {
+    alert('confirm');
+};

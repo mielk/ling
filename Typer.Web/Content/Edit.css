@@ -1522,3 +1522,29 @@ input[type=submit].variant-button-edit {
     height: auto;
     padding: 6px;
 }
+
+.variant-set-edit-panel .meta-container {
+    position: relative;
+    float: left;
+    display: block;
+    width: 100%;
+    height: 32px;
+    background-color: red;
+}
+
+.meta-container .flag {
+    position: relative;
+    float: left;
+    width: 51px;
+    height: 32px;
+    border: 1px solid #444;
+    background-position: center;
+    background-color: transparent !important;
+}
+
+input.set-name:focus
+{
+    border-color: rgb(56, 71, 120);
+    color: rgb(56, 71, 120);
+    background-color: rgb(186, 210, 223);
+}
