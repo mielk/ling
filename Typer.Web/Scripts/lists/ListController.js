@@ -1273,16 +1273,6 @@ function VariantSet(editEntity, properties) {
         dependants: properties.Dependants
     };
 
-    //self.eventHandler.bind({
-    //    addConnection: function (e) {
-    //        my.notify.display('Added to ' + self.tag + ': ' + e.set.tag);
-    //    },
-    //    removeConnection: function (e) {
-    //        my.notify.display('Removed from ' + self.tag + ': ' + e.set.tag);
-    //    }
-    //});
-
-
 }
 VariantSet.prototype.bind = function (e) {
     this.eventHandler.bind(e);
@@ -1328,8 +1318,36 @@ VariantSet.prototype.loadDependants = function (dependants) {
         }
     }
 };
-VariantSet.prototype.setParent = function(set) {
+VariantSet.prototype.setParent = function(set, trigger) {
     this.parent = set;
+    if (trigger) {
+        this.trigger({
+            type: 'setParent',
+            parent: set
+        });
+    }
+
+};
+VariantSet.prototype.clearParent = function () {
+    var self = this;
+    if (this.parent) {
+        this.parent.removeDependency(this);
+    }
+    this.trigger({
+        type: 'clearParent',
+        parent: self.parent
+    });
+
+    this.parent = null;
+
+};
+VariantSet.prototype.removeDependency = function (set) {
+    this.dependants.removeItem(set.id);
+    this.trigger({
+        type: 'dependencyRemoved',
+        dependant: set
+    });
+
 };
 VariantSet.prototype.getLanguageId = function() {
     return this.languageId;
@@ -4098,9 +4116,9 @@ function VariantOptionsManager(parent) {
 
         function refresh() {
             if ($active) {
-                $(container).addClass('connection-group-active');
+                $(container).addClass('active');
             } else {
-                $(container).removeClass('connection-group-active');
+                $(container).removeClass('active');
             }
 
         }
@@ -4716,9 +4734,9 @@ function VariantConnectionsManager(parent) {
 
         function refresh() {
             if ($active) {
-                $(container).addClass('connection-group-active');
+                $(container).addClass('active');
             } else {
-                $(container).removeClass('connection-group-active');
+                $(container).removeClass('active');
             }
 
         }
@@ -4896,10 +4914,37 @@ function VariantDependenciesManager(parent) {
             self.editQuestion.variantsSets.each(function(key, variantSet) {
                 var setWordtype = variantSet.wordtype.id;
                 if (variantSet.languageId === $set.languageId && mastersArray.indexOf(setWordtype) >= 0) {
-                    var masterBlock = new setBlock(variantSet, true);
+                    var masterBlock = new setBlock(variantSet, true, $set.parent === variantSet);
+                    masterBlock.selfinject(masterBlock);
                     $masters.setItem(masterBlock.id, masterBlock);
+                    masterBlock.bind({
+                        click: function (e) {
+                            blockClicked(e.block);
+                        }
+                    });
                 }
             });
+
+        }
+
+        function blockClicked(block) {
+            var previousParent = $set.parent;
+
+            if (previousParent === block.set) {
+                $set.clearParent();
+                block.deactivate();
+            } else {
+
+                if (previousParent) {
+                    $set.clearParent();
+                    var previousBlock = $masters.getItem(previousParent.id);
+                    if (previousBlock) previousBlock.deactivate();
+                }
+
+                $set.setParent(block.set, true);
+                block.activate();
+
+            }
 
         }
 
@@ -4908,6 +4953,7 @@ function VariantDependenciesManager(parent) {
             ui.clear();
 
             $slave = new setBlock(set, false);
+            $slave.selfinject($slave);
             ui.addSlave($slave.view());
 
             loadMasters();
@@ -4948,15 +4994,25 @@ function VariantDependenciesManager(parent) {
         };
     };
 
-    var setBlock = function (set, isMaster) {
+    var setBlock = function (set, isMaster, isActive) {
         var $line;
         var $self;
         var $set = set;
         var $isMaster = isMaster;
+        var $active = isActive;
+        var $events = new EventHandler();
 
         var ui = (function () {
             var container = jQuery('<div/>', {
                 'class': 'variant-set-block'
+            });
+            $(container).bind({
+                click: function () {
+                    $events.trigger({
+                        type: 'click',
+                        block: $self
+                    });
+                }
             });
 
             // ReSharper disable once UnusedLocals
@@ -4975,12 +5031,30 @@ function VariantDependenciesManager(parent) {
                 }
             });
 
+            function refresh() {
+                if ($active) {
+                    $(container).addClass('active');
+                } else {
+                    $(container).removeClass('active');
+                }
+            }
+
+            refresh();
+
             return {
                 container: function () {
                     return container;
                 },
                 destroy: function () {
                     $(container).remove();
+                },
+                activate: function () {
+                    $active = true;
+                    refresh();
+                },
+                deactivate: function () {
+                    $active = false;
+                    refresh();
                 }
             };
 
@@ -4991,12 +5065,25 @@ function VariantDependenciesManager(parent) {
                 $self = me;
             },
             id: $set.id,
+            set: $set,
             view: function () {
                 return ui.container();
             },
             destroy: ui.destroy,
             setLine: function(line) {
                 $line = line;
+            },
+            bind: function (e) {
+                $events.bind(e);
+            },
+            trigger: function (e) {
+                $events.trigger(e);
+            },
+            activate: function () {
+                ui.activate();
+            },
+            deactivate: function () {
+                ui.deactivate();
             }
         };
 

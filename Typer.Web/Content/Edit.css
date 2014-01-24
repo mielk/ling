@@ -1357,7 +1357,7 @@ input[type=submit].variant-button-edit {
     cursor: pointer;
 }
 
-.connection-group-active {
+.variant-subpanel-content .active{
     background-color: rgb(150, 255, 150);
 }
 
@@ -1517,9 +1517,8 @@ input[type=submit].variant-button-edit {
 }
 
 .variant-dependency-line .master-container {
-    float: right;
+    float: left;
     width: auto;
     height: auto;
     padding: 6px;
-    background-color: red;
 }
