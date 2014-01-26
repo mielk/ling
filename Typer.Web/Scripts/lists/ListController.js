@@ -3323,7 +3323,7 @@ function WordtypePanel(line, object) {
         var dropdown = new DropDown({            
             container: container,
             data: WORDTYPE.getValues(),
-            slots: 4,
+            slots: 5,
             caseSensitive: false,
             confirmWithFirstClick: true
         });
@@ -5119,6 +5119,28 @@ function VariantSetEditPanel(set) {
     this.VariantSetEditPanel = true;
     var self = this;
     self.set = set;
+    self.events = new EventHandler();
+
+    this.validator = (function () {
+        var invalid = new HashTable(null);
+
+        return {
+            validation: function (e) {
+                if (e.status) {
+                    invalid.removeItem(e.id);
+                } else {
+                    invalid.setItem(e.id, e.id);
+                }
+
+                self.events.trigger({
+                    type: 'validation',
+                    status: invalid.size() === 0
+                });
+
+            }
+        };
+
+    })();
 
     this.ui = (function () {
         var background = jQuery('<div/>', {
@@ -5143,6 +5165,7 @@ function VariantSetEditPanel(set) {
             }
         }).appendTo($(frame));
 
+
         return {
             display: function () {
                 $(background).css({
@@ -5166,6 +5189,7 @@ function VariantSetEditPanel(set) {
     })();
 
     this.meta = (function () {
+        var timer;
         var container = jQuery('<div/>', {
             'class': 'meta-container'
         });
@@ -5193,22 +5217,22 @@ function VariantSetEditPanel(set) {
                 }
             },
             'keyup': function () {
-                //var field = this;
-                //if (timer) {
-                //    clearTimeout(timer);
-                //}
-                //timer = setTimeout(function () {
-                //    self.validate($(field).val());
-                //}, 150);
+                var field = this;
+                if (timer) {
+                    clearTimeout(timer);
+                }
+                timer = setTimeout(function () {
+                    self.validate($(field).val());
+                }, 150);
             },
             'change': function () {
-                //self.validate($(this).val());
+                self.validate($(this).val());
             },
             'mouseup': function (e) {
                 e.preventDefault();
             },
             'blur': function () {
-                //self.validate($(this).val());
+                self.validate($(this).val());
             }
         }).on({
             'focus': function () {
@@ -5223,7 +5247,7 @@ function VariantSetEditPanel(set) {
             'class': 'block'
         }).bind({
             'click': function () {
-                $(valuePanel).focus();
+                $(name).focus();
             }
         }).appendTo($(container));
 
@@ -5242,6 +5266,62 @@ function VariantSetEditPanel(set) {
                 $(error).text(value);
             }
         }
+
+        function validate(name) {
+            var x = set;
+
+            if (!name || name.trim().length === 0) return MessageBundle.get(dict.NameCannotBeEmpty);
+
+            var sets = self.set.language.variantSets;
+            for (var i = 0; i < sets.length; i++) {
+                var $set = sets[i];
+                if ($set.tag === name && $set !== set) {
+                    return MessageBundle.get(dict.NameAlreadyExists);
+                }
+            }
+
+            return true;
+
+        }
+
+        return {
+            validate: validate,
+            format: format
+        }
+
+    })();
+
+    this.wordtypePanel = (function () {
+        var container = jQuery('<div/>', {
+            'class': 'wordtype-container'
+        });
+
+        self.ui.append(container);
+
+        var name = jQuery('<div/>', {
+            'class': 'name',
+            html: 'Type'
+        }).appendTo(container);
+
+        var combobox = jQuery('<div/>', {
+            'class': 'combobox'
+        }).appendTo(container);
+
+        var dropdown = new DropDown({
+            container: combobox,
+            data: WORDTYPE.getValues(),
+            slots: 5,
+            caseSensitive: false,
+            confirmWithFirstClick: true
+        });
+
+        dropdown.select(self.set.wordtype);
+
+        dropdown.bind({
+            change: function (e) {
+                alert('dropdown changed');
+            }
+        });
 
     })();
 
@@ -5275,9 +5355,21 @@ function VariantSetEditPanel(set) {
             }
         }).appendTo($(container));
 
+        self.events.bind({
+            validation: function (e) {
+                if (e.status) {
+                    $(ok).removeAttr('disabled');
+                } else {
+                    $(ok).attr('disabled', 'disabled');
+                }
+            }
+        });
+
         self.ui.append(panel);
 
     })();
+
+    self.validate();
 
 }
 VariantSetEditPanel.prototype.display = function () {
@@ -5288,4 +5380,16 @@ VariantSetEditPanel.prototype.cancel = function () {
 };
 VariantSetEditPanel.prototype.confirm = function () {
     alert('confirm');
+};
+VariantSetEditPanel.prototype.validate = function (tag) {
+    var self = this;
+    var validationResult = self.meta.validate(tag !== undefined ? tag : self.set.tag);
+
+    self.meta.format(validationResult);
+
+    self.validator.validation({
+        id: self.set.id,
+        status: (validationResult === true ? true : false)
+    });
+
 };

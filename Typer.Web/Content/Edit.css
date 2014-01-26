@@ -1529,7 +1529,6 @@ input[type=submit].variant-button-edit {
     display: block;
     width: 100%;
     height: 32px;
-    background-color: red;
 }
 
 .meta-container .flag {
@@ -1537,9 +1536,38 @@ input[type=submit].variant-button-edit {
     float: left;
     width: 51px;
     height: 32px;
+    margin: 1px 0;
+    margin-right: 6px;
     border: 1px solid #444;
     background-position: center;
     background-color: transparent !important;
+}
+
+.wordtype-container {
+    position: relative;
+    float: left;
+    width: 100%;
+    height: 26px;
+    margin: 12px 0;
+}
+
+.wordtype-container .name {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 51px;
+    height: 26px;
+    padding: 6px;
+    line-height: 14px;
+    text-align: center;
+}
+
+.wordtype-container .combobox {
+    position: absolute;
+    left: 57px;
+    right: 0;
+    top: 0;
+    height: 26px;
 }
 
 input.set-name:focus

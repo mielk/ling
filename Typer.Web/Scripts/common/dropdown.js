@@ -2,9 +2,10 @@
 function DropDown(properties) {
     this.DropDown = true;
     var self = this;
+    self.options = new HashTable(null);
 
     self.container = properties.container;
-    self.select = jQuery('<select/>', {
+    self.selection = jQuery('<select/>', {
         'class': 'dropdown-select'
     }).appendTo($(self.container));
 
@@ -39,10 +40,11 @@ DropDown.prototype.render = function (params) {
             value: key,
             html: value.name
         });
-        option.appendTo(self.select);
+        option.appendTo(self.selection);
+        self.options.setItem(key, option);
     });
 
-    self.select.select2({
+    self.selection.select2({
         placeholder: params.placeholder || '',
         allowClear: params.allowClear || false
     });
@@ -67,4 +69,11 @@ DropDown.prototype.bind = function (e) {
 };
 DropDown.prototype.trigger = function (e) {
     this.eventHandler.trigger(e);
+};
+DropDown.prototype.select = function (item) {
+    var key = item.key || item.name;
+    var $item = this.data.getItem(key);
+    if ($item) {
+        $(this.selection).select2('val', $item.name);
+    }
 };
