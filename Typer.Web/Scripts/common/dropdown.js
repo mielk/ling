@@ -49,7 +49,7 @@ DropDown.prototype.render = function (params) {
         allowClear: params.allowClear || false
     });
 
-    self.select.bind({
+    self.selection.bind({
         change: function (e) {
             var value = e.val;
             var item = self.data.getItem(value);

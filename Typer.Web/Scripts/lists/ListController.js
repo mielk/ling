@@ -1356,6 +1356,14 @@ VariantSet.prototype.edit = function () {
     var panel = new VariantSetEditPanel(this);
     panel.display();
 };
+VariantSet.prototype.changeWordtype = function (wordtype) {
+    if (wordtype === this.wordtype) return;
+    this.wordtype = wordtype;
+    this.trigger({
+        type: 'changeWordtype',
+        wordtype: wordtype
+    });
+};
 
 
 function Variant(editEntity, set, properties) {
@@ -1378,17 +1386,34 @@ function LanguageEntity(parent, language) {
     this.LanguageEntity = true;
     this.parent = parent;
     this.language = language;
+    this.events = new EventHandler();
     this.items = [];
     this.variantSets = [];
     this.variants = new HashTable(null);
     this.dependencies = new HashTable(null);
 }
+LanguageEntity.prototype.trigger = function (e) {
+    this.events.trigger(e);
+};
+LanguageEntity.prototype.bind = function (e) {
+    this.events.bind(e);
+};
 LanguageEntity.prototype.addItem = function (option) {
     this.items.push(option);
     option.injectLanguageEntity(this);
 };
-LanguageEntity.prototype.addVariantSet = function(variantSet) {
-    this.variantSets.push(variantSet);
+LanguageEntity.prototype.addVariantSet = function (variantSet) {
+    var self = this;
+    self.variantSets.push(variantSet);
+    variantSet.bind({
+        changeWordtype: function (e) {
+            self.trigger({
+                type: 'changeWordtype',
+                set: variantSet,
+                wordtype: e.wordtype
+            });
+        }
+    });
 };
 LanguageEntity.prototype.addVariant = function(variant) {
     this.variants.setItem(variant.id, variant);
@@ -4905,6 +4930,9 @@ function VariantDependenciesManager(parent) {
                 },
                 addMaster: function(block) {
                     block.appendTo(masterContainer);
+                },
+                destroy: function () {
+                    $(container).remove();
                 }
             };
 
@@ -4914,10 +4942,32 @@ function VariantDependenciesManager(parent) {
             var wordtypeId = $set.wordtype.id;
             var mastersArray = $set.language.getMasters(wordtypeId);
 
+            $masters.clear();
+            if (mastersArray === undefined || mastersArray.length === 0) return;
+
             self.editQuestion.variantsSets.each(function(key, variantSet) {
                 var setWordtype = variantSet.wordtype.id;
                 if (variantSet.languageId === $set.languageId && mastersArray.indexOf(setWordtype) >= 0) {
                     var masterBlock = new setBlock(variantSet, true, $set.parent === variantSet);
+                    
+                    //Check if this variant set changed its wordtype.
+                    variantSet.bind({
+                        changeWordtype: function (e) {
+                            var newWordtype = e.wordtype;
+
+                            //Block with this variant set is removed.
+                            if (mastersArray.indexOf(newWordtype.id) < 0) {
+                                //Additionally, if this set was assigned as parent, parent is cleared.
+                                if ($set.parent === variantSet) {
+                                    $set.clearParent();
+                                }
+
+                                masterBlock.destroy();
+                                $masters.removeItem(variantSet.id);
+                            }
+                        }
+                    });
+
                     masterBlock.selfinject(masterBlock);
                     $masters.setItem(masterBlock.id, masterBlock);
                     masterBlock.bind({
@@ -4968,32 +5018,43 @@ function VariantDependenciesManager(parent) {
 
         render();
 
-        //Po zmianach w strukturze setów, widok jest aktualizowany
+        var $events = (function () {
+            $set.bind({
+                changeWordtype: function (e) {
+                    loadMasters();
+                    if ($masters === undefined || $masters.size() === 0) {
+                        $set.clearParent();
+                        ui.destroy();
+                    } else {
+                        var previousWordtypeId = $set.parent.wordtype.id;
+                        if (!$masters.hasItem(previousWordtypeId)) {
+                            $set.clearParent();
+                        }
+                        render();
+                    }
+                }
+            });
 
+            $set.language.bind({
+                changeWordtype: function (e) {
+                    if (!$masters.hasItem(e.set.id)) {
+                        loadMasters();
+                        render();
+                    }
+                }
+            });
 
-        //// ReSharper disable once UnusedLocals
-        //var $events = (function () {
-        //    $group.bind({
-        //        remove: function (e) {
-        //            var block = getBlock(e.set.id);
-        //            removeBlock(block);
-        //            refreshOptionsManager();
-        //        },
-        //        add: function (e) {
-        //            var block = setBlock(e.set);
-        //            block.selfinject(block);
-        //            addBlock(block);
-        //            refreshOptionsManager();
-        //        }
-        //    });
-        //})();
+        })();
 
 
         return {
             selfinject: function (me) {
                 $self = me;
             },
-            id: $set.id
+            id: $set.id,
+            destroy: function () {
+                ui.destroy();
+            }
         };
     };
 
@@ -5268,8 +5329,6 @@ function VariantSetEditPanel(set) {
         }
 
         function validate(name) {
-            var x = set;
-
             if (!name || name.trim().length === 0) return MessageBundle.get(dict.NameCannotBeEmpty);
 
             var sets = self.set.language.variantSets;
@@ -5292,6 +5351,7 @@ function VariantSetEditPanel(set) {
     })();
 
     this.wordtypePanel = (function () {
+        var value = self.set.wordtype;
         var container = jQuery('<div/>', {
             'class': 'wordtype-container'
         });
@@ -5315,13 +5375,19 @@ function VariantSetEditPanel(set) {
             confirmWithFirstClick: true
         });
 
-        dropdown.select(self.set.wordtype);
+        dropdown.select(value);
 
         dropdown.bind({
             change: function (e) {
-                alert('dropdown changed');
+                value = e.item;
             }
         });
+
+        return {
+            value: function () {
+                return value;
+            }
+        }
 
     })();
 
@@ -5379,7 +5445,8 @@ VariantSetEditPanel.prototype.cancel = function () {
     this.ui.destroy();
 };
 VariantSetEditPanel.prototype.confirm = function () {
-    alert('confirm');
+    this.set.changeWordtype(this.wordtypePanel.value());
+    this.cancel();
 };
 VariantSetEditPanel.prototype.validate = function (tag) {
     var self = this;
