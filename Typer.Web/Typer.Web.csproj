@@ -279,6 +279,8 @@
     <Content Include="Scripts\authentication\register.js" />
     <Content Include="Scripts\authentication\mailValidation.js" />
     <Content Include="Scripts\lists\ListController.js" />
+    <Content Include="Scripts\lists\Options.js" />
+    <Content Include="Scripts\lists\Variants.js" />
     <Content Include="Scripts\question\search.js" />
     <Content Include="Scripts\question\test.js" />
     <Content Include="Scripts\question\word.js" />

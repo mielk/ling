@@ -32,7 +32,9 @@ namespace Typer.Web
                         "~/Scripts/question/search.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/lists").Include(
-                                    "~/Scripts/lists/ListController.js"));
+                                    "~/Scripts/lists/ListController.js",
+                                    "~/Scripts/lists/Variants.js",
+                                    "~/Scripts/lists/Options.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/notify").Include(
                         "~/Scripts/common/notify.js"));
