@@ -1649,11 +1649,8 @@ function VariantDependenciesManager(parent) {
         set.bind({            
             changeWordtype: function (e) {
             
-                if (e.wasDependable && e.isDependable) {
-                    //var line = self.lines.getItem(set.id);
-                    //line.refresh();
-                } else if (e.isDependable) {
-                    
+                if (!e.wasDependable && e.isDependable) {
+                    checkSet(set);
                 }
 
             }

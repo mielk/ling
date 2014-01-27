@@ -1503,6 +1503,7 @@ input[type=submit].variant-button-edit {
     width: 100%;
     height: auto;
     border: 1px solid #777;
+    margin: 6px 0;
 }
 
 .variant-dependency-line .slave-container {
