@@ -32,7 +32,7 @@ DropDown.prototype.render = function (params) {
 
     //Put an empty option if placeholder is defined.
     if (params.placeholder) {
-        jQuery('<option/>').appendTo(self.select);
+        jQuery('<option/>').appendTo(self.selection);
     }
 
     self.data.each(function(key, value){

@@ -4943,7 +4943,7 @@ function VariantDependenciesManager(parent) {
             var mastersArray = $set.language.getMasters(wordtypeId);
 
             $masters.clear();
-            if (mastersArray === undefined || mastersArray.length === 0) return;
+            if (!mastersArray || mastersArray.length === 0) return;
 
             self.editQuestion.variantsSets.each(function(key, variantSet) {
                 var setWordtype = variantSet.wordtype.id;
@@ -5018,9 +5018,10 @@ function VariantDependenciesManager(parent) {
 
         render();
 
+        // ReSharper disable once UnusedLocals
         var $events = (function () {
             $set.bind({
-                changeWordtype: function (e) {
+                changeWordtype: function () {
                     loadMasters();
                     if ($masters === undefined || $masters.size() === 0) {
                         $set.clearParent();
@@ -5062,7 +5063,6 @@ function VariantDependenciesManager(parent) {
         var $line;
         var $self;
         var $set = set;
-        var $isMaster = isMaster;
         var $active = isActive;
         var $events = new EventHandler();
 
@@ -5257,6 +5257,7 @@ function VariantSetEditPanel(set) {
 
         self.ui.append(container);
 
+        // ReSharper disable once UnusedLocals
         var flag = jQuery('<div/>', {
             'class': 'flag ' + set.language.language.flag
         }).appendTo(container);
@@ -5328,13 +5329,13 @@ function VariantSetEditPanel(set) {
             }
         }
 
-        function validate(name) {
-            if (!name || name.trim().length === 0) return MessageBundle.get(dict.NameCannotBeEmpty);
+        function validate(value) {
+            if (!value || value.trim().length === 0) return MessageBundle.get(dict.NameCannotBeEmpty);
 
             var sets = self.set.language.variantSets;
             for (var i = 0; i < sets.length; i++) {
                 var $set = sets[i];
-                if ($set.tag === name && $set !== set) {
+                if ($set.tag === value && $set !== set) {
                     return MessageBundle.get(dict.NameAlreadyExists);
                 }
             }
@@ -5346,7 +5347,7 @@ function VariantSetEditPanel(set) {
         return {
             validate: validate,
             format: format
-        }
+        };
 
     })();
 
@@ -5358,6 +5359,7 @@ function VariantSetEditPanel(set) {
 
         self.ui.append(container);
 
+        // ReSharper disable once UnusedLocals
         var name = jQuery('<div/>', {
             'class': 'name',
             html: 'Type'
@@ -5384,10 +5386,10 @@ function VariantSetEditPanel(set) {
         });
 
         return {
-            value: function () {
+            value: function() {
                 return value;
             }
-        }
+        };
 
     })();
 
