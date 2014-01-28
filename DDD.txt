@@ -71,3 +71,16 @@ CREATE TABLE [dbo].[MatchQuestionCategory] (
     FOREIGN KEY ([QuestionId]) REFERENCES [dbo].[Questions] ([Id]),
 	FOREIGN KEY ([CategoryId]) REFERENCES [dbo].[Categories] ([Id]),
 );
+
+
+
+===================
+- WordtypeProperties zmieni³o nazwê na WordPropertyDefinitions
+- WordtypeProperties - zmieniona struktura; INT PropertyId zamiast 3 kolumn: Name, Type, Details (wszystkie te dane powinny byæ zdefiniowane w tabeli GrammarPropertyDefinitions)
+- GrammarDefinitions zmieni³o nazwê na GrammarFormDefinitions
+- GrammarForms - zmieniona struktura; INT FormId zamiast NVARCHAR Definition
+- dodana tabela GrammarPropertyDefinitions
+- dodana tabela VariantSetPropertiesDefinitions
+- dodana tabela GrammarPropertyOptions
+- dodana tabela ValueTypes
+
