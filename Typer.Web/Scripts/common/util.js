@@ -414,10 +414,10 @@ my.ui = (function () {
                     return checked;
                 },
                 change: function (value) {
-                    if (value === false) {
-                        change(false);
-                    } else if (value === true) {
+                    if (value) {
                         change(true);
+                    } else {
+                        change(false);
                     }
                 }
             };

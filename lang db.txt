@@ -611,6 +611,17 @@ CREATE TABLE [dbo].[GrammarForms] (
 );
 
 
+CREATE TABLE [dbo].[WordProperties] (
+    [Id]         INT            IDENTITY (1, 1) NOT NULL,
+    [WordId]     INT            NOT NULL,
+    [PropertyId] INT 		NOT NULL,
+    [Value]   	 INT            NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [Unique_Word_Property] UNIQUE NONCLUSTERED ([WordId] ASC, [PropertyId] ASC),
+    FOREIGN KEY ([PropertyId]) REFERENCES [dbo].[GrammarPropertyDefinitions] ([Id]),
+    FOREIGN KEY ([WordId]) REFERENCES [dbo].[Words] ([Id])
+);
+
 
 CREATE TABLE [dbo].[WordPropertyDefinitions] (
     [Id]         INT            IDENTITY (1, 1) NOT NULL,

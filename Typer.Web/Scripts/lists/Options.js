@@ -241,7 +241,7 @@ Word.prototype.loadDetails = function () {
     for (var i = 0; i < $values.length; i++) {
         var set = $values[i];
         var form = {
-            id: set.Definition,
+            id: set.FormId,
             value: set.Content
         };
         this.details.setItem(form.id, form);
@@ -464,18 +464,18 @@ function WordProperty(params) {
 
         var input = (function () {
             switch (params.Type) {
-                case 'radio':
+                case 2:
                     return my.ui.radio({
                         container: container,
                         name: self.name,
-                        options: self.parseToRadioOptions(params.Details)
+                        options: self.parseToRadioOptions(params.Options)
                     });
-                case 'boolean':
+                case 1:
                     return my.ui.checkbox({
                         container: container,
                         name: params.Name,
                         caption: params.Name,
-                        checked: params.Details.indexOf('*') >= 0 ? true : false
+                        checked: params.Default
                     });
                 default:
                     return null;
@@ -513,27 +513,26 @@ function WordProperty(params) {
 WordProperty.prototype.view = function () {
     return this.ui.view();
 };
-WordProperty.prototype.parseToRadioOptions = function (str) {
-    var $options = str.split('|');
-    var options = {};
-    for (var i = 0; i < $options.length; i++) {
-        var text = $options[i];
-        var caption = my.text.substring(text, '', '(').trim();
-        var key = Number(my.text.substring(text, '(', ')'));
-        var checked = (text.indexOf('*') >= 0 ? true : false);
+WordProperty.prototype.parseToRadioOptions = function (options) {
+    var results = {};
+    for (var i = 0; i < options.length; i++) {
+        var option = options[i];
+        var caption = option.Name;
+        var key = option.Id;
+        var checked = option.Default;
 
-        var option = {
+        var result = {
             key: key,
             value: key,
             caption: caption,
             checked: checked
         };
 
-        options[key] = option;
+        results[key] = result;
 
     }
 
-    return options;
+    return results;
 
 };
 WordProperty.prototype.bind = function (e) {
@@ -610,13 +609,60 @@ function GrammarManager(object, properties) {
 
     })();
 
-    this.loadSearchPanel();
+    this.renderSearchPanel(object.name);
     this.loadForms();
     this.loadValues();
     this.render();
 
 }
 extend(DetailsManager, GrammarManager);
+GrammarManager.prototype.renderSearchPanel = function (name) {
+    var self = this;
+
+    //Remove the previous dropdown if exists.
+    var container = self.ui.searchPanel();
+    $(container).empty();
+
+    this.searchDropdown = new DropDown({
+        container: self.ui.searchPanel(),
+        placeholder: 'Select word to copy grammar forms',
+        allowClear: true
+    });
+
+    this.searchDropdown.bind({
+        change: function (e) {
+            self.propertiesManager.copyDetails(e.item.object.Id);
+            self.copyDetails(e.item.object.Name, e.item.object.Id);
+        }
+    });
+
+    if (name) {
+        this.refreshSearchPanel(name);
+    }
+
+};
+GrammarManager.prototype.refreshSearchPanel = function (name) {
+    var self = this;
+
+    var data = my.db.fetch('Words', 'GetSimilarWords', {
+        'languageId': self.entity.languageId,
+        'wordtype': self.entity.parent.wordtype ? self.entity.parent.wordtype.id : 0,
+        'word': name || self.entity.name
+    });
+
+    //Convert to objects for dropdown (they must have [key] or [name] property).
+    var result = [];
+    for (var i = 0; i < data.length; i++) {
+        var item = data[i];
+        result.push({
+            key: item.Id,
+            name: item.Name
+        });
+    }
+
+    self.searchDropdown.loadData(result);
+
+};
 GrammarManager.prototype.loadSearchPanel = function (name) {
     var self = this;
 
@@ -731,7 +777,7 @@ GrammarManager.prototype.addForm = function (form) {
     group.add(form);
 
     //Add to flyweight map of forms.
-    this.forms.setItem(form.key, form);
+    this.forms.setItem(form.id, form);
 
 };
 GrammarManager.prototype.copyDetails = function (name, id) {
@@ -1150,9 +1196,12 @@ EditOptionPanel.prototype.generalRender = function () {
             self.editObject.name = value;
         },
         controlBinding: {
-            blur: function (e) {
+            change: function (e) {
                 var value = e.target.value;
-                if (self.details.loadSearchPanel) self.details.loadSearchPanel(value);
+                if (self.details.searchDropdown) {
+                    self.details.refreshSearchPanel();
+                }
+                //if (self.details.loadSearchPanel) self.details.loadSearchPanel(value);
             }
         },
         validation: function (params) {

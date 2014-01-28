@@ -20,6 +20,7 @@ namespace Typer.DAL.Infrastructure
         public DbSet<QuestionCategoryDto> MatchQuestionCategory { get; set; }
         public DbSet<WordPropertyDefinitionDto> WordPropertyDefinitions { get; set; }
         public DbSet<GrammarPropertyDefinitionDto> GrammarPropertyDefinitions { get; set; }
+        public DbSet<GrammarPropertyOptionDto> GrammarPropertyOptions { get; set; }
         public DbSet<GrammarFormDefinitonDto> GrammarDefinitions { get; set; }
         public DbSet<WordtypePropertyValueDto> WordtypePropertyValues { get; set; }
         public DbSet<GrammarFormDto> GrammarForms { get; set; }
@@ -29,6 +30,7 @@ namespace Typer.DAL.Infrastructure
         public DbSet<VariantLimitDto> VariantLimits { get; set; }
         public DbSet<VariantDependencyDto> VariantDependencies { get; set; }
         public DbSet<DependencyDefinitionDto> DependenciesDefinitions { get; set; }
+        
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -53,6 +55,7 @@ namespace Typer.DAL.Infrastructure
             modelBuilder.Entity<VariantDependencyDto>().ToTable("VariantDependences");
             modelBuilder.Entity<DependencyDefinitionDto>().ToTable("VariantDependenciesDefinitions");
             modelBuilder.Entity<GrammarPropertyDefinitionDto>().ToTable("GrammarPropertyDefinitions");
+            modelBuilder.Entity<GrammarPropertyOptionDto>().ToTable("GrammarPropertyOptions");
         }
 
 

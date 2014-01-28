@@ -328,7 +328,8 @@ namespace Typer.DAL.Repositories
             Int32.TryParse(parameters[1], out propertyId);
 
             //Value
-            string value = parameters[2];
+            int value;
+            Int32.TryParse(parameters[2], out value);
 
             return AddWordProperty(wordId, propertyId, value);
 
@@ -346,25 +347,19 @@ namespace Typer.DAL.Repositories
             Int32.TryParse(parameters[1], out propertyId);
 
             //Value
-            string value = parameters[2];
+            int value;
+            Int32.TryParse(parameters[2], out value);
 
             return AddWordProperty(wordId, propertyId, value);
         }
 
-        private bool AddWordProperty(int wordId, int propertyId, string value)
+        private bool AddWordProperty(int wordId, int propertyId, int value)
         {
             //Dto object.
             WordtypePropertyValueDto dto = GetPropertyValue(wordId, propertyId);
             if (dto != null)
             {
-                if (value.Length == 0)
-                {
-                    Context.WordtypePropertyValues.Remove(dto);
-                }
-                else
-                {
-                    dto.Value = value;
-                }
+                dto.Value = value;
             }
             else
             {
@@ -517,8 +512,8 @@ namespace Typer.DAL.Repositories
                     var parameters = property.Split('|');
                     int key;
                     Int32.TryParse(parameters[0], out key);
-
-                    var value = parameters[1];
+                    int value;
+                    Int32.TryParse(parameters[1], out value);
 
                     if (!AddWordProperty(id, key, value)) result = false;
 
@@ -565,6 +560,11 @@ namespace Typer.DAL.Repositories
         public IEnumerable<GrammarPropertyDefinitionDto> GetProperties(IEnumerable<int> ids)
         {
             return Context.GrammarPropertyDefinitions.Where(gpd => ids.Contains(gpd.Id));
+        }
+
+        public IEnumerable<GrammarPropertyOptionDto> GetGrammarPropertyOptions(int propertyId)
+        {
+            return Context.GrammarPropertyOptions.Where(gpo => gpo.PropertyId == propertyId);
         }
 
         public IEnumerable<int> GetPropertiesIds(int languageId, int wordtypeId)

@@ -3,6 +3,11 @@ function DropDown(properties) {
     this.DropDown = true;
     var self = this;
     self.options = new HashTable(null);
+    self.data = new HashTable(null);
+    self.params = {
+        placeholder: properties.placeholder,
+        allowClear: properties.allowClear
+    }
 
     self.container = properties.container;
     self.selection = jQuery('<select/>', {
@@ -10,28 +15,31 @@ function DropDown(properties) {
     }).appendTo($(self.container));
 
     self.eventHandler = new EventHandler();
-
     self.loadData(properties.data);
-
-    self.render(properties);
 
 }
 DropDown.prototype.loadData = function (data) {
 
     this.data = new HashTable(null);
 
-    for (var i = 0; i < data.length; i++) {
-        var item = data[i];
-        var key = item.key || item.name;
-        this.data.setItem(key, item);
+    if (data) {
+        for (var i = 0; i < data.length; i++) {
+            var item = data[i];
+            var key = item.key || item.name;
+            this.data.setItem(key, item);
+        }
     }
 
+    this.render();
+
 };
-DropDown.prototype.render = function (params) {
+DropDown.prototype.render = function () {
     var self = this;
 
+    $(self.selection).empty();
+
     //Put an empty option if placeholder is defined.
-    if (params.placeholder) {
+    if (self.params.placeholder) {
         jQuery('<option/>').appendTo(self.selection);
     }
 
@@ -45,8 +53,8 @@ DropDown.prototype.render = function (params) {
     });
 
     self.selection.select2({
-        placeholder: params.placeholder || '',
-        allowClear: params.allowClear || false
+        placeholder: self.params.placeholder || '',
+        allowClear: self.params.allowClear || false
     });
 
     self.selection.bind({
