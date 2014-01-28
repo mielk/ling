@@ -527,3 +527,75 @@ CREATE TABLE [dbo].[VariantDependenciesDefinitions]
 	FOREIGN KEY ([MasterWordtypeId]) REFERENCES [dbo].[WordTypes] ([Id]),
 	FOREIGN KEY ([SlaveWordtypeId]) REFERENCES [dbo].[WordTypes] ([Id])
 )
+
+
+===============
+28.01.2014
+CREATE TABLE [dbo].[GrammarPropertyDefinitions]
+(
+    [Id]                INT IDENTITY (1, 1) NOT NULL,
+    [LanguageId]        INT NOT NULL,
+	[Name]				NVARCHAR(255) NOT NULL,
+	[Type]				INT NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC), 
+    FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id])
+)
+
+CREATE TABLE [dbo].[VariantSetPropertiesDefinitions]
+(
+    [Id]                INT IDENTITY (1, 1) NOT NULL,
+    [LanguageId]        INT NOT NULL,
+	[WordtypeId]		INT NOT NULL,
+	[PropertyId]		INT NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC), 
+    FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id]),
+	FOREIGN KEY ([WordtypeId]) REFERENCES [dbo].[WordTypes] ([Id]),
+	FOREIGN KEY ([PropertyId]) REFERENCES [dbo].[GrammarPropertyDefinitions] ([Id])
+)
+
+CREATE TABLE [dbo].[GrammarPropertyOptions]
+(
+    [Id]                INT IDENTITY (1, 1) NOT NULL,
+	[PropertyId]		INT NOT NULL,
+	[Name]				NVARCHAR(255) NOT NULL,
+	[Value]				INT NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC), 
+    FOREIGN KEY ([PropertyId]) REFERENCES [dbo].[GrammarPropertyDefinitions] ([Id])
+)
+
+CREATE TABLE [dbo].[ValueTypes]
+(
+    [Id]                INT IDENTITY (1, 1) NOT NULL,
+    [Type]		NVARCHAR(255) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC)
+)
+
+CREATE TABLE [dbo].[GrammarForms] (
+    [Id]         INT            IDENTITY (1, 1) NOT NULL,
+	[FormId]	 INT			NOT NULL,
+    [WordId]     INT            NOT NULL,
+    [Content]    NVARCHAR (255) NOT NULL,
+    [IsActive]   BIT            DEFAULT ((1)) NOT NULL,
+    [CreatorId]  INT            NOT NULL,
+    [CreateDate] DATETIME       DEFAULT (getdate()) NOT NULL,
+    [IsApproved] BIT            DEFAULT ((0)) NOT NULL,
+    [Positive]   INT            DEFAULT ((0)) NOT NULL,
+    [Negative]   INT            DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [Unique_Grammar_Form2] UNIQUE NONCLUSTERED ([WordId] ASC, [FormId] ASC),
+	FOREIGN KEY ([FormId]) REFERENCES [dbo].[GrammarDefinitions] ([Id]),
+    FOREIGN KEY ([WordId]) REFERENCES [dbo].[Words] ([Id])
+);
+
+
+
+CREATE TABLE [dbo].[WordPropertyDefinitions] (
+    [Id]         INT            IDENTITY (1, 1) NOT NULL,
+    [LanguageId] INT            NOT NULL,
+    [WordtypeId] INT            NOT NULL,
+    [PropertyId] INT		NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id]),
+    FOREIGN KEY ([WordtypeId]) REFERENCES [dbo].[WordTypes] ([Id]),
+    FOREIGN KEY ([PropertyId]) REFERENCES [dbo].[GrammarPropertyDefinitions] ([Id])
+);
