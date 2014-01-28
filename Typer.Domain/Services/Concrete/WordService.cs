@@ -113,16 +113,17 @@ namespace Typer.Domain.Services
             return dtos.Select(dto => _categoryService.GetCategory(dto.CategoryId)).ToList();
         }
 
-        public IEnumerable<WordtypeProperty> GetProperties(int languageId, int wordtypeId)
+        public IEnumerable<GrammarPropertyDefinition> GetProperties(int languageId, int wordtypeId)
         {
-            var dtos = _repository.GetProperties(languageId, wordtypeId);
-            return dtos.Select(WordtypePropertyFromDto).ToList();
+            var propertiesIds = _repository.GetPropertiesIds(languageId, wordtypeId);
+            var properties = _repository.GetProperties(propertiesIds);
+            return properties.Select(GrammarPropertyDefinitionFromDto);
         }
 
-        public IEnumerable<GrammarDefinition> GetGrammarDefinitions(int languageId, int wordtypeId)
+        public IEnumerable<GrammarFormDefinition> GetGrammarFormDefinitions(int languageId, int wordtypeId)
         {
             var dtos = _repository.GetGrammarDefinitions(languageId, wordtypeId);
-            return dtos.Select(GrammarDefinitionFromDto).ToList();
+            return dtos.Select(GrammarFormDefinitionFromDto).ToList();
         }
 
         public IEnumerable<WordtypePropertyValue> GetPropertyValues(int wordId)
@@ -180,9 +181,9 @@ namespace Typer.Domain.Services
             };
         }
 
-        private static GrammarDefinition GrammarDefinitionFromDto(GrammarDefinitonDto dto)
+        private static GrammarFormDefinition GrammarFormDefinitionFromDto(GrammarFormDefinitonDto dto)
         {
-            return new GrammarDefinition
+            return new GrammarFormDefinition
             {
                 Group = dto.Group,
                 Header = dto.Header,
@@ -197,16 +198,14 @@ namespace Typer.Domain.Services
             };
         }
 
-        private static WordtypeProperty WordtypePropertyFromDto(WordtypePropertyDto dto)
+        private static WordPropertyDefinition WordtypePropertyFromDto(WordPropertyDefinitionDto definitionDto)
         {
-            return new WordtypeProperty
+            return new WordPropertyDefinition
             {
-                Details = dto.Details,
-                Id = dto.Id,
-                LanguageId = dto.LanguageId,
-                Name = dto.Name,
-                Type = dto.Type,
-                WordtypeId = dto.WordtypeId
+                Id = definitionDto.Id,
+                LanguageId = definitionDto.LanguageId,
+                WordtypeId = definitionDto.WordtypeId,
+                PropertyId = definitionDto.PropertyId
             };
         }
 
@@ -227,7 +226,7 @@ namespace Typer.Domain.Services
                 Content = dto.Content,
                 CreateDate = dto.CreateDate,
                 CreatorId = dto.CreatorId,
-                Definition = dto.Definition,
+                FormId = dto.FormId,
                 Id = dto.Id,
                 IsActive = dto.IsActive,
                 IsApproved = dto.IsApproved,
@@ -270,6 +269,18 @@ namespace Typer.Domain.Services
                 Negative = dto.Negative,
                 Positive = dto.Positive,
                 Weight = dto.Weight
+            };
+        }
+
+        private static GrammarPropertyDefinition GrammarPropertyDefinitionFromDto(GrammarPropertyDefinitionDto dto)
+        {
+            return new GrammarPropertyDefinition
+            {
+                Id = dto.Id,
+                LanguageId = dto.LanguageId,
+                Default = dto.Default,
+                Name = dto.Name,
+                Type = dto.Type
             };
         }
 

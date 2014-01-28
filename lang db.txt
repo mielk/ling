@@ -531,44 +531,67 @@ CREATE TABLE [dbo].[VariantDependenciesDefinitions]
 
 ===============
 28.01.2014
-CREATE TABLE [dbo].[GrammarPropertyDefinitions]
-(
-    [Id]                INT IDENTITY (1, 1) NOT NULL,
-    [LanguageId]        INT NOT NULL,
-	[Name]				NVARCHAR(255) NOT NULL,
-	[Type]				INT NOT NULL,
-    PRIMARY KEY CLUSTERED ([Id] ASC), 
-    FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id])
-)
+CREATE TABLE [dbo].[GrammarPropertyDefinitions] (
+    [Id]         INT            IDENTITY (1, 1) NOT NULL,
+    [LanguageId] INT            NOT NULL,
+    [Name]       NVARCHAR (255) NOT NULL,
+    [Type]       INT            NOT NULL,
+    [Default]    BIT            DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id]),
+    CONSTRAINT [Unique_Language_Name] UNIQUE NONCLUSTERED ([LanguageId] ASC, [Name] ASC)
+);
+SET IDENTITY_INSERT [dbo].[GrammarPropertyDefinitions] ON
+INSERT INTO [dbo].[GrammarPropertyDefinitions] ([Id], [LanguageId], [Name], [Type], [Default]) VALUES (1, 1, N'Rodzaj', 2, 0)
+INSERT INTO [dbo].[GrammarPropertyDefinitions] ([Id], [LanguageId], [Name], [Type], [Default]) VALUES (2, 1, N'Liczba', 2, 0)
+INSERT INTO [dbo].[GrammarPropertyDefinitions] ([Id], [LanguageId], [Name], [Type], [Default]) VALUES (3, 1, N'Czy osobowy', 1, 0)
+SET IDENTITY_INSERT [dbo].[GrammarPropertyDefinitions] OFF
+
+
+
+
 
 CREATE TABLE [dbo].[VariantSetPropertiesDefinitions]
 (
     [Id]                INT IDENTITY (1, 1) NOT NULL,
     [LanguageId]        INT NOT NULL,
-	[WordtypeId]		INT NOT NULL,
-	[PropertyId]		INT NOT NULL,
+    [WordtypeId]		INT NOT NULL,
+    [PropertyId]		INT NOT NULL,
     PRIMARY KEY CLUSTERED ([Id] ASC), 
     FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id]),
-	FOREIGN KEY ([WordtypeId]) REFERENCES [dbo].[WordTypes] ([Id]),
-	FOREIGN KEY ([PropertyId]) REFERENCES [dbo].[GrammarPropertyDefinitions] ([Id])
-)
-
-CREATE TABLE [dbo].[GrammarPropertyOptions]
-(
-    [Id]                INT IDENTITY (1, 1) NOT NULL,
-	[PropertyId]		INT NOT NULL,
-	[Name]				NVARCHAR(255) NOT NULL,
-	[Value]				INT NOT NULL,
-    PRIMARY KEY CLUSTERED ([Id] ASC), 
+    FOREIGN KEY ([WordtypeId]) REFERENCES [dbo].[WordTypes] ([Id]),
     FOREIGN KEY ([PropertyId]) REFERENCES [dbo].[GrammarPropertyDefinitions] ([Id])
 )
 
-CREATE TABLE [dbo].[ValueTypes]
-(
-    [Id]                INT IDENTITY (1, 1) NOT NULL,
-    [Type]		NVARCHAR(255) NOT NULL,
-    PRIMARY KEY CLUSTERED ([Id] ASC)
-)
+
+
+
+
+
+CREATE TABLE [dbo].[GrammarPropertyOptions] (
+    [Id]         INT            IDENTITY (1, 1) NOT NULL,
+    [PropertyId] INT            NOT NULL,
+    [Name]       NVARCHAR (255) NOT NULL,
+    [Value]      INT            NOT NULL,
+    [Default]    BIT            DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([PropertyId]) REFERENCES [dbo].[GrammarPropertyDefinitions] ([Id]),
+	CONSTRAINT [Unique_Property_Name] UNIQUE NONCLUSTERED ([PropertyId] ASC, [Name] ASC),
+	CONSTRAINT [Unique_Property_Value] UNIQUE NONCLUSTERED ([PropertyId] ASC, [Value] ASC)
+);
+SET IDENTITY_INSERT [dbo].[GrammarPropertyOptions] ON
+INSERT INTO [dbo].[GrammarPropertyOptions] ([Id], [PropertyId], [Name], [Value]) VALUES (1, 1, N'm', 1)
+INSERT INTO [dbo].[GrammarPropertyOptions] ([Id], [PropertyId], [Name], [Value]) VALUES (2, 1, N'f', 2)
+INSERT INTO [dbo].[GrammarPropertyOptions] ([Id], [PropertyId], [Name], [Value]) VALUES (3, 1, N'n', 3)
+INSERT INTO [dbo].[GrammarPropertyOptions] ([Id], [PropertyId], [Name], [Value]) VALUES (4, 2, N'poj', 1)
+INSERT INTO [dbo].[GrammarPropertyOptions] ([Id], [PropertyId], [Name], [Value]) VALUES (5, 2, N'mn', 2)
+INSERT INTO [dbo].[GrammarPropertyOptions] ([Id], [PropertyId], [Name], [Value]) VALUES (6, 3, N'obie', 3)
+SET IDENTITY_INSERT [dbo].[GrammarPropertyOptions] OFF
+
+
+
+
+
 
 CREATE TABLE [dbo].[GrammarForms] (
     [Id]         INT            IDENTITY (1, 1) NOT NULL,
@@ -599,3 +622,18 @@ CREATE TABLE [dbo].[WordPropertyDefinitions] (
     FOREIGN KEY ([WordtypeId]) REFERENCES [dbo].[WordTypes] ([Id]),
     FOREIGN KEY ([PropertyId]) REFERENCES [dbo].[GrammarPropertyDefinitions] ([Id])
 );
+
+
+
+CREATE TABLE [dbo].[ValueTypes]
+(
+    [Id]                INT IDENTITY (1, 1) NOT NULL,
+    [Type]		NVARCHAR(255) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC)
+)
+
+SET IDENTITY_INSERT [dbo].[ValueTypes] ON
+INSERT INTO [dbo].[ValueTypes] ([Id], [Type]) VALUES (1, N'boolean')
+INSERT INTO [dbo].[ValueTypes] ([Id], [Type]) VALUES (2, N'radio')
+INSERT INTO [dbo].[ValueTypes] ([Id], [Type]) VALUES (3, N'multilist')
+SET IDENTITY_INSERT [dbo].[ValueTypes] OFF

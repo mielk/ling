@@ -6,7 +6,7 @@ namespace Typer.Domain.Entities
     {
         public int Id { get; set; }
         public int WordId { get; set; }
-        public string Definition { get; set; }
+        public int FormId { get; set; }
         public string Content { get; set; }
         public bool IsActive { get; set; }
         public int CreatorId { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace Typer.DAL.TransferObjects
 {
-    public class GrammarDefinitonDto
+    public class GrammarFormDefinitonDto
     {
         public int Id { get; set; }
         public string Key { get; set; }

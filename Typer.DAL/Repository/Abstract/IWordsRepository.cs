@@ -30,9 +30,9 @@ namespace Typer.DAL.Repositories
         IEnumerable<WordDto> GetWords(int languageId, int wordtype, string word);
         IEnumerable<WordCategoryDto> GetCategories(int metawordId);
         IEnumerable<int> GetMetawordsIdsByCategories(int[] categories);
-        IEnumerable<WordtypePropertyDto> GetProperties(int languageId, int wordtypeId);
-
-        IEnumerable<GrammarDefinitonDto> GetGrammarDefinitions(int languageId, int wordtypeId);
+        IEnumerable<GrammarPropertyDefinitionDto> GetProperties(IEnumerable<int> ids);
+        IEnumerable<int> GetPropertiesIds(int languageId, int wordtypeId);
+        IEnumerable<GrammarFormDefinitonDto> GetGrammarDefinitions(int languageId, int wordtypeId);
         IEnumerable<WordtypePropertyValueDto> GetPropertyValues(int wordId);
         IEnumerable<GrammarFormDto> GetGrammarForms(int wordId);
     }

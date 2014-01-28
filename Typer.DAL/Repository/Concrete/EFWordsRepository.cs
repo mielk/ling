@@ -38,8 +38,6 @@ namespace Typer.DAL.Repositories
         }
 
 
-
-
         public bool AddMetaword(MetawordDto metaword)
         {
             try
@@ -391,12 +389,13 @@ namespace Typer.DAL.Repositories
             Int32.TryParse(parameters[0], out wordId);
 
             //Property Id.
-            string key = parameters[1];
+            int formId;
+            Int32.TryParse(parameters[1], out formId);
 
             //Value
             string value = parameters[2];
 
-            return AddGrammarForm(wordId, key, value);
+            return AddGrammarForm(wordId, formId, value);
 
         }
 
@@ -405,19 +404,20 @@ namespace Typer.DAL.Repositories
             var parameters = s.Split('|');
 
             //Property Id.
-            string key = parameters[1];
+            int formId;
+            Int32.TryParse(parameters[1], out formId);
 
             //Value
             string value = parameters[2];
 
-            return AddGrammarForm(wordId, key, value);
+            return AddGrammarForm(wordId, formId, value);
         }
 
-        private bool AddGrammarForm(int wordId, string key, string value)
+        private bool AddGrammarForm(int wordId, int formId, string value)
         {
 
             //Dto object.
-            GrammarFormDto dto = GetGrammarForm(wordId, key);
+            GrammarFormDto dto = GetGrammarForm(wordId, formId);
             if (dto != null)
             {
                 if (value.Length == 0)
@@ -435,7 +435,7 @@ namespace Typer.DAL.Repositories
                 {
                     WordId = wordId,
                     Content = value,
-                    Definition = key,
+                    FormId = formId,
                     CreatorId = 1,
                     CreateDate = DateTime.Now,
                     IsActive = true
@@ -465,9 +465,9 @@ namespace Typer.DAL.Repositories
 
         }
 
-        private int AddOptionMetaData(string s, int id)
+        private static int AddOptionMetaData(string s, int id)
         {
-            string[] parameters = s.Split('|');
+            var parameters = s.Split('|');
 
             //Language Id.
             int languageId;
@@ -508,9 +508,9 @@ namespace Typer.DAL.Repositories
 
         private bool AddNewWordProperties(string s, int id){
             var properties = s.Split(';');
-            bool result = true;
+            var result = true;
 
-            foreach (string property in properties)
+            foreach (var property in properties)
             {
                 if (property.Length > 0)
                 {
@@ -518,7 +518,7 @@ namespace Typer.DAL.Repositories
                     int key;
                     Int32.TryParse(parameters[0], out key);
 
-                    string value = parameters[1];
+                    var value = parameters[1];
 
                     if (!AddWordProperty(id, key, value)) result = false;
 
@@ -531,17 +531,18 @@ namespace Typer.DAL.Repositories
 
         private bool AddNewWordGrammarForms(string s, int id){
             var forms = s.Split(';');
-            bool result = true;
+            var result = true;
 
-            foreach (string form in forms)
+            foreach (var form in forms)
             {
                 if (form.Length > 0)
                 {
                     var parameters = form.Split('|');
-                    string key = parameters[0];
-                    string value = parameters[1];
+                    int formId;
+                    Int32.TryParse(parameters[0], out formId);
+                    var value = parameters[1];
 
-                    if (!AddGrammarForm(id, key, value)) result = false;
+                    if (!AddGrammarForm(id, formId, value)) result = false;
 
                 }
             }
@@ -561,12 +562,19 @@ namespace Typer.DAL.Repositories
             return Context.MatchWordCategory.Where(m => m.MetawordId == metawordId);
         }
 
-        public IEnumerable<WordtypePropertyDto> GetProperties(int languageId, int wordtypeId)
+        public IEnumerable<GrammarPropertyDefinitionDto> GetProperties(IEnumerable<int> ids)
         {
-            return Context.WordtypeProperties.Where(wp => wp.LanguageId == languageId && wp.WordtypeId == wordtypeId);
+            return Context.GrammarPropertyDefinitions.Where(gpd => ids.Contains(gpd.Id));
         }
 
-        public IEnumerable<GrammarDefinitonDto> GetGrammarDefinitions(int languageId, int wordtypeId)
+        public IEnumerable<int> GetPropertiesIds(int languageId, int wordtypeId)
+        {
+            return Context.WordPropertyDefinitions.
+                Where(wp => wp.LanguageId == languageId && wp.WordtypeId == wordtypeId).
+                Select(wp => wp.PropertyId).ToList();
+        }
+
+        public IEnumerable<GrammarFormDefinitonDto> GetGrammarDefinitions(int languageId, int wordtypeId)
         {
             return Context.GrammarDefinitions.Where(gd => gd.LanguageId == languageId && gd.WordtypeId == wordtypeId);
         }
@@ -586,9 +594,9 @@ namespace Typer.DAL.Repositories
             return Context.WordtypePropertyValues.SingleOrDefault(wpv => wpv.WordId == wordId && wpv.PropertyId == propertyId);
         }
 
-        public GrammarFormDto GetGrammarForm(int wordId, string key)
+        public GrammarFormDto GetGrammarForm(int wordId, int formId)
         {
-            return Context.GrammarForms.SingleOrDefault(gf => gf.WordId == wordId && gf.Definition == key);
+            return Context.GrammarForms.SingleOrDefault(gf => gf.WordId == wordId && gf.FormId == formId);
         }
 
 
@@ -670,7 +678,7 @@ namespace Typer.DAL.Repositories
         public int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options, string[] properties, string[] forms)
         {
 
-            bool completed = false;
+            var completed = false;
             using (var scope = new TransactionScope())
             {
                 var result = true;

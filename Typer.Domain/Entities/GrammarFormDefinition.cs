@@ -1,6 +1,6 @@
 ﻿namespace Typer.Domain.Entities
 {
-    public class GrammarDefinition
+    public class GrammarFormDefinition
     {
         public int Id { get; set; }
         public string Key { get; set; }

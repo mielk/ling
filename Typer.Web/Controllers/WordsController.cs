@@ -223,7 +223,7 @@ namespace Typer.Web.Controllers
             [AllowAnonymous]
             public ActionResult GetGrammarDefinitions(int languageId, int wordtypeId)
             {
-                var forms = _service.GetGrammarDefinitions(languageId, wordtypeId);
+                var forms = _service.GetGrammarFormDefinitions(languageId, wordtypeId);
                 return Json(forms, JsonRequestBehavior.AllowGet);
             }
 
