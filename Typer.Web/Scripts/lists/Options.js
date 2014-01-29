@@ -182,7 +182,7 @@ Word.prototype.updateProperties = function (properties) {
                     event: 'properties',
                     wordId: self.id,
                     propertyId: property.id,
-                    value: my.text.valueToText(property.value)
+                    value: property.value
                 });
             }
         }
@@ -199,7 +199,7 @@ Word.prototype.updateDetails = function (forms) {
         //var form = self.details.getItem(key);
         if (object.isChanged()) {
             form = {
-                id: object.key,
+                id: object.id,
                 value: object.value
             };
             self.details.setItem(form.id, form);
@@ -546,7 +546,7 @@ WordProperty.prototype.setValue = function (value) {
     this.ui.change(value);
 };
 WordProperty.prototype.isChanged = function () {
-    return (this.originalValue !== this.value);
+    return (this.originalValue != this.value);
 };
 WordProperty.prototype.changeValue = function (value) {
     this.ui.change(value);
@@ -631,8 +631,8 @@ GrammarManager.prototype.renderSearchPanel = function (name) {
 
     this.searchDropdown.bind({
         change: function (e) {
-            self.propertiesManager.copyDetails(e.item.object.Id);
-            self.copyDetails(e.item.object.Name, e.item.object.Id);
+            self.propertiesManager.copyDetails(e.item.key);
+            self.copyDetails(e.item.name, e.item.key);
         }
     });
 
@@ -787,7 +787,7 @@ GrammarManager.prototype.copyDetails = function (name, id) {
 
     for (var i = 0; i < forms.length; i++) {
         var form = forms[i];
-        var def = self.forms.getItem(form.Definition);
+        var def = self.forms.getItem(form.FormId);
         if (def) {
             def.changeValue(self.getProperForm(form.Content, my.text.cut(name, matched), my.text.cut(self.editObject.name, matched)));
         }
@@ -1196,10 +1196,10 @@ EditOptionPanel.prototype.generalRender = function () {
             self.editObject.name = value;
         },
         controlBinding: {
-            change: function (e) {
+            blur: function (e) {
                 var value = e.target.value;
                 if (self.details.searchDropdown) {
-                    self.details.refreshSearchPanel();
+                    self.details.refreshSearchPanel(value);
                 }
                 //if (self.details.loadSearchPanel) self.details.loadSearchPanel(value);
             }
