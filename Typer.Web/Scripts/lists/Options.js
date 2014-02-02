@@ -235,6 +235,10 @@ Word.prototype.loadProperties = function () {
 Word.prototype.getPropertiesFromRepository = function (wordId) {
     return my.db.fetch('Words', 'GetPropertyValues', { 'wordId': wordId });
 };
+Word.prototype.getPropertyValue = function(key){
+    var property = this.properties.getItem(key);
+    return property ? property.value : null;
+};
 Word.prototype.loadDetails = function () {
     this.details = new HashTable(null);
     var $values = this.getFormsFromRepository(this.id);
@@ -416,7 +420,9 @@ WordPropertyManager.prototype.loadProperties = function () {
 
     var $properties = this.getPropertiesFromRepository(languageId, wordtypeId);
     for (var i = 0; i < $properties.length; i++) {
-        var property = new WordProperty($properties[i]);
+        var $property = $properties[i];
+        $property.Value = this.entity.getPropertyValue($property.Id);
+        var property = new WordProperty($property);
         this.items.setItem(property.id, property);
         this.ui.append(property.view());
     }
@@ -468,6 +474,7 @@ function WordProperty(params) {
                     return my.ui.radio({
                         container: container,
                         name: self.name,
+                        value: self.value,
                         options: self.parseToRadioOptions(params.Options)
                     });
                 case 1:
@@ -519,7 +526,7 @@ WordProperty.prototype.parseToRadioOptions = function (options) {
         var option = options[i];
         var caption = option.Name;
         var key = option.Id;
-        var checked = option.Default;
+        var checked = (this.value ? this.value === key : option.Default);
 
         var result = {
             key: key,

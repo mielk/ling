@@ -242,7 +242,7 @@ my.ui = (function () {
             $(div).css({ 'display': (value ? 'block' : 'none') });
         },
         
-        radio: function(params) {
+        radio: function (params) {
             var name = params.name;
             var options = new HashTable(null);
             var eventHandler = new EventHandler();
@@ -253,8 +253,9 @@ my.ui = (function () {
                 'width': '100%',
                 'height': '100%'
             }).appendTo($(params.container));
-            var value;
-            
+            var value = params.value || undefined;
+            var selected;
+
             //Create items.
             var total = Object.keys(params.options).length;
             var option = function ($key, $object) {
@@ -276,29 +277,30 @@ my.ui = (function () {
                     'float': 'left',
                     'margin-right': '6px',
                     'border': 'none'
-                }).bind({                    
-                   'click': function() {
-                       eventHandler.trigger({
-                           type: 'click',
-                           caption: caption,
-                           object: object,
-                           value: object.value
-                       });
-                   } 
+                }).bind({
+                    'click': function () {
+                        eventHandler.trigger({
+                            type: 'click',
+                            caption: caption,
+                            object: object,
+                            value: object.value
+                        });
+                    }
                 });
-                
+
                 if ($object.checked) {
                     value = $object.value;
+                    selected = $object;
                 }
 
                 var label = jQuery('<label>').
                     attr('for', input).
-                    css({ 'height': 'auto', 'width': 'auto'}).
+                    css({ 'height': 'auto', 'width': 'auto' }).
                     text(caption);
                 input.appendTo(label);
                 label.appendTo(container);
 
-                return {                    
+                return {
                     select: function () {
                         $(input).prop('checked', true);
                         eventHandler.trigger({
@@ -308,13 +310,29 @@ my.ui = (function () {
                             value: object.value
                         });
                     },
-                    key: function() {
+                    unselect: function () {
+                        $(input).prop('checked', false);
+                    },
+                    key: function () {
                         return key;
+                    },
+                    isClicked: function () {
+                        return $(input).prop('checked');
+                    },
+                    caption: function () {
+                        return caption;
                     }
                 };
 
             };
-            
+
+            //function printStates() {
+            //    var states = '';
+            //    options.each(function (key, value) {
+            //        states += value.key() + ',' + value.caption() + ', state: ' + value.isClicked() + '\n';
+            //    });
+            //    alert(states);
+            //}
 
             for (var k in params.options) {
                 if (params.options.hasOwnProperty(k)) {
@@ -324,31 +342,34 @@ my.ui = (function () {
             }
 
             eventHandler.bind({
-                click: function(e) {
-                    self.value = e.object.value;
+                click: function (e) {
+                    value = e.object.value;
+                    if (selected) selected.
+                    selected = e.object;
                 }
             });
 
             return {
-                bind: function(e) {
+                bind: function (e) {
                     eventHandler.bind(e);
                 },
-                trigger: function(e) {
+                trigger: function (e) {
                     eventHandler.trigger(e);
                 },
-                value: function() {
+                value: function () {
                     return value;
                 },
-                change: function($value) {
+                change: function ($value) {
                     var selected = options.getItem($value);
                     if (selected) {
                         selected.select();
                     }
+                    //printStates();
                 }
             };
 
         },
-        
+
         checkbox: function(params) {
             var name = params.name;
             var caption = params.caption || name;
