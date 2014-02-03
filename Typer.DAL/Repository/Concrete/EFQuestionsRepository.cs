@@ -429,5 +429,16 @@ namespace Typer.DAL.Repositories
             return Context.DependenciesDefinitions.Where(dd => languages.Contains(dd.LanguageId));
         }
 
+        public IEnumerable<VariantSetPropertyValueDto> GetVariantSetPropertiesValues(int id)
+        {
+            return Context.VariantSetPropertyValues.Where(vspv => vspv.VariantSetId == id);
+        }
+
+        public IEnumerable<VariantSetPropertyDefinitionDto> GetVariantSetPropertiesDefinitions(int wordtypeId, int languageId)
+        {
+            return
+                Context.VariantSetPropertyDefinitions.Where(
+                    vspd => vspd.LanguageId == languageId && vspd.WordtypeId == wordtypeId);
+        }
     }
 }

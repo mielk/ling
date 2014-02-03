@@ -30,6 +30,8 @@ namespace Typer.DAL.Infrastructure
         public DbSet<VariantLimitDto> VariantLimits { get; set; }
         public DbSet<VariantDependencyDto> VariantDependencies { get; set; }
         public DbSet<DependencyDefinitionDto> DependenciesDefinitions { get; set; }
+        public DbSet<VariantSetPropertyDefinitionDto> VariantSetPropertyDefinitions { get; set; }
+        public DbSet<VariantSetPropertyValueDto> VariantSetPropertyValues { get; set; }
         
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -56,6 +58,8 @@ namespace Typer.DAL.Infrastructure
             modelBuilder.Entity<DependencyDefinitionDto>().ToTable("VariantDependenciesDefinitions");
             modelBuilder.Entity<GrammarPropertyDefinitionDto>().ToTable("GrammarPropertyDefinitions");
             modelBuilder.Entity<GrammarPropertyOptionDto>().ToTable("GrammarPropertyOptions");
+            modelBuilder.Entity<VariantSetPropertyDefinitionDto>().ToTable("VariantSetPropertyDefinitions");
+            modelBuilder.Entity<VariantSetPropertyValueDto>().ToTable("VariantSetProperties");
         }
 
 
