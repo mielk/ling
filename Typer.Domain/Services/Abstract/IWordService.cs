@@ -29,5 +29,6 @@ namespace Typer.Domain.Services
         IEnumerable<GrammarForm> GetGrammarForms(int wordId);
         IEnumerable<Word> GetWords(int languageId, int wordtype, string word);
         IEnumerable<GrammarPropertyOption> GetGrammarPropertyOptions(int propertyId);
+        GrammarPropertyDefinition GetProperty(int id);
     }
 }

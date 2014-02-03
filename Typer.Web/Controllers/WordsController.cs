@@ -221,6 +221,14 @@ namespace Typer.Web.Controllers
 
             [HttpGet]
             [AllowAnonymous]
+            public ActionResult GetProperty(int id)
+            {
+                var property = _service.GetProperty(id);
+                return Json(property, JsonRequestBehavior.AllowGet);
+            }
+
+            [HttpGet]
+            [AllowAnonymous]
             public ActionResult GetGrammarDefinitions(int languageId, int wordtypeId)
             {
                 var forms = _service.GetGrammarFormDefinitions(languageId, wordtypeId);

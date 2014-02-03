@@ -567,6 +567,11 @@ namespace Typer.DAL.Repositories
             return Context.GrammarPropertyOptions.Where(gpo => gpo.PropertyId == propertyId);
         }
 
+        public GrammarPropertyDefinitionDto GetProperty(int id)
+        {
+            return Context.GrammarPropertyDefinitions.SingleOrDefault(gpd => gpd.Id == id);
+        }
+
         public IEnumerable<int> GetPropertiesIds(int languageId, int wordtypeId)
         {
             return Context.WordPropertyDefinitions.

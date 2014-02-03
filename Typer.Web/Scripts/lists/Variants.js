@@ -1892,6 +1892,9 @@ function VariantSetEditPanel(set) {
     })();
 
     this.paramsPanel = (function() {
+
+        var params = new HashTable(null);
+
         var container = jQuery('<div/>', {            
            'class': 'variant-set-params-container' 
         });
@@ -1904,15 +1907,53 @@ function VariantSetEditPanel(set) {
         }
         
         function loadDefinitions() {
-            var x = 1;
+            var definitions = my.db.fetch('Questions', 'GetVariantSetPropertiesDefinitions', {
+                'languageId': self.set.languageId,
+                'wordtypeId': self.set.wordtype.id
+            });
+            
+            for (var i = 0; i < definitions.length; i++) {
+                var definition = definitions[i];
+                var p = param({
+                    id: definition.Id,
+                    propertyId: definition.PropertyId
+                });
+                params.setItem(definition.Id, p);
+            }
         }
         
         function loadValues() {
-            var x = 1;
+            var values = my.db.fetch('Questions', 'GetVariantSetPropertiesValues', {
+                'id': self.set.id
+            });
+            
+            for (var i = 0; i < values.length; i++) {
+                var value = values[i];
+                var property = params.getItem(value.PropertyId);
+                if (property) {
+                    property.setValue(value.Value);
+                }
+            }
         }
         
         function render() {
             var x = 2;
+        }
+
+        function param(properties) {
+            var id = properties.id;
+            var propertyId = properties.propertyId;
+            var property = my.grammarProperties.get(propertyId);
+            var value;
+
+            return {
+                id: id,
+                property: property,
+                setValue: function(val) {
+                    value = val;
+                }
+            };
+
         }
 
         (function ini() {

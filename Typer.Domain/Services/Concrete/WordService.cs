@@ -164,6 +164,12 @@ namespace Typer.Domain.Services
             return dtos.Select(GrammarPropertyOptionFromDto).ToList();
         }
 
+        public GrammarPropertyDefinition GetProperty(int id)
+        {
+            var dto = _repository.GetProperty(id);
+            return GrammarPropertyDefinitionFromDto(dto);
+        }
+
         public IEnumerable<Metaword> Filter(int wordType, int lowWeight, int upWeight, int[] categories, string text)
         {
             var dtos = _repository.GetMetawords();

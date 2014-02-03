@@ -934,3 +934,52 @@ my.db = (function() {
         }
     };
 })();
+
+
+my.grammarProperties = (function () {
+
+    var properties = new HashTable(null);
+
+    function get(id) {
+        var object = properties.getItem(id);
+        if (!object) {
+            object = fetch(id);
+            if (object) properties.setItem(id, object);
+        }
+        return object;
+    }
+
+    function fetch(id) {
+        var data = my.db.fetch('Words', 'GetProperty', { 'id': id });
+
+        //Create options collection.
+        var options = new HashTable(null);
+        for (var i = 0; i < data.Options.length; i++) {
+            var object = data.Options[i];
+            var option = {                
+                id: object.Id,
+                propertyId: object.PropertyId,
+                name: object.Name,
+                value: object.Value,
+                default: object.Default
+            };
+            options.setItem(option.id, option);
+        }
+
+        return {            
+            id: data.Id,
+            languageId: data.LanguageId,
+            name: data.Name,
+            type: data.Type,
+            'default': data.Default,
+            options: options
+        };
+        
+    }
+
+    return {
+        get: get,
+        fetch: fetch
+    };
+    
+})();
