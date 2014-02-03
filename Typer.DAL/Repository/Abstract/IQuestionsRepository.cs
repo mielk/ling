@@ -38,5 +38,7 @@ namespace Typer.DAL.Repositories
         IEnumerable<VariantDependencyDto> GetVariantDependencies(int[] sets);
         IEnumerable<DependencyDefinitionDto> GetDependenciesDefinitions(int[] languages);
 
+        IEnumerable<VariantSetPropertyValueDto> GetVariantSetPropertiesValues(int id);
+        IEnumerable<VariantSetPropertyDefinitionDto> GetVariantSetPropertiesDefinitions(int wordtypeId, int languageId);
     }
 }

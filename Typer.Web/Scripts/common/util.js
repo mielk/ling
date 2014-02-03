@@ -360,8 +360,9 @@ my.ui = (function () {
                     return value;
                 },
                 change: function ($value) {
-                    var selected = options.getItem($value);
-                    if (selected) {
+                    var $selected = options.getItem($value);
+                    if ($selected) {
+                        selected = $selected;
                         selected.select();
                     }
                     //printStates();
@@ -460,10 +461,10 @@ my.text = (function () {
 
             if (i > baseLength) return counter;
 
-            var _base = base.charAt(baseLength - i);
-            var _compared = compared.charAt(comparedLength - i);
+            var $base = base.charAt(baseLength - i);
+            var $compared = compared.charAt(comparedLength - i);
 
-            if (_base != _compared) {
+            if ($base != $compared) {
                 return counter;
             } else {
                 counter++;

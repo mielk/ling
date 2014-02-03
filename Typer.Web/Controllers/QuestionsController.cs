@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Web.Mvc;
+using Microsoft.Ajax.Utilities;
 using Typer.Domain.Services;
 using Typer.Domain.Entities;
 using Typer.Web.Models;
@@ -191,7 +192,23 @@ namespace Typer.Web.Controllers
             var definitions = _service.GetDependenciesDefinitions(languages);
             return Json(definitions, JsonRequestBehavior.AllowGet);
         }
-        
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult GetVariantSetPropertiesDefinitions(int wordtypeId, int languageId)
+        {
+            var words = _service.GetVariantSetPropertiesDefinitions(wordtypeId, languageId);
+            return Json(words, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult GetVariantSetPropertiesValues(int id)
+        {
+            var words = _service.GetVariantSetPropertiesValues(id);
+            return Json(words, JsonRequestBehavior.AllowGet);
+        }
+
 
     }
 }

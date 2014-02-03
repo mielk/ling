@@ -1891,6 +1891,38 @@ function VariantSetEditPanel(set) {
 
     })();
 
+    this.paramsPanel = (function() {
+        var container = jQuery('<div/>', {            
+           'class': 'variant-set-params-container' 
+        });
+
+        self.ui.append(container);
+
+        function load() {
+            loadDefinitions();
+            loadValues();
+        }
+        
+        function loadDefinitions() {
+            var x = 1;
+        }
+        
+        function loadValues() {
+            var x = 1;
+        }
+        
+        function render() {
+            var x = 2;
+        }
+
+        (function ini() {
+            load();
+            render();
+        })();
+
+    })();
+
+
     this.buttons = (function () {
         var panel = jQuery('<div/>', {
             'class': 'edit-buttons-panel'

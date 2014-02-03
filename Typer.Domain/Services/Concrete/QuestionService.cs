@@ -215,6 +215,18 @@ namespace Typer.Domain.Services
             return dtos.Select(DependencyDefinitionFromDto).ToList();
         }
 
+        public IEnumerable<VariantSetPropertyDefinition> GetVariantSetPropertiesDefinitions(int wordtypeId, int languageId)
+        {
+            var dtos = _repository.GetVariantSetPropertiesDefinitions(wordtypeId, languageId);
+            return dtos.Select(VariantSetPropertyDefinitionFromDto).ToList();
+        }
+
+        public IEnumerable<VariantSetPropertyValue> GetVariantSetPropertiesValues(int id)
+        {
+            var dtos = _repository.GetVariantSetPropertiesValues(id);
+            return dtos.Select(VariantSetPropertyValueFromDto).ToList();
+        }
+
 
         private static DependencyDefinition DependencyDefinitionFromDto(DependencyDefinitionDto dto)
         {
@@ -311,6 +323,30 @@ namespace Typer.Domain.Services
                 Params = dto.Params,
                 QuestionId = dto.QuestionId,
                 VariantTag = dto.VariantTag
+            };
+        }
+
+        private static VariantSetPropertyDefinition VariantSetPropertyDefinitionFromDto(
+            VariantSetPropertyDefinitionDto dto)
+        {
+            return new VariantSetPropertyDefinition
+            {
+                Id = dto.Id,
+                LanguageId = dto.LanguageId,
+                PropertyId = dto.PropertyId,
+                WordtypeId = dto.WordtypeId
+            };
+        }
+
+        private static VariantSetPropertyValue VariantSetPropertyValueFromDto(
+            VariantSetPropertyValueDto dto)
+        {
+            return new VariantSetPropertyValue
+            {
+                Id = dto.Id,
+                VariantSetId = dto.VariantSetId,
+                PropertyId = dto.PropertyId,
+                Value = dto.Value
             };
         }
 

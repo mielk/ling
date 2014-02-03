@@ -48,6 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Infrastructure\EFDbContext.cs" />
+    <Compile Include="TransferObjects\VariantSetPropertyDefinitionDto.cs" />
+    <Compile Include="TransferObjects\VariantSetPropertyValueDto.cs" />
     <Compile Include="TransferObjects\GrammarPropertyDefinitionDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TransferObjects\DependencyDefinitionDto.cs" />

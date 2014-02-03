@@ -648,3 +648,17 @@ INSERT INTO [dbo].[ValueTypes] ([Id], [Type]) VALUES (1, N'boolean')
 INSERT INTO [dbo].[ValueTypes] ([Id], [Type]) VALUES (2, N'radio')
 INSERT INTO [dbo].[ValueTypes] ([Id], [Type]) VALUES (3, N'multilist')
 SET IDENTITY_INSERT [dbo].[ValueTypes] OFF
+
+
+
+
+CREATE TABLE [dbo].[VariantSetProperties]
+(
+    [Id]			INT IDENTITY (1, 1) NOT NULL,
+	[VariantSetId]	INT NOT NULL,
+	[PropertyId]	INT NOT NULL,
+	[Value]			INT NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([VariantSetId]) REFERENCES [dbo].[VariantSets] ([Id]),
+    FOREIGN KEY ([PropertyId]) REFERENCES [dbo].[VariantSetPropertyDefinitions] ([Id])
+)

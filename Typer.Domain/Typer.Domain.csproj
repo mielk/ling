@@ -74,6 +74,8 @@
     <Compile Include="Services\Abstract\IQuestionService.cs" />
     <Compile Include="Services\Abstract\IUserService.cs" />
     <Compile Include="Entities\WordtypePropertyValue.cs" />
+    <Compile Include="Entities\VariantSetPropertyDefinition.cs" />
+    <Compile Include="Entities\VariantSetPropertyValue.cs" />
     <Compile Include="Services\Concrete\CategoryService.cs" />
     <Compile Include="Services\Concrete\WordService.cs" />
     <Compile Include="Services\Concrete\LanguageService.cs" />
