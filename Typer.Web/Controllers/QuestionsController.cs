@@ -197,16 +197,16 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult GetVariantSetPropertiesDefinitions(int wordtypeId, int languageId)
         {
-            var words = _service.GetVariantSetPropertiesDefinitions(wordtypeId, languageId);
-            return Json(words, JsonRequestBehavior.AllowGet);
+            var properties = _service.GetVariantSetPropertiesDefinitions(wordtypeId, languageId);
+            return Json(properties, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
         [AllowAnonymous]
         public ActionResult GetVariantSetPropertiesValues(int id)
         {
-            var words = _service.GetVariantSetPropertiesValues(id);
-            return Json(words, JsonRequestBehavior.AllowGet);
+            var values = _service.GetVariantSetPropertiesValues(id);
+            return Json(values, JsonRequestBehavior.AllowGet);
         }
 
 

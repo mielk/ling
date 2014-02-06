@@ -30,6 +30,7 @@ VariantSet.prototype.createDetails = function () {
     this.variants.each(function (key, value) {
         value.loadLimits();
     });
+    this.loadProperties();
 };
 VariantSet.prototype.loadVariants = function (variants) {
     var self = this;
@@ -61,6 +62,20 @@ VariantSet.prototype.loadDependants = function (dependants) {
         }
     }
 };
+VariantSet.prototype.loadProperties = function () {
+    var self = this;
+    self.properties = new HashTable(null);
+    var values = my.db.fetch('Questions', 'GetVariantSetPropertiesValues', {
+        'id': self.id
+    });
+
+    for (var i = 0; i < values.length; i++) {
+        var value = values[i];
+        self.properties.setItem(value.PropertyId, value.Value);
+    }
+
+};
+
 VariantSet.prototype.setParent = function (set, trigger) {
     this.parent = set;
     if (trigger) {
@@ -1923,21 +1938,18 @@ function VariantSetEditPanel(set) {
         }
         
         function loadValues() {
-            var values = my.db.fetch('Questions', 'GetVariantSetPropertiesValues', {
-                'id': self.set.id
-            });
-            
-            for (var i = 0; i < values.length; i++) {
-                var value = values[i];
-                var property = params.getItem(value.PropertyId);
+            self.set.properties.each(function (key, value) {
+                var property = params.getItem(key);
                 if (property) {
-                    property.setValue(value.Value);
+                    property.setValue(value);
                 }
-            }
+            })
         }
         
         function render() {
-            var x = 2;
+            params.each(function (key, value) {
+                value.render();
+            });
         }
 
         function param(properties) {
@@ -1945,12 +1957,19 @@ function VariantSetEditPanel(set) {
             var propertyId = properties.propertyId;
             var property = my.grammarProperties.get(propertyId);
             var value;
+            var selectedOption;
 
             return {
                 id: id,
                 property: property,
                 setValue: function(val) {
                     value = val;
+                    if (property.options) {
+                        selectedOption = property.options.getItem(value);
+                    }
+                },
+                render: function () {
+                    var x = 1;
                 }
             };
 
