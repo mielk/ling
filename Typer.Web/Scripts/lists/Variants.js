@@ -7,6 +7,7 @@
     self.languageId = properties.LanguageId;
     self.wordtype = WORDTYPE.getItem(properties.WordType);
     self.tag = properties.VariantTag;
+    self.logs = [];
 
     self.params = properties.Params;
 
@@ -57,8 +58,8 @@ VariantSet.prototype.loadDependants = function (dependants) {
     for (var i = 0; i < dependants.length; i++) {
         var dependant = self.editEntity.getVariantSet(dependants[i]);
         if (dependant) {
+            dependant.parent = self;
             self.dependants.setItem(dependant.id, dependant);
-            dependant.setParent(self);
         }
     }
 };
@@ -76,14 +77,29 @@ VariantSet.prototype.loadProperties = function () {
 
 };
 
-VariantSet.prototype.setParent = function (set, trigger) {
+VariantSet.prototype.clearLogs = function() {
+    this.logs = [];
+};
+
+VariantSet.prototype.sendLogsToParent = function() {
+    var x = this.logs;
+    
+    //sprawdzić zmiany w zależnościach
+    //sprawdzić zmiany w grupach
+    //sprawdzić zmiany w wykluczeniach
+    //sprawdzić zmiany w zestawach opcji
+
+
+};
+
+VariantSet.prototype.setParent = function (set) {
     this.parent = set;
-    if (trigger) {
-        this.trigger({
-            type: 'setParent',
-            parent: set
-        });
-    }
+    this.trigger({
+        type: 'setParent',
+        parent: set
+    });
+    this.parentChanged = true;
+    set.addDependency(this);
 
 };
 VariantSet.prototype.clearParent = function () {
@@ -95,7 +111,7 @@ VariantSet.prototype.clearParent = function () {
         type: 'clearParent',
         parent: self.parent
     });
-
+    this.parentChanged = true;
     this.parent = null;
 
 };
@@ -104,6 +120,24 @@ VariantSet.prototype.removeDependency = function (set) {
     this.trigger({
         type: 'dependencyRemoved',
         dependant: set
+    });
+
+    this.logs.push({        
+        event: 'dependencyRemoved',
+        set: set.id
+    });
+
+};
+VariantSet.prototype.addDependency = function (set) {
+    this.dependants.setItem(set.id, set);
+    this.trigger({
+        type: 'dependencyAdded',
+        dependant: set
+    });
+
+    this.logs.push({
+        event: 'dependencyAdded',
+        set: set.id
     });
 
 };
@@ -116,7 +150,15 @@ VariantSet.prototype.edit = function () {
 };
 VariantSet.prototype.changeWordtype = function (wordtype) {
     var self = this;
+    var tag = 'editWordtype';
+    
     if (wordtype === this.wordtype) return;
+
+    this.logs.push({        
+        event: tag,
+        wordtype: wordtype.id
+    });
+
     var wasDependable = self.language.isDependable(self.wordtype.id);
     self.wordtype = wordtype;
     var isDependable = self.language.isDependable(wordtype.id);
@@ -128,8 +170,21 @@ VariantSet.prototype.changeWordtype = function (wordtype) {
     });
 };
 VariantSet.prototype.setProperties = function (properties) {
+    var tag = 'editVariantSet';
+    
     for (var i = 0; i < properties.length; i++) {
-        var a = 1;
+        var object = properties[i];
+        var property = this.properties.getItem(object.key);
+        
+        if (property != object.value) {
+            this.properties.setItem(object.key, object.value);
+            this.logs.push({
+                event: tag,
+                property: object.key,
+                value: object.value
+            });
+        }
+        
     }
 };
 
@@ -343,10 +398,19 @@ VariantPanel.prototype.display = function () {
     this.ui.display();
 };
 VariantPanel.prototype.cancel = function () {
+    
+    //usuwa wszystkie logi.
+    this.editQuestion.variantSets.each(function(key, value) {
+        value.clearLogs();
+    });
+
     this.ui.destroy();
 };
 VariantPanel.prototype.confirm = function () {
-    //this.object.update(this.editObject, this.properties, this.details, this.isComplete());
+    this.editQuestion.variantsSets.each(function (key, value) {
+        value.sendLogsToParent();
+    });
+
     this.ui.destroy();
 };
 VariantPanel.prototype.isComplete = function () {
@@ -1159,6 +1223,9 @@ function VariantConnectionsManager(parent) {
         };
 
         function release() {
+
+            self.panel.connectionsChanged = true;
+
             if (!self.activeGroup) {
                 if ($group.only($self)) {
                     ui.deactivate();
@@ -1489,7 +1556,7 @@ function VariantDependenciesManager(parent) {
                     if (previousBlock) previousBlock.deactivate();
                 }
 
-                $set.setParent(block.set, true);
+                $set.setParent(block.set);
                 block.activate();
 
             }
@@ -1987,6 +2054,11 @@ function VariantSetEditPanel(set) {
                         checked: value,
                         container: controlContainer
                     });
+                    control.bind({
+                        change: function (e) {
+                            value = e.value;
+                        }
+                    });
                     
                     events.bind({
                         change: function(e) {
@@ -2009,6 +2081,11 @@ function VariantSetEditPanel(set) {
                     control = new DropDown({
                         container: controlContainer,
                         data: data
+                    });
+                    control.bind({                        
+                       change: function(e) {
+                           value = e.value;
+                       } 
                     });
 
                     if (value) {
