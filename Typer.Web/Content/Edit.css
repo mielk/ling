@@ -1576,3 +1576,40 @@ input.set-name:focus
     color: rgb(56, 71, 120);
     background-color: rgb(186, 210, 223);
 }
+
+.variant-set-params-container {
+    display: block;
+    position: relative;
+    float: left;
+    width: 100%;
+    height: auto;
+    padding: 12px 0;
+    border-top: 1px solid #666;
+    border-bottom: 1px solid #666;
+}
+
+.variant-set-single-param {
+    display: block;
+    position: relative;
+    float: left;
+    width: 100%;
+    padding: 6px 0;
+}
+
+.variant-set-single-param > div {
+    display: block;
+    position: relative;
+    float: left;
+}
+
+.variant-set-single-param .name {
+    width: 10%;
+    height: 26px;
+    padding: 6px;
+    line-height: 14px;
+    text-align: center;
+}
+
+.variant-set-single-param .control-container {
+    width: 90%;
+}

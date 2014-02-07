@@ -326,14 +326,6 @@ my.ui = (function () {
 
             };
 
-            //function printStates() {
-            //    var states = '';
-            //    options.each(function (key, value) {
-            //        states += value.key() + ',' + value.caption() + ', state: ' + value.isClicked() + '\n';
-            //    });
-            //    alert(states);
-            //}
-
             for (var k in params.options) {
                 if (params.options.hasOwnProperty(k)) {
                     var $option = option(k, params.options[k]);

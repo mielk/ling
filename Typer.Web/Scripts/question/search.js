@@ -176,7 +176,7 @@ function WordTypeFilter(manager) {
                     name: type.name,
                     object: type
                 };
-                dropdownData.push(object);                
+                dropdownData.push(object);
             }
         }
     }

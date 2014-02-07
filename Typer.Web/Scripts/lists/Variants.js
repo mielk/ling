@@ -1959,6 +1959,69 @@ function VariantSetEditPanel(set) {
             var value;
             var selectedOption;
 
+            var ui = (function () {
+                var $container = jQuery('<div/>', {
+                    'class': 'variant-set-single-param'
+                }).appendTo(container);
+
+                var name = jQuery('<div/>', {
+                    'class': 'name'
+                }).appendTo($container);
+
+                var controlContainer = jQuery('<div/>', {
+                    'class': 'control-container'
+                }).appendTo($container);
+
+
+                function renderAsCheckbox() {
+                    control = my.ui.checkbox({
+                        name: property.name,
+                        caption: property.caption,
+                        checked: value,
+                        container: controlContainer
+                    });
+                }
+
+                function renderAsDropdown() {
+                    data = [];
+                    property.options.each(function ($key, $value) {
+                        data.push({
+                            key: $value.id,
+                            name: $value.name,
+                            object: $value
+                        });
+                    });
+
+                    control = new DropDown({
+                        container: controlContainer,
+                        data: data
+                    });
+
+                    if (value) {
+                        control.select(value);
+                    }
+
+                }
+
+
+                return {
+                    render: function () {
+
+                        $(name).html(property.name);
+
+                        switch (property.type) {
+                            case 1:
+                                renderAsCheckbox();
+                                break;
+                            case 2:
+                                renderAsDropdown();
+                                break;
+                        }
+                    }
+                }
+
+            })();
+
             return {
                 id: id,
                 property: property,
@@ -1969,7 +2032,7 @@ function VariantSetEditPanel(set) {
                     }
                 },
                 render: function () {
-                    var x = 1;
+                    ui.render();
                 }
             };
 
