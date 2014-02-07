@@ -58,7 +58,7 @@ namespace Typer.DAL.Infrastructure
             modelBuilder.Entity<DependencyDefinitionDto>().ToTable("VariantDependenciesDefinitions");
             modelBuilder.Entity<GrammarPropertyDefinitionDto>().ToTable("GrammarPropertyDefinitions");
             modelBuilder.Entity<GrammarPropertyOptionDto>().ToTable("GrammarPropertyOptions");
-            modelBuilder.Entity<VariantSetPropertyDefinitionDto>().ToTable("VariantSetPropertiesDefinitions");
+            modelBuilder.Entity<VariantSetPropertyDefinitionDto>().ToTable("VariantSetPropertyDefinitions");
             modelBuilder.Entity<VariantSetPropertyValueDto>().ToTable("VariantSetProperties");
         }
 

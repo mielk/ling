@@ -79,9 +79,10 @@ DropDown.prototype.trigger = function (e) {
     this.eventHandler.trigger(e);
 };
 DropDown.prototype.select = function (item) {
-    var key = item.key || item.name;
+    var key = (my.values.isNumber(item) || my.values.isString(item) ? item : item.key || item.name);
     var $item = this.data.getItem(key);
     if ($item) {
-        $(this.selection).select2('val', $item.name);
+        //$(this.selection).select2('val', $item.name);
+        $(this.selection).select2('val', key);
     }
 };

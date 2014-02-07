@@ -795,7 +795,14 @@ my.values = (function () {
     return {
         coalesce: function (value, ifFalse) {
             return (value ? value : ifFalse);
+        },
+        isNumber: function (n){
+            return typeof n === 'number' && !isNaN(parseFloat(n)) && isFinite(n);    
+        },
+        isString: function(value) {
+            return typeof value === 'string';
         }
+        
     };
 })();
 

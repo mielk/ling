@@ -127,6 +127,11 @@ VariantSet.prototype.changeWordtype = function (wordtype) {
         isDependable: isDependable
     });
 };
+VariantSet.prototype.setProperties = function (properties) {
+    for (var i = 0; i < properties.length; i++) {
+        var a = 1;
+    }
+};
 
 
 function Variant(editEntity, set, properties) {
@@ -1938,12 +1943,12 @@ function VariantSetEditPanel(set) {
         }
         
         function loadValues() {
-            self.set.properties.each(function (key, value) {
+            self.set.properties.each(function(key, value) {
                 var property = params.getItem(key);
                 if (property) {
                     property.setValue(value);
                 }
-            })
+            });
         }
         
         function render() {
@@ -1958,6 +1963,7 @@ function VariantSetEditPanel(set) {
             var property = my.grammarProperties.get(propertyId);
             var value;
             var selectedOption;
+            var events = new EventHandler();
 
             var ui = (function () {
                 var $container = jQuery('<div/>', {
@@ -1972,6 +1978,7 @@ function VariantSetEditPanel(set) {
                     'class': 'control-container'
                 }).appendTo($container);
 
+                var control;
 
                 function renderAsCheckbox() {
                     control = my.ui.checkbox({
@@ -1980,10 +1987,17 @@ function VariantSetEditPanel(set) {
                         checked: value,
                         container: controlContainer
                     });
+                    
+                    events.bind({
+                        change: function(e) {
+                            control.change(e.value);
+                        }
+                    });
+
                 }
 
                 function renderAsDropdown() {
-                    data = [];
+                    var data = [];
                     property.options.each(function ($key, $value) {
                         data.push({
                             key: $value.id,
@@ -2000,12 +2014,17 @@ function VariantSetEditPanel(set) {
                     if (value) {
                         control.select(value);
                     }
+                    
+                    events.bind({
+                        change: function (e) {
+                            control.select(e.value);
+                        }
+                    });
 
                 }
 
-
                 return {
-                    render: function () {
+                    render: function() {
 
                         $(name).html(property.name);
 
@@ -2018,18 +2037,25 @@ function VariantSetEditPanel(set) {
                                 break;
                         }
                     }
-                }
+                };
 
             })();
 
             return {
                 id: id,
                 property: property,
+                value: function() {
+                    return value;
+                },
                 setValue: function(val) {
                     value = val;
                     if (property.options) {
                         selectedOption = property.options.getItem(value);
                     }
+                    events.trigger({                        
+                        type: 'change',
+                        value: val
+                    });
                 },
                 render: function () {
                     ui.render();
@@ -2043,8 +2069,21 @@ function VariantSetEditPanel(set) {
             render();
         })();
 
-    })();
 
+        return {
+            getParams: function () {
+                var result = [];
+                params.each(function($key, $value) {
+                    result.push({                        
+                        key: $key,
+                        value: $value.value()
+                    });
+                });
+                return result;
+            }
+        };
+
+    })();
 
     this.buttons = (function () {
         var panel = jQuery('<div/>', {
@@ -2100,8 +2139,10 @@ VariantSetEditPanel.prototype.cancel = function () {
     this.ui.destroy();
 };
 VariantSetEditPanel.prototype.confirm = function () {
-    this.set.changeWordtype(this.wordtypePanel.value());
-    this.cancel();
+    var self = this;
+    self.set.changeWordtype(this.wordtypePanel.value());
+    self.set.setProperties(self.paramsPanel.getParams());
+    self.cancel();
 };
 VariantSetEditPanel.prototype.validate = function (tag) {
     var self = this;
