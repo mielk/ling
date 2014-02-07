@@ -766,86 +766,7 @@ Entity.prototype.edit = function () {
     var editPanel = this.editPanel(editItem);
     editPanel.display();
 };
-Entity.prototype.removedLogs = function (logs) {
-    var tag = 'remove';
-    var array = [];
-    for (var i = 0; i < logs.length; i++) {
-        var log = logs[i];
-        if (log.event === tag && log.item && log.item.id) {
-            array.push(log.item.id);
-        }
-    }
-    return array;
-};
-Entity.prototype.editedLogs = function (logs) {
-    var tag = 'edit';
-    var array = [];
-    for (var i = 0; i < logs.length; i++) {
-        var log = logs[i];
-        var item = log.item;
-        if (log.event === tag && item && item.id) {
-            var text = item.id + '|' + item.name + '|' + item.weight + '|' + item.isCompleted;
-            array.push(text);
-        }
-    }
-    return array;
-};
-Entity.prototype.addedLogs = function (logs) {
-    var tag = 'add';
-    var array = [];
-    for (var i = 0; i < logs.length; i++) {
-        var log = logs[i];
-        var item = log.item;
-        if (log.event === tag && item) {
-            //metadata
-            var text = item.languageId + '|' + item.name + '|' + item.weight + '|' + item.isCompleted;
 
-            //properties
-            text += '$';
-            item.properties.each(function (key, value) {
-                text += value.id + '|' + value.value + ';';
-            });
-
-            //details
-            text += '$';
-            item.details.each(function (key, value) {
-                text += value.id + '|' + value.value + ';';
-            });
-
-            array.push(text);
-        }
-    }
-    return array;
-};
-Entity.prototype.propertiesLogs = function (logs) {
-    var tag = 'properties';
-    var array = [];
-    for (var i = 0; i < logs.length; i++) {
-        var log = logs[i];
-        if (log.event === tag) {
-            var wordId = log.wordId;
-            var propertyId = log.propertyId;
-            var value = log.value;
-            var text = wordId + '|' + propertyId + '|' + (value === 'true' ? '*' : (value === 'false' ? '' : value));
-            array.push(text);
-        }
-    }
-    return array;
-};
-Entity.prototype.detailsLogs = function (logs) {
-    var tag = 'details';
-    if (!logs) return [];
-
-    var array = [];
-    for (var i = 0; i < logs.length; i++) {
-        var log = logs[i];
-        if (log.event === tag) {
-            var text = log.wordId + '|' + log.form + '|' + log.value;
-            array.push(text);
-        }
-    }
-    return array;
-};
 
 
 function Metaword(properties) {
@@ -989,6 +910,90 @@ Metaword.prototype.checkWordtype = function (wordtype) {
 Metaword.prototype.editPanel = function (editItem) {
     return new WordEditPanel(this, editItem);
 };
+Metaword.prototype.removedLogs = function (logs) {
+    var tag = 'remove';
+    var array = [];
+    for (var i = 0; i < logs.length; i++) {
+        var log = logs[i];
+        if (log.event === tag && log.item && log.item.id) {
+            array.push(log.item.id);
+        }
+    }
+    return array;
+};
+Metaword.prototype.editedLogs = function (logs) {
+    var tag = 'edit';
+    var array = [];
+    for (var i = 0; i < logs.length; i++) {
+        var log = logs[i];
+        var item = log.item;
+        if (log.event === tag && item && item.id) {
+            var text = item.id + '|' + item.name + '|' + item.weight + '|' + item.isCompleted;
+            array.push(text);
+        }
+    }
+    return array;
+};
+Metaword.prototype.addedLogs = function (logs) {
+    var tag = 'add';
+    var array = [];
+    for (var i = 0; i < logs.length; i++) {
+        var log = logs[i];
+        var item = log.item;
+        if (log.event === tag && item) {
+            //metadata
+            var text = item.languageId + '|' + item.name + '|' + item.weight + '|' + item.isCompleted;
+
+            //properties
+            text += '$';
+            item.properties.each(function (key, value) {
+                text += value.id + '|' + value.value + ';';
+            });
+
+            //details
+            text += '$';
+            item.details.each(function (key, value) {
+                text += value.id + '|' + value.value + ';';
+            });
+
+            array.push(text);
+        }
+    }
+    return array;
+};
+Metaword.prototype.propertiesLogs = function (logs) {
+    var tag = 'properties';
+    var array = [];
+    for (var i = 0; i < logs.length; i++) {
+        var log = logs[i];
+        if (log.event === tag) {
+            var wordId = log.wordId;
+            var propertyId = log.propertyId;
+            var value = log.value;
+            var text = wordId + '|' + propertyId + '|' + (value === 'true' ? '*' : (value === 'false' ? '' : value));
+            array.push(text);
+        }
+    }
+    return array;
+};
+Metaword.prototype.detailsLogs = function (logs) {
+    var tag = 'details';
+    if (!logs) return [];
+
+    var array = [];
+    for (var i = 0; i < logs.length; i++) {
+        var log = logs[i];
+        if (log.event === tag) {
+            var text = log.wordId + '|' + log.form + '|' + log.value;
+            array.push(text);
+        }
+    }
+    return array;
+};
+
+
+
+
 
 
 function Question(properties) {
@@ -1018,22 +1023,26 @@ Question.prototype.update = function (params) {
     var name = (this.name === params.name ? '' : params.name);
     var weight = (this.weight === params.weight ? 0 : params.weight);
     var categories = (my.array.equal(params.categories, this.categories) ? [] : params.categories);
-    var removed = this.removedLogs(params.logs);
-    var edited = this.editedLogs(params.logs);
-    var added = this.addedLogs(params.logs);
-    var details = this.detailsLogs(params.logs);
+    //removed options
+    //edited options
+    //added options
+    //removed sets
+    //added sets
+    var editedSets = this.editedSetsLogs(params.logs);
+    var dependencies = this.dependenciesLogs(params.logs);
+    var connections = this.connectionsLogs(params.logs);
+    
 
     //Check if there are any changes.
-    if (name || weight || (categories && categories.length) || (removed && removed.length) ||
-            (edited && edited.length) || (added && added.length)) {
+    if (name || weight || (categories && categories.length) || (editedSets && editedSets.length) ||
+             (connections && connections.length)) {
 
         this.service.update({
             question: self,
             name: name,
             weight: weight,
-            removed: removed,
-            edited: edited,
-            added: added,
+            editedSets: editedSets,
+            connections: connections,
             categories: my.categories.toIntArray(categories),
             callback: function (result) {
                 if (result !== false) {
@@ -1074,6 +1083,26 @@ Question.prototype.update = function (params) {
 Question.prototype.editPanel = function (editItem) {
     return new QuestionEditPanel(this, editItem);
 };
+Question.prototype.dependenciesLogs = function (logs) {
+    var removeTag = 'dependencyRemoved';
+    var addTag = 'dependencyAdded';
+
+};
+
+Question.prototype.editedSetsLogs = function (logs) {
+    var tag = 'remove';
+
+};
+Question.prototype.connectionsLogs = function (logs) {
+    var tag = 'connections';
+
+};
+
+
+
+
+
+
 
 
 function EditEntity(properties) {

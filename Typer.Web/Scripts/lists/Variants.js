@@ -81,12 +81,30 @@ VariantSet.prototype.clearLogs = function() {
     this.logs = [];
 };
 
-VariantSet.prototype.sendLogsToParent = function() {
-    var x = this.logs;
+VariantSet.prototype.sendLogsToParent = function () {
+    var self = this;
+
+    //zmiany we właściwościach seta
+    for (var i = 0; i < self.logs.length; i++) {
+        var log = self.logs[i];
+        log.setId = self.id;
+        self.editEntity.addLog(log);
+    }
+
+    //Zmiana parentu seta
+    if (self.parentChanged) {
+        self.editEntity.addLog({
+            event: 'parentChanged',
+            set: self.id,
+            parent: self.parent.id
+        });
+    }
     
-    //sprawdzić zmiany w zależnościach
-    //sprawdzić zmiany w grupach
+    //Zmiany w grupach
+    
+    
     //sprawdzić zmiany w wykluczeniach
+    
     //sprawdzić zmiany w zestawach opcji
 
 
@@ -229,6 +247,7 @@ function VariantPanel(properties) {
     self.editQuestion = properties.editQuestion;
     self.groups = new HashTable(null);
     self.counter = 0;
+    self.connectionsChanged = false;
 
     this.loadGroups();
 
@@ -411,7 +430,24 @@ VariantPanel.prototype.confirm = function () {
         value.sendLogsToParent();
     });
 
+    this.addConnectionsLog();
+
     this.ui.destroy();
+};
+VariantPanel.prototype.addConnectionsLog = function () {
+    if (this.connectionsChanged) {
+        var connections = [];
+
+        this.groups.each(function(key, value) {
+            connections.push(value.itemsToString());
+        });
+
+        this.editQuestion.addLog({
+            event: 'connections',
+            connections: connections
+        });
+    }
+
 };
 VariantPanel.prototype.isComplete = function () {
     //var forms = this.details.forms;
@@ -517,6 +553,13 @@ VariantGroup.prototype.removeSet = function (set) {
 };
 VariantGroup.prototype.isEmpty = function () {
     return this.sets.size() === 0;
+};
+VariantGroup.prototype.itemsToString = function() {
+    var s = '';
+    this.sets.each(function(key, value) {
+        s += value.id + ',';
+    });
+    return my.text.cut(s, 1);
 };
 
 
@@ -1224,7 +1267,7 @@ function VariantConnectionsManager(parent) {
 
         function release() {
 
-            self.panel.connectionsChanged = true;
+            self.parent.connectionsChanged = true;
 
             if (!self.activeGroup) {
                 if ($group.only($self)) {
@@ -1461,7 +1504,6 @@ function VariantDependenciesManager(parent) {
         });
     })();
     
-
     var dependencyLine = function (set) {
         var $self;
         var $set = set;
@@ -1744,7 +1786,6 @@ function VariantDependenciesManager(parent) {
         });
 
     }
-    
 
     this.initialize = function () {
         self.parent.groups.each(function (groupKey, group) {
@@ -1754,7 +1795,6 @@ function VariantDependenciesManager(parent) {
         });
     };
     
-
 }
 extend(VariantSubpanel, VariantDependenciesManager);
 
