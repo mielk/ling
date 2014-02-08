@@ -198,7 +198,8 @@ namespace Typer.DAL.Repositories
         #endregion
 
 
-        public bool Update(int id, string name, int weight, int[] categories, int[] removed, string[] edited, string[] added)
+        public bool Update(int id, string name, int weight, int[] categories,
+                string[] dependencies, string[] connections, string[] editedSets)
         {
 
             using (var scope = new TransactionScope())
@@ -216,50 +217,86 @@ namespace Typer.DAL.Repositories
                             result = UpdateCategories(id, categories);
                         }
 
-
-
-
-                        //Removed
-                        if (removed != null)
+                        //Variant sets changes
+                        if (editedSets != null)
                         {
-                            for (var i = 0; i < removed.Length; i++)
+                            foreach (string edited in editedSets)
                             {
-                                var _id = removed[i];
-                                var option = GetOption(_id);
-                                if (option == null)
+                                if (!UpdateVariantSet(edited))
                                 {
                                     result = false;
                                 }
-                                else
+                            }
+                        }
+
+                        //Variant sets dependencies
+                        if (dependencies != null)
+                        {
+                            foreach (string dependency in dependencies)
+                            {
+                                if (!UpdateDependencies(dependency))
                                 {
-                                    option.IsActive = false;    
+                                    result = false;
                                 }
+                            }
+                        }
+
+                        //Variant sets connections
+                        if (connections != null)
+                        {
+
+                            foreach (string connection in connections)
+                            {
+                                if (!UpdateConnections(connection))
+                                {
+                                    result = false;
+                                }                                
+                            }
+                        }
+                        
+
+
+                        ////Removed
+                        //if (removed != null)
+                        //{
+                        //    for (var i = 0; i < removed.Length; i++)
+                        //    {
+                        //        var _id = removed[i];
+                        //        var option = GetOption(_id);
+                        //        if (option == null)
+                        //        {
+                        //            result = false;
+                        //        }
+                        //        else
+                        //        {
+                        //            option.IsActive = false;    
+                        //        }
                                 
-                            }
-                        }
+                        //    }
+                        //}
 
 
-                        //Edited
-                        if (edited != null)
-                        {
-                            for (var i = 0; i < edited.Length; i++)
-                            {
-                                var s = edited[i];
-                                var _result = UpdateOption(s);
-                                if (!_result) result = false;
-                            }
-                        }
+                        ////Edited
+                        //if (edited != null)
+                        //{
+                        //    for (var i = 0; i < edited.Length; i++)
+                        //    {
+                        //        var s = edited[i];
+                        //        var _result = UpdateOption(s);
+                        //        if (!_result) result = false;
+                        //    }
+                        //}
 
-                        //Added
-                        if (added != null)
-                        {
-                            for (var i = 0; i < added.Length; i++)
-                            {
-                                var s = added[i];
-                                var _result = AddOption(s, id);
-                                if (!_result) result = false;
-                            }
-                        }
+                        ////Added
+                        //if (added != null)
+                        //{
+                        //    for (var i = 0; i < added.Length; i++)
+                        //    {
+                        //        var s = added[i];
+                        //        var _result = AddOption(s, id);
+                        //        if (!_result) result = false;
+                        //    }
+                        //}
 
 
 
@@ -273,7 +310,6 @@ namespace Typer.DAL.Repositories
                     }
                     catch (Exception)
                     {
-
                     }
                 }
 
@@ -286,7 +322,135 @@ namespace Typer.DAL.Repositories
 
 
 
+        private bool UpdateVariantSet(string s)
+        {
 
+            string[] parameters = s.Split('|');
+
+            //Set id
+            int id;
+            Int32.TryParse(parameters[0], out id);
+
+            //Property id
+            int propertyId;
+            Int32.TryParse(parameters[1], out propertyId);
+
+            //Value
+            int value;
+            Int32.TryParse(parameters[2], out value);
+
+            var property = GetVariantSetPropertyValue(id, propertyId);
+            if (property == null)
+            {
+                property = new VariantSetPropertyValueDto
+                {
+                    PropertyId = propertyId,
+                    Value = value,
+                    VariantSetId = id
+                };
+
+                Context.VariantSetPropertyValues.Add(property);
+
+            }
+            else
+            {
+                property.Value = value;
+            }
+            
+            return true;
+
+        }
+
+        private bool UpdateDependencies(string s)
+        {
+
+            string[] parameters = s.Split('|');
+
+            //action
+            int action;
+            Int32.TryParse(parameters[0], out action);
+
+            //parent
+            int parentId;
+            Int32.TryParse(parameters[1], out parentId);
+            
+            //dependant
+            int dependantId;
+            Int32.TryParse(parameters[2], out dependantId);
+
+
+            var dependency = GetVariantSetDependency(parentId, dependantId);
+            if (dependency == null && action == 1)
+            {
+                dependency = new VariantDependencyDto
+                {
+                    MainSetId = parentId,
+                    DependantSetId = dependantId,
+                    IsActive = true,
+                    CreatorId = 1
+                };
+
+                Context.VariantDependencies.Add(dependency);
+
+            }
+            else if (dependency != null && action == 0)
+            {
+                Context.VariantDependencies.Remove(dependency);
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
+
+        }
+
+        private bool UpdateConnections(string s)
+        {
+
+            string[] parameters = s.Split('|');
+
+            //action
+            int action;
+            Int32.TryParse(parameters[0], out action);
+
+            //parent
+            int parentId;
+            Int32.TryParse(parameters[1], out parentId);
+
+            //dependant
+            int connectedId;
+            Int32.TryParse(parameters[2], out connectedId);
+
+
+            var connection = GetVariantSetConnection(parentId, connectedId);
+            if (connection == null && action == 1)
+            {
+                connection = new VariantConnectionDto
+                {
+                    VariantSetId = parentId,
+                    ConnectedSetId = connectedId,
+                    IsActive = true,
+                    CreatorId = 1,
+                    CreateDate = DateTime.Now
+                };
+
+                Context.VariantConnections.Add(connection);
+
+            }
+            else if (connection != null && action == 0)
+            {
+                Context.VariantConnections.Remove(connection);
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
+
+        }
 
         private bool UpdateOption(string s)
         {
@@ -432,6 +596,22 @@ namespace Typer.DAL.Repositories
         public IEnumerable<VariantSetPropertyValueDto> GetVariantSetPropertiesValues(int id)
         {
             return Context.VariantSetPropertyValues.Where(vspv => vspv.VariantSetId == id);
+        }
+
+        public VariantSetPropertyValueDto GetVariantSetPropertyValue(int setId, int propertyId)
+        {
+            return Context.VariantSetPropertyValues.SingleOrDefault(vspv => vspv.VariantSetId == setId && vspv.PropertyId == propertyId);
+        }
+
+        public VariantDependencyDto GetVariantSetDependency(int parentId, int dependantId)
+        {
+            return Context.VariantDependencies.SingleOrDefault(vd => vd.MainSetId == parentId && vd.DependantSetId == dependantId);
+        }
+
+        public VariantConnectionDto GetVariantSetConnection(int parentId, int connectedId)
+        {
+            return Context.VariantConnections.SingleOrDefault(vd => (vd.VariantSetId == parentId && vd.ConnectedSetId == connectedId) || 
+                                                                    (vd.VariantSetId == connectedId && vd.ConnectedSetId == parentId));
         }
 
         public IEnumerable<VariantSetPropertyDefinitionDto> GetVariantSetPropertiesDefinitions(int wordtypeId, int languageId)

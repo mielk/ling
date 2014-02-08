@@ -111,13 +111,13 @@
                     'name': e.name,
                     'weight': e.weight,
                     'categories': e.categories,
-                    'removed': e.removed,
-                    'edited': e.edited,
-                    'added': e.added
+                    'dependencies': e.dependencies,
+                    'connections': e.connections,
+                    'editedSets': e.editedSets
                 },
                 traditional: true,
-                success: 'Word ' + e.question.name + ' has been updated',
-                error: 'Error when trying to update the word ' + e.question.name,
+                success: 'Question ' + e.question.name + ' has been updated',
+                error: 'Error when trying to update the question ' + e.question.name,
                 callback: e.callback
             });
         },

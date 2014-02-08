@@ -1035,13 +1035,14 @@ Question.prototype.update = function (params) {
 
     //Check if there are any changes.
     if (name || weight || (categories && categories.length) || (editedSets && editedSets.length) ||
-             (connections && connections.length)) {
+        (dependencies && dependencies.length) || (connections && connections.length)) {
 
         this.service.update({
             question: self,
             name: name,
             weight: weight,
             editedSets: editedSets,
+            dependencies: dependencies,
             connections: connections,
             categories: my.categories.toIntArray(categories),
             callback: function (result) {
@@ -1087,14 +1088,57 @@ Question.prototype.dependenciesLogs = function (logs) {
     var removeTag = 'dependencyRemoved';
     var addTag = 'dependencyAdded';
 
+    var results = [];
+
+    for (var i = 0; i < logs.length; i++) {
+        var log = logs[i];
+        if (log.event === removeTag) {
+            var $log = 0 + '|' + log.setId + '|' + log.set;
+            results.push($log);
+        } else if (log.event === addTag) {
+            $log = 1 + '|' + log.setId + '|' + log.set;
+            results.push($log);
+        }
+    }
+
+    return results;
+
 };
 
 Question.prototype.editedSetsLogs = function (logs) {
-    var tag = 'remove';
+    var tag = 'editVariantSet';
+    var results = [];
+
+    for (var i = 0; i < logs.length; i++) {
+        var log = logs[i];
+        if (log.event === tag) {
+            var $log = log.setId + '|' + log.property + '|' + log.value;
+            results.push($log);
+        }
+    }
+
+    return results;
 
 };
 Question.prototype.connectionsLogs = function (logs) {
-    var tag = 'connections';
+    var removeTag = 'removeConnection';
+    var addTag = 'addConnection';
+
+    var results = [];
+
+    for (var i = 0; i < logs.length; i++) {
+        var log = logs[i];
+        if (log.event === removeTag) {
+            var $log = 0 + '|' + log.parent.id + '|' + log.connected.id;
+            results.push($log);
+        } else if (log.event === addTag) {
+            $log = 1 + '|' + log.parent.id + '|' + log.connected.id;
+            results.push($log);
+        }
+    }
+
+    return results;
+
 
 };
 

@@ -77,6 +77,18 @@ VariantSet.prototype.loadProperties = function () {
 
 };
 
+VariantSet.prototype.getConnectionPairs = function () {
+    var self = this;
+    var pairs = new HashTable(null);
+    self.connections.each(function (key, value) {
+        var connectionKey = self.id + '|' + value.id;
+        var connection = [self, value];
+        pairs.setItem(connectionKey, connection);
+    });
+    return pairs;
+    
+};
+
 VariantSet.prototype.clearLogs = function() {
     this.logs = [];
 };
@@ -90,18 +102,6 @@ VariantSet.prototype.sendLogsToParent = function () {
         log.setId = self.id;
         self.editEntity.addLog(log);
     }
-
-    //Zmiana parentu seta
-    if (self.parentChanged) {
-        self.editEntity.addLog({
-            event: 'parentChanged',
-            set: self.id,
-            parent: self.parent.id
-        });
-    }
-    
-    //Zmiany w grupach
-    
     
     //sprawdzić zmiany w wykluczeniach
     
@@ -205,6 +205,13 @@ VariantSet.prototype.setProperties = function (properties) {
         
     }
 };
+VariantSet.prototype.addConnection = function (set) {
+    this.connections.setItem(set.id, set);
+};
+VariantSet.prototype.removeConnection = function (set) {
+    this.connections.removeItem(set.id);
+};
+
 
 
 function Variant(editEntity, set, properties) {
@@ -430,22 +437,82 @@ VariantPanel.prototype.confirm = function () {
         value.sendLogsToParent();
     });
 
-    this.addConnectionsLog();
+    this.updateConnections();
 
     this.ui.destroy();
 };
-VariantPanel.prototype.addConnectionsLog = function () {
+
+VariantPanel.prototype.updateConnections = function () {
+    var self = this;
+
     if (this.connectionsChanged) {
-        var connections = [];
 
-        this.groups.each(function(key, value) {
-            connections.push(value.itemsToString());
+        var previousPairs = (function () {
+            var pairs = new HashTable(null);
+            self.editQuestion.variantsSets.each(function (key, value) {
+                value.getConnectionPairs().each(function ($key, $value) {
+
+                    function alreadyExists(pair) {
+                        var connectionKey = pair[1].id + '|' + pair[0].id;
+                        return pairs.hasItem(connectionKey);
+                    }
+
+                    if (!alreadyExists($value)) {
+                        pairs.setItem($key, $value);
+                    }
+                    
+                });
+            });
+            return pairs;
+        })();
+
+        var currentPairs = (function () {
+            var pairs = new HashTable(null);
+            self.groups.each(function (key, group) {
+                group.getConnectionPairs().each(function ($key, $value) {
+                    pairs.setItem($key, $value);
+                });
+            });
+            return pairs;
+        })();
+
+        //Match pairs.
+        previousPairs.each(function (key, value) {
+            if (!currentPairs.hasItem(key)) {
+
+                var parent = value[0];
+                var connected = value[1];
+
+                self.editQuestion.addLog({
+                    event: 'removeConnection',
+                    parent: parent,
+                    connected: connected
+                });
+
+                parent.removeConnection(connected);
+                connected.removeConnection(parent);
+
+            }
         });
 
-        this.editQuestion.addLog({
-            event: 'connections',
-            connections: connections
+        currentPairs.each(function (key, value) {
+            if (!previousPairs.hasItem(key)) {
+
+                var parent = value[0];
+                var connected = value[1];
+
+                self.editQuestion.addLog({
+                    event: 'addConnection',
+                    parent: parent,
+                    connected: connected
+                });
+
+                parent.addConnection(connected);
+                connected.addConnection(parent);
+
+            };
         });
+        
     }
 
 };
@@ -560,6 +627,22 @@ VariantGroup.prototype.itemsToString = function() {
         s += value.id + ',';
     });
     return my.text.cut(s, 1);
+};
+VariantGroup.prototype.getConnectionPairs = function () {
+    var results = new HashTable(null);
+    var array = this.sets.values();
+
+    for (var i = 0; i < array.length; i++) {
+        var parent = array[i];
+        for (var j = i + 1; j < array.length; j++) {
+            var connected = array[j];
+            var connectionKey = parent.id + '|' + connected.id;
+            results.setItem(connectionKey, [parent, connected]);
+        }
+    }
+
+    return results;
+
 };
 
 
