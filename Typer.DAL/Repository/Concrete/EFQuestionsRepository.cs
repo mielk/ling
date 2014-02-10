@@ -620,5 +620,18 @@ namespace Typer.DAL.Repositories
                 Context.VariantSetPropertyDefinitions.Where(
                     vspd => vspd.LanguageId == languageId && vspd.WordtypeId == wordtypeId);
         }
+
+        public IEnumerable<VariantDto> GetVariantsForVariantSet(int variantSetId)
+        {
+            return Context.Variants.Where(v => v.VariantSetId == variantSetId);
+        }
+
+        public IEnumerable<VariantDto> GetVariantsForQuestion(int questionId, int[] languages)
+        {
+
+            var sets = Context.VariantSets.Where(vs => vs.QuestionId == questionId && languages.Contains(vs.LanguageId)).Select(vs => vs.Id);
+            return Context.Variants.Where(vs => sets.Contains(vs.VariantSetId));
+
+        }
     }
 }

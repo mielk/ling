@@ -211,5 +211,23 @@ namespace Typer.Web.Controllers
         }
 
 
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult GetVariantsForQuestion(int questionId, int[] languages)
+        {
+            var variants = _service.GetVariantsForQuestion(questionId, languages);
+            return Json(variants, JsonRequestBehavior.AllowGet);
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult GetVariantsForVariantSet(int variantSetId)
+        {
+            var variants = _service.GetVariantsForVariantSet(variantSetId);
+            return Json(variants, JsonRequestBehavior.AllowGet);
+        }
+
+
     }
 }

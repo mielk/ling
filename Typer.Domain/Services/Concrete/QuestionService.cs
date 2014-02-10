@@ -228,6 +228,18 @@ namespace Typer.Domain.Services
             return dtos.Select(VariantSetPropertyValueFromDto).ToList();
         }
 
+        public IEnumerable<Variant> GetVariantsForQuestion(int questionId, int[] languages)
+        {
+            var dtos = _repository.GetVariantsForQuestion(questionId, languages);
+            return dtos.Select(VariantFromDto).ToList();
+        }
+
+        public IEnumerable<Variant> GetVariantsForVariantSet(int variantSetId)
+        {
+            var dtos = _repository.GetVariantsForVariantSet(variantSetId);
+            return dtos.Select(VariantFromDto).ToList();
+        }
+
 
         private static DependencyDefinition DependencyDefinitionFromDto(DependencyDefinitionDto dto)
         {

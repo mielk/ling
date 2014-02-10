@@ -40,5 +40,7 @@ namespace Typer.DAL.Repositories
 
         IEnumerable<VariantSetPropertyValueDto> GetVariantSetPropertiesValues(int id);
         IEnumerable<VariantSetPropertyDefinitionDto> GetVariantSetPropertiesDefinitions(int wordtypeId, int languageId);
+        IEnumerable<VariantDto> GetVariantsForVariantSet(int variantSetId);
+        IEnumerable<VariantDto> GetVariantsForQuestion(int questionId, int[] languages);
     }
 }

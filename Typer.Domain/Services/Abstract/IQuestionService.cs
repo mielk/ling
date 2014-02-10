@@ -38,5 +38,7 @@ namespace Typer.Domain.Services
 
         IEnumerable<VariantSetPropertyDefinition> GetVariantSetPropertiesDefinitions(int wordtypeId, int languageId);
         IEnumerable<VariantSetPropertyValue> GetVariantSetPropertiesValues(int id);
+        IEnumerable<Variant> GetVariantsForQuestion(int questionId, int[] languages);
+        IEnumerable<Variant> GetVariantsForVariantSet(int variantSetId);
     }
 }

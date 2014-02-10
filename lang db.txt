@@ -662,3 +662,25 @@ CREATE TABLE [dbo].[VariantSetProperties]
     FOREIGN KEY ([VariantSetId]) REFERENCES [dbo].[VariantSets] ([Id]),
     FOREIGN KEY ([PropertyId]) REFERENCES [dbo].[VariantSetPropertyDefinitions] ([Id])
 )
+
+
+'==========================
+CREATE TABLE [dbo].[Variants] (
+    [Id]           INT            IDENTITY (1, 1) NOT NULL,
+    [VariantSetId] INT            NOT NULL,
+    [Key]          NVARCHAR (255) NOT NULL,
+    [Content]      NVARCHAR (255) NOT NULL,
+    [WordId]       INT            NULL,
+    [IsAnchored]   BIT            DEFAULT ((0)) NOT NULL,
+    [IsActive]     BIT            DEFAULT ((1)) NOT NULL,
+    [CreatorId]    INT            NOT NULL,
+    [CreateDate]   DATETIME       DEFAULT (getdate()) NOT NULL,
+    [IsApproved]   BIT            DEFAULT ((0)) NOT NULL,
+    [Positive]     INT            DEFAULT ((0)) NOT NULL,
+    [Negative]     INT            DEFAULT ((0)) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [Unique_Variant_Content] UNIQUE NONCLUSTERED ([VariantSetId] ASC, [Key] ASC),
+    FOREIGN KEY ([WordId]) REFERENCES [dbo].[Words] ([Id]),
+    FOREIGN KEY ([VariantSetId]) REFERENCES [dbo].[VariantSets] ([Id])
+);
+
