@@ -11,6 +11,7 @@ namespace Typer.Domain.Entities
         public string Key { get; set; }
         public string Content { get; set; }
         public int WordId { get; set; }
+        public bool IsAnchored { get; set; }
         public bool IsActive { get; set; }
         public int CreatorId { get; set; }
         public DateTime CreateDate { get; set; }

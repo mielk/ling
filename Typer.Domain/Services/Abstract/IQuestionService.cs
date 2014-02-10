@@ -40,5 +40,6 @@ namespace Typer.Domain.Services
         IEnumerable<VariantSetPropertyValue> GetVariantSetPropertiesValues(int id);
         IEnumerable<Variant> GetVariantsForQuestion(int questionId, int[] languages);
         IEnumerable<Variant> GetVariantsForVariantSet(int variantSetId);
+        int GetGrammarDefinitionId(int variantSetId);
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
+using Ninject.Infrastructure.Language;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.TransferObjects;
 
@@ -631,6 +632,30 @@ namespace Typer.DAL.Repositories
 
             var sets = Context.VariantSets.Where(vs => vs.QuestionId == questionId && languages.Contains(vs.LanguageId)).Select(vs => vs.Id);
             return Context.Variants.Where(vs => sets.Contains(vs.VariantSetId));
+
+        }
+
+        public int GetGrammarDefinitionId(int variantSetId)
+        {
+
+            var wordtypeId = Context.VariantSets.Where(vs => vs.Id == variantSetId).Select(vs => vs.WordType).First();
+            var properties = Context.VariantSetPropertyValues.Where(vspv => vspv.VariantSetId == variantSetId);
+            var definitions = Context.GrammarDefinitions.Where(gd => gd.WordtypeId == wordtypeId).Select(gd => gd.Id);
+            
+
+            foreach (var propertyValue in properties)
+            {
+                var value = propertyValue;
+                var numbers = definitions.ToArray();
+                definitions = Context.GrammarFormDefinitionProperties.
+                    Where(d => numbers.Contains(d.IdDefinition) && 
+                        d.IdProperty == value.PropertyId &&
+                        d.Value == value.Value).Select(d => d.IdDefinition);
+
+            }
+
+            var id = definitions.FirstOrDefault();
+            return id;
 
         }
     }

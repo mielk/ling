@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data.Common.CommandTrees;
 using System.Linq;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.Repositories;
@@ -240,6 +241,13 @@ namespace Typer.Domain.Services
             return dtos.Select(VariantFromDto).ToList();
         }
 
+        //public IEnumerable<GrammarFormDefinitionProperty> 
+
+        public int GetGrammarDefinitionId(int variantSetId)
+        {
+            return _repository.GetGrammarDefinitionId(variantSetId);
+        }
+
 
         private static DependencyDefinition DependencyDefinitionFromDto(DependencyDefinitionDto dto)
         {
@@ -313,6 +321,7 @@ namespace Typer.Domain.Services
                 CreateDate = dto.CreateDate,
                 CreatorId = dto.CreatorId,
                 Id = dto.Id,
+                IsAnchored = dto.IsAnchored,
                 IsActive = dto.IsActive,
                 IsApproved = dto.IsApproved,
                 Key = dto.Key,
@@ -362,6 +371,18 @@ namespace Typer.Domain.Services
                 Value = dto.Value
             };
         }
+
+        //private static GrammarFormDefinitionProperty grammarFormDefinitionPropertyFromDto(
+        //    GrammarFormDefinitionPropertyDto dto)
+        //{
+        //    return new GrammarFormDefinitionProperty
+        //    {
+        //        Id = dto.Id,
+        //        IdDefinition = dto.IdDefinition,
+        //        IdProperty = dto.IdProperty,
+        //        Value = dto.Value
+        //    };
+        //}
 
     }
 }

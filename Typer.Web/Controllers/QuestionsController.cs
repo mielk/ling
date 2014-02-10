@@ -228,6 +228,14 @@ namespace Typer.Web.Controllers
             return Json(variants, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult GetGrammarDefinitionId(int variantSetId)
+        {
+            var id = _service.GetGrammarDefinitionId(variantSetId);
+            return Json(id, JsonRequestBehavior.AllowGet);
+        }
+
 
     }
 }

@@ -225,7 +225,6 @@ namespace Typer.Domain.Services
                 Key = dto.Key,
                 LanguageId = dto.LanguageId,
                 Name = dto.Name,
-                Params = dto.Params,
                 WordtypeId = dto.WordtypeId
             };
         }

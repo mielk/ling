@@ -10,6 +10,7 @@
     self.logs = [];
 
     self.params = properties.Params;
+    self.grammarDefinitionId = 0;
 
     self.raw = {
         variants: properties.Variants,
@@ -74,6 +75,13 @@ VariantSet.prototype.loadProperties = function () {
         var value = values[i];
         self.properties.setItem(value.PropertyId, value.Value);
     }
+    
+
+    //Assign a proper grammar definition.
+    var grammarId = my.db.fetch('Questions', 'GetGrammarDefinitionId', {
+        'variantSetId': self.id
+    }, {});
+    self.grammarDefinitionId = grammarId;
 
 };
 
@@ -223,7 +231,8 @@ function Variant(editEntity, set, properties) {
     self.id = properties.Id;
     self.key = properties.Key;
     self.content = properties.Content;
-    self.wordId = properties.wordId;
+    self.wordId = properties.WordId;
+    self.anchored = properties.IsAnchored;
 }
 Variant.prototype.loadLimits = function () {
     this.excluded = new HashTable(null);
@@ -554,6 +563,9 @@ VariantPanel.prototype.loadGroups = function () {
             self.groups.setItem(group.id, group);
         }
     });
+
+    self.loadVariants();
+
 };
 VariantPanel.prototype.newGroup = function (set) {
     var self = this;
@@ -587,7 +599,35 @@ VariantPanel.prototype.removeGroup = function (group) {
     });
 
 };
-
+VariantPanel.prototype.loadVariants = function () {
+    var self = this;
+    var languagesIds = self.editQuestion.getLanguagesIds();
+    $.ajax({
+        url: '/Questions/GetVariantsForQuestion',
+        type: "GET",
+        data: {
+            'questionId': self.editQuestion.id,
+            'languages': languagesIds
+        },
+        traditional: true,
+        datatype: "json",
+        async: true,
+        cache: false,
+        success: function (result) {
+            var question = self.editQuestion;
+            for (var i = 0; i < result.length; i++) {
+                var $raw = result[i];
+                var set = question.variantsSets.getItem($raw.VariantSetId);
+                var option = new Variant(question, set, $raw);
+                var x = 1;
+            }
+        },
+        error: function (msg) {
+            alert(msg.status + " | " + msg.statusText);
+            return null;
+        }
+    });
+};
 
 function VariantGroup(properties) {
     this.VariantGroup = true;

@@ -32,7 +32,7 @@ namespace Typer.DAL.Infrastructure
         public DbSet<DependencyDefinitionDto> DependenciesDefinitions { get; set; }
         public DbSet<VariantSetPropertyDefinitionDto> VariantSetPropertyDefinitions { get; set; }
         public DbSet<VariantSetPropertyValueDto> VariantSetPropertyValues { get; set; }
-        
+        public DbSet<GrammarFormDefinitionPropertyDto> GrammarFormDefinitionProperties { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -60,6 +60,7 @@ namespace Typer.DAL.Infrastructure
             modelBuilder.Entity<GrammarPropertyOptionDto>().ToTable("GrammarPropertyOptions");
             modelBuilder.Entity<VariantSetPropertyDefinitionDto>().ToTable("VariantSetPropertiesDefinitions");
             modelBuilder.Entity<VariantSetPropertyValueDto>().ToTable("VariantSetProperties");
+            modelBuilder.Entity<GrammarFormDefinitionPropertyDto>().ToTable("GrammarFormsDefinitionsProperties");
         }
 
 

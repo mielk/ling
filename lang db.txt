@@ -684,3 +684,33 @@ CREATE TABLE [dbo].[Variants] (
     FOREIGN KEY ([VariantSetId]) REFERENCES [dbo].[VariantSets] ([Id])
 );
 
+
+
+CREATE TABLE [dbo].[GrammarFormsDefinitionsProperties]
+(
+    [Id]         INT    IDENTITY (1, 1) NOT NULL,
+	[IdDefinition] INT	NOT NULL,
+	[IdProperty] INT	NOT NULL,
+	[Value]		 INT	NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([IdDefinition]) REFERENCES [dbo].[GrammarFormDefinitions] ([Id]),
+	FOREIGN KEY ([IdProperty]) REFERENCES [dbo].[GrammarPropertyDefinitions] ([Id]),
+	FOREIGN KEY ([Value]) REFERENCES [dbo].[GrammarPropertyOptions] ([Id])
+)
+
+
+
+CREATE TABLE [dbo].[GrammarFormDefinitions] (
+    [Id]            INT            IDENTITY (1, 1) NOT NULL,
+    [Key]           VARCHAR (10)   NOT NULL,
+    [LanguageId]    INT            NOT NULL,
+    [WordtypeId]    INT            NOT NULL,
+    [Name]          NVARCHAR (255) NOT NULL,
+    [Group]         NVARCHAR (255) NULL,
+    [Header]        BIT            NOT NULL,
+    [InactiveRules] VARCHAR (255)  NULL,
+    [Index]         INT            NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC),
+    FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id]),
+    FOREIGN KEY ([WordtypeId]) REFERENCES [dbo].[WordTypes] ([Id])
+);
