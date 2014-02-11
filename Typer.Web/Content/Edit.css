@@ -1620,7 +1620,31 @@ input.set-name:focus
     height: auto;
 }
 
+.variants-content {
+    width: 100%;
+    height: auto;    
+}
+
 .variant-key-field {
+    width: 100%;
+    height: 24px;
+    padding: 3px;
+    border: 1px solid #999999;
+    margin: 3px 0;
+    text-align: center;
+    background-color: #e7ffe3;
+}
+
+.keys-content .variant-key-field:first-child {
+    margin-top: 0;
+}
+
+.keys-content .variant-key-field:last-child {
+    margin-bottom: 0;
+}
+
+
+.variant-value-field {
     width: 100%;
     height: 24px;
     padding: 3px;
@@ -1629,10 +1653,10 @@ input.set-name:focus
     text-align: center;
 }
 
-.keys-content .variant-key-field:first-child {
+.variants-content .variant-value-field:first-child {
     margin-top: 0;
 }
 
-.keys-content .variant-key-field:last-child {
+.variants-content .variant-value-field:last-child {
     margin-bottom: 0;
 }

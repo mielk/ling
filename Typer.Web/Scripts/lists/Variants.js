@@ -235,6 +235,9 @@ function Variant(editEntity, set, properties) {
 Variant.prototype.loadLimits = function () {
     this.excluded = new HashTable(null);
 };
+Variant.prototype.value = function() {
+    return this.content;
+};
 
 
 
@@ -1022,6 +1025,8 @@ function GroupOptionsManager(properties) {
     self.parent = properties.parent;
     self.group = properties.group;
     self.visible = false;
+    self.keysMap = new HashTable(null);
+    self.keysArray = [];
 
     self.ui = (function () {
         var container = jQuery('<div/>', {
@@ -1075,9 +1080,6 @@ function GroupOptionsManager(properties) {
     })();
 
     self.keys = (function () {
-        var keysMap;
-        var keys = [];
-
 
         // ReSharper disable once UnusedLocals
         var ui = (function () {
@@ -1108,8 +1110,8 @@ function GroupOptionsManager(properties) {
                 $(content).empty();
 
                 //Adding new labels.
-                for (var i = 0; i < keys.length; i++) {
-                    var key = keys[i];
+                for (var i = 0; i < self.keysArray.length; i++) {
+                    var key = self.keysArray[i];
                     var keyField = jQuery('<input/>', {
                         'class': 'variant-key-field',
                         'type': 'text'
@@ -1133,30 +1135,30 @@ function GroupOptionsManager(properties) {
         })();
 
         function addKey(key) {
-            if (!keysMap.hasItem(key)) {
-                keysMap.setItem(key, key);
-                keys.push(key);
+            if (!self.keysMap.hasItem(key)) {
+                self.keysMap.setItem(key, key);
+                self.keysArray.push(key);
             }
         }
 
         function getKey(index) {
-            if (index < 0 || index >= keys.length) return null;
-            return keys[index];
+            if (index < 0 || index >= self.keysArray.length) return null;
+            return self.keysArray[index];
         }
 
         function loadKeys() {
             //Reset keys collections.
-            keysMap = new HashTable(null);
-            keys = [];
+            self.keysMap = new HashTable(null);
+            self.keysArray = [];
 
             self.group.sets.each(function (key, value) {
                 value.variants.each(function ($key) {
-                    if (!keysMap.hasItem($key)) {
-                        keysMap.setItem($key, $key);
-                        keys.push($key);
+                    if (!self.keysMap.hasItem($key)) {
+                        self.keysMap.setItem($key, $key);
+                        self.keysArray.push($key);
                     }
                 });
-                keys.sort();
+                self.keysArray.sort();
             });
 
             ui.renderKeys();
@@ -1206,25 +1208,66 @@ function GroupOptionsManager(properties) {
                 });
                 $(header).appendTo(container);
 
+                var content = jQuery('<div/>', {
+                    'class': 'variants-content'
+                }).appendTo(container);
+                
+
+                function renderVariants() {
+                    //Clearing previous key labels.
+                    $(content).empty();
+
+                    var variants = $set.variants;
+
+                    //Adding new labels.
+                    for (var i = 0; i < self.keysArray.length; i++) {
+                        var key = self.keysArray[i];
+                        var variant = variants.getItem(key);
+                        var valueField = jQuery('<input/>', {
+                            'class': 'variant-value-field',
+                            'type': 'text'
+                        });
+                        var value = (variant ? variant.value() : '');
+                        valueField.val(value);
+                        valueField.appendTo(content);
+                    }
+
+                }
+
+
+                return {
+                    renderVariants: renderVariants
+                };
+
 
             })();
 
             return {
-                id: $set.id
+                id: $set.id,
+                renderVariants: function() {
+                    ui.renderVariants();
+                }
             };
 
         };
 
         initialize();
 
-        return {
+        function loadVariants() {
+            columns.each(function(key, value) {
+                value.renderVariants();
+            });
+        }
 
+        return {
+            loadVariants : loadVariants
         };
 
     })();
 
     self.loadData = function() {
         self.keys.loadKeys();
+        self.columns.loadVariants();
     };
 
 }
