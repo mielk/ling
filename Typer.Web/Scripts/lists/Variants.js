@@ -40,8 +40,8 @@ VariantSet.prototype.loadVariants = function (variants) {
     for (var i = 0; i < variants.length; i++) {
         var object = variants[i];
         var variant = new Variant(self.editEntity, self, object);
-        self.variants.setItem(variant.id, variant);
-        self.language.addVariant(variant);
+        self.variants.setItem(variant.key, variant);
+        //self.language.addVariant(variant);
     }
 };
 VariantSet.prototype.loadConnections = function (connections) {
@@ -80,11 +80,10 @@ VariantSet.prototype.loadProperties = function () {
     //Assign a proper grammar definition.
     var grammarId = my.db.fetch('Questions', 'GetGrammarDefinitionId', {
         'variantSetId': self.id
-    }, {});
+    });
     self.grammarDefinitionId = grammarId;
 
 };
-
 VariantSet.prototype.getConnectionPairs = function () {
     var self = this;
     var pairs = new HashTable(null);
@@ -96,11 +95,9 @@ VariantSet.prototype.getConnectionPairs = function () {
     return pairs;
     
 };
-
 VariantSet.prototype.clearLogs = function() {
     this.logs = [];
 };
-
 VariantSet.prototype.sendLogsToParent = function () {
     var self = this;
 
@@ -117,7 +114,6 @@ VariantSet.prototype.sendLogsToParent = function () {
 
 
 };
-
 VariantSet.prototype.setParent = function (set) {
     this.parent = set;
     this.trigger({
@@ -219,7 +215,9 @@ VariantSet.prototype.addConnection = function (set) {
 VariantSet.prototype.removeConnection = function (set) {
     this.connections.removeItem(set.id);
 };
+VariantSet.prototype.addVariant = function(variant) {
 
+};
 
 
 function Variant(editEntity, set, properties) {
@@ -564,7 +562,7 @@ VariantPanel.prototype.loadGroups = function () {
         }
     });
 
-    self.loadVariants();
+    //self.loadVariants();
 
 };
 VariantPanel.prototype.newGroup = function (set) {
@@ -599,35 +597,34 @@ VariantPanel.prototype.removeGroup = function (group) {
     });
 
 };
-VariantPanel.prototype.loadVariants = function () {
-    var self = this;
-    var languagesIds = self.editQuestion.getLanguagesIds();
-    $.ajax({
-        url: '/Questions/GetVariantsForQuestion',
-        type: "GET",
-        data: {
-            'questionId': self.editQuestion.id,
-            'languages': languagesIds
-        },
-        traditional: true,
-        datatype: "json",
-        async: true,
-        cache: false,
-        success: function (result) {
-            var question = self.editQuestion;
-            for (var i = 0; i < result.length; i++) {
-                var $raw = result[i];
-                var set = question.variantsSets.getItem($raw.VariantSetId);
-                var option = new Variant(question, set, $raw);
-                var x = 1;
-            }
-        },
-        error: function (msg) {
-            alert(msg.status + " | " + msg.statusText);
-            return null;
-        }
-    });
-};
+//VariantPanel.prototype.loadVariants = function () {
+//    var self = this;
+//    var languagesIds = self.editQuestion.getLanguagesIds();
+//    $.ajax({
+//        url: '/Questions/GetVariantsForQuestion',
+//        type: "GET",
+//        data: {
+//            'questionId': self.editQuestion.id,
+//            'languages': languagesIds
+//        },
+//        traditional: true,
+//        datatype: "json",
+//        async: true,
+//        cache: false,
+//        success: function (result) {
+//            var question = self.editQuestion;
+//            for (var i = 0; i < result.length; i++) {
+//                var $raw = result[i];
+//                var set = question.variantsSets.getItem($raw.VariantSetId);
+//                var option = new Variant(question, set, $raw);
+//            }
+//        },
+//        error: function (msg) {
+//            alert(msg.status + " | " + msg.statusText);
+//            return null;
+//        }
+//    });
+//};
 
 function VariantGroup(properties) {
     this.VariantGroup = true;
@@ -682,6 +679,15 @@ VariantGroup.prototype.getConnectionPairs = function () {
     }
 
     return results;
+
+};
+VariantGroup.prototype.getVariantKeys = function() {
+    var self = this;
+    if (!self.keys) {
+        self.keys = new HashTable(null);
+    }
+
+    var x = 1;
 
 };
 
@@ -1029,21 +1035,13 @@ function GroupOptionsManager(properties) {
             'class': 'group-options-content'
         }).appendTo(container);
 
-        var contentInside = jQuery('<div/>').css({
-            'position': 'relative',
-            'width': '100%',
-            'height': '100%',
-            'margin': 0,
-            'padding': 0
-        }).appendTo(content);
-
         var keys = jQuery('<div/>', {
             'class': 'keys-column'
-        }).appendTo(contentInside);
+        }).appendTo(content);
 
         var groups = jQuery('<div/>', {
             'class': 'group-options'
-        }).appendTo(contentInside);
+        }).appendTo(content);
 
         var buttons = jQuery('<div/>', {
             'class': 'group-options-buttons'
@@ -1077,8 +1075,9 @@ function GroupOptionsManager(properties) {
     })();
 
     self.keys = (function () {
-
+        var keysMap;
         var keys = [];
+
 
         // ReSharper disable once UnusedLocals
         var ui = (function () {
@@ -1097,10 +1096,47 @@ function GroupOptionsManager(properties) {
             });
             $(header).appendTo(container);
 
+
+            var content = jQuery('<div/>', {
+                'class' : 'keys-content'
+            }).appendTo(container);
+
+
+
+            function renderKeys() {
+                //Clearing previous key labels.
+                $(content).empty();
+
+                //Adding new labels.
+                for (var i = 0; i < keys.length; i++) {
+                    var key = keys[i];
+                    var keyField = jQuery('<input/>', {
+                        'class': 'variant-key-field',
+                        'type': 'text'
+                    });
+                    keyField.val(key);
+                    keyField.appendTo(content);
+                }
+                
+            }
+
+
+            (function ini() {
+                renderKeys();
+            });
+            
+
+            return {                
+                renderKeys: renderKeys
+            };
+
         })();
 
         function addKey(key) {
-            keys.push(key);
+            if (!keysMap.hasItem(key)) {
+                keysMap.setItem(key, key);
+                keys.push(key);
+            }
         }
 
         function getKey(index) {
@@ -1108,9 +1144,29 @@ function GroupOptionsManager(properties) {
             return keys[index];
         }
 
+        function loadKeys() {
+            //Reset keys collections.
+            keysMap = new HashTable(null);
+            keys = [];
+
+            self.group.sets.each(function (key, value) {
+                value.variants.each(function ($key) {
+                    if (!keysMap.hasItem($key)) {
+                        keysMap.setItem($key, $key);
+                        keys.push($key);
+                    }
+                });
+                keys.sort();
+            });
+
+            ui.renderKeys();
+
+        }
+
         return {
             addKey: addKey,
-            getKey: getKey
+            getKey: getKey,
+            loadKeys: loadKeys
         };
 
     })();
@@ -1167,9 +1223,14 @@ function GroupOptionsManager(properties) {
 
     })();
 
+    self.loadData = function() {
+        self.keys.loadKeys();
+    };
+
 }
 GroupOptionsManager.prototype.show = function () {
     this.visible = true;
+    this.loadData();
     this.ui.show();
 };
 GroupOptionsManager.prototype.hide = function () {
