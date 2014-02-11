@@ -158,6 +158,12 @@ namespace Typer.Domain.Services
             return dtos.Select(GrammarFormFromDto).ToList();
         }
 
+        public IEnumerable<GrammarForm> GetGrammarForms(int definition, int[] wordsIds)
+        {
+            var dtos = _repository.GetGrammarForms(definition, wordsIds);
+            return dtos.Select(GrammarFormFromDto).ToList();            
+        }
+
         public IEnumerable<GrammarPropertyOption> GetGrammarPropertyOptions(int propertyId)
         {
             var dtos = _repository.GetGrammarPropertyOptions(propertyId);

@@ -218,6 +218,62 @@ VariantSet.prototype.removeConnection = function (set) {
 VariantSet.prototype.addVariant = function(variant) {
 
 };
+VariantSet.prototype.loadWordsForms = function (column) {
+    var self = this;
+    var wordVariants = new HashTable(null);
+    var wordsIds = (function () {
+        var array = [];
+        self.variants.each(function (key, value) {
+            var wordId = value.wordId;
+            if (wordId && !value.anchored) {
+                array.push(wordId);
+                wordVariants.setItem(wordId, value);
+            }
+        });
+
+        return array;
+
+    })();
+    
+
+
+    if (wordsIds.length) {
+        $.ajax({
+            url: '/Words/GetGrammarFormsForWords',
+            type: "GET",
+            data: {
+                'grammarForm': self.grammarDefinitionId,
+                'words': wordsIds
+            },
+            traditional: true,
+            datatype: "json",
+            async: true,
+            cache: false,
+            success: function (result) {
+                for (var i = 0; i < result.length; i++) {
+                    var object = result[i];
+                    var variant = wordVariants.getItem(object.WordId);
+                    if (variant) {
+                        variant.content = object.Content;
+                    }
+                }
+                column.renderVariants();
+                
+                //Clear collection.
+                wordVariants = null;
+                
+            },
+            error: function (msg) {
+                alert(msg.status + " | " + msg.statusText);
+                return null;
+            }
+        });
+    } else {
+        column.renderVariants();
+    }
+
+
+};
 
 
 function Variant(editEntity, set, properties) {
@@ -1234,7 +1290,6 @@ function GroupOptionsManager(properties) {
 
                 }
 
-
                 return {
                     renderVariants: renderVariants
                 };
@@ -1244,6 +1299,9 @@ function GroupOptionsManager(properties) {
 
             return {
                 id: $set.id,
+                loadVariants: function() {
+                    $set.loadWordsForms(this);
+                },
                 renderVariants: function() {
                     ui.renderVariants();
                 }
@@ -1255,7 +1313,7 @@ function GroupOptionsManager(properties) {
 
         function loadVariants() {
             columns.each(function(key, value) {
-                value.renderVariants();
+                value.loadVariants();
             });
         }
 

@@ -35,6 +35,7 @@ namespace Typer.DAL.Repositories
         IEnumerable<GrammarFormDefinitonDto> GetGrammarDefinitions(int languageId, int wordtypeId);
         IEnumerable<WordtypePropertyValueDto> GetPropertyValues(int wordId);
         IEnumerable<GrammarFormDto> GetGrammarForms(int wordId);
+        IEnumerable<GrammarFormDto> GetGrammarForms(int definition, int[] wordsIds);
         IEnumerable<GrammarPropertyOptionDto> GetGrammarPropertyOptions(int propertyId);
         GrammarPropertyDefinitionDto GetProperty(int id);
     }

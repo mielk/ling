@@ -562,6 +562,11 @@ namespace Typer.DAL.Repositories
             return Context.GrammarPropertyDefinitions.Where(gpd => ids.Contains(gpd.Id));
         }
 
+        public IEnumerable<GrammarFormDto> GetGrammarForms(int definition, int[] wordsIds)
+        {
+            return Context.GrammarForms.Where(gf => gf.FormId == definition && wordsIds.Contains(gf.WordId));
+        }
+
         public IEnumerable<GrammarPropertyOptionDto> GetGrammarPropertyOptions(int propertyId)
         {
             return Context.GrammarPropertyOptions.Where(gpo => gpo.PropertyId == propertyId);
