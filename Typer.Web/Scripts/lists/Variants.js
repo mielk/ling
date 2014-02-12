@@ -289,6 +289,7 @@ function Variant(editEntity, set, properties) {
     self.content = properties.Content;
     self.wordId = properties.WordId;
     self.anchored = properties.IsAnchored;
+    self.isNew = properties.IsNew ? true : false;
 }
 Variant.prototype.loadLimits = function () {
     this.excluded = new HashTable(null);
@@ -301,9 +302,6 @@ Variant.prototype.bind = function(e) {
 };
 Variant.prototype.trigger = function (e) {
     this.eventHandler.trigger(e);
-};
-Variant.prototype.isNew = function() {
-    this.isNew = true;
 };
 
 
@@ -723,6 +721,33 @@ VariantGroup.prototype.addSet = function (set) {
 };
 VariantGroup.prototype.removeSet = function (set) {
     this.sets.removeItem(set.id);
+    this.removeEmptyVariants(set);
+};
+VariantGroup.prototype.removeEmptyVariants = function(removedSet) {
+    //Przy tworzeniu grup, każdy set oprócz swojego zestawu
+    //wariantów otrzymuje również warianty z powiązanych setów.
+    //W momencie usuwania seta i przeniesienia go do innej grupy,
+    //puste warianty (dodane do tego setu tylko z uwagi na to, 
+    //że był powiązany z jakimiś innymi) są usuwane, bo powiązanie
+    //pomiędzy setami już nie występuje.
+
+    this.sets.each(function(key, value) {
+        value.variants.each(function($key, variant) {
+            if (variant.isNew && !variant.content && !variant.wordId) {
+                var linked = removedSet.variants.getItem(variant.key);
+                if (linked && !linked.isNew) {
+                    value.variants.removeItem(variant.key);
+                }
+            }
+        });
+    });
+
+    removedSet.variants.each(function(key, variant) {
+        if (variant.isNew && !variant.content && !variant.wordId) {
+            removedSet.variants.removeItem(key);
+        }
+    });
+
 };
 VariantGroup.prototype.isEmpty = function () {
     return this.sets.size() === 0;
@@ -1303,7 +1328,8 @@ function GroupOptionsManager(properties) {
                     function checkVariant() {
                         if (!variant) {
                             variant = new Variant($set.editEntity, $set, {
-                                Key: key
+                                Key: key,
+                                IsNew: true
                             });
                             $set.variants.setItem(variant.key, variant);
                         }
