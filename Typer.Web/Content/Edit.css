@@ -1462,8 +1462,6 @@ input[type=submit].variant-button-edit {
     float: left;
     height: auto;
     width: 100%;
-    left: 6px;
-    right: 6px;
     border-bottom: 1px solid #777;
     padding: 6px 0;
 }

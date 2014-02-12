@@ -218,7 +218,7 @@ VariantSet.prototype.removeConnection = function (set) {
 VariantSet.prototype.addVariant = function(variant) {
 
 };
-VariantSet.prototype.loadWordsForms = function (column) {
+VariantSet.prototype.loadWordsForms = function () {
     var self = this;
     var wordVariants = new HashTable(null);
     var wordsIds = (function () {
@@ -255,9 +255,13 @@ VariantSet.prototype.loadWordsForms = function (column) {
                     var variant = wordVariants.getItem(object.WordId);
                     if (variant) {
                         variant.content = object.Content;
+                        variant.trigger({                            
+                            type: 'loadValue',
+                            value: object.Content
+                        });
                     }
                 }
-                column.renderVariants();
+                //column.renderVariants();
                 
                 //Clear collection.
                 wordVariants = null;
@@ -268,10 +272,7 @@ VariantSet.prototype.loadWordsForms = function (column) {
                 return null;
             }
         });
-    } else {
-        column.renderVariants();
     }
-
 
 };
 
@@ -279,6 +280,7 @@ VariantSet.prototype.loadWordsForms = function (column) {
 function Variant(editEntity, set, properties) {
     this.Variant = true;
     var self = this;
+    self.eventHandler = new EventHandler();
     self.editEntity = editEntity;
     self.set = set;
     self.language = set.language;
@@ -294,7 +296,15 @@ Variant.prototype.loadLimits = function () {
 Variant.prototype.value = function() {
     return this.content;
 };
-
+Variant.prototype.bind = function(e) {
+    this.eventHandler.bind(e);
+};
+Variant.prototype.trigger = function (e) {
+    this.eventHandler.trigger(e);
+};
+Variant.prototype.new = function() {
+    this.new = true;
+};
 
 
 
@@ -492,7 +502,7 @@ VariantPanel.prototype.display = function () {
 VariantPanel.prototype.cancel = function () {
     
     //usuwa wszystkie logi.
-    this.editQuestion.variantSets.each(function(key, value) {
+    this.editQuestion.variantsSets.each(function(key, value) {
         value.clearLogs();
     });
 
@@ -738,15 +748,6 @@ VariantGroup.prototype.getConnectionPairs = function () {
     }
 
     return results;
-
-};
-VariantGroup.prototype.getVariantKeys = function() {
-    var self = this;
-    if (!self.keys) {
-        self.keys = new HashTable(null);
-    }
-
-    var x = 1;
 
 };
 
@@ -1245,6 +1246,9 @@ function GroupOptionsManager(properties) {
 
             // ReSharper disable once UnusedLocals
             var ui = (function () {
+
+                var valueFields = new HashTable(null);
+
                 var container = jQuery('<div/>', {
                     'class': 'group-column'
                 }).css({
@@ -1273,20 +1277,87 @@ function GroupOptionsManager(properties) {
                     //Clearing previous key labels.
                     $(content).empty();
 
-                    var variants = $set.variants;
-
                     //Adding new labels.
                     for (var i = 0; i < self.keysArray.length; i++) {
                         var key = self.keysArray[i];
-                        var variant = variants.getItem(key);
-                        var valueField = jQuery('<input/>', {
-                            'class': 'variant-value-field',
-                            'type': 'text'
-                        });
-                        var value = (variant ? variant.value() : '');
-                        valueField.val(value);
-                        valueField.appendTo(content);
+                        var field = valueField(key);
+                        valueFields.setItem(key, field);
+                        field.appendTo(content);
                     }
+
+                }
+
+                function valueField(key) {
+                    var control = jQuery('<input/>', {
+                        'class': 'default variant-value-field',
+                        'type': 'text'
+                    });
+                    
+                    var variant = $set.variants.getItem(key);
+
+                    function checkVariant() {
+                        if (!variant) {
+                            variant = new Variant($set.editEntity, $set, {
+                                Key: key
+                            });
+                            $set.variants.setItem(variant.key, variant);
+                        }
+                    }
+
+                    function setValue(val) {
+                        $(control).val(val);
+                        if (val) {
+                            $(control).removeClass('invalid');
+                            $(control).addClass('valid');
+                        } else {
+                            $(control).removeClass('valid');
+                            $(control).addClass('invalid');
+                        }
+                    }
+
+                    function fetchValue() {
+                        //First check if this variant's value is anchored
+                        if (variant) {
+                            if (variant.anchored) {
+                                return variant.content;
+                            } else if (variant.wordId) { //if (variant.anchored || (!variant.wordId && variant.content)) {
+                                //to be loaded by the separate process (for performance reasons).
+                            } else {
+                                //try to get the value based on the connected variantSets
+                            }
+                        }
+
+                        return '';
+
+                    }
+
+                    function bindEvents() {
+                        if (variant) {
+                            variant.bind({
+                                loadValue: function(e) {
+                                    setValue(e.value);
+                                }
+                            });
+                        }
+                    };
+
+
+
+                    (function $initialize() {
+                        checkVariant();
+                        setValue(fetchValue());
+                        bindEvents();
+                    })();
+
+
+
+                    return {                        
+                        appendTo: function(parent) {
+                            $(control).appendTo(parent);
+                        },
+                        setValue: setValue
+                    };
+
 
                 }
 
@@ -1300,7 +1371,7 @@ function GroupOptionsManager(properties) {
             return {
                 id: $set.id,
                 loadVariants: function() {
-                    $set.loadWordsForms(this);
+                    $set.loadWordsForms();
                 },
                 renderVariants: function() {
                     ui.renderVariants();
@@ -1312,7 +1383,8 @@ function GroupOptionsManager(properties) {
         initialize();
 
         function loadVariants() {
-            columns.each(function(key, value) {
+            columns.each(function (key, value) {
+                value.renderVariants();
                 value.loadVariants();
             });
         }
