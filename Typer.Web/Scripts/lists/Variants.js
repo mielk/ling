@@ -144,7 +144,7 @@ VariantSet.prototype.removeDependency = function (set) {
         dependant: set
     });
 
-    this.logs.push({        
+    this.logs.push({
         event: 'dependencyRemoved',
         set: set.id
     });
@@ -176,7 +176,7 @@ VariantSet.prototype.changeWordtype = function (wordtype) {
     
     if (wordtype === this.wordtype) return;
 
-    this.logs.push({        
+    this.logs.push({
         event: tag,
         wordtype: wordtype.id
     });
@@ -255,7 +255,7 @@ VariantSet.prototype.loadWordsForms = function () {
                     var variant = wordVariants.getItem(object.WordId);
                     if (variant) {
                         variant.content = object.Content;
-                        variant.trigger({                            
+                        variant.trigger({
                             type: 'loadValue',
                             value: object.Content
                         });
@@ -302,8 +302,8 @@ Variant.prototype.bind = function(e) {
 Variant.prototype.trigger = function (e) {
     this.eventHandler.trigger(e);
 };
-Variant.prototype.new = function() {
-    this.new = true;
+Variant.prototype.isNew = function() {
+    this.isNew = true;
 };
 
 
@@ -586,7 +586,7 @@ VariantPanel.prototype.updateConnections = function () {
                 parent.addConnection(connected);
                 connected.addConnection(parent);
 
-            };
+            }
         });
         
     }
@@ -1109,6 +1109,11 @@ function GroupOptionsManager(properties) {
             'class': 'group-options-buttons'
         }).appendTo(container);
 
+        var add = jQuery('<input/>', {
+            'class': 'button add-variant'
+        }).appendTo(buttons);
+
+
         return {
             hide: function () {
                 $(container).css({
@@ -1185,7 +1190,7 @@ function GroupOptionsManager(properties) {
             });
             
 
-            return {                
+            return {
                 renderKeys: renderKeys
             };
 
@@ -1339,7 +1344,7 @@ function GroupOptionsManager(properties) {
                                 }
                             });
                         }
-                    };
+                    }
 
 
 
@@ -1351,7 +1356,7 @@ function GroupOptionsManager(properties) {
 
 
 
-                    return {                        
+                    return {
                         appendTo: function(parent) {
                             $(control).appendTo(parent);
                         },
@@ -1571,7 +1576,7 @@ function VariantConnectionsManager(parent) {
                 'class': 'variant-set-block variant-block-mover'
             }).css({
                 'top': $top + 'px',
-                'left': $left + 'px',
+                'left': $left + 'px'
             }).appendTo(self.panel);
 
             var content = jQuery('<div/>').
@@ -2132,7 +2137,7 @@ function VariantDependenciesManager(parent) {
             createNewLine(set);
         }
 
-        set.bind({            
+        set.bind({
             changeWordtype: function (e) {
             
                 if (!e.wasDependable && e.isDependable) {
@@ -2164,11 +2169,11 @@ function VariantSetEditPanel(set) {
     self.set = set;
     self.events = new EventHandler();
 
-    this.validator = (function () {
+    this.validator = (function() {
         var invalid = new HashTable(null);
 
         return {
-            validation: function (e) {
+            validation: function(e) {
                 if (e.status) {
                     invalid.removeItem(e.id);
                 } else {
@@ -2379,8 +2384,8 @@ function VariantSetEditPanel(set) {
 
         var params = new HashTable(null);
 
-        var container = jQuery('<div/>', {            
-           'class': 'variant-set-params-container' 
+        var container = jQuery('<div/>', {
+           'class': 'variant-set-params-container'
         });
 
         self.ui.append(container);
@@ -2479,10 +2484,10 @@ function VariantSetEditPanel(set) {
                         container: controlContainer,
                         data: data
                     });
-                    control.bind({                        
+                    control.bind({
                        change: function(e) {
                            value = e.value;
-                       } 
+                       }
                     });
 
                     if (value) {
@@ -2526,7 +2531,7 @@ function VariantSetEditPanel(set) {
                     if (property.options) {
                         selectedOption = property.options.getItem(value);
                     }
-                    events.trigger({                        
+                    events.trigger({
                         type: 'change',
                         value: val
                     });
@@ -2548,7 +2553,7 @@ function VariantSetEditPanel(set) {
             getParams: function () {
                 var result = [];
                 params.each(function($key, $value) {
-                    result.push({                        
+                    result.push({
                         key: $key,
                         value: $value.value()
                     });

@@ -1391,6 +1391,7 @@ input[type=submit].variant-button-edit {
     right: 6px;
     top: 6px;
     bottom: 6px;
+    padding-left: 6px;
     overflow-x: auto;
 }
 
@@ -1463,15 +1464,15 @@ input[type=submit].variant-button-edit {
     height: auto;
     width: 100%;
     border-bottom: 1px solid #777;
-    padding: 6px 0;
+    padding: 6px;
 }
 
 .group-options-buttons {
     position: relative;
     float: left;
     width: 100%;
-    height: 36px;
-    padding: 6px 0;
+    height: auto;
+    padding: 6px;
 }
 
 .variant-subpanel-content .column-header {
@@ -1655,4 +1656,31 @@ input.set-name:focus
 
 .variants-content .variant-value-field:last-child {
     margin-bottom: 0;
+}
+
+
+.add-variant {
+    display: block;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    height: 32px;
+    width: 143px;
+    border: 1px solid #555;
+    font-size: 14px;
+    line-height: 14px;
+    padding: 8px 18px;
+    margin: 0;
+    -webkit-box-shadow: 1px 1px 0 0 #ffffff;
+    -webkit-box-shadow: 1px 1px 0 0 rgba(255,255,255,0.25);
+    -ms-box-shadow: 1px 1px 0 0 #ffffff;
+    /* ReSharper disable once RequiresFallbackColor */
+    -ms-box-shadow: 1px 1px 0 0 rgba(255,255,255,0.25);
+    box-shadow: 1px 1px 0 0 #ffffff;
+    box-shadow: 1px 1px 0 0 rgba(255,255,255,0.25);
+    background-color: rgb(121, 173, 131);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
 }
