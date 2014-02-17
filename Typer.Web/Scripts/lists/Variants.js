@@ -209,6 +209,15 @@ VariantSet.prototype.setProperties = function (properties) {
         
     }
 };
+VariantSet.prototype.rename = function(name) {
+    if (this.tag !== name) {
+        this.tag = name;
+        this.trigger({            
+            type: 'rename',
+            name: name
+        });
+    }
+};
 VariantSet.prototype.addConnection = function (set) {
     this.connections.setItem(set.id, set);
 };
@@ -1305,6 +1314,12 @@ function GroupOptionsManager(properties) {
                 });
                 $(header).appendTo(container);
 
+                $set.bind({
+                    rename: function(e) {
+                        $(header).html(e.name);
+                    }
+                });
+
                 var content = jQuery('<div/>', {
                     'class': 'variants-content'
                 }).appendTo(container);
@@ -2194,7 +2209,7 @@ function VariantSetEditPanel(set) {
     this.VariantSetEditPanel = true;
     var self = this;
     self.set = set;
-    //self.events = new EventHandler();
+    self.events = new EventHandler();
 
     this.validator = (function() {
         var invalid = new HashTable(null);
@@ -2360,8 +2375,11 @@ function VariantSetEditPanel(set) {
 
         return {
             validate: validate,
-            format: format
-        };
+            format: format,
+            name: function() {
+                return $(name).val();
+            }
+    };
 
     })();
 
@@ -2646,6 +2664,7 @@ VariantSetEditPanel.prototype.cancel = function () {
 };
 VariantSetEditPanel.prototype.confirm = function () {
     var self = this;
+    self.set.rename(this.meta.name());
     self.set.changeWordtype(this.wordtypePanel.value());
     self.set.setProperties(self.paramsPanel.getParams());
     self.cancel();
@@ -2792,7 +2811,7 @@ function ConnectionGroup(parent, group, isBase) {
         }).bind({
             click: function () {
                 if (self.active) {
-                    self.deactivate();
+                    //self.deactivate();
                 } else {
                     self.activate();
                 }
