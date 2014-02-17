@@ -26,13 +26,13 @@ ListManager.prototype.trigger = function (e) {
     this.eventHandler.trigger(e);
 };
 ListManager.prototype.start = function () {
-    this.filter({ page: 1, pageSize: 10 });
+    this.filter({page: 1, pageSize: 10 });
 };
 ListManager.prototype.filter = function (e) {
     this.filterManager.filter(e);
 };
 ListManager.prototype.moveToPage = function (page) {
-    this.filter({ page: page });
+    this.filter({page: page });
 };
 ListManager.prototype.newItem = function () {
     var e = this.filterValues;
@@ -153,10 +153,10 @@ ListView.prototype.append = function (element) {
     $(element).appendTo($(this.container));
 };
 ListView.prototype.addHeaderRow = function (columns) {
-    var headerContainer = jQuery('<div/>', { 'class': 'item header' }).appendTo($(this.container));
+    var headerContainer = jQuery('<div/>', {'class': 'item header' }).appendTo($(this.container));
     for (var i = 0; i < columns.length; i++) {
         var name = columns[i];
-        jQuery('<div/>', { 'class': name, html: name }).appendTo($(headerContainer));
+        jQuery('<div/>', {'class': name, html: name }).appendTo($(headerContainer));
     }
     return headerContainer;
 };
@@ -168,7 +168,7 @@ ListView.prototype.createAddButton = function () {
         click: function () {
             controller.createNewItem();
         }
-    }).appendTo(jQuery('<div/>', { 'id': 'add-button-container' }).appendTo($(this.container)));
+    }).appendTo(jQuery('<div/>', {'id': 'add-button-container' }).appendTo($(this.container)));
 };
 ListView.prototype.render = function (properties) {
     this.append(properties.filter);
@@ -194,7 +194,7 @@ function ListFilterManager(controller, filters) {
     var self = this;
 
     this.manager = new FilterManager(this.filterManagerCreatingObject(filters));
-    this.manager.bind({        
+    this.manager.bind({
         filter: function (e) {
             self.controller.filter(e);
         }
@@ -204,7 +204,7 @@ function ListFilterManager(controller, filters) {
         wordtype: 0,
         categories: [],
         text: '',
-        weight: { from: 0, to: 0 }
+        weight: {from: 0, to: 0 }
     };
 
 }
@@ -293,11 +293,11 @@ function ListPager(controller, properties) {
         });
 
         // ReSharper disable UnusedLocals
-        var first = element('first', 'First', function () { self.controller.moveToPage(1); });
-        var previous = element('previous', 'Previous', function () { self.controller.moveToPage(self.page - 1); });
-        var current = element('current', '', function () { });
-        var next = element('next', 'Next', function () { self.controller.moveToPage(self.page + 1); });
-        var last = element('last', 'Last', function () { self.controller.moveToPage(self.totalPages); });
+        var first = element('first', 'First', function () {self.controller.moveToPage(1); });
+        var previous = element('previous', 'Previous', function () {self.controller.moveToPage(self.page - 1); });
+        var current = element('current', '', function () {});
+        var next = element('next', 'Next', function () {self.controller.moveToPage(self.page + 1); });
+        var last = element('last', 'Last', function () {self.controller.moveToPage(self.totalPages); });
         // ReSharper restore UnusedLocals
 
         function element(cssClass, caption, clickCallback) {
@@ -356,7 +356,7 @@ function ListItemsManager(controller) {
     this.container = jQuery('<div/>');
     this.items = [];
 
-    this.controller.bind({        
+    this.controller.bind({
         filter: function (e) {
             self.refresh(e.items);
         }
@@ -423,7 +423,7 @@ function QuestionListItem(manager, properties) {
     this.QuestionListItem = true;
     var self = this;
     this.name = 'question';
-    this.view = new QuestionListItemView(self.manager, self, { className: this.name });
+    this.view = new QuestionListItemView(self.manager, self, {className: this.name });
 }
 extend(ListItem, QuestionListItem);
 
@@ -441,23 +441,23 @@ function ListItemView(manager, item) {
     });
     if (!this.object.isActive) $(this.container).addClass('inactive');
     
-    this.id = jQuery('<div/>', { 'class': 'id', html: self.object.id }).appendTo($(this.container));
-    this.name = jQuery('<div/>', { 'class': 'name', html: self.object.name }).appendTo($(this.container));
+    this.id = jQuery('<div/>', {'class': 'id', html: self.object.id }).appendTo($(this.container));
+    this.name = jQuery('<div/>', {'class': 'name', html: self.object.name }).appendTo($(this.container));
     this.addWeigthPanel();
     
-    this.categories = jQuery('<div/>', { 'class': 'categories', html: my.categories.toString(self.object.categories) }).appendTo($(this.container));
+    this.categories = jQuery('<div/>', {'class': 'categories', html: my.categories.toString(self.object.categories) }).appendTo($(this.container));
 
     this.details = jQuery('<div/>', {
         'class': 'list-item-details',
         'id': 'details_' + self.object.id
     }).appendTo(this.container);
 
-    this.edit = jQuery('<div/>', { 'class': 'edit-item' }).
-        bind({ click: function () { self.object.edit(); } }).
+    this.edit = jQuery('<div/>', {'class': 'edit-item' }).
+        bind({click: function () {self.object.edit(); } }).
         appendTo($(this.container));
 
-    this.deactivate = jQuery('<a/>', { html: self.object.isActive ? 'Deactivate' : 'Activate' }).
-        bind({ click: function () { self.object.activate(); } }).
+    this.deactivate = jQuery('<a/>', {html: self.object.isActive ? 'Deactivate' : 'Activate' }).
+        bind({click: function () {self.object.activate(); } }).
         appendTo($(this.container));
 
     //Events.
@@ -509,7 +509,7 @@ function WordListItemView(manager, item) {
     var self = this;
 
     //Add panels specific for this type of objects.
-    this.type = jQuery('<div/>', { 'class': 'type', html: self.object.wordtype.symbol }).appendTo($(this.container));
+    this.type = jQuery('<div/>', {'class': 'type', html: self.object.wordtype.symbol }).appendTo($(this.container));
     $(this.categories).before(this.type);
 
     this.object.bind({
@@ -1320,7 +1320,7 @@ QuestionEditEntity.prototype.getVariantSet = function(key) {
 };
 QuestionEditEntity.prototype.editVariants = function () {
     var self = this;
-    var variantPanel = new VariantPanel({        
+    var variantPanel = new VariantPanel({
         question: self.object,
         editQuestion: self
     });
@@ -1585,16 +1585,16 @@ EditPanel.prototype.generalRender = function () {
     var self = this;
 
     //[Id]
-    this.meta.addLine(new EditDataLine(this, { 
+    this.meta.addLine(new EditDataLine(this, {
         property: 'id', label: 'ID', value: self.editObject.id,
-        callback: function (value) { self.editObject.id = value; },
-        inputCss: { 'width': '60px', 'text-align': 'center', 'border': '1px solid #777', 'background-color': 'white' } 
+        callback: function (value) {self.editObject.id = value; },
+        inputCss: {'width': '60px', 'text-align': 'center', 'border': '1px solid #777', 'background-color': 'white' } 
     }));
 
     //[Name]
     this.meta.addLine(new EditDataLine(this, {
         property: 'name', label: 'Name', value: self.editObject.name,
-        callback: function (value) { self.editObject.name = value; },
+        callback: function (value) {self.editObject.name = value; },
         validation: function (params) {
             return self.object.checkName(params.value);
         },
@@ -1603,7 +1603,7 @@ EditPanel.prototype.generalRender = function () {
     
     //[Weight]
     var weightPanel = new WeightPanel(this, self.editObject, {
-        css: { 'margin': '9px 0', 'height': '16px' }
+        css: {'margin': '9px 0', 'height': '16px' }
     });
     this.meta.addLine(new EditDataLine(this, {
         property: 'weight', label: 'Weight', value: self.editObject.weight,
@@ -1720,8 +1720,8 @@ function EditDataLine(panel, properties) {
         //Append error panels if this property is validatable.
         if (self.validation) {
             var errorContainer = jQuery('<div/>').addClass('error').appendTo($(container));
-            var error = jQuery('<div/>', { 'class': 'error_content' }).appendTo(errorContainer);
-            var errorIcon = jQuery('<span/>', { 'class': 'icon' }).appendTo($(container));
+            var error = jQuery('<div/>', {'class': 'error_content' }).appendTo(errorContainer);
+            var errorIcon = jQuery('<span/>', {'class': 'icon' }).appendTo($(container));
         }
 
         //Append right panel if is defined.
@@ -1802,11 +1802,11 @@ function EditDataLine(panel, properties) {
         function format(value) {
             if (value === true) {
                 $(valuePanel).removeClass('invalid').addClass('valid');
-                $(errorContainer).css({ 'display': 'none' });
+                $(errorContainer).css({'display': 'none' });
                 $(errorIcon).removeClass('iconInvalid').addClass('iconValid');
             } else {
                 $(valuePanel).removeClass('valid').addClass('invalid');
-                $(errorContainer).css({ 'display': 'table' });
+                $(errorContainer).css({'display': 'table' });
                 $(errorIcon).removeClass('iconValid').addClass('iconInvalid');
                 $(error).text(value);
             }
@@ -2026,7 +2026,7 @@ LanguagePanel.prototype.remove = function (item) {
 LanguagePanel.prototype.addNew = function () {
     var item = this.item.newItem(this.language.id);
     item.injectLanguageEntity(this.languageEntity);
-    item.edit({ languagePanel: this });
+    item.edit({languagePanel: this });
 };
 LanguagePanel.prototype.add = function (item) {
     this.addOption(item);
@@ -2043,7 +2043,7 @@ function OptionPanel(item, parent) {
 
     this.ui = (function () {
 
-        var container = jQuery('<div/>', { 'class': 'option' });
+        var container = jQuery('<div/>', {'class': 'option' });
         
         // ReSharper disable once UnusedLocals
         var deleteButton = jQuery('<div/>', {
@@ -2061,7 +2061,7 @@ function OptionPanel(item, parent) {
             'title': 'Edit this option'
         }).bind({
             click: function () {
-                self.item.edit({ line: self });
+                self.item.edit({line: self });
             }
         }).appendTo($(container));
 
@@ -2313,7 +2313,7 @@ CategoryPanel.prototype.selectCategories = function () {
         'hidden': true
     });
 
-    tree.reset({ unselect: false, collapse: false });
+    tree.reset({unselect: false, collapse: false });
     tree.eventHandler.bind({
         confirm: function (e) {
             var categories = my.categories.getCategories(e.item);
@@ -2356,7 +2356,7 @@ function WordtypePanel(line, object) {
             'class': 'wordtype-dropdown-container'
         });
 
-        var dropdown = new DropDown({            
+        var dropdown = new DropDown({    
             container: container,
             data: WORDTYPE.getValues(),
             slots: 5,

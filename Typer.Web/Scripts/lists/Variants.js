@@ -2763,6 +2763,63 @@ function VariantLimitsManager(parent) {
         });
     };
 
+
+
+    var shortcutsPanel = (function() {
+        var container = jQuery('<div/>', {            
+            'class': 'limit-shortcuts-panel'
+        });
+        
+        function render() {
+            $(container).appendTo(self.panel);
+        }
+
+        return {
+            render: render
+        };
+
+    })();
+
+
+
+    var limitGrid = (function() {
+
+        var container = jQuery('<div/>', {
+            'class': 'limit-grid-container'
+        });
+        
+        function render() {
+            $(container).appendTo(self.panel);
+        }
+
+        function show() {
+            $(container).css({                
+                'display' : 'block !important'
+            });
+        }
+
+        function populate(checked) {
+            var base = self.baseGroups.getSelected();
+
+            var z = 1;
+
+            show();
+
+        }
+
+        function clear() {
+            
+        }
+
+        return {
+            render: render,
+            populate: populate,
+            clear: clear
+        };
+
+    })();
+
+
     // ReSharper disable once UnusedLocals
     var events = (function () {
         self.parent.bind({
@@ -2790,11 +2847,10 @@ function VariantLimitsManager(parent) {
             },
             changeBaseGroup: function (e) {
                 populateCheckGroupsPanel(e.group);
-                //clear data array
+                limitGrid.clear();
             },
-            changeCheckGroup: function(e) {
-                //if changed -
-                //update data array
+            changeCheckGroup: function (e) {
+                limitGrid.populate(e.group);
             }
         });
 
@@ -2808,6 +2864,10 @@ function VariantLimitsManager(parent) {
         self.parent.groups.each(function (key, value) {
             self.baseGroups.createNew(value);
         });
+
+        //shortcutsPanel.render();
+        limitGrid.render();
+        
     }
 
     initialize();
