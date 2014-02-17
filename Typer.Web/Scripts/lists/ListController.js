@@ -2154,7 +2154,6 @@ OptionPanel.prototype.contentToHtml = function () {
 
 
 
-
 function WeightPanel(line, object, properties) {
     this.WeightPanel = true;
     var self = this;

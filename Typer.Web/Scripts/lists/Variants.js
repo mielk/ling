@@ -784,6 +784,7 @@ function VariantSubpanel(parent, name) {
     self.parent = parent;
     self.question = parent.question;
     self.editQuestion = parent.editQuestion;
+    self.events = new EventHandler();
 
     self.ui = (function () {
         var expanded = false;
@@ -849,6 +850,12 @@ function VariantSubpanel(parent, name) {
 }
 VariantSubpanel.prototype.contentPanel = function () {
     return this.ui.content;
+};
+VariantSubpanel.prototype.bind = function(e) {
+    this.events.bind(e);
+};
+VariantSubpanel.prototype.trigger = function (e) {
+    this.events.trigger(e);
 };
 
 
@@ -2187,7 +2194,7 @@ function VariantSetEditPanel(set) {
     this.VariantSetEditPanel = true;
     var self = this;
     self.set = set;
-    self.events = new EventHandler();
+    //self.events = new EventHandler();
 
     this.validator = (function() {
         var invalid = new HashTable(null);
@@ -2664,213 +2671,95 @@ function VariantLimitsManager(parent) {
     this.VariantLimitsManager = true;
     var self = this;
     self.panel = self.ui.content;
-    self.groups = new HashTable(null);      //connection groups
-    this.baseGroup = null;
-    this.checkedGroup = null;
-
     
-
-    var groupViews = (function () {
+    var groups = function ($isBase) {
+        var isBase = $isBase;
+        var items = new HashTable(null);
+        var selectedConnectionGroup = null;
         var container = jQuery('<div/>', {
             'class': 'variant-options-groups'
         });
         $(container).appendTo(self.panel);
 
+        function add(item) {
+            items.setItem(item.id, item);
+            item.appendTo(container);
+        }
+
+        function createNew(group) {
+            var $group = new ConnectionGroup(self, group, isBase);
+            add($group);
+        }
+        
+        function clear() {
+            $(container).empty();
+        }
+        
+        function select(group) {
+            if (selectedConnectionGroup !== group) {
+                selectedConnectionGroup = group;
+            }
+        }
+        
+        function unselect(group) {
+            if (selectedConnectionGroup === group) {
+                selectedConnectionGroup = null;
+            }
+        }
+
         return {
-            clear: function () {
-                $(container).empty();
-            },
-            add: function (element) {
-                $(element).appendTo(container);
+            clear: clear,
+            add: add,
+            createNew: createNew,
+            select: select,
+            unselect: unselect,
+            getSelected: function() {
+                return selectedConnectionGroup;
             }
         };
-
-    })();
-
-    var setBlock = function (set) {
-        var group;
-        var $self;
-        var $set = set;
-
-        var ui = (function () {
-            var container = jQuery('<div/>', {
-                'class': 'variant-set-block'
-            });
-
-            // ReSharper disable once UnusedLocals
-            var flag = jQuery('<div/>', {
-                'class': 'unselectable flag ' + set.language.language.flag + '-small'
-            }).appendTo(container);
-
-            var name = jQuery('<div/>', {
-                'class': 'unselectable name',
-                html: set.tag
-            }).appendTo(container);
-
-            set.bind({
-                rename: function (e) {
-                    $(name).html(e.name);
-                }
-            });
-
-            return {
-                container: function () {
-                    return container;
-                },
-                destroy: function () {
-                    $(container).remove();
-                }
-            };
-
-        })();
-
-        return {
-            selfinject: function (me) {
-                $self = me;
-            },
-            setGroup: function ($group) {
-                group = $group;
-            },
-            id: $set.id,
-            view: function () {
-                return ui.container();
-            },
-            destroy: ui.destroy
-        };
-
     };
-
-    var connectionGroup = function (group) {
-        var $self = null;
-        var $index = group.id;
-        var $blocks = new HashTable(null);
-        var $active = false;
-        var $group = group;
-
-        var container = jQuery('<div/>', {
-            'class': 'variant-options-group variant-connection-group'
-        }).bind({
-            click: function () {
-                var previous = self.activeGroup;
-                if (previous === $self) return;
-                if (previous) {
-                    previous.deactivate();
-                }
-                $self.activate();
-            }
-        });
-        groupViews.add(container);
-
-        function createBlocks() {
-            $group.sets.each(function (key, value) {
-                var block = setBlock(value);
-                block.selfinject(block);
-                addBlock(block);
-            });
-        }
-
-        function refresh() {
-            if ($active) {
-                $(container).addClass('active');
-            } else {
-                $(container).removeClass('active');
-            }
-
-        }
-
-        function addBlock(block) {
-            $blocks.setItem(block.id, block);
-            block.setGroup($self);
-            block.view().appendTo(container);
-        }
-
-        function removeBlock(block) {
-            $blocks.removeItem(block.id);
-            block.destroy();
-            if ($blocks.size() === 0) destroy();
-        }
-
-        function getBlock(id) {
-            return $blocks.getItem(id);
-        }
-
-        function destroy() {
-            $(container).remove();
-            self.groups.removeItem($index);
-        }
-
-        function activate() {
-            alert('activate');
-        }
-
-        function deactivate() {
-            alert('deactivate');
-        }
-
-
-        // ReSharper disable once UnusedLocals
-        var $events = (function () {
-            $group.bind({
-                remove: function (e) {
-                    var block = getBlock(e.set.id);
-                    removeBlock(block);
-                },
-                add: function (e) {
-                    var block = setBlock(e.set);
-                    block.selfinject(block);
-                    addBlock(block);
-                }
-            });
-        })();
-
-
-        return {
-            selfinject: function (me) {
-                $self = me;
-            },
-            id: $index,
-            createBlocks: createBlocks,
-            addBlock: addBlock,
-            removeBlock: removeBlock,
-            getBlock: getBlock,
-            activate: activate,
-            deactivate: deactivate,
-            hasSet: function (key) {
-                return $blocks.hasItem(key);
-            }
-        };
-
-    };
-
 
     // ReSharper disable once UnusedLocals
     var events = (function () {
         self.parent.bind({
             newGroup: function (e) {
-                createNewGroup(e.group);
+                self.baseGroup.createNew(e.group);
             }
         });
+
+        self.bind({
+            selectGroup: function (e) {
+                var $groups = e.isBase ? self.baseGroups : self.checkedGroups;
+                var previous = $groups.getSelected();
+                if (previous !== e.connectionGroup) {
+                    $groups.select(e.connectionGroup);
+                    if (previous) {
+                        previous.deactivate();
+                    }
+                }
+            },
+            unselectGroup: function(e) {
+                var $groups = e.isBase ? self.baseGroups : self.checkedGroups;
+                if ($groups.getSelected() === e.connectionGroup) {
+                    $groups.unselect(e.connectionGroup);
+                }
+            }
+        });
+
     })();
-
-    var createNewGroup = function (group) {
-        var $group = connectionGroup(group);
-        $group.selfinject($group);
-        $group.createBlocks();
-        self.groups.setItem($group.id, $group);
-    };
-
+    
     function initialize() {
         //Clear previous selections.
-        groupViews.clear();
-        self.activeGroup = null;
-        self.groups = new HashTable(null);
+        self.baseGroups = groups(true);
+        self.checkedGroups = groups(false);
 
         self.parent.groups.each(function (key, value) {
-            createNewGroup(value);
+            self.baseGroups.createNew(value);
         });
     }
 
     initialize();
+
 
 
     //this.ui = (function() {
@@ -2883,6 +2772,177 @@ function VariantLimitsManager(parent) {
 }
 
 
-
-
 extend(VariantSubpanel, VariantLimitsManager);
+
+
+
+function ConnectionGroup(parent, group, isBase) {
+    this.ConnectionGroup = true;
+    var self = this;
+    this.parent = parent;
+    this.group = group;
+    this.id = group.id;
+    this.blocks = new HashTable(null);
+    this.active = false;
+    this.isBase = isBase ? true : false;
+
+    this.ui = (function() {
+        var container = jQuery('<div/>', {
+            'class': 'variant-options-group variant-connection-group'
+        }).bind({
+            click: function () {
+                if (self.active) {
+                    self.deactivate();
+                } else {
+                    self.activate();
+                }
+            }
+        });
+
+        return {            
+            refresh: function() {
+                if (self.active) {
+                    $(container).addClass('active');
+                } else {
+                    $(container).removeClass('active');
+                }
+            },
+            addBlock: function(block) {
+                block.view().appendTo(container);
+            },
+            destroy: function () {
+                $(container).remove();
+            },
+            appendTo: function(parentContainer) {
+                $(container).appendTo(parentContainer);
+            }
+        };
+
+    })();
+
+    //groupViews.add(container);
+
+    function createBlocks() {
+        self.group.sets.each(function (key, value) {
+            var block = new SetBlock(value);
+            self.addBlock(block);
+        });
+    }
+
+
+
+    // ReSharper disable once UnusedLocals
+    this.events = (function () {
+        self.group.bind({
+            remove: function (e) {
+                var block = self.getBlock(e.set.id);
+                self.removeBlock(block);
+            },
+            add: function (e) {
+                var block = new SetBlock(e.set);
+                self.addBlock(block);
+            }
+        });
+    })();
+
+    //Initializing.
+    (function() {
+        createBlocks();
+    })();
+
+
+}
+ConnectionGroup.prototype.destroy = function() {
+    this.ui.destroy();
+};
+ConnectionGroup.prototype.getBlock = function(id) {
+    return this.blocks.getItem(id);
+};
+ConnectionGroup.prototype.addBlock = function(block) {
+    this.blocks.setItem(block.id, block);
+    block.setGroup(this);
+    this.ui.addBlock(block);
+};
+ConnectionGroup.prototype.removeBlock = function(block) {
+    this.blocks.removeItem(block.id);
+    block.destroy();
+    if (this.blocks.size() === 0) this.ui.destroy();
+};
+ConnectionGroup.prototype.hasSet = function(key) {
+    return this.blocks.hasItem(key);
+};
+ConnectionGroup.prototype.appendTo = function(container) {
+    this.ui.appendTo(container);
+};
+ConnectionGroup.prototype.deactivate = function () {
+    var self = this;
+    self.active = false;
+    self.ui.refresh();
+    self.parent.trigger({
+        type: 'unselectGroup',
+        connectionGroup: self,
+        group: self.group,
+        isBase: self.isBase
+    });
+};
+ConnectionGroup.prototype.activate = function () {
+    var self = this;
+    self.active = true;
+    self.ui.refresh();
+    self.parent.trigger({
+        type: 'selectGroup',
+        connectionGroup: self,
+        group: self.group,
+        isBase: self.isBase
+    });
+};
+
+
+function SetBlock(set) {
+    this.SetBlock = true;
+    var self = this;
+    this.set = set;
+    this.id = set.id;
+
+    this.ui = (function () {
+        var container = jQuery('<div/>', {
+            'class': 'variant-set-block'
+        });
+
+        // ReSharper disable once UnusedLocals
+        var flag = jQuery('<div/>', {
+            'class': 'unselectable flag ' + self.set.language.language.flag + '-small'
+        }).appendTo(container);
+
+        var name = jQuery('<div/>', {
+            'class': 'unselectable name',
+            html: self.set.tag
+        }).appendTo(container);
+
+        self.set.bind({
+            rename: function (e) {
+                $(name).html(e.name);
+            }
+        });
+
+        return {
+            container: function () {
+                return container;
+            },
+            destroy: function () {
+                $(container).remove();
+            }
+        };
+
+    })();
+
+}
+SetBlock.prototype.setGroup = function(group) {
+    this.group = group;
+};
+SetBlock.prototype.view = function() {
+    return this.ui.container();
+};
+SetBlock.prototype.destroy = function () {
+    this.ui.destroy();
+};
