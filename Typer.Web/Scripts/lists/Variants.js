@@ -2697,6 +2697,8 @@ function VariantLimitsManager(parent) {
         var selectedConnectionGroup = null;
         var container = jQuery('<div/>', {
             'class': 'variant-options-groups'
+        }).css({
+            'display': isBase ? 'block' : 'none'
         });
         $(container).appendTo(self.panel);
 
@@ -2717,6 +2719,12 @@ function VariantLimitsManager(parent) {
         function select(group) {
             if (selectedConnectionGroup !== group) {
                 selectedConnectionGroup = group;
+
+                self.trigger({
+                    type: isBase ? 'changeBaseGroup' : 'changeCheckGroup',
+                    group: group
+                });
+
             }
         }
         
@@ -2726,7 +2734,14 @@ function VariantLimitsManager(parent) {
             }
         }
 
+        function show() {
+            $(container).css({
+                'display': 'block'
+            });
+        }
+
         return {
+            show: show,
             clear: clear,
             add: add,
             createNew: createNew,
@@ -2736,6 +2751,16 @@ function VariantLimitsManager(parent) {
                 return selectedConnectionGroup;
             }
         };
+    };
+
+    var populateCheckGroupsPanel = function(base) {
+        self.checkedGroups.clear();
+        self.checkedGroups.show();
+        self.parent.groups.each(function (key, value) {
+            if (value.id !== base.id) {
+                self.checkedGroups.createNew(value);
+            }
+        });
     };
 
     // ReSharper disable once UnusedLocals
@@ -2762,6 +2787,14 @@ function VariantLimitsManager(parent) {
                 if ($groups.getSelected() === e.connectionGroup) {
                     $groups.unselect(e.connectionGroup);
                 }
+            },
+            changeBaseGroup: function (e) {
+                populateCheckGroupsPanel(e.group);
+                //clear data array
+            },
+            changeCheckGroup: function(e) {
+                //if changed -
+                //update data array
             }
         });
 
@@ -2778,7 +2811,6 @@ function VariantLimitsManager(parent) {
     }
 
     initialize();
-
 
 
     //this.ui = (function() {

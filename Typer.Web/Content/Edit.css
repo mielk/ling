@@ -1347,7 +1347,12 @@ input[type=submit].variant-button-edit {
 .variant-options-groups {
     height: auto;
     width: 100%;
-    padding: 0;
+    padding: 6px 0;
+    border-top: 1px solid #888;
+}
+
+.variant-subpanel-content .variant-options-groups:first-child {
+    border-top: none;
 }
 
 .variant-options-group {
