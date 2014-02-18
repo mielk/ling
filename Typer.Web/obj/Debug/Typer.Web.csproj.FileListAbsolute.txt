@@ -7,7 +7,6 @@ C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\Moq.d
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\Newtonsoft.Json.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\Ninject.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\System.Net.Http.Formatting.dll
-C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\System.Web.Http.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\System.Web.Http.WebHost.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\System.Web.Mvc.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\System.Web.Optimization.dll
@@ -25,7 +24,6 @@ C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\Ninje
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\EntityFramework.xml
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\Newtonsoft.Json.xml
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\System.Net.Http.Formatting.xml
-C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\System.Web.Http.xml
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\System.Web.Http.WebHost.xml
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\System.Web.Mvc.xml
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Web\bin\System.Web.Razor.xml

@@ -5,7 +5,6 @@ C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Tests.UnitTes
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Typer.Domain.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Typer.Web.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\System.Web.Optimization.dll
-C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\System.Web.Http.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\System.Web.Http.WebHost.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\WebGrease.dll
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\System.Net.Http.Formatting.dll
@@ -16,7 +15,6 @@ C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Tests.UnitTes
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Moq.xml
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Ninject.pdb
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Ninject.xml
-C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\System.Web.Http.xml
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\System.Web.Http.WebHost.xml
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\System.Net.Http.Formatting.xml
 C:\Users\txmieln\documents\visual studio 2012\Projects\Typer\Typer.Tests.UnitTests\bin\Debug\Newtonsoft.Json.xml

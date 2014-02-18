@@ -784,6 +784,26 @@ VariantGroup.prototype.getConnectionPairs = function () {
     return results;
 
 };
+VariantGroup.prototype.getKeys = function () {
+    var self = this;
+    
+    if (!self.keys) {
+        self.keys = new HashTable(null);
+        
+        self.sets.each(function (key, value) {
+            value.variants.each(function ($key) {
+                if (!self.keys.hasItem($key)) {
+                    self.keys.setItem($key, $key);
+                }
+            });
+        });
+
+    }
+    
+    return self.keys;
+
+};
+
 
 
 function VariantSubpanel(parent, name) {
@@ -1150,6 +1170,7 @@ function GroupOptionsManager(properties) {
             'class': 'group-options-buttons'
         }).appendTo(container);
 
+        // ReSharper disable once UnusedLocals
         var add = jQuery('<input/>', {
             'class': 'button add-variant'
         }).appendTo(buttons);
@@ -1251,18 +1272,21 @@ function GroupOptionsManager(properties) {
 
         function loadKeys() {
             //Reset keys collections.
-            self.keysMap = new HashTable(null);
-            self.keysArray = [];
+            //self.keysMap = new HashTable(null);
+            //self.keysArray = [];
+            self.keysMap = self.group.getKeys();
+            self.keysArray = self.keysMap.values();
+            self.keysArray.sort();
 
-            self.group.sets.each(function (key, value) {
-                value.variants.each(function ($key) {
-                    if (!self.keysMap.hasItem($key)) {
-                        self.keysMap.setItem($key, $key);
-                        self.keysArray.push($key);
-                    }
-                });
-                self.keysArray.sort();
-            });
+            //self.group.sets.each(function (key, value) {
+            //    value.variants.each(function ($key) {
+            //        if (!self.keysMap.hasItem($key)) {
+            //            self.keysMap.setItem($key, $key);
+            //            self.keysArray.push($key);
+            //        }
+            //    });
+            //    self.keysArray.sort();
+            //});
 
             ui.renderKeys();
 
@@ -2783,27 +2807,102 @@ function VariantLimitsManager(parent) {
 
 
     var limitGrid = (function() {
+        var base = null;
+        var checked = null;
+        var baseKeys = new HashTable(null);
+        var checkedKeys = new HashTable(null);
 
         var container = jQuery('<div/>', {
             'class': 'limit-grid-container'
+        }).css({            
+           'display' : 'none' 
         });
-        
+
+        var headerColumn = jQuery('<div/>', {            
+            'class': 'limit-grid-header-column'
+        }).appendTo(container);
+
+        var content = jQuery('<div/>', {
+            'class': 'absolute limit-grid-content'
+        }).appendTo(container);
+
         function render() {
             $(container).appendTo(self.panel);
         }
 
         function show() {
             $(container).css({                
-                'display' : 'block !important'
+                'display' : 'block'
+            });
+        }
+        
+        function hide() {
+            $(container).css({                
+               'display' : 'none'
             });
         }
 
-        function populate(checked) {
-            var base = self.baseGroups.getSelected();
-
-            var z = 1;
-
+        function populate($checked) {
+            loadKeys($checked);
+            renderHeaderColumn();
+            renderContent();
             show();
+        }
+
+        function loadKeys($checked) {
+            base = self.baseGroups.getSelected();
+            checked = $checked;
+
+            baseKeys = base.group.getKeys();
+            checkedKeys = checked.group.getKeys();            
+        }
+        
+        function renderHeaderColumn() {
+            //Clear previous entries.
+            $(headerColumn).empty();
+            
+            //First empty header cell is added.
+            // ReSharper disable once UnusedLocals
+            var headerCell = jQuery('<div/>', {
+                'class': 'limit-grid-header-cell'
+            }).appendTo(headerColumn);
+
+            baseKeys.each(function(key) {
+                var $label = label(key);
+                $label.append(headerColumn);
+            });
+            
+        }
+        
+        function renderContent() {
+            //Clear previous entries.
+            $(content).empty();
+
+            checkedKeys.each(function(key, value) {
+                var column = jQuery('<div/>', {
+                    'class': 'limit-grid-column'
+                });
+                $(column).appendTo(content);
+
+                var headerCell = jQuery('<div/>', {
+                    'class': 'limit-grid-header-cell',
+                    'html': key
+                });
+                $(headerCell).appendTo(column);
+
+
+                //Render cells.
+                baseKeys.each(function($key, $value) {
+                    // ReSharper disable once UnusedLocals
+                    var $cell = cell({                        
+                        baseKey: $key,
+                        checkedKey: key,
+                        column: column
+                    });
+                });
+
+
+            });
 
         }
 
@@ -2811,10 +2910,40 @@ function VariantLimitsManager(parent) {
             
         }
 
+
+        var label = function(key) {
+            var control = jQuery('<div/>', {
+                'class': 'limit-grid-label',
+                'html': key
+            });
+
+            return {                
+                append: function($container) {
+                    $(control).appendTo($container);
+                }  
+            };
+
+        };
+
+        var cell = function (params) {
+            var baseKey = params.baseKey;
+            var checkedKey = params.checkedKey;
+            var column = params.column;
+
+            var control = jQuery('<div/>', {
+                'class': 'limit-grid-cell',
+                'title': baseKey + ' | ' + checkedKey
+            });
+            $(control).appendTo(column);
+
+        };
+
         return {
             render: render,
             populate: populate,
-            clear: clear
+            clear: clear,
+            hide: hide,
+            show: show
         };
 
     })();
@@ -2848,6 +2977,7 @@ function VariantLimitsManager(parent) {
             changeBaseGroup: function (e) {
                 populateCheckGroupsPanel(e.group);
                 limitGrid.clear();
+                limitGrid.hide();
             },
             changeCheckGroup: function (e) {
                 limitGrid.populate(e.group);
@@ -2871,14 +3001,6 @@ function VariantLimitsManager(parent) {
     }
 
     initialize();
-
-
-    //this.ui = (function() {
-    //    var baseGroupPanel = 1;
-    //    var checkedGroupPanel = 2;
-    //    var dropdown = 3;
-    //    var dataGrid = 4;
-    //})();
 
 }
 
