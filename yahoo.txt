@@ -1,0 +1,6 @@
+Current prices: 
+http://finance.yahoo.com/d/quotes.csv?s=AAPL+GOOG+MSFT
+Parametry: http://www.jarloo.com/yahoo_finance/
+
+Historical prices:
+http://ichart.yahoo.com/table.csv?s=BARC.L&a=00&b=1&c=2014&d=01&e=18&f=2014&g=d
