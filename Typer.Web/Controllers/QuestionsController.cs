@@ -173,8 +173,8 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult GetOptions(int id, int[] languages)
         {
-            var words = _service.GetOptions(id, languages);
-            return Json(words, JsonRequestBehavior.AllowGet);
+            var options = _service.GetOptions(id, languages);
+            return Json(options, JsonRequestBehavior.AllowGet);
         }
 
 
@@ -182,8 +182,8 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult GetVariantSets(int id, int[] languages)
         {
-            var words = _service.GetVariantSets(id, languages);
-            return Json(words, JsonRequestBehavior.AllowGet);
+            var sets = _service.GetVariantSets(id, languages);
+            return Json(sets, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]

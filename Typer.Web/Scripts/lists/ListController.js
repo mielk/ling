@@ -1308,6 +1308,11 @@ QuestionEditEntity.prototype.loadVariants = function () {
         value.createDetails();
     });
 
+    //Loading limits must be invoked after variants have been loaded.
+    this.variantsSets.each(function(key, value) {
+        value.loadLimits();
+    });
+
 };
 QuestionEditEntity.prototype.newItem = function (languageId) {
     return new Option(this, {

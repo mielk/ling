@@ -19,16 +19,16 @@ namespace Typer.Domain.Entities
         public int Negative { set; get; }
         public int Positive { get; set; }
         //public List<Variant> Excluded { get; set; }
-        public List<int> Excluded { get; set; }
+        public List<string> Excluded { get; set; }
 
         public Variant()
         {
-            Excluded = new List<int>();
+            Excluded = new List<string>();
         }
 
         public void AddExcluded(Variant variant)
         {
-            Excluded.Add(variant.Id);
+            Excluded.Add(variant.VariantSetId + "|" + variant.Id);   
         }
 
 

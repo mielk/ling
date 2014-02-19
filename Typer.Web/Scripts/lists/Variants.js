@@ -29,18 +29,17 @@ VariantSet.prototype.createDetails = function () {
     this.loadVariants(this.raw.variants);
     this.loadConnections(this.raw.related);
     this.loadDependants(this.raw.dependants);
-    this.variants.each(function (key, value) {
-        value.loadLimits();
-    });
     this.loadProperties();
 };
 VariantSet.prototype.loadVariants = function (variants) {
     var self = this;
     this.variants = new HashTable(null);
+    this.variantsById = new HashTable(null);
     for (var i = 0; i < variants.length; i++) {
         var object = variants[i];
         var variant = new Variant(self.editEntity, self, object);
         self.variants.setItem(variant.key, variant);
+        self.variantsById.setItem(variant.id, variant);
         //self.language.addVariant(variant);
     }
 };
@@ -63,6 +62,11 @@ VariantSet.prototype.loadDependants = function (dependants) {
             self.dependants.setItem(dependant.id, dependant);
         }
     }
+};
+VariantSet.prototype.loadLimits = function (limits) {
+    this.variants.each(function (key, value) {
+        value.loadLimits();
+    });
 };
 VariantSet.prototype.loadProperties = function () {
     var self = this;
@@ -224,9 +228,6 @@ VariantSet.prototype.addConnection = function (set) {
 VariantSet.prototype.removeConnection = function (set) {
     this.connections.removeItem(set.id);
 };
-VariantSet.prototype.addVariant = function(variant) {
-
-};
 VariantSet.prototype.loadWordsForms = function () {
     var self = this;
     var wordVariants = new HashTable(null);
@@ -284,6 +285,12 @@ VariantSet.prototype.loadWordsForms = function () {
     }
 
 };
+VariantSet.prototype.getVariantById = function(id) {
+    return this.variantsById.getItem(id);
+};
+VariantSet.prototype.getVariantByKey = function(key) {
+    return this.variants.getItem(key);
+};
 
 
 function Variant(editEntity, set, properties) {
@@ -299,9 +306,25 @@ function Variant(editEntity, set, properties) {
     self.wordId = properties.WordId;
     self.anchored = properties.IsAnchored;
     self.isNew = properties.IsNew ? true : false;
+    self.raw = {        
+        excluded: properties.Excluded
+    };
 }
 Variant.prototype.loadLimits = function () {
     this.excluded = new HashTable(null);
+    
+    for (var i = 0; i < this.raw.excluded.length; i++) {
+        var exclusion = this.raw.excluded[i];
+        var splitted = exclusion.split('|');
+        var excludedSet = Number(splitted[0]);
+        var excludedId = Number(splitted[1]);
+        var set = this.editEntity.variantsSets.getItem(excludedSet);
+        if (set) {
+            var variant = set.getVariantById(excludedId);
+            this.excluded.setItem(excludedId, variant);
+        }
+    }
+
 };
 Variant.prototype.value = function() {
     return this.content;
