@@ -63,7 +63,7 @@ VariantSet.prototype.loadDependants = function (dependants) {
         }
     }
 };
-VariantSet.prototype.loadLimits = function (limits) {
+VariantSet.prototype.loadLimits = function () {
     this.variants.each(function (key, value) {
         value.loadLimits();
     });
@@ -335,9 +335,15 @@ Variant.prototype.bind = function(e) {
 Variant.prototype.trigger = function (e) {
     this.eventHandler.trigger(e);
 };
-
-
-
+Variant.prototype.isExcluded = function(set, key) {
+    var variant = set.getVariantByKey(key);
+    if (variant) {
+        var id = variant.id;
+        return this.excluded.hasItem(id);
+    } else {
+        return false;
+    }
+};
 
 
 
@@ -2812,6 +2818,7 @@ function VariantLimitsManager(parent) {
 
 
 
+    // ReSharper disable once UnusedLocals
     var shortcutsPanel = (function() {
         var container = jQuery('<div/>', {            
             'class': 'limit-shortcuts-panel'
@@ -2901,7 +2908,7 @@ function VariantLimitsManager(parent) {
             //Clear previous entries.
             $(content).empty();
 
-            checkedKeys.each(function(key, value) {
+            checkedKeys.each(function(key) {
                 var column = jQuery('<div/>', {
                     'class': 'limit-grid-column'
                 });
@@ -2915,9 +2922,11 @@ function VariantLimitsManager(parent) {
 
 
                 //Render cells.
-                baseKeys.each(function($key, $value) {
+                baseKeys.each(function($key) {
                     // ReSharper disable once UnusedLocals
-                    var $cell = cell({                        
+                    var $cell = cell({
+                        baseGroup: base,
+                        checkedGroup: checked,
                         baseKey: $key,
                         checkedKey: key,
                         column: column
@@ -2949,15 +2958,58 @@ function VariantLimitsManager(parent) {
         };
 
         var cell = function (params) {
+            var baseGroup = params.baseGroup;
+            var checkedGroup = params.checkedGroup;
             var baseKey = params.baseKey;
             var checkedKey = params.checkedKey;
             var column = params.column;
+            var excluded = false;
+
+            function isExcluded() {
+                var result = false;
+                baseGroup.group.sets.each(function (setKey, set) {
+                    var variant = set.getVariantByKey(baseKey);
+                    if (variant && !result) {
+                        checkedGroup.group.sets.each(function (checkedSetKey, checkedSet) {
+                            if (!result) {
+                                result = variant.isExcluded(checkedSet, checkedKey);
+                            }
+                        });
+                    }
+                });
+
+                return result;
+                
+            }
+
+            function check() {
+                var $excluded = isExcluded();
+                update($excluded);
+            }
+            
+            function update($excluded) {
+                excluded = $excluded;
+                $(control).css({
+                    'background-color': excluded ? 'red' : 'green'
+                });
+            }
 
             var control = jQuery('<div/>', {
                 'class': 'limit-grid-cell',
                 'title': baseKey + ' | ' + checkedKey
             });
+
+            $(control).bind({                
+                click: function() {
+                    alert('Change excluding');
+                }
+            });
             $(control).appendTo(column);
+
+
+            (function ini() {
+                check();
+            })();
 
         };
 
@@ -2970,6 +3022,9 @@ function VariantLimitsManager(parent) {
         };
 
     })();
+
+
+
 
 
     // ReSharper disable once UnusedLocals
