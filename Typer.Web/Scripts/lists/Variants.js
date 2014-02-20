@@ -3012,17 +3012,14 @@ function VariantLimitsManager(parent) {
                 });
             }
 
-            //aa/ab/ac/ba/bb/bc : ca/cb/aaa/aab
-            
-
             var control = jQuery('<div/>', {
                 'class': 'limit-grid-cell',
                 'title': baseKey + ' | ' + checkedKey
             });
 
             $(control).bind({                
-                click: function() {
-                    alert('Change excluding');
+                click: function () {
+                    update(!excluded);
                 }
             });
             $(control).appendTo(column);
