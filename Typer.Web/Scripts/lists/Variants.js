@@ -309,6 +309,7 @@ function Variant(editEntity, set, properties) {
     self.raw = {        
         excluded: properties.Excluded
     };
+    self.excluded = new HashTable(null);
 }
 Variant.prototype.loadLimits = function () {
     this.excluded = new HashTable(null);
@@ -344,9 +345,19 @@ Variant.prototype.isExcluded = function(set, key) {
         return false;
     }
 };
-
-
-
+Variant.prototype.exclude = function (set, key, value) {
+    var variant = set.getVariantByKey(key);
+    if (variant) {
+        var id = variant.id;
+        if (value) {
+            this.excluded.setItem(id, variant);
+            variant.excluded.setItem(this.id, this);
+        } else {
+            this.excluded.removeItem(id);
+            variant.excluded.removeItem(this.id);
+        }
+    }
+};
 
 
 
@@ -667,7 +678,10 @@ VariantPanel.prototype.loadGroups = function () {
         }
     });
 
-    //self.loadVariants();
+
+    self.groups.each(function(key, value) {
+        value.loadMissingVariants();
+    });
 
 };
 VariantPanel.prototype.newGroup = function (set) {
@@ -702,34 +716,7 @@ VariantPanel.prototype.removeGroup = function (group) {
     });
 
 };
-//VariantPanel.prototype.loadVariants = function () {
-//    var self = this;
-//    var languagesIds = self.editQuestion.getLanguagesIds();
-//    $.ajax({
-//        url: '/Questions/GetVariantsForQuestion',
-//        type: "GET",
-//        data: {
-//            'questionId': self.editQuestion.id,
-//            'languages': languagesIds
-//        },
-//        traditional: true,
-//        datatype: "json",
-//        async: true,
-//        cache: false,
-//        success: function (result) {
-//            var question = self.editQuestion;
-//            for (var i = 0; i < result.length; i++) {
-//                var $raw = result[i];
-//                var set = question.variantsSets.getItem($raw.VariantSetId);
-//                var option = new Variant(question, set, $raw);
-//            }
-//        },
-//        error: function (msg) {
-//            alert(msg.status + " | " + msg.statusText);
-//            return null;
-//        }
-//    });
-//};
+
 
 function VariantGroup(properties) {
     this.VariantGroup = true;
@@ -814,25 +801,44 @@ VariantGroup.prototype.getConnectionPairs = function () {
 
 };
 VariantGroup.prototype.getKeys = function () {
-    var self = this;
-    
-    if (!self.keys) {
-        self.keys = new HashTable(null);
-        
-        self.sets.each(function (key, value) {
-            value.variants.each(function ($key) {
-                if (!self.keys.hasItem($key)) {
-                    self.keys.setItem($key, $key);
-                }
-            });
-        });
-
+    if (!this.keys) {
+        this.loadKeys();
     }
-    
-    return self.keys;
+    return this.keys;
+};
+VariantGroup.prototype.loadKeys = function () {
+    var self = this;
+    self.keys = new HashTable(null);
+
+    self.sets.each(function (key, value) {
+        value.variants.each(function ($key) {
+            if (!self.keys.hasItem($key)) {
+                self.keys.setItem($key, $key);
+            }
+        });
+    });
+};
+VariantGroup.prototype.loadMissingVariants = function () {
+    var self = this;
+
+    if (!self.keys) {
+        self.loadKeys();
+    }
+
+    self.keys.each(function (key) {
+        self.sets.each(function (setKey, set) {
+            if (!set.variants.hasItem(key)) {
+                var variant = new Variant(set.editEntity, set, {
+                    Id: key,
+                    Key: key,
+                    IsNew: true
+                });
+                set.variants.setItem(variant.key, variant);
+            }
+        });
+    });
 
 };
-
 
 
 function VariantSubpanel(parent, name) {
@@ -2987,12 +2993,27 @@ function VariantLimitsManager(parent) {
                 update($excluded);
             }
             
+            function updateLinked() {
+                baseGroup.group.sets.each(function (setKey, set) {
+                    var variant = set.getVariantByKey(baseKey);
+                    if (variant) {
+                        checkedGroup.group.sets.each(function (checkedSetKey, checkedSet) {
+                            variant.exclude(checkedSet, checkedKey, excluded);
+                        });
+                    }
+                });
+            }
+
             function update($excluded) {
                 excluded = $excluded;
+                updateLinked();
                 $(control).css({
                     'background-color': excluded ? 'red' : 'green'
                 });
             }
+
+            //aa/ab/ac/ba/bb/bc : ca/cb/aaa/aab
+            
 
             var control = jQuery('<div/>', {
                 'class': 'limit-grid-cell',
