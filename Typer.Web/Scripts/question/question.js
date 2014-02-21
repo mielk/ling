@@ -113,7 +113,9 @@
                     'categories': e.categories,
                     'dependencies': e.dependencies,
                     'connections': e.connections,
-                    'editedSets': e.editedSets
+                    'editedSets': e.editedSets,
+                    'editedVariants': e.editedVariants,
+                    'addedVariants': e.addedVariants
                 },
                 traditional: true,
                 success: 'Question ' + e.question.name + ' has been updated',

@@ -199,8 +199,8 @@ namespace Typer.DAL.Repositories
         #endregion
 
 
-        public bool Update(int id, string name, int weight, int[] categories,
-                string[] dependencies, string[] connections, string[] editedSets)
+        public bool Update(int id, string name, int weight, int[] categories, string[] dependencies, 
+                string[] connections, string[] editedSets, string[] editedVariants, string[] addedVariants)
         {
 
             using (var scope = new TransactionScope())
@@ -246,7 +246,7 @@ namespace Typer.DAL.Repositories
                         if (connections != null)
                         {
 
-                            foreach (string connection in connections)
+                            foreach (var connection in connections)
                             {
                                 if (!UpdateConnections(connection))
                                 {
@@ -254,6 +254,33 @@ namespace Typer.DAL.Repositories
                                 }                                
                             }
                         }
+
+                        //Edited variants
+                        if (editedVariants != null)
+                        {
+                            foreach (var edited in editedVariants)
+                            {
+                                if (!UpdateVariant(edited))
+                                {
+                                    result = false;
+                                }
+                            }
+                        }
+
+
+                        //Added variants
+                        if (addedVariants != null)
+                        {
+                            foreach (var added in addedVariants)
+                            {
+                                if (!AddVariant(added))
+                                {
+                                    result = false;
+                                }
+                            }
+                        }
+
+                        
                         
 
 
@@ -321,12 +348,86 @@ namespace Typer.DAL.Repositories
 
         }
 
+        private bool UpdateVariant(string edited)
+        {
+            var parameters = edited.Split('|');
+        
+            //Set id
+            int setId;
+            Int32.TryParse(parameters[0], out setId);
 
+            //Variant id
+            int variantId;
+            Int32.TryParse(parameters[1], out variantId);
+
+            //Content
+            var content = parameters[2];
+
+            //Word id
+            int wordId;
+            Int32.TryParse(parameters[3], out wordId);
+
+            //Anchored
+            int anchored;
+            Int32.TryParse(parameters[4], out anchored);
+
+
+            var variant = GetVariant(variantId);
+            if (variant == null) return false;
+
+            variant.Content = content;
+            variant.WordId = wordId;
+            variant.IsActive = (anchored == 1);
+
+            return true;
+
+        }
+
+        private bool AddVariant(string added)
+        {
+            var parameters = added.Split('|');
+
+            //Set id
+            int setId;
+            Int32.TryParse(parameters[0], out setId);
+
+            //Variant id
+            var key = parameters[1];
+
+            //Content
+            var content = parameters[2];
+
+            //Word id
+            int wordId;
+            Int32.TryParse(parameters[3], out wordId);
+
+            //Anchored
+            int anchored;
+            Int32.TryParse(parameters[4], out anchored);
+
+
+            var variant = new VariantDto
+            {
+                Key = key,
+                Content = content,
+                WordId = wordId,
+                IsAnchored = (anchored == 1),
+                CreateDate = DateTime.Now,
+                CreatorId = 1,
+                IsActive = true,
+                VariantSetId = setId
+            };
+
+            Context.Variants.Add(variant);
+
+            return true;
+            
+        }
 
         private bool UpdateVariantSet(string s)
         {
 
-            string[] parameters = s.Split('|');
+            var parameters = s.Split('|');
 
             //Set id
             int id;
@@ -597,6 +698,11 @@ namespace Typer.DAL.Repositories
         public IEnumerable<VariantSetPropertyValueDto> GetVariantSetPropertiesValues(int id)
         {
             return Context.VariantSetPropertyValues.Where(vspv => vspv.VariantSetId == id);
+        }
+
+        public VariantDto GetVariant(int variantId)
+        {
+            return Context.Variants.SingleOrDefault(v => v.Id == variantId);
         }
 
         public VariantSetPropertyValueDto GetVariantSetPropertyValue(int setId, int propertyId)

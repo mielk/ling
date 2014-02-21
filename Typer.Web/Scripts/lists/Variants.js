@@ -8,6 +8,7 @@
     self.wordtype = WORDTYPE.getItem(properties.WordType);
     self.tag = properties.VariantTag;
     self.logs = [];
+    self.contentChangesLogs = [];
 
     self.params = properties.Params;
     self.grammarDefinitionId = 0;
@@ -111,10 +112,39 @@ VariantSet.prototype.sendLogsToParent = function () {
         log.setId = self.id;
         self.editEntity.addLog(log);
     }
-    
-    //sprawdzić zmiany w wykluczeniach
-    
+
     //sprawdzić zmiany w zestawach opcji
+    self.variants.each(function (key, variant) {
+        if (variant.isNew) {
+            if (variant.content || variant.wordId) {
+                var variantLog = {
+                    event: 'addVariant',
+                    setId: self.id,
+                    variant: variant
+                };
+                self.editEntity.addLog(variantLog);
+            }
+        }
+    });
+    
+    //sprawdzić zmiany w zawartości wariantów
+    self.variants.each(function(key, variant) {
+        if (!variant.isNew && variant.change.meta) {
+            var variantLog = {                
+                event: 'editVariant',
+                setId: self.id,
+                variant: variant
+            };
+            self.editEntity.addLog(variantLog);
+        }
+    });
+    
+    //usunięte warianty
+    for (var j = 0; j < self.contentChangesLogs.length; j++) {
+        alert('variant removed - log needs to be added');
+    }
+
+    //sprawdzić zmiany w wykluczeniach
 
 
 };
@@ -291,6 +321,27 @@ VariantSet.prototype.getVariantById = function(id) {
 VariantSet.prototype.getVariantByKey = function(key) {
     return this.variants.getItem(key);
 };
+VariantSet.prototype.addContentChangeLog = function (log) {
+    this.contentChangesLogs.push(log);
+};
+VariantSet.prototype.removeVariant = function (key) {
+    var self = this;
+    var variant = self.variants.getItem(key);
+    
+    //Jeżeli nie był to nowy variant, to dodawany jest 
+    //log o konieczności usunięcia go z bazy.
+    if (variant && !variant.isNew) {
+        self.addContentChangeLog({
+            event: 'removeVariant',
+            setId: self.id,
+            key: key
+        });
+    }
+    
+    this.variants.removeItem(key);
+    
+};
+
 
 
 function Variant(editEntity, set, properties) {
@@ -310,6 +361,11 @@ function Variant(editEntity, set, properties) {
         excluded: properties.Excluded
     };
     self.excluded = new HashTable(null);
+
+    self.change = {        
+        meta: false,
+        exclusion: false
+    };
 }
 Variant.prototype.loadLimits = function () {
     this.excluded = new HashTable(null);
@@ -357,9 +413,14 @@ Variant.prototype.exclude = function (set, key, value) {
             variant.excluded.removeItem(this.id);
         }
     }
+
+    this.change.exclusion = true;
+
 };
-
-
+Variant.prototype.changeContent = function(value) {
+    this.content = value;
+    this.change.meta = true;
+};
 
 
 
@@ -761,15 +822,16 @@ VariantGroup.prototype.removeEmptyVariants = function(removedSet) {
             if (variant.isNew && !variant.content && !variant.wordId) {
                 var linked = removedSet.variants.getItem(variant.key);
                 if (linked && !linked.isNew) {
-                    value.variants.removeItem(variant.key);
+                    value.removeVariant(variant.key);
                 }
             }
         });
     });
 
     removedSet.variants.each(function(key, variant) {
-        if (variant.isNew && !variant.content && !variant.wordId) {
-            removedSet.variants.removeItem(key);
+        //if (variant.isNew && !variant.content && !variant.wordId) {
+        if (!variant.content && !variant.wordId) {
+            removedSet.removeVariant(key);
         }
     });
 
@@ -829,7 +891,7 @@ VariantGroup.prototype.loadMissingVariants = function () {
         self.sets.each(function (setKey, set) {
             if (!set.variants.hasItem(key)) {
                 var variant = new Variant(set.editEntity, set, {
-                    Id: key,
+                    Id: set.id + ':' + key,
                     Key: key,
                     IsNew: true
                 });
@@ -1399,12 +1461,13 @@ function GroupOptionsManager(properties) {
                 }
 
                 function valueField(key) {
+                    var variant = $set.variants.getItem(key);
                     var control = jQuery('<input/>', {
                         'class': 'default variant-value-field',
                         'type': 'text'
                     });
                     
-                    var variant = $set.variants.getItem(key);
+                    
 
                     function checkVariant() {
                         if (!variant) {
@@ -1451,6 +1514,13 @@ function GroupOptionsManager(properties) {
                                 }
                             });
                         }
+
+                        $(control).bind({                            
+                            change: function (e) {
+                                variant.changeContent(e.target.value);
+                            }
+                        });
+
                     }
 
 

@@ -4,6 +4,7 @@ using Microsoft.Ajax.Utilities;
 using Typer.Domain.Services;
 using Typer.Domain.Entities;
 using Typer.Web.Models;
+using WebGrease.Css;
 
 namespace Typer.Web.Controllers
 {
@@ -98,9 +99,10 @@ namespace Typer.Web.Controllers
         [HttpPost]
         [AllowAnonymous]
         public ActionResult Update(int id, string name, int weight, int[] categories, 
-            string[] dependencies, string[] connections, string[] editedSets)
+            string[] dependencies, string[] connections, string[] editedSets,
+            string[] editedVariants, string[] addedVariants)
         {
-            var result = _service.Update(id, name, weight, categories, dependencies, connections, editedSets);
+            var result = _service.Update(id, name, weight, categories, dependencies, connections, editedSets, editedVariants, addedVariants);
             return Json(result);
         }
 

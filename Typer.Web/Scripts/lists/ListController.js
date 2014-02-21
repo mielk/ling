@@ -1022,20 +1022,22 @@ Question.prototype.update = function (params) {
     var self = this;
     var name = (this.name === params.name ? '' : params.name);
     var weight = (this.weight === params.weight ? 0 : params.weight);
-    var categories = (my.array.equal(params.categories, this.categories) ? [] : params.categories);
-    //removed options
-    //edited options
-    //added options
+    var categories = (my.array.equal(params.categories, this.categories) ? [] : params.categories);    
+    
     //removed sets
     //added sets
     var editedSets = this.editedSetsLogs(params.logs);
     var dependencies = this.dependenciesLogs(params.logs);
     var connections = this.connectionsLogs(params.logs);
+    var editedVariants = this.editedVariantsLogs(params.logs);
+    var addedVariants = this.addedVariantsLogs(params.logs);
+    //removed options
     
 
     //Check if there are any changes.
     if (name || weight || (categories && categories.length) || (editedSets && editedSets.length) ||
-        (dependencies && dependencies.length) || (connections && connections.length)) {
+        (dependencies && dependencies.length) || (connections && connections.length) || 
+        (addedVariants && addedVariants.length) || (editedVariants && editedVariants.length)) {
 
         this.service.update({
             question: self,
@@ -1045,6 +1047,8 @@ Question.prototype.update = function (params) {
             dependencies: dependencies,
             connections: connections,
             categories: my.categories.toIntArray(categories),
+            addedVariants: addedVariants,
+            editedVariants: editedVariants,
             callback: function (result) {
                 if (result !== false) {
 
@@ -1139,6 +1143,38 @@ Question.prototype.connectionsLogs = function (logs) {
 
     return results;
 
+};
+
+Question.prototype.editedVariantsLogs = function(logs) {
+    var tag = 'editVariant';
+    var results = [];
+
+    for (var i = 0; i < logs.length; i++) {
+        var log = logs[i];
+        if (log.event === tag && !log.variant.isNew) {
+            var variant = log.variant;
+            var $log = log.setId + '|' + variant.id + '|' + variant.content + '|' + (variant.wordId ? variant.wordId : 0) + '|' + (variant.anchored ? 1 : 0);
+            results.push($log);
+        }
+    }
+    
+    return results;
+
+};
+Question.prototype.addedVariantsLogs = function(logs) {
+    var tag = 'addVariant';
+    var results = [];
+    
+    for (var i = 0; i < logs.length; i++) {
+        var log = logs[i];
+        if (log.event === tag) {
+            var variant = log.variant;
+            var $log = log.setId + '|' + variant.key + '|' + variant.content + '|' + (variant.wordId ? variant.wordId : 0) + '|' + (variant.anchored ? 1 : 0);
+            results.push($log);
+        }
+    }
+    
+    return results;
 
 };
 
