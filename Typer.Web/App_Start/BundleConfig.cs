@@ -19,6 +19,7 @@ namespace Typer.Web
 
             bundles.Add(new ScriptBundle("~/bundles/global").Include(
                         "~/Scripts/jquery.sizes.js",
+                        "~/Scripts/common/mielk.js",
                         "~/Scripts/common/util.js",
                         "~/Scripts/common/tree.js",
                         "~/Scripts/common/spin.js",

@@ -1,6 +1,8 @@
 ﻿var my = my || {};
 
 
+
+
 //Class inheritance.
 function extend(base, sub) {
     // Avoid instantiating the base class just to setup inheritance
@@ -56,8 +58,12 @@ WORDTYPE = {
 
 //HashTable
 function HashTable(obj) {
+    this.HashTable = true;
     this.length = 0;
     this.items = {};
+    
+
+
     for (var p in obj) {
         if (obj.hasOwnProperty(p)) {
             this.items[p] = obj[p];

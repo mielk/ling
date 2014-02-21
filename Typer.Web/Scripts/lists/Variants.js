@@ -341,6 +341,23 @@ VariantSet.prototype.removeVariant = function (key) {
     this.variants.removeItem(key);
     
 };
+VariantSet.prototype.backup = function() {
+    var self = this;
+    self.previous = {
+        wordtype: self.wordtype,
+        tag: self.tag,
+        grammarDefinitionId: self.grammarDefinitionId,
+        parent: self.parent
+    //variants
+    //connections
+    //dependants
+    //limits
+    //properties
+};
+};
+VariantSet.prototype.reset = function() {
+
+};
 
 
 
@@ -363,7 +380,9 @@ function Variant(editEntity, set, properties) {
     self.excluded = new HashTable(null);
 
     self.change = {        
-        meta: false,
+        key: false,
+        content: false,
+        wordId: false,
         exclusion: false
     };
 }
@@ -413,16 +432,34 @@ Variant.prototype.exclude = function (set, key, value) {
             variant.excluded.removeItem(this.id);
         }
     }
-
-    this.change.exclusion = true;
-
 };
 Variant.prototype.changeContent = function(value) {
-    this.content = value;
-    this.change.meta = true;
+    this.change.content = value;
 };
+Variant.prototype.changeWordId = function(wordId) {
+    this.change.wordId = wordId;
+};
+Variant.prototype.confirmChanges = function () {
+    var ch = this.change;
+    this.key = (ch.key ? ch.key : this.key);
+    this.content = (ch.content ? ch.content : this.content);
+    this.wordId = (ch.wordId ? ch.wordId : this.wordId);
+    this.exclusion = (ch.exclusion ? ch.exclusion : this.excluded);
+};
+Variant.prototype.backup = function() {
+    var self = this;
+    self.previous = {        
+        id: self.id,
+        key: self.key,
+        content: self.content,
+        wordId: self.wordId,
+        anchored: self.anchored
+        //excluded
+    };
+};
+Variant.prototype.reset = function() {
 
-
+};
 
 
 
@@ -455,6 +492,7 @@ function VariantPanel(properties) {
 
                 self.editQuestion.trigger({
                     type: 'variantsValidation',
+                    
                     status: invalid.size() === 0
                 });
 
@@ -625,7 +663,6 @@ VariantPanel.prototype.confirm = function () {
 
     this.ui.destroy();
 };
-
 VariantPanel.prototype.updateConnections = function () {
     var self = this;
 
