@@ -1023,7 +1023,6 @@ Question.prototype.update = function (params) {
     var name = (this.name === params.name ? '' : params.name);
     var weight = (this.weight === params.weight ? 0 : params.weight);
     var categories = (my.array.equal(params.categories, this.categories) ? [] : params.categories);    
-    
     //removed sets
     //added sets
     var editedSets = this.editedSetsLogs(params.logs);
@@ -1097,10 +1096,10 @@ Question.prototype.dependenciesLogs = function (logs) {
     for (var i = 0; i < logs.length; i++) {
         var log = logs[i];
         if (log.event === removeTag) {
-            var $log = 0 + '|' + log.setId + '|' + log.set;
+            var $log = 0 + '|' + log.masterId + '|' + log.slaveId;
             results.push($log);
         } else if (log.event === addTag) {
-            $log = 1 + '|' + log.setId + '|' + log.set;
+            $log = 1 + '|' + log.masterId + '|' + log.slaveId;
             results.push($log);
         }
     }
@@ -1129,15 +1128,32 @@ Question.prototype.connectionsLogs = function (logs) {
     var addTag = 'addConnection';
 
     var results = [];
+    var map = new HashTable(null);
 
     for (var i = 0; i < logs.length; i++) {
         var log = logs[i];
         if (log.event === removeTag) {
             var $log = 0 + '|' + log.parent.id + '|' + log.connected.id;
-            results.push($log);
+            var $oppositeLog = 0 + '|' + log.connected.id + '|' + log.parent.id;
+            
+            //Avoiding duplicated pairs.
+            if (!map.hasItem($log) && !map.hasItem($oppositeLog)) {
+                map.setItem($log, $log);
+                map.setItem($oppositeLog, $oppositeLog);
+                results.push($log);
+            }
+
         } else if (log.event === addTag) {
             $log = 1 + '|' + log.parent.id + '|' + log.connected.id;
-            results.push($log);
+            $oppositeLog = 1 + '|' + log.connected.id + '|' + log.parent.id;
+            
+            //Avoiding duplicated pairs.
+            if (!map.hasItem($log) && !map.hasItem($oppositeLog)) {
+                map.setItem($log, $log);
+                map.setItem($oppositeLog, $oppositeLog);
+                results.push($log);
+            }
+
         }
     }
 

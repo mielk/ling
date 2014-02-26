@@ -6,7 +6,7 @@
     self.editQuestion = properties.editQuestion;
     self.groups = new HashTable(null);
     self.counter = 0;
-    //self.connectionsChanged = false;
+    self.connectionsChanged = false;
 
     this.loadGroups();
 
@@ -178,38 +178,98 @@ VariantPanel.prototype.display = function () {
 };
 VariantPanel.prototype.cancel = function () {
 
-    ////usuwa wszystkie logi.
+
+
+    //usuwa wszystkie logi.
     this.editQuestion.variantsSets.each(function (key, value) {
-        value.reset();
+        value.clearLogs();
     });
 
-    //zamyka panel.
     this.ui.destroy();
-    
 };
 VariantPanel.prototype.confirm = function () {
-    
-    //tworzy logi o zmianach (które będą przekazane do kontrolera w celu wykonania na bazie danych)
-    this.editQuestion.variantsSets.each(function (key, set) {
-        set.updateDependencies();
-        set.updateConnections();
-        
-        //set.sendLogsToParent();
+    this.editQuestion.variantsSets.each(function (key, value) {
+        value.sendLogsToParent();
     });
 
-    //this.editQuestion.variantsSets.each(function (key, value) {
-    //    
-    //});
+    this.updateConnections();
 
-    //zamyka panel.
     this.ui.destroy();
-    
 };
+VariantPanel.prototype.updateConnections = function () {
+    var self = this;
 
-VariantPanel.prototype.updateDependants = function () {
+    if (this.connectionsChanged) {
+
+        var previousPairs = (function () {
+            var pairs = new HashTable(null);
+            self.editQuestion.variantsSets.each(function (key, value) {
+                value.getConnectionPairs().each(function ($key, $value) {
+
+                    function alreadyExists(pair) {
+                        var connectionKey = pair[1].id + '|' + pair[0].id;
+                        return pairs.hasItem(connectionKey);
+                    }
+
+                    if (!alreadyExists($value)) {
+                        pairs.setItem($key, $value);
+                    }
+
+                });
+            });
+            return pairs;
+        })();
+
+        var currentPairs = (function () {
+            var pairs = new HashTable(null);
+            self.groups.each(function (key, group) {
+                group.getConnectionPairs().each(function ($key, $value) {
+                    pairs.setItem($key, $value);
+                });
+            });
+            return pairs;
+        })();
+
+        //Match pairs.
+        previousPairs.each(function (key, value) {
+            if (!currentPairs.hasItem(key)) {
+
+                var parent = value[0];
+                var connected = value[1];
+
+                self.editQuestion.addLog({
+                    event: 'removeConnection',
+                    parent: parent,
+                    connected: connected
+                });
+
+                parent.removeConnection(connected);
+                connected.removeConnection(parent);
+
+            }
+        });
+
+        currentPairs.each(function (key, value) {
+            if (!previousPairs.hasItem(key)) {
+
+                var parent = value[0];
+                var connected = value[1];
+
+                self.editQuestion.addLog({
+                    event: 'addConnection',
+                    parent: parent,
+                    connected: connected
+                });
+
+                parent.addConnection(connected);
+                connected.addConnection(parent);
+
+            }
+        });
+
+    }
 
 };
-
 VariantPanel.prototype.isComplete = function () {
     //var forms = this.details.forms;
     //var complete = true;
@@ -303,118 +363,32 @@ VariantPanel.prototype.removeGroup = function (group) {
 
 
 function VariantSet(editEntity, properties) {
-    var self = this;
     this.VariantSet = true;
+    var self = this;
     self.eventHandler = new EventHandler();
-
-    (function setParameters() {
-        self.editEntity = editEntity;
-        self.id = properties.Id;
-        self.languageId = properties.LanguageId;
-        self.wordtype = WORDTYPE.getItem(properties.WordType);
-        self.tag = properties.VariantTag;
-        self.params = properties.Params;
-        self.grammarDefinitionId = 0;
-        self.raw = {
-            variants: properties.Variants,
-            related: properties.Related,
-            dependants: properties.Dependants
-        };
-    })();
-    
+    self.editEntity = editEntity;
+    self.id = properties.Id;
+    self.languageId = properties.LanguageId;
+    self.wordtype = WORDTYPE.getItem(properties.WordType);
+    self.tag = properties.VariantTag;
     self.logs = [];
     self.contentChangesLogs = [];
 
-    self.updated = {        
+    self.params = properties.Params;
+    self.grammarDefinitionId = 0;
+
+    self.raw = {
+        variants: properties.Variants,
+        related: properties.Related,
+        dependants: properties.Dependants
+    };
+
+    self.change = {        
         wordtype: self.wordtype,
-        tag: self.tag,
-        parent: self.parent,
-        params: self.params,
-        grammarDefinitionId: self.grammarDefinitionId
+        tag: self.tag
     };
 
 }
-
-VariantSet.prototype.reset = function () {
-    var self = this;
-    self.updated = {
-        wordtype: self.wordtype,
-        tag: self.tag,
-        parent: self.parent,
-        params: self.params,
-        grammarDefinitionId: self.grammarDefinitionId,
-        variants: self.variants.clone(),
-        variantsById: self.variantsById.clone(),
-        connections: self.connections.clone(),
-        dependants: self.dependants.clone(),
-        properties: self.properties.clone()
-    };
-};
-
-VariantSet.prototype.updateDependencies = function () {
-    var self = this;
-    var tagForRemoving = 'dependencyRemoved';
-    var tagForAdding = 'dependencyAdded';
-
-    var differences = this.dependants.differences(this.updated.dependants);
-
-    //Removed.
-    for (var i = 0; i < differences.removed.length; i++) {
-        var removed = differences.removed[i];
-        this.editEntity.addLog({
-            event: tagForRemoving,
-            masterId: self.id,
-            slaveId: removed.id
-        });
-    }
-    
-    //Added.
-    for (var j = 0; j < differences.added.length; j++) {
-        var added = differences.added[j];
-        this.editEntity.addLog({
-            event: tagForAdding,
-            masterId: self.id,
-            slaveId: added.id
-        });
-    }
-
-
-    this.dependants = this.updated.dependants;
-
-};
-
-VariantSet.prototype.updateConnections = function () {
-    var self = this;
-    var tagForRemoving = 'removeConnection';
-    var tagForAdding = 'addConnection';
-    
-    var differences = this.connections.differences(this.updated.connections);
-
-    //Removed.
-    for (var i = 0; i < differences.removed.length; i++) {
-        var removed = differences.removed[i];
-        this.editEntity.addLog({
-            event: tagForRemoving,
-            parent: self,
-            connected: removed
-        });
-    }
-
-    //Added.
-    for (var j = 0; j < differences.added.length; j++) {
-        var added = differences.added[j];
-        this.editEntity.addLog({
-            event: tagForAdding,
-            parent: self,
-            connected: added
-        });
-    }
-
-    this.connections = this.updated.connections;
-
-};
-
-
 VariantSet.prototype.bind = function (e) {
     this.eventHandler.bind(e);
 };
@@ -436,11 +410,8 @@ VariantSet.prototype.loadVariants = function (variants) {
         var variant = new Variant(self.editEntity, self, object);
         self.variants.setItem(variant.key, variant);
         self.variantsById.setItem(variant.id, variant);
+        //self.language.addVariant(variant);
     }
-
-    this.updated.variants = this.variants.clone();
-    this.updated.variantsById = this.variantsById.clone();
-
 };
 VariantSet.prototype.loadConnections = function (connections) {
     this.connections = new HashTable(null);
@@ -450,9 +421,6 @@ VariantSet.prototype.loadConnections = function (connections) {
             this.connections.setItem(connection.id, connection);
         }
     }
-    
-    this.updated.connections = this.connections.clone();
-
 };
 VariantSet.prototype.loadDependants = function (dependants) {
     var self = this;
@@ -460,16 +428,13 @@ VariantSet.prototype.loadDependants = function (dependants) {
     for (var i = 0; i < dependants.length; i++) {
         var dependant = self.editEntity.getVariantSet(dependants[i]);
         if (dependant) {
-            dependant.setParent(self, true);
+            dependant.parent = self;
             self.dependants.setItem(dependant.id, dependant);
         }
     }
-
-    this.updated.dependants = this.dependants.clone();
-
 };
 VariantSet.prototype.loadLimits = function () {
-    this.updated.variants.each(function (key, value) {
+    this.variants.each(function (key, value) {
         value.loadLimits();
     });
 };
@@ -492,13 +457,11 @@ VariantSet.prototype.loadProperties = function () {
     });
     self.grammarDefinitionId = grammarId;
 
-    this.updated.properties = this.properties.clone();
-
 };
 VariantSet.prototype.getConnectionPairs = function () {
     var self = this;
     var pairs = new HashTable(null);
-    self.updated.connections.each(function (key, value) {
+    self.connections.each(function (key, value) {
         var connectionKey = self.id + '|' + value.id;
         var connection = [self, value];
         pairs.setItem(connectionKey, connection);
@@ -510,110 +473,97 @@ VariantSet.prototype.clearLogs = function() {
     this.logs = [];
 };
 VariantSet.prototype.sendLogsToParent = function () {
+    var self = this;
 
-    alert('VariantSet.sendLogsToParent');
+    //zmiany we właściwościach seta
+    for (var i = 0; i < self.logs.length; i++) {
+        var log = self.logs[i];
+        log.setId = self.id;
+        self.editEntity.addLog(log);
+    }
 
-    //var self = this;
+    //sprawdzić zmiany w zestawach opcji
+    self.variants.each(function (key, variant) {
+        if (variant.isNew) {
+            if (variant.content || variant.wordId) {
+                var variantLog = {
+                    event: 'addVariant',
+                    setId: self.id,
+                    variant: variant
+                };
+                self.editEntity.addLog(variantLog);
+            }
+        }
+    });
+    
+    //sprawdzić zmiany w zawartości wariantów
+    self.variants.each(function(key, variant) {
+        if (!variant.isNew && variant.change.meta) {
+            var variantLog = {                
+                event: 'editVariant',
+                setId: self.id,
+                variant: variant
+            };
+            self.editEntity.addLog(variantLog);
+        }
+    });
+    
+    //usunięte warianty
+    for (var j = 0; j < self.contentChangesLogs.length; j++) {
+        alert('variant removed - log needs to be added');
+    }
 
-    ////zmiany we właściwościach seta
-    //for (var i = 0; i < self.logs.length; i++) {
-    //    var log = self.logs[i];
-    //    log.setId = self.id;
-    //    self.editEntity.addLog(log);
-    //}
-
-    ////sprawdzić zmiany w zestawach opcji
-    //self.variants.each(function (key, variant) {
-    //    if (variant.isNew) {
-    //        if (variant.content || variant.wordId) {
-    //            var variantLog = {
-    //                event: 'addVariant',
-    //                setId: self.id,
-    //                variant: variant
-    //            };
-    //            self.editEntity.addLog(variantLog);
-    //        }
-    //    }
-    //});
-
-    ////sprawdzić zmiany w zawartości wariantów
-    //self.variants.each(function(key, variant) {
-    //    if (!variant.isNew && variant.change.meta) {
-    //        var variantLog = {                
-    //            event: 'editVariant',
-    //            setId: self.id,
-    //            variant: variant
-    //        };
-    //        self.editEntity.addLog(variantLog);
-    //    }
-    //});
-
-    ////usunięte warianty
-    //for (var j = 0; j < self.contentChangesLogs.length; j++) {
-    //    alert('variant removed - log needs to be added');
-    //}
-
-    ////sprawdzić zmiany w wykluczeniach
+    //sprawdzić zmiany w wykluczeniach
 
 
 };
-VariantSet.prototype.setParent = function (set, initial) {
-    
-    this.updated.parent = set;
-    if (initial) {
-        this.parent = set;
-    } else {
-        this.trigger({
-            type: 'setParent',
-            parent: set
-        });
-        //this.parentChanged = true;
-        set.addDependency(this);
-
-        //this.updated.parent = this.parent;
-        
-    }
+VariantSet.prototype.setParent = function (set) {
+    this.parent = set;
+    this.trigger({
+        type: 'setParent',
+        parent: set
+    });
+    this.parentChanged = true;
+    set.addDependency(this);
 
 };
 VariantSet.prototype.clearParent = function () {
     var self = this;
-    if (this.updated.parent) {
-        this.updated.parent.removeDependency(this);
+    if (this.parent) {
+        this.parent.removeDependency(this);
     }
     this.trigger({
         type: 'clearParent',
-        parent: self.updated.parent
+        parent: self.parent
     });
-    //this.parentChanged = true;
-    //this.parent = null;
-
-    this.updated.parent = null;
+    this.parentChanged = true;
+    this.parent = null;
 
 };
 VariantSet.prototype.removeDependency = function (set) {
-    this.updated.dependants.removeItem(set.id);
+    this.dependants.removeItem(set.id);
     this.trigger({
         type: 'dependencyRemoved',
         dependant: set
     });
 
-    //this.logs.push({
-    //    event: 'dependencyRemoved',
-    //    set: set.id
-    //});
+    this.logs.push({
+        event: 'dependencyRemoved',
+        set: set.id
+    });
 
 };
 VariantSet.prototype.addDependency = function (set) {
-    this.updated.dependants.setItem(set.id, set);
+    this.dependants.setItem(set.id, set);
     this.trigger({
         type: 'dependencyAdded',
         dependant: set
     });
 
-    //this.logs.push({
-    //    event: 'dependencyAdded',
-    //    set: set.id
-    //});
+    this.logs.push({
+        event: 'dependencyAdded',
+        set: set.id
+    });
 
 };
 VariantSet.prototype.getLanguageId = function () {
@@ -629,13 +579,13 @@ VariantSet.prototype.changeWordtype = function (wordtype) {
     
     if (wordtype === this.wordtype) return;
 
-    //this.logs.push({
-    //    event: tag,
-    //    wordtype: wordtype.id
-    //});
+    this.logs.push({
+        event: tag,
+        wordtype: wordtype.id
+    });
 
     var wasDependable = self.language.isDependable(self.wordtype.id);
-    self.updated.wordtype = wordtype;
+    self.wordtype = wordtype;
     var isDependable = self.language.isDependable(wordtype.id);
     self.trigger({
         type: 'changeWordtype',
@@ -649,10 +599,10 @@ VariantSet.prototype.setProperties = function (properties) {
     
     for (var i = 0; i < properties.length; i++) {
         var object = properties[i];
-        var property = this.updated.properties.getItem(object.key);
+        var property = this.properties.getItem(object.key);
         
         if (property != object.value) {
-            this.updated.properties.setItem(object.key, object.value);
+            this.properties.setItem(object.key, object.value);
             this.logs.push({
                 event: tag,
                 property: object.key,
@@ -662,29 +612,27 @@ VariantSet.prototype.setProperties = function (properties) {
         
     }
 };
-VariantSet.prototype.rename = function (name) {
-    this.updated.name = name;
-    this.trigger({
-        type: 'rename',
-        name: name
-    });
-    //if (this.tag !== name) {
-    //    this.tag = name;
-        
-    //}
+VariantSet.prototype.rename = function(name) {
+    if (this.tag !== name) {
+        this.tag = name;
+        this.trigger({            
+            type: 'rename',
+            name: name
+        });
+    }
 };
 VariantSet.prototype.addConnection = function (set) {
-    this.updated.connections.setItem(set.id, set);
+    this.connections.setItem(set.id, set);
 };
 VariantSet.prototype.removeConnection = function (set) {
-    this.updated.connections.removeItem(set.id);
+    this.connections.removeItem(set.id);
 };
 VariantSet.prototype.loadWordsForms = function () {
     var self = this;
     var wordVariants = new HashTable(null);
     var wordsIds = (function () {
         var array = [];
-        self.updated.variants.each(function (key, value) {
+        self.variants.each(function (key, value) {
             var wordId = value.wordId;
             if (wordId && !value.anchored) {
                 array.push(wordId);
@@ -703,7 +651,7 @@ VariantSet.prototype.loadWordsForms = function () {
             url: '/Words/GetGrammarFormsForWords',
             type: "GET",
             data: {
-                'grammarForm': self.updated.grammarDefinitionId,
+                'grammarForm': self.grammarDefinitionId,
                 'words': wordsIds
             },
             traditional: true,
@@ -737,66 +685,75 @@ VariantSet.prototype.loadWordsForms = function () {
 
 };
 VariantSet.prototype.getVariantById = function(id) {
-    return this.updated.variantsById.getItem(id);
+    return this.variantsById.getItem(id);
 };
 VariantSet.prototype.getVariantByKey = function(key) {
-    return this.updated.variants.getItem(key);
+    return this.variants.getItem(key);
 };
 VariantSet.prototype.addContentChangeLog = function (log) {
-    //this.contentChangesLogs.push(log);
+    this.contentChangesLogs.push(log);
 };
 VariantSet.prototype.removeVariant = function (key) {
     var self = this;
-    //var variant = self.updated.variants.getItem(key);
+    var variant = self.variants.getItem(key);
     
     //Jeżeli nie był to nowy variant, to dodawany jest 
     //log o konieczności usunięcia go z bazy.
-    //if (variant && !variant.isNew) {
-    //    self.addContentChangeLog({
-    //        event: 'removeVariant',
-    //        setId: self.id,
-    //        key: key
-    //    });
-    //}
+    if (variant && !variant.isNew) {
+        self.addContentChangeLog({
+            event: 'removeVariant',
+            setId: self.id,
+            key: key
+        });
+    }
     
-    this.updated.variants.removeItem(key);
+    this.variants.removeItem(key);
     
 };
+VariantSet.prototype.backup = function() {
+    var self = this;
+    self.previous = {
+        wordtype: self.wordtype,
+        tag: self.tag,
+        grammarDefinitionId: self.grammarDefinitionId,
+        parent: self.parent
+    //variants
+    //connections
+    //dependants
+    //limits
+    //properties
+    };
+};
+VariantSet.prototype.reset = function() {
 
-
-
-
+};
 
 
 
 function Variant(editEntity, set, properties) {
-    var self = this;
     this.Variant = true;
+    var self = this;
     self.eventHandler = new EventHandler();
-
-    (function setParameters() {
-        self.editEntity = editEntity;
-        self.set = set;
-        self.language = set.language;
-        self.id = properties.Id;
-        self.key = properties.Key;
-        self.content = properties.Content;
-        self.wordId = properties.WordId;
-        self.anchored = properties.IsAnchored;
-        self.isNew = properties.IsNew ? true : false;
-        self.raw = {
-            excluded: properties.Excluded
-        };
-    })();
+    self.editEntity = editEntity;
+    self.set = set;
+    self.language = set.language;
+    self.id = properties.Id;
+    self.key = properties.Key;
+    self.content = properties.Content;
+    self.wordId = properties.WordId;
+    self.anchored = properties.IsAnchored;
+    self.isNew = properties.IsNew ? true : false;
+    self.raw = {        
+        excluded: properties.Excluded
+    };
     self.excluded = new HashTable(null);
 
-    self.updated = {        
-        key: self.key,
-        content: self.content,
-        wordId: self.wordId,
-        anchored: self.anchored
+    self.change = {        
+        key: false,
+        content: false,
+        wordId: false,
+        exclusion: false
     };
-    
 }
 Variant.prototype.loadLimits = function () {
     this.excluded = new HashTable(null);
@@ -813,11 +770,9 @@ Variant.prototype.loadLimits = function () {
         }
     }
 
-    this.updated.excluded = this.excluded.clone();
-
 };
 Variant.prototype.value = function() {
-    return this.updated.content;
+    return this.content;
 };
 Variant.prototype.bind = function(e) {
     this.eventHandler.bind(e);
@@ -829,7 +784,7 @@ Variant.prototype.isExcluded = function(set, key) {
     var variant = set.getVariantByKey(key);
     if (variant) {
         var id = variant.id;
-        return this.updated.excluded.hasItem(id);
+        return this.excluded.hasItem(id);
     } else {
         return false;
     }
@@ -839,27 +794,42 @@ Variant.prototype.exclude = function (set, key, value) {
     if (variant) {
         var id = variant.id;
         if (value) {
-            this.updated.excluded.setItem(id, variant);
-            variant.updated.excluded.setItem(this.id, this);
+            this.excluded.setItem(id, variant);
+            variant.excluded.setItem(this.id, this);
         } else {
-            this.updated.excluded.removeItem(id);
-            variant.updated.excluded.removeItem(this.id);
+            this.excluded.removeItem(id);
+            variant.excluded.removeItem(this.id);
         }
     }
 };
 Variant.prototype.changeContent = function(value) {
-    this.updated.content = value;
+    this.change.content = value;
 };
 Variant.prototype.changeWordId = function(wordId) {
-    this.updated.wordId = wordId;
+    this.change.wordId = wordId;
 };
 Variant.prototype.confirmChanges = function () {
-    //var ch = this.change;
-    //this.key = (ch.key ? ch.key : this.key);
-    //this.content = (ch.content ? ch.content : this.content);
-    //this.wordId = (ch.wordId ? ch.wordId : this.wordId);
-    //this.exclusion = (ch.exclusion ? ch.exclusion : this.excluded);
+    var ch = this.change;
+    this.key = (ch.key ? ch.key : this.key);
+    this.content = (ch.content ? ch.content : this.content);
+    this.wordId = (ch.wordId ? ch.wordId : this.wordId);
+    this.exclusion = (ch.exclusion ? ch.exclusion : this.excluded);
 };
+Variant.prototype.backup = function() {
+    var self = this;
+    self.previous = {        
+        id: self.id,
+        key: self.key,
+        content: self.content,
+        wordId: self.wordId,
+        anchored: self.anchored
+        //excluded
+    };
+};
+Variant.prototype.reset = function() {
+
+};
+
 
 
 
@@ -908,8 +878,8 @@ VariantGroup.prototype.removeEmptyVariants = function(removedSet) {
 
     this.sets.each(function(key, value) {
         value.variants.each(function($key, variant) {
-            if (variant.isNew && !variant.updated.content && !variant.updated.wordId) {
-                var linked = removedSet.updated.variants.getItem(variant.key);
+            if (variant.isNew && !variant.content && !variant.wordId) {
+                var linked = removedSet.variants.getItem(variant.key);
                 if (linked && !linked.isNew) {
                     value.removeVariant(variant.key);
                 }
@@ -919,7 +889,7 @@ VariantGroup.prototype.removeEmptyVariants = function(removedSet) {
 
     removedSet.variants.each(function(key, variant) {
         //if (variant.isNew && !variant.content && !variant.wordId) {
-        if (!variant.updated.content && !variant.updated.wordId) {
+        if (!variant.content && !variant.wordId) {
             removedSet.removeVariant(key);
         }
     });
@@ -962,7 +932,7 @@ VariantGroup.prototype.loadKeys = function () {
     self.keys = new HashTable(null);
 
     self.sets.each(function (key, value) {
-        value.updated.variants.each(function ($key) {
+        value.variants.each(function ($key) {
             if (!self.keys.hasItem($key)) {
                 self.keys.setItem($key, $key);
             }
@@ -978,13 +948,13 @@ VariantGroup.prototype.loadMissingVariants = function () {
 
     self.keys.each(function (key) {
         self.sets.each(function (setKey, set) {
-            if (!set.updated.variants.hasItem(key)) {
+            if (!set.variants.hasItem(key)) {
                 var variant = new Variant(set.editEntity, set, {
                     Id: set.id + ':' + key,
                     Key: key,
                     IsNew: true
                 });
-                set.updated.variants.setItem(variant.key, variant);
+                set.variants.setItem(variant.key, variant);
             }
         });
     });
@@ -1078,7 +1048,6 @@ function VariantOptionsManager(parent) {
     VariantSubpanel.call(this, parent, 'Options');
     this.VariantOptionsManager = true;
     var self = this;
-    self.eventHandler = new EventHandler();
     self.panel = self.ui.content;
     self.groups = new HashTable(null);      //connection groups
 
@@ -1099,196 +1068,196 @@ function VariantOptionsManager(parent) {
 
     })();
 
-    //var setBlock = function (set) {
-    //    var group;
-    //    var $self;
-    //    var $set = set;
+    var setBlock = function (set) {
+        var group;
+        var $self;
+        var $set = set;
 
-    //    var ui = (function () {
-    //        var container = jQuery('<div/>', {
-    //            'class': 'variant-set-block'
-    //        });
+        var ui = (function () {
+            var container = jQuery('<div/>', {
+                'class': 'variant-set-block'
+            });
 
-    //        // ReSharper disable once UnusedLocals
-    //        var flag = jQuery('<div/>', {
-    //            'class': 'unselectable flag ' + set.language.language.flag + '-small'
-    //        }).appendTo(container);
+            // ReSharper disable once UnusedLocals
+            var flag = jQuery('<div/>', {
+                'class': 'unselectable flag ' + set.language.language.flag + '-small'
+            }).appendTo(container);
 
-    //        var name = jQuery('<div/>', {
-    //            'class': 'unselectable name',
-    //            html: set.tag
-    //        }).appendTo(container);
+            var name = jQuery('<div/>', {
+                'class': 'unselectable name',
+                html: set.tag
+            }).appendTo(container);
 
-    //        set.bind({
-    //            rename: function (e) {
-    //                $(name).html(e.name);
-    //            }
-    //        });
+            set.bind({
+                rename: function (e) {
+                    $(name).html(e.name);
+                }
+            });
 
-    //        return {
-    //            container: function () {
-    //                return container;
-    //            },
-    //            destroy: function () {
-    //                $(container).remove();
-    //            }
-    //        };
+            return {
+                container: function () {
+                    return container;
+                },
+                destroy: function () {
+                    $(container).remove();
+                }
+            };
 
-    //    })();
+        })();
 
-    //    return {
-    //        selfinject: function (me) {
-    //            $self = me;
-    //        },
-    //        setGroup: function ($group) {
-    //            group = $group;
-    //        },
-    //        id: $set.id,
-    //        view: function () {
-    //            return ui.container();
-    //        },
-    //        destroy: ui.destroy
-    //    };
+        return {
+            selfinject: function (me) {
+                $self = me;
+            },
+            setGroup: function ($group) {
+                group = $group;
+            },
+            id: $set.id,
+            view: function () {
+                return ui.container();
+            },
+            destroy: ui.destroy
+        };
 
-    //};
+    };
 
-    //var connectionGroup = function (group) {
-    //    var $self = null;
-    //    var $index = group.id;
-    //    var $blocks = new HashTable(null);
-    //    var $active = false;
-    //    var $group = group;
-    //    var $optionsManager;
+    var connectionGroup = function (group) {
+        var $self = null;
+        var $index = group.id;
+        var $blocks = new HashTable(null);
+        var $active = false;
+        var $group = group;
+        var $optionsManager;
 
-    //    var container = jQuery('<div/>', {
-    //        'class': 'variant-options-group variant-connection-group'
-    //    }).bind({
-    //        click: function () {
-    //            var previous = self.activeGroup;
-    //            if (previous === $self) return;
-    //            if (previous) {
-    //                previous.deactivate();
-    //            }
-    //            $self.activate();
-    //        }
-    //    });
-    //    groupViews.add(container);
+        var container = jQuery('<div/>', {
+            'class': 'variant-options-group variant-connection-group'
+        }).bind({
+            click: function () {
+                var previous = self.activeGroup;
+                if (previous === $self) return;
+                if (previous) {
+                    previous.deactivate();
+                }
+                $self.activate();
+            }
+        });
+        groupViews.add(container);
 
-    //    function createBlocks() {
-    //        $group.sets.each(function (key, value) {
-    //            var block = setBlock(value);
-    //            block.selfinject(block);
-    //            addBlock(block);
-    //        });
-    //    }
+        function createBlocks() {
+            $group.sets.each(function (key, value) {
+                var block = setBlock(value);
+                block.selfinject(block);
+                addBlock(block);
+            });
+        }
 
-    //    function refresh() {
-    //        if ($active) {
-    //            $(container).addClass('active');
-    //        } else {
-    //            $(container).removeClass('active');
-    //        }
+        function refresh() {
+            if ($active) {
+                $(container).addClass('active');
+            } else {
+                $(container).removeClass('active');
+            }
 
-    //    }
+        }
 
-    //    function addBlock(block) {
-    //        $blocks.setItem(block.id, block);
-    //        block.setGroup($self);
-    //        block.view().appendTo(container);
-    //    }
+        function addBlock(block) {
+            $blocks.setItem(block.id, block);
+            block.setGroup($self);
+            block.view().appendTo(container);
+        }
 
-    //    function removeBlock(block) {
-    //        $blocks.removeItem(block.id);
-    //        block.destroy();
-    //        if ($blocks.size() === 0) destroy();
-    //    }
+        function removeBlock(block) {
+            $blocks.removeItem(block.id);
+            block.destroy();
+            if ($blocks.size() === 0) destroy();
+        }
 
-    //    function getBlock(id) {
-    //        return $blocks.getItem(id);
-    //    }
+        function getBlock(id) {
+            return $blocks.getItem(id);
+        }
 
-    //    function destroy() {
-    //        $(container).remove();
-    //        self.groups.removeItem($index);
-    //    }
+        function destroy() {
+            $(container).remove();
+            self.groups.removeItem($index);
+        }
 
-    //    function activate() {
-    //        self.activeGroup = $self;
-    //        $active = true;
-    //        refresh();
+        function activate() {
+            self.activeGroup = $self;
+            $active = true;
+            refresh();
 
-    //        //Show options panel.
-    //        if (!$optionsManager) {
-    //            $optionsManager = new GroupOptionsManager({
-    //                parent: self,
-    //                group: $group
-    //            });
-    //        }
-    //        $optionsManager.show();
+            //Show options panel.
+            if (!$optionsManager) {
+                $optionsManager = new GroupOptionsManager({
+                    parent: self,
+                    group: $group
+                });
+            }
+            $optionsManager.show();
 
-    //    }
+        }
 
-    //    function deactivate() {
-    //        if (self.activeGroup === $self) {
-    //            self.activeGroup = null;
-    //            $active = false;
-    //            refresh();
-    //        }
+        function deactivate() {
+            if (self.activeGroup === $self) {
+                self.activeGroup = null;
+                $active = false;
+                refresh();
+            }
 
-    //        if ($optionsManager && $optionsManager.visible) {
-    //            $optionsManager.hide();
-    //        }
+            if ($optionsManager && $optionsManager.visible) {
+                $optionsManager.hide();
+            }
 
-    //    }
+        }
 
-    //    function refreshOptionsManager() {
-    //        if ($optionsManager) {
-    //            var visible = $optionsManager.visible;
-    //            $optionsManager.destroy();
-    //            $optionsManager = new GroupOptionsManager({
-    //                parent: self,
-    //                group: $group
-    //            });
-    //            if (visible) $optionsManager.show();
-    //        }
-    //    }
-
-
-    //    // ReSharper disable once UnusedLocals
-    //    var $events = (function () {
-    //        $group.bind({
-    //            remove: function (e) {
-    //                var block = getBlock(e.set.id);
-    //                removeBlock(block);
-    //                refreshOptionsManager();
-    //            },
-    //            add: function (e) {
-    //                var block = setBlock(e.set);
-    //                block.selfinject(block);
-    //                addBlock(block);
-    //                refreshOptionsManager();
-    //            }
-    //        });
-    //    })();
+        function refreshOptionsManager() {
+            if ($optionsManager) {
+                var visible = $optionsManager.visible;
+                $optionsManager.destroy();
+                $optionsManager = new GroupOptionsManager({
+                    parent: self,
+                    group: $group
+                });
+                if (visible) $optionsManager.show();
+            }
+        }
 
 
-    //    return {
-    //        selfinject: function (me) {
-    //            $self = me;
-    //        },
-    //        id: $index,
-    //        createBlocks: createBlocks,
-    //        addBlock: addBlock,
-    //        removeBlock: removeBlock,
-    //        getBlock: getBlock,
-    //        activate: activate,
-    //        deactivate: deactivate,
-    //        hasSet: function (key) {
-    //            return $blocks.hasItem(key);
-    //        }
-    //    };
+        // ReSharper disable once UnusedLocals
+        var $events = (function () {
+            $group.bind({
+                remove: function (e) {
+                    var block = getBlock(e.set.id);
+                    removeBlock(block);
+                    refreshOptionsManager();
+                },
+                add: function (e) {
+                    var block = setBlock(e.set);
+                    block.selfinject(block);
+                    addBlock(block);
+                    refreshOptionsManager();
+                }
+            });
+        })();
 
-    //};
+
+        return {
+            selfinject: function (me) {
+                $self = me;
+            },
+            id: $index,
+            createBlocks: createBlocks,
+            addBlock: addBlock,
+            removeBlock: removeBlock,
+            getBlock: getBlock,
+            activate: activate,
+            deactivate: deactivate,
+            hasSet: function (key) {
+                return $blocks.hasItem(key);
+            }
+        };
+
+    };
 
 
     // ReSharper disable once UnusedLocals
@@ -1298,23 +1267,12 @@ function VariantOptionsManager(parent) {
                 createNewGroup(e.group);
             }
         });
-
-        self.bind({            
-            selectGroup: function(e) {
-                var previous = self.activeGroup;
-                if (previous === e.connectionGroup) return;
-                if (previous) {
-                    previous.deactivate();
-                }
-            }
-        });
-
     })();
 
     var createNewGroup = function (group) {
-        var $group = new ConnectionGroup(self, group, true);// connectionGroup(group);
-        //$group.selfinject($group);
-        //$group.createBlocks();
+        var $group = connectionGroup(group);
+        $group.selfinject($group);
+        $group.createBlocks();
         self.groups.setItem($group.id, $group);
     };
 
@@ -1333,8 +1291,6 @@ function VariantOptionsManager(parent) {
 
 }
 extend(VariantSubpanel, VariantOptionsManager);
-
-
 
 
 function GroupOptionsManager(properties) {
@@ -1564,7 +1520,7 @@ function GroupOptionsManager(properties) {
                 }
 
                 function valueField(key) {
-                    var variant = $set.updated.variants.getItem(key);
+                    var variant = $set.variants.getItem(key);
                     var control = jQuery('<input/>', {
                         'class': 'default variant-value-field',
                         'type': 'text'
@@ -1578,7 +1534,7 @@ function GroupOptionsManager(properties) {
                                 Key: key,
                                 IsNew: true
                             });
-                            $set.updated.variants.setItem(variant.key, variant);
+                            $set.variants.setItem(variant.key, variant);
                         }
                     }
 
@@ -1596,9 +1552,9 @@ function GroupOptionsManager(properties) {
                     function fetchValue() {
                         //First check if this variant's value is anchored
                         if (variant) {
-                            if (variant.updated.anchored) {
-                                return variant.updated.content;
-                            } else if (variant.updated.wordId) { //if (variant.anchored || (!variant.wordId && variant.content)) {
+                            if (variant.anchored) {
+                                return variant.content;
+                            } else if (variant.wordId) { //if (variant.anchored || (!variant.wordId && variant.content)) {
                                 //to be loaded by the separate process (for performance reasons).
                             } else {
                                 //try to get the value based on the connected variantSets
@@ -1909,7 +1865,7 @@ function VariantConnectionsManager(parent) {
 
         function release() {
 
-            //self.parent.connectionsChanged = true;
+            self.parent.connectionsChanged = true;
 
             if (!self.activeGroup) {
                 if ($group.only($self)) {
@@ -2030,8 +1986,6 @@ function VariantConnectionsManager(parent) {
 
         function removeBlock(block) {
             $blocks.removeItem(block.id);
-            $group.sets.removeItem(block.id);
-
             if ($blocks.size() === 0) {
                 destroy();
             }
@@ -2046,7 +2000,6 @@ function VariantConnectionsManager(parent) {
 
             function triggerRemoveConnectionEvent(base, removed) {
                 if (base.VariantSet) {
-                    base.removeConnection(removed);
                     base.trigger({
                         type: 'removeConnection',
                         set: removed
@@ -2059,14 +2012,6 @@ function VariantConnectionsManager(parent) {
         function addBlock(block) {
             $blocks.setItem(block.id, block);
             block.setGroup($self);
-
-            $blocks.each(function(key, value) {
-                if (value != block) {
-                    value.set.addConnection(block.set);
-                    block.set.addConnection(value.set);
-                }
-            });
-
             block.rerender();
             block.view().appendTo(container);
         }
@@ -2190,16 +2135,16 @@ function VariantDependenciesManager(parent) {
         })();
 
         function loadMasters() {
-            var wordtypeId = $set.updated.wordtype.id;
+            var wordtypeId = $set.wordtype.id;
             var mastersArray = $set.language.getMasters(wordtypeId);
 
             $masters.clear();
             if (!mastersArray || mastersArray.length === 0) return;
 
             self.editQuestion.variantsSets.each(function (key, variantSet) {
-                var setWordtype = variantSet.updated.wordtype.id;
+                var setWordtype = variantSet.wordtype.id;
                 if (variantSet.languageId === $set.languageId && mastersArray.indexOf(setWordtype) >= 0) {
-                    var masterBlock = new setBlock(variantSet, true, $set.updated.parent === variantSet);
+                    var masterBlock = new setBlock(variantSet, true, $set.parent === variantSet);
 
                     //Check if this variant set changed its wordtype.
                     variantSet.bind({
@@ -2209,7 +2154,7 @@ function VariantDependenciesManager(parent) {
                             //Block with this variant set is removed.
                             if (mastersArray.indexOf(newWordtype.id) < 0) {
                                 //Additionally, if this set was assigned as parent, parent is cleared.
-                                if ($set.updated.parent === variantSet) {
+                                if ($set.parent === variantSet) {
                                     $set.clearParent();
                                 }
 
@@ -2232,7 +2177,7 @@ function VariantDependenciesManager(parent) {
         }
 
         function blockClicked(block) {
-            var previousParent = $set.updated.parent;
+            var previousParent = $set.parent;
 
             if (previousParent === block.set) {
                 $set.clearParent();
@@ -2312,7 +2257,6 @@ function VariantDependenciesManager(parent) {
                 render();
             }
         };
-        
     };
 
     var setBlock = function (set, isMaster, isActive) {
@@ -2418,7 +2362,7 @@ function VariantDependenciesManager(parent) {
 
     function checkSet(set) {
         var language = set.language;
-        var masters = language.getMasters(set.updated.wordtype.id);
+        var masters = language.getMasters(set.wordtype.id);
         if (masters && masters.length) {
             createNewLine(set);
         }
@@ -3234,7 +3178,7 @@ function VariantLimitsManager(parent) {
     var events = (function () {
         self.parent.bind({
             newGroup: function (e) {
-                self.baseGroups.createNew(e.group);
+                self.baseGroup.createNew(e.group);
             }
         });
 

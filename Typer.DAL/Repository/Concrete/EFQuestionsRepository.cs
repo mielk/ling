@@ -336,7 +336,7 @@ namespace Typer.DAL.Repositories
                         }
 
                     }
-                    catch (Exception)
+                    catch (Exception exception)
                     {
                     }
                 }
@@ -466,7 +466,7 @@ namespace Typer.DAL.Repositories
         private bool UpdateDependencies(string s)
         {
 
-            string[] parameters = s.Split('|');
+            var parameters = s.Split('|');
 
             //action
             int action;
@@ -511,7 +511,7 @@ namespace Typer.DAL.Repositories
         private bool UpdateConnections(string s)
         {
 
-            string[] parameters = s.Split('|');
+            var parameters = s.Split('|');
 
             //action
             int action;
@@ -556,7 +556,7 @@ namespace Typer.DAL.Repositories
 
         private bool UpdateOption(string s)
         {
-            string[] parameters = s.Split('|');
+            var parameters = s.Split('|');
 
             //Id.
             int id;
@@ -580,7 +580,7 @@ namespace Typer.DAL.Repositories
 
         private bool AddOption(string s, int id)
         {
-            string[] parameters = s.Split('|');
+            var parameters = s.Split('|');
 
             //Language Id.
             int languageId;

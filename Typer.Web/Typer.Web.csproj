@@ -279,6 +279,7 @@
     <Content Include="Scripts\app\global.js" />
     <Content Include="Scripts\authentication\register.js" />
     <Content Include="Scripts\authentication\mailValidation.js" />
+    <Content Include="Scripts\lists\Variants3.js" />
     <Content Include="Scripts\lists\ListController.js" />
     <Content Include="Scripts\lists\Options.js" />
     <Content Include="Scripts\lists\Variants.js" />

@@ -129,6 +129,44 @@ function HashTable(obj) {
         }
     };
 
+    this.clone = function() {
+        var clone = new HashTable();
+        this.each(function(key, value) {
+            clone.setItem(key, value);
+        });
+        return clone;
+    };
+
+    this.differences = function (compared) {
+        var self = this;
+        
+        if (!compared.HashTable) {
+            return {};
+        }
+
+        var results = {
+            removed: [],
+            added: []
+        };
+
+        //Removed.
+        self.each(function(key, value) {
+            if (!compared.hasItem(key)) {
+                results.removed.push(value);
+            }
+        });
+        
+        //Added.
+        compared.each(function(key, value) {
+            if (!self.hasItem(key)) {
+                results.added.push(value);
+            }
+        });
+
+        return results;
+
+    };
+
     this.size = function() {
         return this.length;
     };
