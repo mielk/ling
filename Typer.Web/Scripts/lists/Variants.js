@@ -1099,196 +1099,196 @@ function VariantOptionsManager(parent) {
 
     })();
 
-    //var setBlock = function (set) {
-    //    var group;
-    //    var $self;
-    //    var $set = set;
+    var setBlock = function (set) {
+        var group;
+        var $self;
+        var $set = set;
 
-    //    var ui = (function () {
-    //        var container = jQuery('<div/>', {
-    //            'class': 'variant-set-block'
-    //        });
+        var ui = (function () {
+            var container = jQuery('<div/>', {
+                'class': 'variant-set-block'
+            });
 
-    //        // ReSharper disable once UnusedLocals
-    //        var flag = jQuery('<div/>', {
-    //            'class': 'unselectable flag ' + set.language.language.flag + '-small'
-    //        }).appendTo(container);
+            // ReSharper disable once UnusedLocals
+            var flag = jQuery('<div/>', {
+                'class': 'unselectable flag ' + set.language.language.flag + '-small'
+            }).appendTo(container);
 
-    //        var name = jQuery('<div/>', {
-    //            'class': 'unselectable name',
-    //            html: set.tag
-    //        }).appendTo(container);
+            var name = jQuery('<div/>', {
+                'class': 'unselectable name',
+                html: set.updated.tag
+            }).appendTo(container);
 
-    //        set.bind({
-    //            rename: function (e) {
-    //                $(name).html(e.name);
-    //            }
-    //        });
+            set.bind({
+                rename: function (e) {
+                    $(name).html(e.name);
+                }
+            });
 
-    //        return {
-    //            container: function () {
-    //                return container;
-    //            },
-    //            destroy: function () {
-    //                $(container).remove();
-    //            }
-    //        };
+            return {
+                container: function () {
+                    return container;
+                },
+                destroy: function () {
+                    $(container).remove();
+                }
+            };
 
-    //    })();
+        })();
 
-    //    return {
-    //        selfinject: function (me) {
-    //            $self = me;
-    //        },
-    //        setGroup: function ($group) {
-    //            group = $group;
-    //        },
-    //        id: $set.id,
-    //        view: function () {
-    //            return ui.container();
-    //        },
-    //        destroy: ui.destroy
-    //    };
+        return {
+            selfinject: function (me) {
+                $self = me;
+            },
+            setGroup: function ($group) {
+                group = $group;
+            },
+            id: $set.id,
+            view: function () {
+                return ui.container();
+            },
+            destroy: ui.destroy
+        };
 
-    //};
+    };
 
-    //var connectionGroup = function (group) {
-    //    var $self = null;
-    //    var $index = group.id;
-    //    var $blocks = new HashTable(null);
-    //    var $active = false;
-    //    var $group = group;
-    //    var $optionsManager;
+    var connectionGroup = function (group) {
+        var $self = null;
+        var $index = group.id;
+        var $blocks = new HashTable(null);
+        var $active = false;
+        var $group = group;
+        var $optionsManager;
 
-    //    var container = jQuery('<div/>', {
-    //        'class': 'variant-options-group variant-connection-group'
-    //    }).bind({
-    //        click: function () {
-    //            var previous = self.activeGroup;
-    //            if (previous === $self) return;
-    //            if (previous) {
-    //                previous.deactivate();
-    //            }
-    //            $self.activate();
-    //        }
-    //    });
-    //    groupViews.add(container);
+        var container = jQuery('<div/>', {
+            'class': 'variant-options-group variant-connection-group'
+        }).bind({
+            click: function () {
+                var previous = self.activeGroup;
+                if (previous === $self) return;
+                if (previous) {
+                    previous.deactivate();
+                }
+                $self.activate();
+            }
+        });
+        groupViews.add(container);
 
-    //    function createBlocks() {
-    //        $group.sets.each(function (key, value) {
-    //            var block = setBlock(value);
-    //            block.selfinject(block);
-    //            addBlock(block);
-    //        });
-    //    }
+        function createBlocks() {
+            $group.sets.each(function (key, value) {
+                var block = setBlock(value);
+                block.selfinject(block);
+                addBlock(block);
+            });
+        }
 
-    //    function refresh() {
-    //        if ($active) {
-    //            $(container).addClass('active');
-    //        } else {
-    //            $(container).removeClass('active');
-    //        }
+        function refresh() {
+            if ($active) {
+                $(container).addClass('active');
+            } else {
+                $(container).removeClass('active');
+            }
 
-    //    }
+        }
 
-    //    function addBlock(block) {
-    //        $blocks.setItem(block.id, block);
-    //        block.setGroup($self);
-    //        block.view().appendTo(container);
-    //    }
+        function addBlock(block) {
+            $blocks.setItem(block.id, block);
+            block.setGroup($self);
+            block.view().appendTo(container);
+        }
 
-    //    function removeBlock(block) {
-    //        $blocks.removeItem(block.id);
-    //        block.destroy();
-    //        if ($blocks.size() === 0) destroy();
-    //    }
+        function removeBlock(block) {
+            $blocks.removeItem(block.id);
+            block.destroy();
+            if ($blocks.size() === 0) destroy();
+        }
 
-    //    function getBlock(id) {
-    //        return $blocks.getItem(id);
-    //    }
+        function getBlock(id) {
+            return $blocks.getItem(id);
+        }
 
-    //    function destroy() {
-    //        $(container).remove();
-    //        self.groups.removeItem($index);
-    //    }
+        function destroy() {
+            $(container).remove();
+            self.groups.removeItem($index);
+        }
 
-    //    function activate() {
-    //        self.activeGroup = $self;
-    //        $active = true;
-    //        refresh();
+        function activate() {
+            self.activeGroup = $self;
+            $active = true;
+            refresh();
 
-    //        //Show options panel.
-    //        if (!$optionsManager) {
-    //            $optionsManager = new GroupOptionsManager({
-    //                parent: self,
-    //                group: $group
-    //            });
-    //        }
-    //        $optionsManager.show();
+            //Show options panel.
+            if (!$optionsManager) {
+                $optionsManager = new GroupOptionsManager({
+                    parent: self,
+                    group: $group
+                });
+            }
+            $optionsManager.show();
 
-    //    }
+        }
 
-    //    function deactivate() {
-    //        if (self.activeGroup === $self) {
-    //            self.activeGroup = null;
-    //            $active = false;
-    //            refresh();
-    //        }
+        function deactivate() {
+            if (self.activeGroup === $self) {
+                self.activeGroup = null;
+                $active = false;
+                refresh();
+            }
 
-    //        if ($optionsManager && $optionsManager.visible) {
-    //            $optionsManager.hide();
-    //        }
+            if ($optionsManager && $optionsManager.visible) {
+                $optionsManager.hide();
+            }
 
-    //    }
+        }
 
-    //    function refreshOptionsManager() {
-    //        if ($optionsManager) {
-    //            var visible = $optionsManager.visible;
-    //            $optionsManager.destroy();
-    //            $optionsManager = new GroupOptionsManager({
-    //                parent: self,
-    //                group: $group
-    //            });
-    //            if (visible) $optionsManager.show();
-    //        }
-    //    }
-
-
-    //    // ReSharper disable once UnusedLocals
-    //    var $events = (function () {
-    //        $group.bind({
-    //            remove: function (e) {
-    //                var block = getBlock(e.set.id);
-    //                removeBlock(block);
-    //                refreshOptionsManager();
-    //            },
-    //            add: function (e) {
-    //                var block = setBlock(e.set);
-    //                block.selfinject(block);
-    //                addBlock(block);
-    //                refreshOptionsManager();
-    //            }
-    //        });
-    //    })();
+        function refreshOptionsManager() {
+            if ($optionsManager) {
+                var visible = $optionsManager.visible;
+                $optionsManager.destroy();
+                $optionsManager = new GroupOptionsManager({
+                    parent: self,
+                    group: $group
+                });
+                if (visible) $optionsManager.show();
+            }
+        }
 
 
-    //    return {
-    //        selfinject: function (me) {
-    //            $self = me;
-    //        },
-    //        id: $index,
-    //        createBlocks: createBlocks,
-    //        addBlock: addBlock,
-    //        removeBlock: removeBlock,
-    //        getBlock: getBlock,
-    //        activate: activate,
-    //        deactivate: deactivate,
-    //        hasSet: function (key) {
-    //            return $blocks.hasItem(key);
-    //        }
-    //    };
+        // ReSharper disable once UnusedLocals
+        var $events = (function () {
+            $group.bind({
+                remove: function (e) {
+                    var block = getBlock(e.set.id);
+                    removeBlock(block);
+                    refreshOptionsManager();
+                },
+                add: function (e) {
+                    var block = setBlock(e.set);
+                    block.selfinject(block);
+                    addBlock(block);
+                    refreshOptionsManager();
+                }
+            });
+        })();
 
-    //};
+
+        return {
+            selfinject: function (me) {
+                $self = me;
+            },
+            id: $index,
+            createBlocks: createBlocks,
+            addBlock: addBlock,
+            removeBlock: removeBlock,
+            getBlock: getBlock,
+            activate: activate,
+            deactivate: deactivate,
+            hasSet: function (key) {
+                return $blocks.hasItem(key);
+            }
+        };
+
+    };
 
 
     // ReSharper disable once UnusedLocals
@@ -1312,9 +1312,9 @@ function VariantOptionsManager(parent) {
     })();
 
     var createNewGroup = function (group) {
-        var $group = new ConnectionGroup(self, group, true);// connectionGroup(group);
-        //$group.selfinject($group);
-        //$group.createBlocks();
+        var $group = connectionGroup(group);
+        $group.selfinject($group);
+        $group.createBlocks();
         self.groups.setItem($group.id, $group);
     };
 
@@ -1529,7 +1529,7 @@ function GroupOptionsManager(properties) {
                 // ReSharper disable once UnusedLocals
                 var header = jQuery('<div/>', {
                     'class': 'column-header',
-                    html: $set.tag
+                    html: $set.updated.tag
                 });
                 $(header).bind({
                     click: function () {
@@ -2575,7 +2575,7 @@ function VariantSetEditPanel(set) {
             }
         });
 
-        $(name).val(set.tag);
+        $(name).val(set.updated.tag);
 
         //Append panel to span to center it vertically.
         var span = jQuery('<span/>', {
@@ -2608,7 +2608,7 @@ function VariantSetEditPanel(set) {
             var sets = self.set.language.variantSets;
             for (var i = 0; i < sets.length; i++) {
                 var $set = sets[i];
-                if ($set.tag === value && $set !== set) {
+                if ($set.updated.tag === value && $set !== set) {
                     return MessageBundle.get(dict.NameAlreadyExists);
                 }
             }
@@ -2628,7 +2628,7 @@ function VariantSetEditPanel(set) {
     })();
 
     this.wordtypePanel = (function () {
-        var value = self.set.wordtype;
+        var value = self.set.updated.wordtype;
         var container = jQuery('<div/>', {
             'class': 'wordtype-container'
         });
@@ -2687,7 +2687,7 @@ function VariantSetEditPanel(set) {
         function loadDefinitions() {
             var definitions = my.db.fetch('Questions', 'GetVariantSetPropertiesDefinitions', {
                 'languageId': self.set.languageId,
-                'wordtypeId': self.set.wordtype.id
+                'wordtypeId': self.set.updated.wordtype.id
             });
             
             for (var i = 0; i < definitions.length; i++) {
@@ -2701,7 +2701,7 @@ function VariantSetEditPanel(set) {
         }
         
         function loadValues() {
-            self.set.properties.each(function(key, value) {
+            self.set.updated.properties.each(function (key, value) {
                 var property = params.getItem(key);
                 if (property) {
                     property.setValue(value);
