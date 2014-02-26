@@ -191,6 +191,8 @@ VariantPanel.prototype.confirm = function () {
     
     //tworzy logi o zmianach (które będą przekazane do kontrolera w celu wykonania na bazie danych)
     this.editQuestion.variantsSets.each(function (key, set) {
+        set.updateMeta();
+        set.updateProperties();
         set.updateDependencies();
         set.updateConnections();
         
@@ -349,6 +351,55 @@ VariantSet.prototype.reset = function () {
         dependants: self.dependants.clone(),
         properties: self.properties.clone()
     };
+};
+
+VariantSet.prototype.updateMeta = function () {
+    var self = this;
+    var tag = 'editVariantSet';
+    
+    if (self.updated.tag !== self.tag || self.updated.wordtype !== self.wordtype) {
+        self.editEntity.addLog({            
+            event: tag,
+            set: self.id,
+            tag: self.updated.tag,
+            wordtype: self.updated.wordtype.id
+        });
+
+        self.tag = self.updated.tag;
+        self.wordtype = self.updated.wordtype;
+
+    }
+
+};
+
+VariantSet.prototype.updateProperties = function () {
+    var self = this;
+    var removeTag = 'removeVariantProperty';
+    var editTag = 'editVariantProperty';
+
+    var differences = this.properties.differences(this.updated.properties, true);
+
+    //Removed.
+    for (var i = 0; i < differences.removed.length; i++) {
+        var removed = differences.removed[i];
+        self.editEntity.addLog({
+            event: removeTag,
+            setId: self.id,
+            property: removed
+        });
+    }
+
+
+    //Added/Edited
+    this.updated.properties.each(function (key, value) {
+        self.editEntity.addLog({
+            event: editTag,
+            setId: self.id,
+            property: key,
+            value: value
+        });
+    });
+    
 };
 
 VariantSet.prototype.updateDependencies = function () {
@@ -645,33 +696,36 @@ VariantSet.prototype.changeWordtype = function (wordtype) {
     });
 };
 VariantSet.prototype.setProperties = function (properties) {
-    var tag = 'editVariantSet';
-    
+    this.updated.properties.clear();
     for (var i = 0; i < properties.length; i++) {
-        var object = properties[i];
-        var property = this.updated.properties.getItem(object.key);
-        
-        if (property != object.value) {
-            this.updated.properties.setItem(object.key, object.value);
-            this.logs.push({
-                event: tag,
-                property: object.key,
-                value: object.value
-            });
-        }
-        
+        var property = properties[i];
+        this.updated.properties.setItem(property.key, property.value);
     }
+
+
+    //var tag = 'editVariantSet';
+    
+    //for (var i = 0; i < properties.length; i++) {
+    //    var object = properties[i];
+    //    var property = this.updated.properties.getItem(object.key);
+        
+    //    if (property != object.value) {
+    //        this.updated.properties.setItem(object.key, object.value);
+    //        this.logs.push({
+    //            event: tag,
+    //            property: object.key,
+    //            value: object.value
+    //        });
+    //    }
+        
+    //}
 };
 VariantSet.prototype.rename = function (name) {
-    this.updated.name = name;
+    this.updated.tag = name;
     this.trigger({
         type: 'rename',
         name: name
     });
-    //if (this.tag !== name) {
-    //    this.tag = name;
-        
-    //}
 };
 VariantSet.prototype.addConnection = function (set) {
     this.updated.connections.setItem(set.id, set);
@@ -1792,7 +1846,7 @@ function VariantConnectionsManager(parent) {
 
                 name = jQuery('<div/>', {
                     'class': 'unselectable name',
-                    html: set.tag
+                    html: set.updated.tag
                 }).appendTo(container);
 
                 set.bind({
@@ -1874,7 +1928,7 @@ function VariantConnectionsManager(parent) {
             // ReSharper disable once UnusedLocals
             var name = jQuery('<div/>', {
                 'class': 'name',
-                html: set.tag
+                html: set.updated.tag
             }).appendTo(content);
 
             var cancel = jQuery('<div/>', {
@@ -2342,7 +2396,7 @@ function VariantDependenciesManager(parent) {
 
             var name = jQuery('<div/>', {
                 'class': 'unselectable name',
-                html: set.tag
+                html: set.updated.tag
             }).appendTo(container);
 
             set.bind({
@@ -2658,6 +2712,7 @@ function VariantSetEditPanel(set) {
         dropdown.bind({
             change: function (e) {
                 value = e.item;
+                self.paramsPanel.refresh(value.id);
             }
         });
 
@@ -2679,15 +2734,15 @@ function VariantSetEditPanel(set) {
 
         self.ui.append(container);
 
-        function load() {
-            loadDefinitions();
+        function load(wordtypeId) {
+            loadDefinitions(wordtypeId);
             loadValues();
         }
         
-        function loadDefinitions() {
+        function loadDefinitions(wordtypeId) {
             var definitions = my.db.fetch('Questions', 'GetVariantSetPropertiesDefinitions', {
                 'languageId': self.set.languageId,
-                'wordtypeId': self.set.updated.wordtype.id
+                'wordtypeId': wordtypeId || self.set.updated.wordtype.id
             });
             
             for (var i = 0; i < definitions.length; i++) {
@@ -2832,9 +2887,17 @@ function VariantSetEditPanel(set) {
 
         }
 
-        (function ini() {
-            load();
+        function refresh(wordtypeId) {
+            //Clear previous params.
+            $(container).empty();
+            params = new HashTable(null);
+            
+            load(wordtypeId);
             render();
+        }
+
+        (function ini() {
+            refresh();
         })();
 
 
@@ -2848,7 +2911,8 @@ function VariantSetEditPanel(set) {
                     });
                 });
                 return result;
-            }
+            },
+            refresh: refresh
         };
 
     })();
@@ -2915,7 +2979,7 @@ VariantSetEditPanel.prototype.confirm = function () {
 };
 VariantSetEditPanel.prototype.validate = function (tag) {
     var self = this;
-    var validationResult = self.meta.validate(tag !== undefined ? tag : self.set.tag);
+    var validationResult = self.meta.validate(tag !== undefined ? tag : self.set.updated.tag);
 
     self.meta.format(validationResult);
 
@@ -3430,7 +3494,7 @@ function SetBlock(set) {
 
         var name = jQuery('<div/>', {
             'class': 'unselectable name',
-            html: self.set.tag
+            html: self.set.updated.tag
         }).appendTo(container);
 
         self.set.bind({

@@ -43,6 +43,11 @@ namespace Typer.DAL.Repositories
             return Context.VariantSets.Where(vs => vs.QuestionId == questionId);
         }
 
+        public VariantSetDto GetVariantSet(int id)
+        {
+            return Context.VariantSets.SingleOrDefault(vs => vs.Id == id);
+        }
+
         public IEnumerable<VariantSetDto> GetVariantSets(int questionId, int languageId)
         {
             return Context.VariantSets.Where(vs => vs.QuestionId == questionId && vs.LanguageId == languageId);
@@ -200,7 +205,7 @@ namespace Typer.DAL.Repositories
 
 
         public bool Update(int id, string name, int weight, int[] categories, string[] dependencies, 
-                string[] connections, string[] editedSets, string[] editedVariants, string[] addedVariants)
+                string[] connections, string[] editedSets, string[] properties, string[] editedVariants, string[] addedVariants)
         {
 
             using (var scope = new TransactionScope())
@@ -218,12 +223,12 @@ namespace Typer.DAL.Repositories
                             result = UpdateCategories(id, categories);
                         }
 
-                        //Variant sets changes
+                        //Variant sets changes (Name and wordtype).
                         if (editedSets != null)
                         {
-                            foreach (string edited in editedSets)
+                            foreach (var edited in editedSets)
                             {
-                                if (!UpdateVariantSet(edited))
+                                if (!UpdateSet(edited))
                                 {
                                     result = false;
                                 }
@@ -233,7 +238,7 @@ namespace Typer.DAL.Repositories
                         //Variant sets dependencies
                         if (dependencies != null)
                         {
-                            foreach (string dependency in dependencies)
+                            foreach (var dependency in dependencies)
                             {
                                 if (!UpdateDependencies(dependency))
                                 {
@@ -280,8 +285,17 @@ namespace Typer.DAL.Repositories
                             }
                         }
 
-                        
-                        
+                        //Properties.
+                        if (properties != null)
+                        {
+                            foreach (var property in properties)
+                            {
+                                if (!UpdateProperty(property))
+                                {
+                                    result = false;
+                                }
+                            }
+                        }                        
 
 
                         ////Removed
@@ -383,7 +397,7 @@ namespace Typer.DAL.Repositories
 
         }
 
-        private bool AddVariant(string added)
+        private static bool AddVariant(string added)
         {
             var parameters = added.Split('|');
 
@@ -424,7 +438,8 @@ namespace Typer.DAL.Repositories
             
         }
 
-        private bool UpdateVariantSet(string s)
+
+        private bool UpdateSet(string s)
         {
 
             var parameters = s.Split('|');
@@ -433,17 +448,52 @@ namespace Typer.DAL.Repositories
             int id;
             Int32.TryParse(parameters[0], out id);
 
+            //Name
+            var name = parameters[1];
+
+            //Wordtype
+            int wordtype;
+            Int32.TryParse(parameters[2], out wordtype);
+
+            var set = GetVariantSet(id);
+            if (set != null)
+            {
+                set.VariantTag = name;
+                set.WordType = wordtype;
+            }
+
+            return true;
+
+        }
+
+        private bool UpdateProperty(string s)
+        {
+
+            var parameters = s.Split('|');
+
+            //Type
+            int type;
+            Int32.TryParse(parameters[0], out type);
+
+            //Set id
+            int id;
+            Int32.TryParse(parameters[1], out id);
+
             //Property id
             int propertyId;
-            Int32.TryParse(parameters[1], out propertyId);
+            Int32.TryParse(parameters[2], out propertyId);
 
             //Value
             int value;
-            Int32.TryParse(parameters[2], out value);
+            Int32.TryParse(parameters[3], out value);
 
             var property = GetVariantSetPropertyValue(id, propertyId);
             if (property == null)
             {
+
+                //Should exist if was set to be deleted.
+                if (type == -1) return false;
+
                 property = new VariantSetPropertyValueDto
                 {
                     PropertyId = propertyId,
@@ -456,7 +506,16 @@ namespace Typer.DAL.Repositories
             }
             else
             {
-                property.Value = value;
+
+                if (type == -1)
+                {
+                    Context.VariantSetPropertyValues.Remove(property);
+                }
+                else
+                {
+                    property.Value = value;
+                }
+                
             }
             
             return true;

@@ -1026,6 +1026,7 @@ Question.prototype.update = function (params) {
     //removed sets
     //added sets
     var editedSets = this.editedSetsLogs(params.logs);
+    var properties = this.editedPropertiesLogs(params.logs);
     var dependencies = this.dependenciesLogs(params.logs);
     var connections = this.connectionsLogs(params.logs);
     var editedVariants = this.editedVariantsLogs(params.logs);
@@ -1035,8 +1036,9 @@ Question.prototype.update = function (params) {
 
     //Check if there are any changes.
     if (name || weight || (categories && categories.length) || (editedSets && editedSets.length) ||
-        (dependencies && dependencies.length) || (connections && connections.length) || 
-        (addedVariants && addedVariants.length) || (editedVariants && editedVariants.length)) {
+        (dependencies && dependencies.length) || (connections && connections.length) ||
+        (properties && properties.length) || (addedVariants && addedVariants.length) ||
+        (editedVariants && editedVariants.length)) {
 
         this.service.update({
             question: self,
@@ -1048,6 +1050,7 @@ Question.prototype.update = function (params) {
             categories: my.categories.toIntArray(categories),
             addedVariants: addedVariants,
             editedVariants: editedVariants,
+            properties: properties,
             callback: function (result) {
                 if (result !== false) {
 
@@ -1115,7 +1118,7 @@ Question.prototype.editedSetsLogs = function (logs) {
     for (var i = 0; i < logs.length; i++) {
         var log = logs[i];
         if (log.event === tag) {
-            var $log = log.setId + '|' + log.property + '|' + log.value;
+            var $log = log.set + '|' + log.tag + '|' + log.wordtype;
             results.push($log);
         }
     }
@@ -1123,6 +1126,25 @@ Question.prototype.editedSetsLogs = function (logs) {
     return results;
 
 };
+
+Question.prototype.editedPropertiesLogs = function (logs) {
+    var removeTag = 'removeVariantProperty';
+    var editTag = 'editVariantProperty';
+
+    var results = [];
+
+    for (var i = 0; i < logs.length; i++) {
+        var log = logs[i];
+        if (log.event === removeTag || log.event === editTag) {
+            var $log = (log.event === removeTag ? -1 : 1) + '|' + log.setId + '|' + log.property + '|' + (log.value ? log.value : 0);
+            results.push($log);
+        }
+    }
+
+    return results;
+
+};
+
 Question.prototype.connectionsLogs = function (logs) {
     var removeTag = 'removeConnection';
     var addTag = 'addConnection';

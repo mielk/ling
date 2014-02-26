@@ -114,6 +114,7 @@
                     'dependencies': e.dependencies,
                     'connections': e.connections,
                     'editedSets': e.editedSets,
+                    'properties': e.properties,
                     'editedVariants': e.editedVariants,
                     'addedVariants': e.addedVariants
                 },

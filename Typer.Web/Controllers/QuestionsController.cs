@@ -99,10 +99,10 @@ namespace Typer.Web.Controllers
         [HttpPost]
         [AllowAnonymous]
         public ActionResult Update(int id, string name, int weight, int[] categories, 
-            string[] dependencies, string[] connections, string[] editedSets,
+            string[] dependencies, string[] connections, string[] editedSets, string[] properties,
             string[] editedVariants, string[] addedVariants)
         {
-            var result = _service.Update(id, name, weight, categories, dependencies, connections, editedSets, editedVariants, addedVariants);
+            var result = _service.Update(id, name, weight, categories, dependencies, connections, editedSets, properties, editedVariants, addedVariants);
             return Json(result);
         }
 

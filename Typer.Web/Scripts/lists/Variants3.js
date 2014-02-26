@@ -613,7 +613,7 @@ VariantSet.prototype.setProperties = function (properties) {
     }
 };
 VariantSet.prototype.rename = function(name) {
-    if (this.tag !== name) {
+    if (this.updated.tag !== name) {
         this.tag = name;
         this.trigger({            
             type: 'rename',

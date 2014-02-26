@@ -137,7 +137,7 @@ function HashTable(obj) {
         return clone;
     };
 
-    this.differences = function (compared) {
+    this.differences = function (compared, getKeys) {
         var self = this;
         
         if (!compared.HashTable) {
@@ -152,14 +152,14 @@ function HashTable(obj) {
         //Removed.
         self.each(function(key, value) {
             if (!compared.hasItem(key)) {
-                results.removed.push(value);
+                results.removed.push(getKeys ? key : value);
             }
         });
         
         //Added.
         compared.each(function(key, value) {
             if (!self.hasItem(key)) {
-                results.added.push(value);
+                results.added.push(getKeys ? key : value);
             }
         });
 
