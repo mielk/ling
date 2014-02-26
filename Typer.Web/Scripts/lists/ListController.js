@@ -1215,7 +1215,13 @@ Question.prototype.addedVariantsLogs = function(logs) {
     return results;
 
 };
+Question.prototype.limits = function(logs) {
+    var removeTag = 'removeLimit';
+    var addTag = 'addLimit';
+    
 
+
+};
 
 
 

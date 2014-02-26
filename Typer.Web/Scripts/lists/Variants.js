@@ -195,7 +195,7 @@ VariantPanel.prototype.confirm = function () {
         set.updateProperties();
         set.updateDependencies();
         set.updateConnections();
-        
+        set.updateLimits();
         //set.sendLogsToParent();
     });
 
@@ -370,6 +370,12 @@ VariantSet.prototype.updateMeta = function () {
 
     }
 
+};
+
+VariantSet.prototype.updateLimits = function () {
+    this.updated.variants.each(function(key, value) {
+        value.updateLimits();
+    });
 };
 
 VariantSet.prototype.updateProperties = function () {
@@ -848,7 +854,8 @@ function Variant(editEntity, set, properties) {
         key: self.key,
         content: self.content,
         wordId: self.wordId,
-        anchored: self.anchored
+        anchored: self.anchored,
+        excluded: self.excluded.clone()
     };
     
 }
@@ -913,6 +920,44 @@ Variant.prototype.confirmChanges = function () {
     //this.content = (ch.content ? ch.content : this.content);
     //this.wordId = (ch.wordId ? ch.wordId : this.wordId);
     //this.exclusion = (ch.exclusion ? ch.exclusion : this.excluded);
+};
+Variant.prototype.updateLimits = function() {
+    var self = this;
+    var removeTag = 'removeLimit';
+    var addTag = 'addLimit';
+
+    var differences = this.excluded.differences(this.updated.excluded);
+
+    //Removed.
+    for (var i = 0; i < differences.removed.length; i++) {
+        var removed = differences.removed[i];
+        
+        this.editEntity.addLog({
+            event: removeTag,
+            variantId: self.id,
+            excludedId: removed.id
+        });
+    }
+
+    //Added.
+    for (var j = 0; j < differences.added.length; j++) {
+        var added = differences.added[j];
+        
+        this.editEntity.addLog({
+            event: addTag,
+            masterId: self.id,
+            slaveId: added.id
+        });
+    }
+
+
+    this.dependants = this.updated.dependants;
+
+
+
+
+    var x = 1;
+
 };
 
 
