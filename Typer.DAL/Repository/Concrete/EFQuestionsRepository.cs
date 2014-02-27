@@ -586,6 +586,7 @@ namespace Typer.DAL.Repositories
                 Context.VariantLimits.Add(limit);
             }
 
+            Context.SaveChanges();
             return true;
 
         }
@@ -631,6 +632,7 @@ namespace Typer.DAL.Repositories
                 return false;
             }
 
+            Context.SaveChanges();
             return true;
 
         }
@@ -677,6 +679,7 @@ namespace Typer.DAL.Repositories
                 return false;
             }
 
+            Context.SaveChanges();
             return true;
 
         }
@@ -701,6 +704,7 @@ namespace Typer.DAL.Repositories
             option.Content = name;
             option.Weight = weight;
 
+            Context.SaveChanges();
             return true;
 
         }
@@ -735,6 +739,7 @@ namespace Typer.DAL.Repositories
             };
 
             Context.QuestionOptions.Add(option);
+            Context.SaveChanges();
 
             return true;
 

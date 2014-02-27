@@ -1189,30 +1189,30 @@ Question.prototype.editedVariantsLogs = function(logs) {
     var tag = 'editVariant';
     var results = [];
 
-    for (var i = 0; i < logs.length; i++) {
-        var log = logs[i];
-        if (log.event === tag && !log.variant.isNew) {
-            var variant = log.variant;
-            var $log = log.setId + '|' + variant.id + '|' + variant.content + '|' + (variant.wordId ? variant.wordId : 0) + '|' + (variant.anchored ? 1 : 0);
-            results.push($log);
-        }
-    }
+    //for (var i = 0; i < logs.length; i++) {
+    //    var log = logs[i];
+    //    if (log.event === tag && !log.variant.isNew) {
+    //        var variant = log.variant;
+    //        var $log = log.setId + '|' + variant.id + '|' + variant.content + '|' + (variant.wordId ? variant.wordId : 0) + '|' + (variant.anchored ? 1 : 0);
+    //        results.push($log);
+    //    }
+    //}
     
-    return results;
+    //return results;
 
 };
 Question.prototype.addedVariantsLogs = function(logs) {
     var tag = 'addVariant';
     var results = [];
     
-    for (var i = 0; i < logs.length; i++) {
-        var log = logs[i];
-        if (log.event === tag) {
-            var variant = log.variant;
-            var $log = log.setId + '|' + variant.key + '|' + variant.content + '|' + (variant.wordId ? variant.wordId : 0) + '|' + (variant.anchored ? 1 : 0);
-            results.push($log);
-        }
-    }
+    //for (var i = 0; i < logs.length; i++) {
+    //    var log = logs[i];
+    //    if (log.event === tag) {
+    //        var variant = log.variant;
+    //        var $log = log.setId + '|' + variant.key + '|' + variant.content + '|' + (variant.wordId ? variant.wordId : 0) + '|' + (variant.anchored ? 1 : 0);
+    //        results.push($log);
+    //    }
+    //}
     
     return results;
 

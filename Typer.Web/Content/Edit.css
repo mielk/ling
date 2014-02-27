@@ -1388,7 +1388,7 @@ input[type=submit].variant-button-edit {
 .variant-subpanel-content .keys-column {
     position: relative;
     float: left;
-    width: 150px;
+    width: 200px;
     height: auto;
     padding-right: 6px;
     border-right: 1px solid #777;
@@ -1396,7 +1396,7 @@ input[type=submit].variant-button-edit {
 
 .variant-subpanel-content .group-options {
     position: absolute;
-    left: 156px;
+    left: 206px;
     right: 6px;
     top: 6px;
     bottom: 6px;
@@ -1631,21 +1631,38 @@ input.set-name:focus
     height: auto;    
 }
 
-.variant-key-field {
+.variant-key-container {
     width: 100%;
+    height: auto;
+    position: relative;
+    display: block;
+    float: left;
+    margin: 3px 0;
+}
+
+.variant-key-field {
+    width: 168px;
     height: 32px;
     padding: 3px;
     border: 1px solid #999999;
-    margin: 3px 0;
+    margin: 0;
     text-align: center;
     background-color: #e7ffe3;
 }
 
-.keys-content .variant-key-field:first-child {
+
+.key-remove-button {
+    width: 16px;
+    height: 16px;
+    margin: 8px 9px 8px 0;
+    background-image: url('images/delete-node.png');
+}
+
+.keys-content .variant-key-container:first-child {
     margin-top: 0;
 }
 
-.keys-content .variant-key-field:last-child {
+.keys-content .variant-key-container:last-child {
     margin-bottom: 0;
 }
 

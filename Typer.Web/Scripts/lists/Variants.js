@@ -196,6 +196,7 @@ VariantPanel.prototype.confirm = function () {
         set.updateDependencies();
         set.updateConnections();
         set.updateLimits();
+        set.updateVariants();
         //set.sendLogsToParent();
     });
 
@@ -473,6 +474,29 @@ VariantSet.prototype.updateConnections = function () {
 
 };
 
+VariantSet.prototype.updateVariants = function() {
+    var self = this;
+    var tagForRemoving = 'removeVariant';
+
+    var differences = this.variants.differences(this.updated.variants);
+    
+    //Removed.
+    for (var i = 0; i < differences.removed.length; i++) {
+        var removed = differences.removed[i];
+        self.editEntity.addLog({
+            event: tagForRemoving,
+            variantId: removed.id
+        });
+    }
+    
+    //Added + edited.
+    self.updated.variants.each(function(key, variant) {
+        variant.checkForUpdates();
+    });
+
+    self.variants = self.updated.variants;
+
+};
 
 VariantSet.prototype.bind = function (e) {
     this.eventHandler.bind(e);
@@ -966,6 +990,40 @@ Variant.prototype.reset = function() {
         anchored: self.anchored,
         excluded: self.excluded.clone()
     };
+};
+Variant.prototype.checkForUpdates = function() {
+    var self = this;
+    var tagForAdding = 'addVariant';
+    var tagForEdit = 'editVariant';
+    
+    if (self.isNew) {
+        self.editEntity.addLog({
+            event: tagForAdding,
+            key: self.updated.key,
+            content: self.updated.content,
+            wordId: self.updated.wordId,
+            anchored: self.updated.anchored
+    });
+    } else if (!self.equal(self.updated)) {
+        self.editEntity.addLog({            
+            event: tagForEdit,
+            id: self.id,
+            key: self.updated.key,
+            content: self.updated.content,
+            wordId: self.updated.wordId,
+            anchored: self.updated.anchored
+        });
+    }
+
+};
+Variant.prototype.equal = function(object) {
+    if (this.key !== object.key) return false;
+    if (this.content !== object.content) return false;
+    if (this.wordId !== object.wordId) return false;
+    if (this.anchored !== object.anchored) return false;
+
+    return true;
+
 };
 
 
@@ -1542,12 +1600,30 @@ function GroupOptionsManager(properties) {
                 //Adding new labels.
                 for (var i = 0; i < self.keysArray.length; i++) {
                     var key = self.keysArray[i];
-                    var keyField = jQuery('<input/>', {
-                        'class': 'variant-key-field',
-                        'type': 'text'
-                    });
-                    keyField.val(key);
-                    keyField.appendTo(content);
+
+                    var keySet = (function (value) {
+                        var $key = value;
+                        var keyContainer = jQuery('<div/>', {
+                            'class': 'variant-key-container'
+                        }).appendTo(content);
+
+                        var deleteButton = jQuery('<div/>', {
+                            'class': 'key-remove-button'
+                        }).bind({
+                            click: function () {
+                                $(keyContainer).remove();
+                                self.removeKey($key);
+                            }
+                        }).appendTo(keyContainer);
+
+                        var keyField = jQuery('<input/>', {
+                            'class': 'variant-key-field',
+                            'type': 'text'
+                        });
+                        keyField.val($key);
+                        keyField.appendTo(keyContainer);
+                    })(key);
+
                 }
                 
             }
@@ -1732,7 +1808,9 @@ function GroupOptionsManager(properties) {
 
                     }
 
-
+                    function destroy() {
+                        $(control).remove();
+                    }
 
                     (function $initialize() {
                         checkVariant();
@@ -1746,14 +1824,23 @@ function GroupOptionsManager(properties) {
                         appendTo: function(parent) {
                             $(control).appendTo(parent);
                         },
-                        setValue: setValue
+                        setValue: setValue,
+                        remove: destroy
                     };
 
 
                 }
 
+                function remove(key) {
+                    var field = valueFields.getItem(key);
+                    if (field) {
+                        field.remove();
+                    }
+                }
+
                 return {
-                    renderVariants: renderVariants
+                    renderVariants: renderVariants,
+                    removeKey: remove
                 };
 
 
@@ -1766,6 +1853,9 @@ function GroupOptionsManager(properties) {
                 },
                 renderVariants: function() {
                     ui.renderVariants();
+                },
+                removeKey: function(key) {
+                    ui.removeKey(key);
                 }
             };
 
@@ -1780,8 +1870,15 @@ function GroupOptionsManager(properties) {
             });
         }
 
+        function removeKey(key) {
+            columns.each(function(colKey, col) {
+                col.removeKey(key);
+            });
+        }
+
         return {
-            loadVariants : loadVariants
+            loadVariants: loadVariants,
+            removeKey: removeKey
         };
 
     })();
@@ -1803,6 +1900,12 @@ GroupOptionsManager.prototype.hide = function () {
 };
 GroupOptionsManager.prototype.destroy = function () {
     this.ui.destroy();
+};
+GroupOptionsManager.prototype.removeKey = function (key) {
+    this.group.sets.each(function(setKey, set) {
+        set.removeVariant(key);
+    });
+    this.columns.removeKey(key);
 };
 
 
