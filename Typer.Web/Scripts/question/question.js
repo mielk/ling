@@ -116,7 +116,8 @@
                     'editedSets': e.editedSets,
                     'properties': e.properties,
                     'editedVariants': e.editedVariants,
-                    'addedVariants': e.addedVariants
+                    'addedVariants': e.addedVariants,
+                    'limits': e.limits
                 },
                 traditional: true,
                 success: 'Question ' + e.question.name + ' has been updated',

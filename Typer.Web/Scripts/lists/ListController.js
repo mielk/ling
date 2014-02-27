@@ -1029,6 +1029,7 @@ Question.prototype.update = function (params) {
     var properties = this.editedPropertiesLogs(params.logs);
     var dependencies = this.dependenciesLogs(params.logs);
     var connections = this.connectionsLogs(params.logs);
+    var limits = this.limitsLogs(params.logs);
     var editedVariants = this.editedVariantsLogs(params.logs);
     var addedVariants = this.addedVariantsLogs(params.logs);
     //removed options
@@ -1037,8 +1038,8 @@ Question.prototype.update = function (params) {
     //Check if there are any changes.
     if (name || weight || (categories && categories.length) || (editedSets && editedSets.length) ||
         (dependencies && dependencies.length) || (connections && connections.length) ||
-        (properties && properties.length) || (addedVariants && addedVariants.length) ||
-        (editedVariants && editedVariants.length)) {
+        (properties && properties.length) || (limits && limits.length) ||
+        (addedVariants && addedVariants.length) || (editedVariants && editedVariants.length)) {
 
         this.service.update({
             question: self,
@@ -1051,6 +1052,7 @@ Question.prototype.update = function (params) {
             addedVariants: addedVariants,
             editedVariants: editedVariants,
             properties: properties,
+            limits: limits,
             callback: function (result) {
                 if (result !== false) {
 
@@ -1215,11 +1217,29 @@ Question.prototype.addedVariantsLogs = function(logs) {
     return results;
 
 };
-Question.prototype.limits = function(logs) {
+Question.prototype.limitsLogs = function(logs) {
     var removeTag = 'removeLimit';
     var addTag = 'addLimit';
+    var results = [];
+    var map = new HashTable(null);
     
+    for (var i = 0; i < logs.length; i++) {
+        var log = logs[i];
+        if (log.event === removeTag || log.event === addTag) {
+            if (my.values.isNumber(log.variantId) && my.values.isNumber(log.excludedId)) {
+                var $log = (log.event === removeTag ? -1 : 1) + '|' + log.question + '|' + log.variantId + '|' + log.excludedId;
+                var $oppositeLog = (log.event === removeTag ? -1 : 1) + '|' + log.question + '|' + log.excludedId + '|' + log.variantId;
+                
+                if (!map.hasItem($log) && !map.hasItem($oppositeLog)) {
+                    map.setItem($log, $log);
+                    map.setItem($oppositeLog, $oppositeLog);
+                    results.push($log);
+                }
+            }
+        }
+    }
 
+    return results;
 
 };
 

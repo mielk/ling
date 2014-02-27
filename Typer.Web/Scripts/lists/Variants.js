@@ -208,9 +208,6 @@ VariantPanel.prototype.confirm = function () {
     
 };
 
-VariantPanel.prototype.updateDependants = function () {
-
-};
 
 VariantPanel.prototype.isComplete = function () {
     //var forms = this.details.forms;
@@ -351,6 +348,11 @@ VariantSet.prototype.reset = function () {
         dependants: self.dependants.clone(),
         properties: self.properties.clone()
     };
+
+    self.variants.each(function(key, value) {
+        value.reset();
+    });
+
 };
 
 VariantSet.prototype.updateMeta = function () {
@@ -934,6 +936,7 @@ Variant.prototype.updateLimits = function() {
         
         this.editEntity.addLog({
             event: removeTag,
+            question: self.editEntity.id,
             variantId: self.id,
             excludedId: removed.id
         });
@@ -945,21 +948,25 @@ Variant.prototype.updateLimits = function() {
         
         this.editEntity.addLog({
             event: addTag,
-            masterId: self.id,
-            slaveId: added.id
+            question: self.editEntity.id,
+            variantId: self.id,
+            excludedId: added.id
         });
     }
 
-
-    this.dependants = this.updated.dependants;
-
-
-
-
-    var x = 1;
+    this.excluded = this.updated.excluded;
 
 };
-
+Variant.prototype.reset = function() {
+    var self = this;
+    self.updated = {
+        key: self.key,
+        content: self.content,
+        wordId: self.wordId,
+        anchored: self.anchored,
+        excluded: self.excluded.clone()
+    };
+};
 
 
 

@@ -17,7 +17,7 @@ namespace Typer.DAL.Repositories
         bool UpdateProperties(int id, string name, int weight);
         bool UpdateCategories(int id, int[] categories);
         bool Update(int id, string name, int weight, int[] categories, string[] dependencies, string[] connections, string[] editedSets, string[] properties,
-                    string[] editedVariants, string[] addedVariants);
+                    string[] editedVariants, string[] addedVariants, string[] limits);
 
         bool Activate(int id);
         bool Deactivate(int id);

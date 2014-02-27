@@ -74,6 +74,11 @@ namespace Typer.DAL.Repositories
             return Context.VariantLimits.Where(vc => vc.QuestionId == questionId);
         }
 
+        public VariantLimitDto GetVariantLimit(int variantId, int excludedId)
+        {
+            return Context.VariantLimits.SingleOrDefault(vc => vc.VariantId == variantId && vc.ConnectedVariantId == excludedId);
+        }
+
         public IEnumerable<VariantDependencyDto> GetVariantDependencies(int[] sets)
         {
             return Context.VariantDependencies.Where(vd => sets.Contains(vd.MainSetId) && sets.Contains(vd.DependantSetId));
@@ -204,8 +209,8 @@ namespace Typer.DAL.Repositories
         #endregion
 
 
-        public bool Update(int id, string name, int weight, int[] categories, string[] dependencies, 
-                string[] connections, string[] editedSets, string[] properties, string[] editedVariants, string[] addedVariants)
+        public bool Update(int id, string name, int weight, int[] categories, string[] dependencies, string[] connections, string[] editedSets, 
+                            string[] properties, string[] editedVariants, string[] addedVariants, string[] limits)
         {
 
             using (var scope = new TransactionScope())
@@ -295,7 +300,19 @@ namespace Typer.DAL.Repositories
                                     result = false;
                                 }
                             }
-                        }                        
+                        }          
+              
+                        //Limits.
+                        if (limits != null)
+                        {
+                            foreach (var limit in limits)
+                            {
+                                if (!UpdateLimit(limit))
+                                {
+                                    result = false;
+                                }
+                            }
+                        }
 
 
                         ////Removed
@@ -518,6 +535,57 @@ namespace Typer.DAL.Repositories
                 
             }
             
+            return true;
+
+        }
+
+        private bool UpdateLimit(string s)
+        {
+            var parameters = s.Split('|');
+
+            //action
+            int action;
+            Int32.TryParse(parameters[0], out action);
+
+            //question
+            int question;
+            Int32.TryParse(parameters[1], out question);
+
+            //parent
+            int variantId;
+            Int32.TryParse(parameters[2], out variantId);
+
+            //dependant
+            int excludedId;
+            Int32.TryParse(parameters[3], out excludedId);
+
+
+            var limit = GetVariantLimit(variantId, excludedId);
+            if (limit != null)
+            {
+                if (action == -1)
+                {
+                    Context.VariantLimits.Remove(limit);
+                }
+                else
+                {
+                    limit.IsActive = true;
+                }
+            }
+            else
+            {
+                limit = new VariantLimitDto
+                {
+                    VariantId = variantId,
+                    ConnectedVariantId = excludedId,
+                    CreatorId = 1,
+                    CreateDate = DateTime.Now,
+                    QuestionId = question,
+                    IsActive = true
+                };
+                Context.VariantLimits.Add(limit);
+            }
+
             return true;
 
         }
