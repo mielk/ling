@@ -1,0 +1,2 @@
+http://helios.ca/2009/04/22/aspnet-mvc-sqlmembershipprovider/
+http://weblogs.asp.net/sukumarraju/archive/2009/10/02/installing-asp-net-membership-services-database-in-sql-server-expreess.aspx
