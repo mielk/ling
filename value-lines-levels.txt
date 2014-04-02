@@ -1,0 +1,66 @@
+var x = (function() {
+    var id = 'container';
+    var div = $('#' + id)[0];
+
+    var width = 100;
+    var height = 80;
+    var svg = Raphael(id, width, height);
+
+    svg.path('M5,5L5,50L20,50L20,5L5,5Z').attr({
+        'stroke-width': 1
+    });
+
+    svg.text(50, 40, 'test text');
+
+    var y = calculateValueLevels(500, 1241, 312.54, 207.59);
+
+
+    $(div).css({
+        border: '1px solid black',
+        width: width + 'px',
+        height: height + 'px'
+    });
+
+
+
+    function calculateValueLevels(visibleHeight, totalHeight, maxValue, minValue) {
+        var visibleLines = 10;
+        var totalLines = Math.round(totalHeight * visibleLines / visibleHeight);
+        var step = calculateStep(minValue, maxValue, totalLines);
+        var initialLevel = findFirstLineLevel(minValue, step);
+
+        var z = 1;
+
+    }
+
+
+    function calculateStep(minValue, maxValue, lines) {
+        var difference = maxValue - minValue;
+        var step = difference / lines;
+        var logLevel = Math.floor(log10(step));
+        var factor = Math.pow(10, logLevel);
+
+        var compareValue = factor * step;
+        if (compareValue <= 1) {
+            return factor;
+        } else if (compareValue <= 2) {
+            return factor * 2;
+        } else if (compareValue <= 5) {
+            return factor * 5;
+        } else {
+            return factor * 10;
+        }
+        
+    }
+
+    function findFirstLineLevel(minValue, step) {
+        var lastLower = Math.floor(minValue / step) * step;
+        return lastLower + step;
+    }
+
+
+    function log10(x) {
+        return Math.log(x) / Math.LN10;
+    }
+
+})();
