@@ -1,0 +1,7 @@
+C:\Users\Tomek\documents\visual studio 2012\Projects\liing\Typer.Common\bin\Debug\Typer.Common.dll
+C:\Users\Tomek\documents\visual studio 2012\Projects\liing\Typer.Common\bin\Debug\Typer.Common.pdb
+C:\Users\Tomek\documents\visual studio 2012\Projects\liing\Typer.Common\bin\Debug\Typer.Common.dll.CodeAnalysisLog.xml
+C:\Users\Tomek\documents\visual studio 2012\Projects\liing\Typer.Common\bin\Debug\Typer.Common.dll.lastcodeanalysissucceeded
+C:\Users\Tomek\documents\visual studio 2012\Projects\liing\Typer.Common\obj\Debug\Stock.Common.csprojResolveAssemblyReference.cache
+C:\Users\Tomek\documents\visual studio 2012\Projects\liing\Typer.Common\obj\Debug\Typer.Common.dll
+C:\Users\Tomek\documents\visual studio 2012\Projects\liing\Typer.Common\obj\Debug\Typer.Common.pdb
