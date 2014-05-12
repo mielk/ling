@@ -39,14 +39,14 @@ namespace Typer.DAL.Infrastructure
             modelBuilder.Entity<UserDto>().ToTable("Users");
             modelBuilder.Entity<QuestionDto>().ToTable("Questions");
             modelBuilder.Entity<LanguageDto>().ToTable("Languages");
-            modelBuilder.Entity<UserLanguageDto>().ToTable("UserLanguages");
-            modelBuilder.Entity<QuestionOptionDto>().ToTable("QuestionOptions");
+            modelBuilder.Entity<UserLanguageDto>().ToTable("UsersLanguages");
+            modelBuilder.Entity<QuestionOptionDto>().ToTable("QuestionsOptions");
             modelBuilder.Entity<MetawordDto>().ToTable("Metawords");
             modelBuilder.Entity<WordDto>().ToTable("Words");
             modelBuilder.Entity<CategoryDto>().ToTable("Categories");
             modelBuilder.Entity<WordCategoryDto>().ToTable("MatchWordCategory");
             modelBuilder.Entity<QuestionCategoryDto>().ToTable("MatchQuestionCategory");
-            modelBuilder.Entity<WordPropertyDefinitionDto>().ToTable("WordPropertyDefinitions");
+            modelBuilder.Entity<WordPropertyDefinitionDto>().ToTable("WordtypeRequiredProperties");
             modelBuilder.Entity<GrammarFormDefinitonDto>().ToTable("GrammarFormDefinitions");
             modelBuilder.Entity<WordtypePropertyValueDto>().ToTable("WordsProperties");
             modelBuilder.Entity<GrammarFormDto>().ToTable("GrammarForms");
@@ -54,11 +54,11 @@ namespace Typer.DAL.Infrastructure
             modelBuilder.Entity<VariantDto>().ToTable("Variants");
             modelBuilder.Entity<VariantLimitDto>().ToTable("VariantLimits");
             modelBuilder.Entity<VariantConnectionDto>().ToTable("VariantConnections");
-            modelBuilder.Entity<VariantDependencyDto>().ToTable("VariantDependences");
+            modelBuilder.Entity<VariantDependencyDto>().ToTable("VariantDependencies");
             modelBuilder.Entity<DependencyDefinitionDto>().ToTable("VariantDependenciesDefinitions");
             modelBuilder.Entity<GrammarPropertyDefinitionDto>().ToTable("GrammarPropertyDefinitions");
             modelBuilder.Entity<GrammarPropertyOptionDto>().ToTable("GrammarPropertyOptions");
-            modelBuilder.Entity<VariantSetPropertyDefinitionDto>().ToTable("VariantSetPropertiesDefinitions");
+            modelBuilder.Entity<VariantSetPropertyDefinitionDto>().ToTable("VariantSetRequiredProperties");
             modelBuilder.Entity<VariantSetPropertyValueDto>().ToTable("VariantSetProperties");
             modelBuilder.Entity<GrammarFormDefinitionPropertyDto>().ToTable("GrammarFormsDefinitionsProperties");
         }

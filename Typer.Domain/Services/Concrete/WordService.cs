@@ -224,7 +224,7 @@ namespace Typer.Domain.Services
             return new GrammarFormDefinition
             {
                 Group = dto.Group,
-                Header = dto.Header,
+                Header = dto.IsHeader,
                 Id = dto.Id,
                 InactiveRules = dto.InactiveRules,
                 Index = dto.Index,

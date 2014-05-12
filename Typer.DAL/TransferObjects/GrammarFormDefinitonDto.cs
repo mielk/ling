@@ -8,7 +8,7 @@
         public int WordtypeId { get; set; }
         public string Name { get; set; }
         public string Group { get; set; }
-        public bool Header { get; set; }
+        public bool IsHeader { get; set; }
         public string InactiveRules { get; set; }
         public int Index { get; set; }
     }
