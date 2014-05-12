@@ -18,16 +18,16 @@ namespace Typer.Web
                         "~/Scripts/jquery.validate*"));
 
             bundles.Add(new ScriptBundle("~/bundles/global").Include(
-                        "~/Scripts/jquery.sizes.js",
-                        "~/Scripts/common/mielk.js",
-                        "~/Scripts/common/util.js",
-                        "~/Scripts/common/tree.js",
-                        "~/Scripts/common/spin.js",
-                        "~/Scripts/common/dropdown.js",
-                        "~/Scripts/app/global.js"));
-
-            bundles.Add(new ScriptBundle("~/bundles/select").Include(
-                        "~/Scripts/common/select2.js"));
+                          "~/Scripts/external/select2.js"
+                        , "~/Scripts/external/notify.js"
+                        , "~/Scripts/external/spin.js"
+                        , "~/Scripts/common/internationalization.js"
+                        , "~/Scripts/jquery.sizes.js"
+                        , "~/Scripts/common/tree.js"
+                        , "~/Scripts/common/dropdown.js"
+                        , "~/Scripts/common/util.js"                        
+                        , "~/Scripts/common/mielk.js"
+                        ));
 
             bundles.Add(new ScriptBundle("~/bundles/search").Include(
                         "~/Scripts/question/search.js"));
@@ -36,9 +36,6 @@ namespace Typer.Web
                                     "~/Scripts/lists/ListController.js",
                                     "~/Scripts/lists/Variants.js",
                                     "~/Scripts/lists/Options.js"));
-
-            bundles.Add(new ScriptBundle("~/bundles/notify").Include(
-                        "~/Scripts/common/notify.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/login").Include(
                         "~/Scripts/authentication/login.js"));
@@ -51,12 +48,6 @@ namespace Typer.Web
 
             bundles.Add(new ScriptBundle("~/bundles/resend").Include(
                         "~/Scripts/authentication/mailValidation.js"));
-
-            bundles.Add(new ScriptBundle("~/bundles/tree").Include(
-                        "~/Scripts/common/tree.js"));
-
-            bundles.Add(new ScriptBundle("~/bundles/dropdown").Include(
-                                    "~/Scripts/common/dropdown.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/question").Include(
                                     "~/Scripts/question/question.js"));
@@ -73,23 +64,18 @@ namespace Typer.Web
                         "~/Scripts/modernizr-*"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                        "~/Content/normalize.css",
-                        "~/Content/select2.css",
-                        "~/Content/site.css"));
+                        "~/Content/normalize.css"
+                        , "~/Content/select2.css"
+                        , "~/Content/site.css"
+                        , "~/Content/tree.css"
+                        , "~/Content/dropdown.css"
+                        ));
 
             bundles.Add(new StyleBundle("~/Content/categories").Include(
                                     "~/Content/categories.css"));
 
-            bundles.Add(new StyleBundle("~/Content/tree").Include(
-                        "~/Content/normalize.css",
-                        "~/Content/tree.css"));
-
             bundles.Add(new StyleBundle("~/Content/edit").Include(
                         "~/Content/edit.css"));
-
-            bundles.Add(new StyleBundle("~/Content/dropdown").Include(
-                                    "~/Content/normalize.css",
-                                    "~/Content/dropdown.css"));
 
             bundles.Add(new StyleBundle("~/Content/test").Include(
                         "~/Content/normalize.css",

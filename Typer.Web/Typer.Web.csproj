@@ -268,15 +268,16 @@
     <Compile Include="App_Start\NinjectWebCommon.Bindings.cs" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\categories\categories.js" />
+    <Content Include="Scripts\common\mielk2.js" />
     <Content Include="Scripts\common\mielk.js" />
-    <Content Include="Scripts\common\select2.js" />
-    <Content Include="Scripts\common\spin.js" />
+    <Content Include="Scripts\external\select2.js" />
+    <Content Include="Scripts\external\spin.js" />
     <Content Include="Scripts\common\tree.js" />
     <Content Include="Scripts\common\dropdown.js" />
-    <Content Include="Scripts\common\notify.js" />
+    <Content Include="Scripts\external\notify.js" />
     <Content Include="Scripts\jquery-1.7.2.min.js" />
     <Content Include="Scripts\jquery.sizes.js" />
-    <Content Include="Scripts\app\global.js" />
+    <Content Include="Scripts\common\internationalization.js" />
     <Content Include="Scripts\authentication\register.js" />
     <Content Include="Scripts\authentication\mailValidation.js" />
     <Content Include="Scripts\lists\Variants3.js" />
@@ -303,7 +304,6 @@
     <Content Include="Scripts\knockout-2.1.0.js" />
     <Content Include="Scripts\authentication\login.js" />
     <Content Include="Scripts\modernizr-2.5.3.js" />
-    <Content Include="Scripts\unittests\import_test.js" />
     <Content Include="Scripts\unittests\qunit-1.12.0.js" />
     <Content Include="Scripts\unittests\tests.js" />
     <Content Include="Scripts\_references.js" />
@@ -351,6 +351,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\images\xcf\" />
+    <Folder Include="Scripts\app\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
