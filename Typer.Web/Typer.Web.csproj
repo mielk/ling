@@ -169,9 +169,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\categories.css" />
-    <Content Include="Content\dropdown.css" />
-    <Content Include="Content\edit.css" />
+    <Content Include="Content\app\categories.css" />
+    <Content Include="Content\common\dropdown.css" />
+    <Content Include="Content\app\edit.css" />
     <Content Include="Content\images\close-image-36.png" />
     <Content Include="Content\images\close-image-24.png" />
     <Content Include="Content\images\close.png" />
@@ -202,11 +202,11 @@
     <Content Include="Content\images\white_star.png" />
     <Content Include="Content\images\flags\ESP.png" />
     <Content Include="Content\images\flags\ITA.png" />
-    <Content Include="Content\login.css" />
-    <Content Include="Content\normalize.css" />
-    <Content Include="Content\select2.css" />
-    <Content Include="Content\unittests\qunit-1.12.0.css" />
-    <Content Include="Content\test.css" />
+    <Content Include="Content\app\login.css" />
+    <Content Include="Content\common\normalize.css" />
+    <Content Include="Content\common\select2.css" />
+    <Content Include="Content\tests\qunit-1.12.0.css" />
+    <Content Include="Content\app\test.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -261,14 +261,14 @@
     <Content Include="Content\themes\base\minified\jquery.ui.slider.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
-    <Content Include="Content\tree.css" />
-    <Content Include="Content\userPanel.css" />
+    <Content Include="Content\common\tree.css" />
+    <Content Include="Content\app\userPanel.css" />
     <Content Include="Global.asax" />
-    <Content Include="Content\site.css" />
+    <Content Include="Content\app\site.css" />
     <Compile Include="App_Start\NinjectWebCommon.Bindings.cs" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
-    <Content Include="Scripts\categories\categories.js" />
-    <Content Include="Scripts\common\mielk2.js" />
+    <Content Include="Scripts\app\common\ling.js" />
+    <Content Include="Scripts\app\categories\categories.js" />
     <Content Include="Scripts\common\mielk.js" />
     <Content Include="Scripts\external\select2.js" />
     <Content Include="Scripts\external\spin.js" />
@@ -280,15 +280,14 @@
     <Content Include="Scripts\common\internationalization.js" />
     <Content Include="Scripts\authentication\register.js" />
     <Content Include="Scripts\authentication\mailValidation.js" />
-    <Content Include="Scripts\lists\Variants3.js" />
-    <Content Include="Scripts\lists\ListController.js" />
-    <Content Include="Scripts\lists\Options.js" />
-    <Content Include="Scripts\lists\Variants.js" />
-    <Content Include="Scripts\question\search.js" />
-    <Content Include="Scripts\question\test.js" />
-    <Content Include="Scripts\question\word.js" />
-    <Content Include="Scripts\question\question.js" />
-    <Content Include="Scripts\test\test.js" />
+    <Content Include="Scripts\app\questions\variants3.js" />
+    <Content Include="Scripts\app\common\listController.js" />
+    <Content Include="Scripts\app\questions\options.js" />
+    <Content Include="Scripts\app\questions\variants.js" />
+    <Content Include="Scripts\app\common\search.js" />
+    <Content Include="Scripts\app\words\words.js" />
+    <Content Include="Scripts\app\questions\questions.js" />
+    <Content Include="Scripts\app\test\test.js" />
     <Content Include="Scripts\common\util.js" />
     <Content Include="Scripts\jquery-1.7.1.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
@@ -304,8 +303,9 @@
     <Content Include="Scripts\knockout-2.1.0.js" />
     <Content Include="Scripts\authentication\login.js" />
     <Content Include="Scripts\modernizr-2.5.3.js" />
-    <Content Include="Scripts\unittests\qunit-1.12.0.js" />
-    <Content Include="Scripts\unittests\tests.js" />
+    <Content Include="Scripts\tests\qunit-1.12.0.js" />
+    <Content Include="Scripts\tests\tests.html" />
+    <Content Include="Scripts\tests\mielk.dates.tests.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -351,7 +351,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\images\xcf\" />
-    <Folder Include="Scripts\app\" />
+    <Folder Include="Scripts\lists\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

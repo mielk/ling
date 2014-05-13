@@ -4,21 +4,21 @@
  * Date: 2014-02-21 14:31
  *
  */
-(function(window) {
+(function (window) {
 
-    "use strict";
+    'use strict';
 
     //Classes
 
-    function hashTable(obj) {
+    function HashTable(obj) {
         var self = this;
-        self.hashTable = true;
+        self.HashTable = true;
         self.length = 0;
         self.items = {};
-        
+
 
         (function init() {
-            
+
             if (obj instanceof Object) {
                 for (var key in obj) {
                     if (obj.hasOwnProperty(key)) {
@@ -27,11 +27,11 @@
                     }
                 }
             }
-            
+
         })();
 
         this.setItem = function (key, value) {
-            var previous = undefined;
+            var previous;
             if (this.hasItem(key)) {
                 previous = this.items[key];
             } else {
@@ -97,40 +97,238 @@
             this.length = 0;
         };
 
-        this.clone = function() {
+        this.clone = function () {
             var clone = {};
             for (var key in self.items) {
                 if (self.items.hasOwnProperty(key)) {
                     clone[key] = self.items[key];
                 }
             }
-            
+
             return clone;
-            
+
         };
 
     }
 
-    function eventHandler() {
+    function EventHandler() {
+        this.EventHandler = true;
         var listener = {};
 
-        return {            
-            bind: function(e) {
+        return {
+            bind: function (e) {
                 $(listener).bind(e);
             },
-            trigger: function(e) {
+            trigger: function (e) {
                 $(listener).trigger(e);
             }
         };
 
     }
 
+    function ResizableDiv(params) {
+        var self = this;
+        self.ResizableDiv = true;
+        self.eventHandler = new EventHandler();
+
+        self.id = params.id || 'id';
+        self.parent = params.parent;
+        self.minHeight = params.minHeight || 200;
+        self.maxHeight = params.maxHeight || 800;
+
+        //State.
+        self.resizable = false;
+        self.isMinimized = false;
+
+        //Current position.
+        self.x = 0;
+        self.y = 0;
+
+        //GUI.
+        self.ui = (function () {
+            var menuBarId = '_bar';
+            var containerId = '_container';
+            var resizerId = '_resizer';
+
+            var container = $('<div>', {
+                id: self.id + containerId,
+                'class': 'resizable-panel'
+            });
+            $(container).appendTo(self.parent);
+
+            var menubar = $('<div>', {
+                id: self.id + menuBarId,
+                html: self.id,
+                'class': 'menuBar'
+            }).dblclick(function (e) {
+                if (self.isMinimized) {
+                    self.maximize();
+                } else {
+                    self.minimize();
+                }
+            });
+            menubar.appendTo(container);
+
+            var div = $('<div>', {
+                id: self.id,
+                'class': params.class
+            });
+            div.appendTo(container);
+            //Set initial height if applicable.
+            if (params.height) {
+                $(div).height(params.height);
+            }
+
+            var resizer = $('<div>', {
+                id: self.id + resizerId,
+                'class': 'resizer'
+            }).bind({
+                mousedown: function (e) {
+                    e.preventDefault();
+                    self.setAsResizable(true);
+                }
+            });
+            resizer.appendTo(container);
+
+
+            return {
+                container: container,
+                content: div,
+                height: function () {
+                    return $(div).height();
+                },
+                setHeight: function (height) {
+                    $(div).height(height);
+                },
+                hide: function () {
+                    $(div).css({
+                        'display': 'none'
+                    });
+                    $(resizer).css({
+                        'display': 'none'
+                    });
+                },
+                show: function () {
+                    $(div).css({
+                        'display': 'block'
+                    });
+                    $(resizer).css({
+                        'display': 'block'
+                    });
+                },
+                css: function (css) {
+                    $(div).css(css);
+                },
+                getX: function (e) {
+                    return (mielk.ui.getPosition(e).x - $(div).offset().left);
+                },
+                getY: function (e) {
+                    return (mielk.ui.getPosition(e).y - $(div).offset().top);
+                },
+                setCaption: function (caption) {
+                    $(menubar).html(caption);
+                }
+            };
+
+        })();
+
+        //Events binder.
+        var events = (function () {
+
+            $(document).bind({
+                mousemove: function (e) {
+                    e.preventDefault();
+                    self.resize(e);
+                },
+                mouseup: function (e) {
+                    self.setAsResizable(false);
+                }
+            });
+
+        })();
+
+    }
+    ResizableDiv.prototype = {
+        bind: function (e) {
+            this.eventHandler.bind(e);
+        },
+        trigger: function (e) {
+            this.eventHandler.trigger(e);
+        },
+        container: function () {
+            return this.ui.container;
+        },
+        content: function () {
+            var div = this.ui.content[0];
+            return div;
+        },
+        resize: function (e) {
+            if (this.resizable) {
+                var prevY = (this.y ? this.y : -1);
+                this.y = this.getY(e);
+                this.y = (this.y > this.maxHeight ? this.maxHeight : (this.y < this.minHeight ? this.minHeight : this.y));
+                if (prevY === -1) prevY = this.y;
+
+                var height = this.y - prevY + this.ui.height();
+                height = (height < this.minHeight ? this.minHeight : (height > this.maxHeight ? this.maxHeight : height));
+                this.ui.setHeight(height);
+
+                this.eventHandler.trigger({
+                    type: 'resize',
+                    height: height
+                });
+
+            }
+        },
+        minimize: function () {
+            this.ui.hide();
+            this.isMinimized = true;
+        },
+        maximize: function () {
+            this.ui.show();
+            this.isMinimized = false;
+        },
+        setAsResizable: function (value) {
+            if (value) {
+                this.resizable = true;
+                this.ui.css('backgroundColor', '#D6EFF9;');
+            } else {
+                this.resizable = false;
+                this.ui.css('backgroundColor', 'white;');
+                this.x = 0;
+                this.y = 0;
+            }
+        },
+        disableResizing: function () {
+            //MOUSE_CLICKED = 0;
+            //mainFrame.setCurrentDiv(null);
+            this.ui.css({ 'backgroundColor': 'white;' });
+            this.resized = false;
+            this.x = 0;
+            this.y = 0;
+        },
+        enableResizing: function () {
+            this.ui.css({ 'backgroundColor': '#D6EFF9;' });
+            this.resized = true;
+            this.resize();
+        },
+        getX: function () {
+            return this.ui.getX();
+        },
+        getY: function () {
+            return this.ui.getY();
+        },
+        setCaption: function (caption) {
+
+        }
+    };
+
 
 
 
     //Modules
 
-    var objects = (function() {
+    var objects = (function () {
 
         //Class inheritance.
         function extend(base, sub) {
@@ -148,13 +346,27 @@
             });
         }
 
+        function isFunction(object) {
+            return (object && typeof (object) === 'function');
+        }
 
-        return {            
-            extend: extend  
+        function addProperties(object, properties) {
+            for (var key in properties) {
+                if (properties.hasOwnProperty(key)) {
+                    object[key] = properties[key];
+                }
+            }
+            return object;
+        }
+
+        return {
+            extend: extend,
+            isFunction: isFunction,
+            addProperties: addProperties
         };
 
 
-    });
+    })();
 
     var notify = (function () {
         var options = {};
@@ -211,7 +423,7 @@
 
 
         /*
-         * Function to change the class of the displayed 
+         * Function to change the class of the displayed
          * notification based on the given string.
          */
         function changeState(state) {
@@ -228,7 +440,7 @@
 
 
 
-        /* 
+        /*
          * applyCustomProperties
          * Function to apply custom properties for
          * the notification to be displayed.
@@ -260,7 +472,7 @@
         (function initialize() {
             reset();
         })();
-        
+
 
 
         return {
@@ -272,7 +484,7 @@
 
     })();
 
-    var validation = (function() {
+    var validation = (function () {
 
         function coalesce(value, ifFalse) {
             return value ? value : ifFalse;
@@ -298,25 +510,636 @@
 
     })();
 
+    var db = (function () {
+
+        return {
+            fetch: function (controller, method, data, params) {
+                var $result;
+                var callback = (params && params.callback && typeof (params.callback) === 'function' ? params.callback : null);
+
+                $.ajax({
+                    url: '/' + controller + '/' + method,
+                    type: 'GET',
+                    data: data,
+                    datatype: 'json',
+                    async: (params && params.async ? true : false),
+                    cache: false,
+                    traditional: (params && params.traditional ? true : false),
+                    success: function (result) {
+                        if (callback) {
+                            $result = callback(result);
+                        } else {
+                            $result = result;
+                        }
+                    },
+                    error: function (msg) {
+                        alert(msg.status + ' | ' + msg.statusText);
+                    }
+                });
+
+                return $result;
+            }
+        };
+
+    })();
+
+    var ui = (function () {
+
+        function getPosition(e) {
+            var x, y;
+
+            if (!e) e = window.event;
+            if (e.pageX || e.pageY) {
+                x = e.pageX;
+                y = e.pageY;
+            } else if (e.clientX || e.clientY) {
+                x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+                y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+            }
+
+            return {
+                x: x,
+                y: y
+            };
+
+        }
+
+        function getPositionInElement(e, element) {
+            //var x, y;
+            //var imgPos = findPosition(element);
+
+            //if (!e) e = window.event;
+
+            //if (e.pageX || e.pageY) {
+            //    x = e.pageX;
+            //    y = e.pageY;
+            //} else if (e.clientX || e.clientY) {
+            //    x = e.clientX + document.body.scrollLeft
+            //      + document.documentElement.scrollLeft;
+            //    y = e.clientY + document.body.scrollTop
+            //      + document.documentElement.scrollTop;
+            //}
+
+            //return {
+            //    x: x - imgPos[0],
+            //    y: y - imgPos[1]
+            //};
+
+        }
+
+        function findPosition(element) {
+            //if (element.offsetParent !== undefined) {
+            //    for (var x = 0, y = 0; element; element = element.offsetParent) {
+            //        x += element.offsetLeft;
+            //        y += element.offsetTop;
+            //    }
+
+            //    return {
+            //        x: x,
+            //        y: y
+            //    };
+
+            //} else {
+
+            //    return {
+            //        x: element.x,
+            //        y: element.y
+            //    };
+
+            //}
+        }
+
+
+        return {
+            getPosition: getPosition,
+            getPositionInElement: getPositionInElement,
+            findPosition: findPosition
+        };
+
+    })();
+
+    var spinner = (function () {
+        var background = null;
+        var $spinner = null;
+
+        function createBackground() {
+            background = jQuery('<div/>').css({
+                'background-color': 'transparent',
+                'z-index': 9999,
+                'position': 'absolute',
+                'width': '20%',
+                'height': '150px',
+                'left': '40%',
+                'right': '40%',
+                'top': '200px',
+                'display': 'none'
+            }).appendTo($(document.body));
+        }
+
+        function start() {
+            if (!background) createBackground();
+            $(background).css('display', 'block');
+            $spinner = new SpinnerWrapper($(background));
+        }
+
+        function stop() {
+            $(background).css('display', 'none');
+            if ($spinner) $spinner.stop();
+        }
+
+        return {
+            start: start,
+            stop: stop
+        };
+
+    })();
+
+    var arrays = (function () {
+
+        function getLastItem(array) {
+            var item = array[array.length - 1];
+            return item;
+        }
+
+        function fromObject(object) {
+            var array = [];
+            for (var key in object) {
+                if (object.hasOwnProperty(key)) {
+                    var item = object[key];
+                    array.push(item);
+                }
+            }
+            return array;
+        }
+
+        function equal(arr1, arr2) {
+            if (arr1 && arr2) {
+                if (arr1.length === arr2.length) {
+                    for (var i = 0; i < arr1.length; i++) {
+                        var object = arr1[i];
+                        var found = false;
+                        for (var j = 0; j < arr2.length; j++) {
+                            // ReSharper disable once ExpressionIsAlwaysConst
+                            var obj2 = arr2[j];
+                            if (!found && obj2 === object) {
+                                found = true;
+                            }
+                        }
+
+                        if (!found) {
+                            return false;
+                        }
+
+                    }
+
+                    return true;
+
+                }
+                return false;
+            }
+
+            return false;
+
+        }
+
+        function remove(array, item) {
+            var after = [];
+            if (!array || !array.length) return array;
+
+            for (var i = 0; i < array.length; i++) {
+                var object = array[i];
+                if (object !== item) {
+                    after.push(object);
+                }
+            }
+
+            return after;
+
+        }
+
+        function getMax(array, fn, start, end) {
+            var result = null;
+            var $start = start || 0;
+            var $end = Math.min(end, array.length - 1) || array.length - 1;
+            for (var i = $start; i < $end; i++) {
+                var item = array[i];
+                var value = fn(item);
+                if (!result || value > result) result = value;
+            }
+
+            return result;
+
+        }
+
+        function getMin(array, fn, start, end) {
+            var result = null;
+            var $start = start || 0;
+            var $end = Math.min(end, array.length - 1) || array.length - 1;
+            for (var i = $start; i < $end; i++) {
+                var item = array[i];
+                var value = fn(item);
+                if (!result || value < result) result = value;
+            }
+
+            return result;
+
+        }
+
+        function firstGreater(array, value, fn, returnIndex) {
+
+            if (array) {
+                var size = array.length;
+                var start = 0;
+                var end = size - 1;
+
+                //If the first item is greater than value searched
+                //or the last item is less than value searched, null is returned.
+                if (fn(array[start], value) === 1 && fn(array[end], value) === -1) {
+                    return null;
+                }
+
+                do {
+
+                    var index = Math.round((end - start) / 2) + start;
+
+                    var item = array[index];
+                    var result = fn(item, value);
+                    if (result === true) {
+                        return returnIndex ? index : item;
+                    } else if (result === 1) {
+                        end = index - 1;
+                    } else if (result === -1) {
+                        start = index + 1;
+                    }
+
+                } while (end >= start);
+
+            }
+
+            return null;
+
+        }
+
+        function findItem(array, value, fn) {
+            var size = array.length;
+            var start = 0;
+            var end = size - 1;
+            var index = Math.round((end - start) / 2);
+
+            var item = array[index];
+            var x = 1;
+        }
+
+        return {
+            getLastItem: getLastItem,
+            fromObject: fromObject,
+            equal: equal,
+            remove: remove,
+            getMax: getMax,
+            getMin: getMin,
+            findItem: findItem,
+            firstGreater: firstGreater
+        };
+
+    })();
+
+    var numbers = (function () {
+
+        function generateUuid() {
+            var d = new Date().getTime();
+            var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = (d + Math.random() * 16) % 16 | 0;
+                d = Math.floor(d / 16);
+                return (c == 'x' ? r : (r & 0x7 | 0x8)).toString(16);
+            });
+            return uuid;
+        };
+
+        function log10(x) {
+            return Math.log(x) / Math.LN10;
+        }
+
+        function addThousandSeparator(number, separator) {
+            number += '';
+            var x = number.split('.');
+            var x1 = x[0];
+            var x2 = x.length > 1 ? '.' + x[1] : '';
+            var rgx = /(\d+)(\d{3})/;
+            while (rgx.test(x1)) {
+                x1 = x1.replace(rgx, '$1' + separator + '$2');
+            }
+            return x1 + x2;
+        }
+
+
+        return {
+            generateUUID: generateUuid,
+            log10: log10,
+            addThousandSeparator: addThousandSeparator
+        };
+
+    })();
+
+    var text = (function () {
+
+        function onlyDigits(s) {
+            return (s + '').match(/^-?\d*/g);
+        }
+
+        function countMatchedEnd(base, compared) {
+            var counter = 0;
+            var baseLength = base.length;
+            var comparedLength = compared.length;
+            for (var i = 1; i < comparedLength; i++) {
+
+                if (i > baseLength) return counter;
+
+                var $base = base.charAt(baseLength - i);
+                var $compared = compared.charAt(comparedLength - i);
+
+                if ($base !== $compared) {
+                    return counter;
+                } else {
+                    counter++;
+                }
+
+            }
+
+            return counter;
+
+        }
+
+        function substring(base, start, end, isCaseSensitive) {
+            var tempBase, tempStart, tempEnd;
+
+            //Checks if all the parameters are defined.
+            if (base === undefined || base === null || start === undefined || start === null || end === undefined || end === null) {
+                return '';
+            }
+
+
+            if (isCaseSensitive) {
+                tempBase = base ? base.toString() : 0;
+                tempStart = start ? start.toString() : 0;
+                tempEnd = end ? end.toString() : 0;
+            } else {
+                tempBase = base.toString().toLowerCase();
+                tempStart = start.toString().toLowerCase();
+                tempEnd = end.toString().toLowerCase();
+            }
+
+
+            //Wyznacza pozycje początkowego i końcowego stringa w stringu bazowym.
+            var iStart = (tempStart.length ? tempBase.indexOf(tempStart) : 0);
+            //alert('baseString: ' + baseString + '; start: ' + start + '; end: ' + end + '; caseSensitive: ' + isCaseSensitive);
+            if (iStart < 0) {
+                return '';
+            } else {
+                var iEnd = (tempEnd.length ? tempBase.indexOf(tempEnd, iStart + tempStart.length) : tempBase.length);
+                return (iEnd < 0 ? '' : base.toString().substring(iStart + tempStart.length, iEnd));
+            }
+
+        }
+
+        function isLetter($char) {
+            return ($char.length === 1 && $char.match(/[a-z]/i) ? true : false);
+        }
+
+        function containLettersNumbersUnderscore(str) {
+            return (str.match(/^\w+$/) ? true : false);
+        }
+
+        function isValidMail(mail) {
+            return (mail.match(/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/) ? true : false);
+        }
+
+        function startsWith(base, prefix) {
+            var s = base.substr(0, prefix.length);
+            return (s === prefix);
+        }
+
+        function parse(txt) {
+            if (txt === '*' || txt === 'true') {
+                return true;
+            } else if (txt === '' || txt === 'false') {
+                return false;
+            } else if ($.isNumeric(txt)) {
+                return Number(txt);
+            } else {
+                return txt;
+            }
+        }
+
+        function valueToText(value) {
+            if (value === true) {
+                return '*';
+            } else if (value === false) {
+                return '';
+            } else {
+                return value;
+            }
+        }
+
+        function matchEnd(base, compared) {
+            var counter = countMatchedEnd(base, compared);
+            if (counter === 0) return '';
+            return compared.substring(compared.length - counter, counter);
+
+        }
+
+        function cut(base, chars) {
+            if (chars > base.length) return base;
+            return base.substring(0, base.length - chars);
+        }
+
+        return {
+            cut: cut,
+            countMatchedEnd: countMatchedEnd,
+            onlyDigits: onlyDigits,
+            substring: substring,
+            isLetter: isLetter,
+            containLettersNumbersUnderscore: containLettersNumbersUnderscore,
+            isValidMail: isValidMail,
+            startsWith: startsWith,
+            valueToText: valueToText,
+            matchEnd: matchEnd,
+            parse: parse
+        };
+
+    })();
+
+    var dates = (function () {
+
+        function toString(date) {
+            var year = date.getFullYear();
+            var month = date.getMonth() + 1;
+            var day = date.getDate();
+            return year + '-' +
+                (month < 10 ? '0' : '') + month + '-' +
+                (day < 10 ? '0' : '') + day;
+        }
+
+        function fromString(s) {
+            var year = s.substr(0, 4) * 1;
+            var month = s.substr(5, 2) * 1 - 1;
+            var day = s.substr(8, 2) * 1;
+            return new Date(year, month, day);
+        }
+
+        function daysDifference(start, end) {
+            var milisInDay = 86400000;
+            var startDay = Math.floor(start.getTime() / milisInDay);
+            var endDay = Math.floor(end.getTime() / milisInDay);
+            return (endDay - startDay);
+        }
+
+        function weeksDifference(start, end) {
+            var result = Math.floor(daysDifference(start, end) / 7);
+            return (end.getDay() < start.getDay() ? result : result);
+        }
+
+        //    return {
+        //        TIMEBAND: $timeband,
+
+        //        /*   Funkcja:    dateDifference
+        //        *    Opis:       Funkcja zwraca różnicę pomiędzy datami [start] i [end],
+        //        *                wyrażoną w jednostkach przypisanych do podanego timebandu.
+        //        */
+        //        dateDifference: function (timeband, start, end) {
+        //            switch (timeband) {
+        //                case $timeband.D:
+        //                    return this.daysDifference(start, end);
+        //                case $timeband.W:
+        //                    return this.weeksDifference(start, end);
+        //                case $timeband.M:
+        //                    return this.monthsDifference(start, end);
+        //                default:
+        //                    return 0;
+        //            }
+        //        },
+
+
+        //        /*-------------------------------*/
+
+
+        //        /*   Funkcja:    daysDifference
+        //        *    Opis:       Funkcja zwraca różnicę pomiędzy datami [start] i [end],
+        //        *                wyrażoną w dniach.
+        //        */
+        //        daysDifference: function (start, end) {
+        //            return daysDifference(start, end);
+        //        },
+
+
+        //        /*-------------------------------*/
+
+
+        //        /*   Funkcja:    weeksDifference
+        //        *    Opis:       Funkcja zwraca różnicę pomiędzy datami [start] i [end],
+        //        *                wyrażoną w tygodniach.
+        //        */
+        //        weeksDifference: function (start, end) {
+        //            return weeksDifference(start, end);
+        //        },
+
+
+        //        /*-------------------------------*/
+
+
+        //        /*   Funkcja:    monthsDifference
+        //        *    Opis:       Funkcja zwraca różnicę pomiędzy datami [start] i [end],
+        //        *                wyrażoną w miesiącach.
+        //        */
+        //        monthsDifference: function (start, end) {
+        //            var yearStart = start.getFullYear();
+        //            var monthStart = start.getMonth();
+        //            var yearEnd = end.getFullYear();
+        //            var monthEnd = end.getMonth();
+
+        //            return (monthEnd - monthStart) + (12 * (yearEnd - yearStart));
+
+        //        },
+
+
+        //        /*-------------------------------*/
+
+
+        //        /*   Funkcja:    workingDays
+        //        *    Opis:       Funkcja zwraca liczbę dni pracujących pomiędzy dwiema datami.
+        //        */
+        //        workingDays: function (start, end) {
+        //            var sDate = (start.getDay() > 5 ? start.getDate() - (start.getDay() - 5) : start);
+        //            var eDate = (end.getDay() > 5 ? end.getDate() - (end.getDay() - 5) : end);
+        //            return (weeksDifference(sDate, eDate) * 5) + (eDate.getDay() - sDate.getDay());
+        //        },
+
+
+        //        /*-------------------------------*/
+
+
+        //        /*-------------------------------*/
+
+
+        //        /*   Funkcja:    getMonth
+        //        *    Opis:       Funkcja zwracająca nazwę podanego miesiąca.
+        //        */
+        //        monthName: function (month, isShort) {
+        //            var months = {
+        //                1: ['styczeń', 'sty'],
+        //                2: ['luty', 'lut'],
+        //                3: ['marzec', 'mar'],
+        //                4: ['kwiecień', 'kwi'],
+        //                5: ['maj', 'maj'],
+        //                6: ['czerwiec', 'cze'],
+        //                7: ['lipiec', 'lip'],
+        //                8: ['sierpień', 'sie'],
+        //                9: ['wrzesień', 'wrz'],
+        //                10: ['październik', 'paź'],
+        //                11: ['listopad', 'lis'],
+        //                12: ['grudzień', 'gru']
+        //            };
+
+        //            return months[month][isShort ? 1 : 0];
+
+        //        }
+        //    };
+
+
+        return {
+            toString: toString,
+            fromString: fromString,
+            daysDifference: daysDifference,
+            weeksDifference: weeksDifference
+        };
+
+    })();
+
 
     /*
      * Wrapper for functions defined above.
      */
-    var mielk = (function() {
+    var mielk = {
+        hashTable: function (obj) {
+            return new HashTable(obj);
+        },
+        eventHandler: function () {
+            return new EventHandler();
+        },
+        resizableDiv: function (params) {
+            return new ResizableDiv(params);
+        },
+        notify: notify,
+        objects: objects,
+        validation: validation,
+        db: db,
+        ui: ui,
+        spinner: spinner,
+        arrays: arrays,
+        numbers: numbers,
+        text: text,
+        dates: dates
+    };
 
-        return {
-            hashTable: function(obj) {
-                return new hashTable(obj);
-            },
-            eventHandler: function() {
-                return new eventHandler();
-            },
-            notify: notify,
-            objects: objects,
-            validation: validation
-        };
-
-    })();
 
 
     // Expose mielk to the global object
@@ -324,9 +1147,6 @@
 
 
 })(window);
-
-
-
 
 
 
@@ -414,9 +1234,9 @@
 //                    sel.collapse(textNode, Math.min(textNode.length, newOffset));
 //                }
 //            } else if ((sel = win.document.selection)) {
-//                if (sel.type != "Control") {
+//                if (sel.type != 'Control') {
 //                    range = sel.createRange();
-//                    range.move("character", charCount);
+//                    range.move('character', charCount);
 //                    range.select();
 //                }
 //            }
@@ -634,352 +1454,12 @@
 
 //})();
 
-///* Funkcje tekstowe */
-//my.text = (function () {
 
-//    function countMatchedEnd(base, compared) {
-//        var counter = 0;
-//        var baseLength = base.length;
-//        var comparedLength = compared.length;
-//        for (var i = 1; i < comparedLength; i++) {
-
-//            if (i > baseLength) return counter;
-
-//            var $base = base.charAt(baseLength - i);
-//            var $compared = compared.charAt(comparedLength - i);
-
-//            if ($base != $compared) {
-//                return counter;
-//            } else {
-//                counter++;
-//            }
-
-//        }
-
-//        return counter;
-
-//    }
-
-//    return {
-//        /*  Funkcja:    onlyDigits
-//         *  Opis:       Funkcja usuwa z podanego stringa wszystkie
-//         *              znaki nie będące cyframi.
-//         */
-//        onlyDigits: function (s) {
-//            return (s + '').match(/^-?\d*/g);
-//        },
-
-
-//        /*-------------------------------*/
-
-
-//        /*  Funkcja:    substring
-//         *  Opis:       Funkcja zwraca podciąg znaków tekstu bazowego [base]
-//         *              znajdujący się pomiędzy podanymi znacznikami [start]
-//         *              oraz [end].
-//         */
-//        substring: function (base, start, end, isCaseSensitive) {
-//            var tempBase, tempStart, tempEnd;
-
-//            //Checks if all the parameters are defined.
-//            if (base === undefined || base === null || start === undefined || start === null || end === undefined || end === null) {
-//                return '';
-//            }
-
-
-//            if (isCaseSensitive) {
-//                tempBase = base ? base.toString() : 0;
-//                tempStart = start ? start.toString() : 0;
-//                tempEnd = end ? end.toString() : 0;
-//            } else {
-//                tempBase = base.toString().toLowerCase();
-//                tempStart = start.toString().toLowerCase();
-//                tempEnd = end.toString().toLowerCase();
-//            }
-
-
-//            //Wyznacza pozycje początkowego i końcowego stringa w stringu bazowym.
-//            var iStart = (tempStart.length ? tempBase.indexOf(tempStart) : 0);
-//            //alert('baseString: ' + baseString + '; start: ' + start + '; end: ' + end + '; caseSensitive: ' + isCaseSensitive);
-//            if (iStart < 0) {
-//                return '';
-//            } else {
-//                var iEnd = (tempEnd.length ? tempBase.indexOf(tempEnd, iStart + tempStart.length) : tempBase.length);
-//                return (iEnd < 0 ? '' : base.toString().substring(iStart + tempStart.length, iEnd));
-//            }
-
-//        },
-
-//        isLetter: function ($char) {
-//            return ($char.length === 1 && $char.match(/[a-z]/i) ? true : false);
-//        },
-
-//        containLettersNumbersUnderscore: function (str) {
-//            return (str.match(/^\w+$/) ? true : false);
-//        },
-
-//        isValidMail: function (mail) {
-//            return (mail.match(/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/) ? true : false);
-//        },
-
-//        startsWith: function (base, prefix) {
-//            var s = base.substr(0, prefix.length);
-//            return (s === prefix);
-//        },
-
-//        parse: function (text) {
-//            if (text === '*' || text === 'true') {
-//                return true;
-//            } else if (text === '' || text === 'false') {
-//                return false;
-//            } else if ($.isNumeric(text)) {
-//                return Number(text);
-//            } else {
-//                return text;
-//            }
-//        },
-
-//        valueToText: function (value) {
-//            if (value === true) {
-//                return '*';
-//            } else if (value === false) {
-//                return '';
-//            } else {
-//                return value;
-//            }
-//        },
-
-//        matchEnd: function (base, compared) {
-//            var counter = countMatchedEnd(base, compared);
-//            if (counter === 0) return '';
-//            return compared.substring(compared.length - counter, counter);
-
-//        },
-
-//        countMatchedEnd: function (base, compared) {
-//            return countMatchedEnd(base, compared);
-//        },
-
-//        cut: function (base, chars) {
-//            if (chars > base.length) return base;
-//            return base.substring(0, base.length - chars);
-//        }
-
-//    };
-
-//})();
-
-//my.array = (function () {
-//    return {
-//        objectToArray: function (object) {
-//            var array = [];
-//            for (var key in object) {
-//                if (object.hasOwnProperty(key)) {
-//                    var item = object[key];
-//                    array.push(item);
-//                }
-//            }
-//            return array;
-//        },
-//        equal: function (arr1, arr2) {
-//            if (arr1 && arr2) {
-//                if (arr1.length === arr2.length) {
-//                    for (var i = 0; i < arr1.length; i++) {
-//                        var object = arr1[i];
-//                        var found = false;
-//                        for (var j = 0; j < arr2.length; j++) {
-//                            // ReSharper disable once ExpressionIsAlwaysConst
-//                            var obj2 = arr2[j];
-//                            if (!found && obj2 === object) {
-//                                found = true;
-//                            }
-//                        }
-
-//                        if (!found) {
-//                            return false;
-//                        }
-
-//                    }
-
-//                    return true;
-
-//                }
-//                return false;
-//            }
-
-//            return false;
-
-//        },
-//        remove: function (array, item) {
-//            var after = [];
-//            if (!array || !array.length) return array;
-
-//            for (var i = 0; i < array.length; i++) {
-//                var object = array[i];
-//                if (object !== item) {
-//                    after.push(object);
-//                }
-//            }
-
-//            return after;
-
-//        }
-//    };
 //})();
 
 ///* Funkcje daty i czasu */
 //my.dates = (function () {
 
-//    var $timeband = {
-//        D: { name: 'day', period: 1 },
-//        W: { name: 'week', period: 7 },
-//        M: { name: 'month', period: 30 }
-//    };
-
-//    function daysDifference(start, end) {
-//        var milisInDay = 86400000;
-//        var startDay = Math.floor(start.getTime() / milisInDay);
-//        var endDay = Math.floor(end.getTime() / milisInDay);
-//        return (endDay - startDay);
-//    }
-
-//    function weeksDifference(start, end) {
-//        var result = Math.floor(daysDifference(start, end) / 7);
-//        return (end.getDay() < start.getDay() ? result : result);
-//    }
-
-//    return {
-//        TIMEBAND: $timeband,
-
-//        /*   Funkcja:    dateDifference
-//        *    Opis:       Funkcja zwraca różnicę pomiędzy datami [start] i [end],
-//        *                wyrażoną w jednostkach przypisanych do podanego timebandu.
-//        */
-//        dateDifference: function (timeband, start, end) {
-//            switch (timeband) {
-//                case $timeband.D:
-//                    return this.daysDifference(start, end);
-//                case $timeband.W:
-//                    return this.weeksDifference(start, end);
-//                case $timeband.M:
-//                    return this.monthsDifference(start, end);
-//                default:
-//                    return 0;
-//            }
-//        },
-
-
-//        /*-------------------------------*/
-
-
-//        /*   Funkcja:    daysDifference
-//        *    Opis:       Funkcja zwraca różnicę pomiędzy datami [start] i [end],
-//        *                wyrażoną w dniach.
-//        */
-//        daysDifference: function (start, end) {
-//            return daysDifference(start, end);
-//        },
-
-
-//        /*-------------------------------*/
-
-
-//        /*   Funkcja:    weeksDifference
-//        *    Opis:       Funkcja zwraca różnicę pomiędzy datami [start] i [end],
-//        *                wyrażoną w tygodniach.
-//        */
-//        weeksDifference: function (start, end) {
-//            return weeksDifference(start, end);
-//        },
-
-
-//        /*-------------------------------*/
-
-
-//        /*   Funkcja:    monthsDifference
-//        *    Opis:       Funkcja zwraca różnicę pomiędzy datami [start] i [end],
-//        *                wyrażoną w miesiącach.
-//        */
-//        monthsDifference: function (start, end) {
-//            var yearStart = start.getFullYear();
-//            var monthStart = start.getMonth();
-//            var yearEnd = end.getFullYear();
-//            var monthEnd = end.getMonth();
-
-//            return (monthEnd - monthStart) + (12 * (yearEnd - yearStart));
-
-//        },
-
-
-//        /*-------------------------------*/
-
-
-//        /*   Funkcja:    workingDays
-//        *    Opis:       Funkcja zwraca liczbę dni pracujących pomiędzy dwiema datami.
-//        */
-//        workingDays: function (start, end) {
-//            var sDate = (start.getDay() > 5 ? start.getDate() - (start.getDay() - 5) : start);
-//            var eDate = (end.getDay() > 5 ? end.getDate() - (end.getDay() - 5) : end);
-//            return (weeksDifference(sDate, eDate) * 5) + (eDate.getDay() - sDate.getDay());
-//        },
-
-
-//        /*-------------------------------*/
-
-
-//        /*   Funkcja:    toString
-//        *    Opis:       Funkcja zwraca tekstową reprezentację danej daty.
-//        */
-//        toString: function (date) {
-//            var year = date.getFullYear();
-//            var month = date.getMonth() + 1;
-//            var day = date.getDate();
-//            return year + '-' +
-//                (month < 10 ? '0' : '') + month + '-' +
-//                (day < 10 ? '0' : '') + day;
-//        },
-
-
-//        /*-------------------------------*/
-
-
-//        /*   Funkcja:    fromString
-//        *    Opis:       Funkcja konwertująca podany tekst na datę.
-//        */
-//        fromString: function (s) {
-//            var year = s.substr(0, 4) * 1;
-//            var month = s.substr(5, 2) * 1 - 1;
-//            var day = s.substr(8, 2) * 1;
-//            return new Date(year, month, day);
-//        },
-
-
-//        /*-------------------------------*/
-
-
-//        /*   Funkcja:    getMonth
-//        *    Opis:       Funkcja zwracająca nazwę podanego miesiąca.
-//        */
-//        monthName: function (month, isShort) {
-//            var months = {
-//                1: ['styczeń', 'sty'],
-//                2: ['luty', 'lut'],
-//                3: ['marzec', 'mar'],
-//                4: ['kwiecień', 'kwi'],
-//                5: ['maj', 'maj'],
-//                6: ['czerwiec', 'cze'],
-//                7: ['lipiec', 'lip'],
-//                8: ['sierpień', 'sie'],
-//                9: ['wrzesień', 'wrz'],
-//                10: ['październik', 'paź'],
-//                11: ['listopad', 'lis'],
-//                12: ['grudzień', 'gru']
-//            };
-
-//            return months[month][isShort ? 1 : 0];
-
-//        }
-//    };
 
 //})();
 
@@ -999,11 +1479,11 @@
 
 //        $.ajax({
 //            url: '/Language/GetUserLanguages',
-//            type: "GET",
+//            type: 'GET',
 //            data: {
 //                'userId': userId,
 //            },
-//            datatype: "json",
+//            datatype: 'json',
 //            async: false,
 //            traditional: false,
 //            success: function (result) {
@@ -1079,36 +1559,6 @@
 
 //})();
 
-//my.db = (function () {
-//    return {
-//        fetch: function (controller, method, data, params) {
-//            var $result;
-//            var callback = (params && params.callback && typeof (params.callback) === 'function' ? params.callback : null);
-
-//            $.ajax({
-//                url: '/' + controller + '/' + method,
-//                type: "GET",
-//                data: data,
-//                datatype: "json",
-//                async: (params && params.async ? true : false),
-//                cache: false,
-//                traditional: (params && params.traditional ? true : false),
-//                success: function (result) {
-//                    if (callback) {
-//                        $result = callback(result);
-//                    } else {
-//                        $result = result;
-//                    }
-//                },
-//                error: function (msg) {
-//                    alert(msg.status + " | " + msg.statusText);
-//                }
-//            });
-
-//            return $result;
-//        }
-//    };
-//})();
 
 
 //my.grammarProperties = (function () {

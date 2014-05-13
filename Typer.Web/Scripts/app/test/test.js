@@ -3,7 +3,7 @@
     var container = $('#test-container')[0];
     var result = $('#result')[0];
 
-    var checkbox = my.ui.checkbox({        
+    var checkbox = my.ui.checkbox({
         container: container,
         name: 'test',
         caption: 'Test checkbox',
@@ -11,8 +11,8 @@
     });
 
     checkbox.bind({
-        click: function(e) {
-            $(result).css({                
+        click: function (e) {
+            $(result).css({
                 'background-color': e.value ? 'red' : 'green'
             });
         }
