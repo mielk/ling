@@ -19,6 +19,9 @@
    #deactivate
  */
 function Tree(properties) {
+
+    return null;
+
     // ReSharper disable once UnusedLocals
     var me = this;
     //Public properties.
@@ -34,7 +37,7 @@ function Tree(properties) {
 
     // ReSharper disable once UseOfImplicitGlobalInFunctionScope
     // EventHandler class is defined in global.js.
-    this.eventHandler = new EventHandler();
+    this.eventHandler = mielk.eventHandler();
     //Declare events specific for this class.
     this.eventHandler.bind({
         // transfer
@@ -148,7 +151,7 @@ function TreeView(tree, container, x, y) {
             return jQuery('<div/>', {
                  'class': 'tree-background'
             }).
-            css({ 'z-index': my.ui.addTopLayer() }).
+            css({ 'z-index': 9999 }). //mielk.ui.addTopLayer() }).
             appendTo($(document.body));
         }
     })(); 

@@ -2,9 +2,9 @@
 function ListManager(properties) {
     this.ListManager = true;
     var self = this;
-    this.eventHandler = new EventHandler();
+    this.eventHandler = mielk.eventHandler();
 
-    this.filterManager = new ListFilterManager(this, properties.filters);
+    //this.filterManager = new ListFilterManager(this, properties.filters);
 
     this.itemsManager = new ListItemsManager(this);
 
@@ -13,7 +13,7 @@ function ListManager(properties) {
     this.view = new ListView(this, properties);
     this.view.render({
         columns: properties.columns,
-        filter: self.filterManager.view(),
+        //filter: self.filterManager.view(),
         items: self.itemsManager.view(),
         pager: self.pagerManager.view()
     });
@@ -29,7 +29,7 @@ ListManager.prototype.start = function () {
     this.filter({page: 1, pageSize: 10 });
 };
 ListManager.prototype.filter = function (e) {
-    this.filterManager.filter(e);
+    //this.filterManager.filter(e);
 };
 ListManager.prototype.moveToPage = function (page) {
     this.filter({page: page });
@@ -652,7 +652,7 @@ function Entity(properties) {
     this.categories = this.loadCategories(properties.Categories) || [];
     this.new = properties.new || false;
 
-    this.eventHandler = new EventHandler();
+    this.eventHandler = mielk.eventHandler();
 
 }
 Entity.prototype.trigger = function(e) {
@@ -1259,7 +1259,7 @@ function EditEntity(properties) {
     this.categories = properties.categories;
 
     //Logic.
-    this.eventHandler = new EventHandler();
+    this.eventHandler = mielk.eventHandler();
     this.languages = new HashTable(null);
     this.logs = [];
 
@@ -1439,7 +1439,7 @@ function LanguageEntity(parent, language) {
     this.LanguageEntity = true;
     this.parent = parent;
     this.language = language;
-    this.events = new EventHandler();
+    this.events = mielk.eventHandler();
     this.items = [];
     this.variantSets = [];
     this.variants = new HashTable(null);
@@ -2030,7 +2030,7 @@ function LanguagePanel(item, panel, languageEntity) {
 
         // ReSharper disable once UnusedLocals
         var flag = jQuery('<div/>', {
-            'class': 'flag ' + self.language.flag,
+            'class': 'flag ' + self.language.flag
         }).appendTo($(info));
 
         // ReSharper disable once UnusedLocals

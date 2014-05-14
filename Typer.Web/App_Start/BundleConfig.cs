@@ -25,7 +25,6 @@ namespace Typer.Web
                 , "~/Scripts/jquery.sizes.js"
                 , "~/Scripts/common/tree.js"
                 , "~/Scripts/common/dropdown.js"
-                //, "~/Scripts/common/util.js"                        
                 , "~/Scripts/common/mielk.js"
             ));
 
@@ -37,14 +36,15 @@ namespace Typer.Web
 
             bundles.Add(new ScriptBundle("~/bundles/app").Include(
                   "~/Scripts/app/common/ling.js"
-                , "~/Scripts/app/common/search.js"
                 , "~/Scripts/app/common/internationalization.js"
                 , "~/Scripts/app/categories/categories.js"
-                , "~/Scripts/app/common/listController.js"
-                , "~/Scripts/app/questions/questions.js"
-                , "~/Scripts/app/questions/variants.js"
-                , "~/Scripts/app/questions/variants3.js"
-                , "~/Scripts/app/questions/options.js"
+                //, "~/Scripts/app/common/search.js"
+                //, "~/Scripts/app/common/list/listController.js"
+                //, "~/Scripts/app/common/list/list.js"
+                //, "~/Scripts/app/questions/questions.js"
+                //, "~/Scripts/app/questions/variants.js"
+                //, "~/Scripts/app/questions/variants3.js"
+                //, "~/Scripts/app/questions/options.js"
                 , "~/Scripts/app/words/words.js"
             ));
 

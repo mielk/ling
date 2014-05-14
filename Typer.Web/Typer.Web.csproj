@@ -269,6 +269,7 @@
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\app\common\ling.js" />
     <Content Include="Scripts\app\categories\categories.js" />
+    <Content Include="Scripts\app\common\list\list.js" />
     <Content Include="Scripts\common\mielk.js" />
     <Content Include="Scripts\external\select2.js" />
     <Content Include="Scripts\external\spin.js" />
@@ -281,7 +282,7 @@
     <Content Include="Scripts\authentication\register.js" />
     <Content Include="Scripts\authentication\mailValidation.js" />
     <Content Include="Scripts\app\questions\variants3.js" />
-    <Content Include="Scripts\app\common\listController.js" />
+    <Content Include="Scripts\app\common\list\listController.js" />
     <Content Include="Scripts\app\questions\options.js" />
     <Content Include="Scripts\app\questions\variants.js" />
     <Content Include="Scripts\app\common\search.js" />

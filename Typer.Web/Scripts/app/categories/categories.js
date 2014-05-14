@@ -95,30 +95,10 @@ $(function () {
 
 
 
-        //function dbOperation(properties) {
-        //    $.ajax({
-        //        url: "/Categories/" + properties.functionName,
-        //        type: "POST",
-        //        data: properties.data,
-        //        datatype: "json",
-        //        async: false,
-        //        success: function (result) {
-        //            
-        //            if (properties.callback) {
-        //                properties.callback(result);
-        //            }
-        //        },
-        //        error: function (msg) {
-        //            my.notify.display(properties.error + ' (' + msg.status + ')', false);
-        //            properties.callback(false);
-        //        }
-        //    });
-        //}
-        
         //DB OPERATIONS
         function updateName(e) {
-            var successMessage = 'Category ' + e.previous + ' changed its name to ' + e.name;
-            var errorMessage = 'Error when trying to change category name from ' + e.previous + ' to ' + e.name;
+            var success = dict.CategoryNameChanged.get([e.name]);
+            var error = dict.CategoryNameChangedError.get([e.previous, e.name]);
 
             mielk.db.fetch('Categories', 'UpdateName', {
                   'id': e.node.key
@@ -126,19 +106,19 @@ $(function () {
             }, {
                 async: true,
                 callback: function (result) {
-                    mielk.notify.display(result ? successMessage : errorMessage, result);
+                    mielk.notify.display(result ? success : error, result);
                     e.node.object.name = e.name;
                 },
                 errorCallback: function() {
-                    mielk.notify.display(errorMessage);
+                    mielk.notify.display(error);
                 }
             });
             
         }
         
         function updateParent(e) {
-            var successMessage = 'Category ' + e.node.name + ' has been moved to ' + e.to.name;
-            var errorMessage = 'Error when trying to move category ' + e.node.name + ' to ' + e.to.name;
+            var success = dict.CategoryParentChanged.get([e.node.name, e.to.name]);
+            var error = dict.CategoryParentChangedError.get([e.node.name, e.to.name]);
 
             mielk.db.fetch('Categories', 'UpdateParentId', {
                   'id': e.node.key
@@ -146,30 +126,30 @@ $(function () {
             }, {
                 async: true,
                 callback: function (result) {
-                    mielk.notify.display(result ? successMessage : errorMessage, result);
+                    mielk.notify.display(result ? success : error, result);
                     e.node.object.parent = e.to;
                 },
                 errorCallback: function() {
-                    mielk.notify.display(errorMessage);
+                    mielk.notify.display(error);
                 }
             });
             
         }
         
         function remove(e) {
-            var successMessage = 'Category ' + e.node.name + ' has been removed';
-            var errorMessage = 'Error when trying to remove category ' + e.node.name;
+            var success = dict.CategoryRemoved.get([e.node.name]);
+            var error = dict.CategoryRemovedError.get([e.node.name]);
 
             mielk.db.fetch('Categories', 'RemoveCategory', {
                 'id': e.node.key
             }, {
                 async: true,
                 callback: function (result) {
-                    mielk.notify.display(result ? successMessage : errorMessage, result);
+                    mielk.notify.display(result ? success : error, result);
                     e.node.object.parent = e.to;
                 },
                 errorCallback: function () {
-                    mielk.notify.display(errorMessage);
+                    mielk.notify.display(error);
                 }
             });
 
@@ -177,8 +157,8 @@ $(function () {
         
         function addNew(e) {
             var node = e.node;
-            var successMessage = 'Category ' + node.name + ' has been added';
-            var errorMessage = 'Error when trying to add new category';
+            var success = dict.CategoryAdded.get([node.name]);
+            var error = dict.CategoryAddedError.get();
 
             mielk.db.fetch('Categories', 'AddCategory', {
                   'name': node.name
@@ -186,7 +166,7 @@ $(function () {
             }, {
                 async: true,
                 callback: function (key) {
-                    mielk.notify.display(key ? successMessage : errorMessage, key ? true : false);
+                    mielk.notify.display(key ? success : error, key ? true : false);
                     
                     if (key === false) {
                         node.cancel();
@@ -197,7 +177,7 @@ $(function () {
 
                 },
                 errorCallback: function () {
-                    mielk.notify.display(errorMessage);
+                    mielk.notify.display(error);
                 }
             });
 
@@ -312,6 +292,26 @@ $(function () {
     categories.load();
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 $(function () {

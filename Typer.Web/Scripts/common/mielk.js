@@ -614,7 +614,6 @@
             //}
         }
 
-
         return {
             getPosition: getPosition,
             getPositionInElement: getPositionInElement,

@@ -1,83 +1,113 @@
-﻿my.words = my.words || (function () {
+﻿/*
+ * Words
+ *
+ * Date: 2014-05-14 14:11
+ *
+ */
 
-    function dbOperation(properties) {
-        $.ajax({
-            url: "/Words/" + properties.functionName,
-            type: "POST",
-            data: properties.data,
-            datatype: "json",
-            async: false,
-            traditional: properties.traditional || false,
-            success: function (result) {
-                my.notify.display(result ? properties.success : properties.error, result);
-                if (properties.callback) {
-                    properties.callback(result);
-                }
-            },
-            error: function (msg) {
-                my.notify.display(properties.error + ' (' + msg.status + ')', false);
-                if (properties.callback) {
-                    properties.callback(false);
-                }
-            }
-        });
+
+function Word() {
+
+    'use strict';
+
+    var self = this;
+    
+    //Class signature.
+    self.Word = true;
+    
+    //Instance properties.
+    
+
+}
+Word.prototype = {
+    
+
+    setCategories: function(categories) {
+        
     }
+};
 
-    return{
-        nameAlreadyExists: function (id, name) {
-            var nameExists = true;
-            $.ajax({
-                url: '/Words/CheckName',
-                type: "GET",
-                data: {
-                    'id': id,
-                    'name': name
-                },
-                datatype: "json",
+
+
+
+$(function () {
+
+    'use strict';
+
+    var words = (function () {
+
+        //Funkcja sprawdzająca czy w bazie istnieje już wyraz o podanej nazwie.
+        function nameAlreadyExists(id, name) {
+            var error = dict.MetawordCheckIfNameExistsError.get([name]);
+
+            mielk.db.fetch('Words', 'CheckName', {
+                'id': id,
+                'name': name
+            }, {                
                 async: false,
                 cache: false,
-                success: function (result) {
-                    nameExists = (result.IsExisting === true);
+                callback: function(result) {
+                    return (result.IsExisting === true);
                 },
-                error: function (msg) {
-                    alert("[register.js::nameAlreadyExists] " + msg.status + " | " + msg.statusText);
+                errorCallback: function() {
+                    alert(error);
                 }
             });
 
-            return nameExists;
-
-        },
-        updateCategory: function (e) {
+        }
+        
+        //Funkcja update'ująca kategorie dla danego wyrazu.
+        function updateCategories(metaword, categories, callback) {            
             var categoriesIds = [];
             var categoriesNames = '';
-            for (var key in e.items) {
-                if (e.items.hasOwnProperty(key)) {
-                    var category = e.items[key];
+            for (var key in categories) {
+                if (categories.hasOwnProperty(key)) {
+                    var category = categories[key];
                     categoriesIds.push(category.key);
                     categoriesNames += (categoriesNames ? ', ' : '') + category.object.path();
                 }
             }
 
-            dbOperation({
-                functionName: 'UpdateCategories',
-                data: {
-                    'id': e.word.id,
-                    'categories': categoriesIds
-                },
-                traditional: true,
-                success: 'Categories ' + categoriesNames + ' have been assigned to word ' + e.word.name,
-                error: 'Error when trying to assign the given categories to word ' + e.word.name,
-                // ReSharper disable once UnusedParameter
-                callback: e.callback
-            });
+            //Insert to the DB.
+            var success = dict.MetawordCategoryAssigned.get([metaword.name, categoriesNames]);
+            var error = dict.MetawordCategoryAssignedError.get([metaword.name]);
 
-        },
+            mielk.db.fetch('Words', 'UpdateCategories', {
+                      'id': metaword.id
+                    , 'categories': categoriesIds
+                }, {                
+                    async: true,
+                    cache: false,
+                    traditional: true,
+                    callback: function (result) {
+                        metaword.setCategories(categories);
+                        mielk.notify.display(successMessage, true);
+                        if (callback && typeof(callback) === 'function') {
+                            callback(result);
+                        }
+                    },
+                    errorCallback: function() {
+                        mielk.notify.display(errorMessage, false);
+                    }
+                });
+            
+        }
+
+        //Funkcja ustawiająca podany wyraz na aktywny.
+        function activate(id, name, callback) {
+            var success = dict.MetawordActivated.get([name]);
+            var error = dict.MetawordActivatedError.get([name]);
+            
+
+
+        }
+
         activate: function(e) {
             dbOperation({                
                 functionName: 'Activate',
                 data: { 'id': e.id },
-                success: 'Word ' + e.name + ' has been activated',
-                error: 'Error when trying to activate word ' + e.name,
+                success: 
+                error: ',
                 callback: e.callback
             });
         },
@@ -163,6 +193,51 @@
             return words;
 
         }
+
+        return {
+              nameAlreadyExists: nameAlreadyExists
+            , updateCategories: updateCategories
+        };
+
+    })();
+
+    // Expose ling to the global object
+    LING.WORDS = words;
+
+});
+
+
+
+
+
+
+my.words = my.words || (function () {
+
+    function dbOperation(properties) {
+        $.ajax({
+            url: "/Words/" + properties.functionName,
+            type: "POST",
+            data: properties.data,
+            datatype: "json",
+            async: false,
+            traditional: properties.traditional || false,
+            success: function (result) {
+                my.notify.display(result ? properties.success : properties.error, result);
+                if (properties.callback) {
+                    properties.callback(result);
+                }
+            },
+            error: function (msg) {
+                my.notify.display(properties.error + ' (' + msg.status + ')', false);
+                if (properties.callback) {
+                    properties.callback(false);
+                }
+            }
+        });
+    }
+
+    return{
+
     };
 
 })();

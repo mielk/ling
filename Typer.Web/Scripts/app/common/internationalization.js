@@ -8,7 +8,7 @@
 $(function () {
     
     'use strict';
-    var dict = [];
+    var dict = {};
     var entry = function ($name, $translations) {
         var name = $name;
         var translations = $translations;
@@ -135,9 +135,60 @@ $(function () {
                 ENG: 'Node cannot be moved into itself'
             },
             WordtypeCannotBeEmpty: {
-                POL: 'Część mowy nie może być pusta',
-                ENG: 'Wordtype cannot be empty'
+                  POL: 'Część mowy nie może być pusta'
+                , ENG: 'Wordtype cannot be empty'
+            },
+            
+            //Kategorie
+            CategoryNameChanged: {
+                  POL: 'Nazwa kategorii została zmieniona na {0}'
+                , ENG: 'Category changed its name to {0}'
+            },
+            CategoryNameChangedError: {
+                  POL: 'Błąd podczas zmiany nazwy kategorii z {0} na {1}'
+                , ENG: 'Error when trying to change category\'s name from {0} to {1}'
+            },
+            CategoryParentChanged: {
+                  POL: 'Kategoria {0} została przeniesiona do grupy {1}'
+                , ENG: 'Category {0} has been moved to the group {1}'
+            },
+            CategoryParentChangedError: {
+                  POL: 'Błąd podczas próby przeniesienia kategorii {0} do grupy {1}'
+                , ENG: 'Error when trying to move category {0} to the group {1}'
+            },
+            CategoryRemoved: {
+                  POL: 'Kategoria {0} została usunięta'
+                , ENG: 'Category {0} has been removed'
+            },
+            CategoryRemovedError: {
+                  POL: 'Błąd podczas próby usunięcia kategorii {0}'
+                , ENG: 'Error when trying to remove category {0}'
+            },
+            CategoryAdded: {
+                  POL: 'Dodano kategorię {0}'
+                , ENG: 'Category {0} has been added'
+            },
+            CategoryAddedError: {
+                  POL: 'Błąd podczas próby dodania kategorii {0}'
+                , ENG: 'Error when trying to add category {0}'
+            },
+            
+            //Metawords
+            MetawordCheckIfNameExistsError: {
+                  POL: 'Błąd podczas próby sprawdzenia czy istnieje już metawyraz o nazwie {0}'
+                , ENG: 'Error when trying to check if there is already metaword with name {0}'
+            },
+            MetawordCategoryAssigned: {
+                  POL: 'Kategorie {1} zostały przypisane do wyrazu {0}'
+                , ENG: 'Categories {1} have been assigned to word {0}'
+            }, 
+            MetawordCategoryAssignedError: {
+                  POL: 'Błąd podczas próby przypisania nowych kategorii do wyrazu {0}'
+                , ENG: 'Error when trying to assign the given categories to word {0}'
             }
+
+
+
         };
 
         addEntries(entries);
