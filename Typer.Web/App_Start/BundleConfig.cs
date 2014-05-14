@@ -41,11 +41,21 @@ namespace Typer.Web
                 //, "~/Scripts/app/common/search.js"
                 //, "~/Scripts/app/common/list/listController.js"
                 //, "~/Scripts/app/common/list/list.js"
-                //, "~/Scripts/app/questions/queries.js"
-                //, "~/Scripts/app/questions/variants.js"
-                //, "~/Scripts/app/questions/variants3.js"
-                //, "~/Scripts/app/questions/options.js"
+                //, "~/Scripts/app/queries/variants.js"
+                //, "~/Scripts/app/queries/variants3.js"
+                //, "~/Scripts/app/queries/options.js"
+            ));
+
+            bundles.Add(new ScriptBundle("~/bundles/words").Include(
+                  "~/Scripts/app/common/list/list.js"
+                , "~/Scripts/app/common/list/wordList.js"
                 , "~/Scripts/app/words/words.js"
+            ));
+
+            bundles.Add(new ScriptBundle("~/bundles/queries").Include(
+                  "~/Scripts/app/common/list/list.js"
+                , "~/Scripts/app/common/list/queryList.js"
+                , "~/Scripts/app/queries/queries.js"
             ));
 
             bundles.Add(new ScriptBundle("~/bundles/test").Include(

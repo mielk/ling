@@ -3,5 +3,15 @@
 @{
     ViewBag.Title = "List";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    @Scripts.Render("~/bundles/words")
+}
+
+@section scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            LING.WORDS.initialize();
+        });
+    </script>
 }
 

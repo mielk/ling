@@ -1,19 +1,21 @@
 ﻿
-
-//Klasa generyczna będąca podstawą dla listy wyrazów i zapytań.
 function ListManager(properties) {
 
     'use strict';
     
     var self = this;
+    
+    //Class signature.
     self.ListManager = true;
+    
+
     self.eventHandler = mielk.eventHandler();
 
     //this.filterManager = new ListFilterManager(this, properties.filters);
 
-    this.itemsManager = new ListItemsManager(this);
+    //this.itemsManager = new ListItemsManager(this);
 
-    this.pagerManager = new ListPager(this, properties);
+    //this.pagerManager = new ListPager(this, properties);
 
     this.view = new ListView(this, properties);
     this.view.render({
@@ -55,72 +57,45 @@ ListManager.prototype = {
 
     },
     
-ListManager.prototype.pageItems = function () {
-    return this.pagerManager.pageItems;
-};
-ListManager.prototype.createObject = function () {
-    alert('Must be defined in implementing class');
-};
-ListManager.prototype.createListItem = function () {
-    alert('Must be defined in implementing class');
-};
-ListManager.prototype.createNewItem = function () {
-    var self = this;
-    var item = this.emptyItem();
-    item.bind({
-        add: function () {
-            self.filterManager.filter({});
+    pageItems: function () {
+        return this.pagerManager.pageItems;
+    },
+    
+    createObject: function () {
+        alert('Must be defined in implementing class');
+    },
+    
+    createListItem: function () {
+        alert('Must be defined in implementing class');
+    },
+    
+    createNewItem: function () {
+        var self = this;
+        var item = this.emptyItem();
+        item.bind({
+            add: function () {
+                self.filterManager.filter({});
+            }
+        });
+        item.edit();
+    },
+    
+    emptyItem: function () {
+        alert('Must be defined in implementing class');
+    },
+    
+    getLanguages: function () {
+        if (!this.languages) {
+            this.languages = my.languages.userLanguages();
         }
-    });
-    item.edit();
-};
-ListManager.prototype.emptyItem = function () {
-    alert('Must be defined in implementing class');
-};
-ListManager.prototype.getLanguages = function () {
-    if (!this.languages) {
-        this.languages = my.languages.userLanguages();
+        return this.languages;
+    },
+    
+    getLanguagesIds: function () {
+        if (!this.languagesIds) {
+            this.languagesIds = my.languages.userLanguagesId();
+        }
+        return this.languagesIds;
     }
-    return this.languages;
-};
-ListManager.prototype.getLanguagesIds = function () {
-    if (!this.languagesIds) {
-        this.languagesIds = my.languages.userLanguagesId();
-    }
-    return this.languagesIds;
-};    
     
 };
-
-
-
-
-WordListManager:
-
-
-    $(function () {
-        //var controller = new WordViewController({
-        var manager = new WordListManager({
-            pageItems: 10,
-            currentPage: 1,
-            columns: ['id', 'name', 'weight', 'type', 'categories'],
-            filters: ['wordtype', 'weight', 'categories', 'text']
-        });
-        manager.start();
-    });
-
-
-
-
-
-QuestionListManager:
-
-$(function () {
-    var manager = new QuestionListManager({
-        pageItems: 10,
-        currentPage: 1,
-        columns: ['id', 'name', 'weight', 'categories'],
-        filters: ['weight', 'categories', 'text']
-    });
-    manager.start();
-});

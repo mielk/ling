@@ -1,25 +1,23 @@
 ﻿/*
- * Words
+ * Word
  *
  * Date: 2014-05-14 14:11
  *
  */
-
-
-function Word() {
+function Metaword() {
 
     'use strict';
 
     var self = this;
     
     //Class signature.
-    self.Word = true;
+    self.Metaword = true;
     
     //Instance properties.
     
 
 }
-Word.prototype = {
+Metaword.prototype = {
     
 
     setCategories: function(categories) {
@@ -29,12 +27,14 @@ Word.prototype = {
 
 
 
-
 $(function () {
 
     'use strict';
 
     var words = (function () {
+
+        //Obiekt kontrolujący przepływem danych na ekranie wyrazów.
+        var controller;
 
         //Funkcja sprawdzająca czy w bazie istnieje już wyraz o podanej nazwie.
         function nameAlreadyExists(id, name) {
@@ -241,7 +241,8 @@ $(function () {
 
         //Funkcja ładująca ekran startowy dla wyrazów.
         function initialize() {
-            
+            controller = new WordListManager();
+            controller.start();
         }
 
 
