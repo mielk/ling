@@ -261,6 +261,13 @@ $(function () {
             });
 
         }
+        
+
+
+        //Funkcja ładująca ekran startowy dla zapytań.
+        function initialize() {
+
+        }
 
 
         return {
@@ -273,6 +280,7 @@ $(function () {
             //, add: add
             , getOptions: getOptions
             , getVariantSets: getVariantSets
+            , initialize: initialize
         };
 
     })();

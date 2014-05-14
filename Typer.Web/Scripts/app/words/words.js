@@ -239,6 +239,12 @@ $(function () {
         }
 
 
+        //Funkcja ładująca ekran startowy dla wyrazów.
+        function initialize() {
+            
+        }
+
+
         return {
               nameAlreadyExists: nameAlreadyExists
             , updateCategories: updateCategories
@@ -248,6 +254,7 @@ $(function () {
             , update: update
             , add: add
             , getWords: getWords
+            , initialize: initialize
         };
 
     })();
