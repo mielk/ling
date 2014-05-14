@@ -229,8 +229,70 @@ $(function () {
             GetMetawordWordsError: {
                   POL: 'Błąd podczas próby pobrania wyrazów dla metawyrazu {0}'
                 , ENG: 'Error when trying to get words for metaword {0}'
-            }
+            },
+            
 
+            //Querys
+            QueryCheckIfNameExistsError: {
+                  POL: 'Błąd podczas próby sprawdzenia czy istnieje już zapytanie o nazwie {0}'
+                , ENG: 'Error when trying to check if there is already query with name {0}'
+            },
+            QueryCategoryAssigned: {
+                  POL: 'Kategorie {1} zostały przypisane do zapytania {0}'
+                , ENG: 'Categories {1} have been assigned to query {0}'
+            }, 
+            QueryCategoryAssignedError: {
+                  POL: 'Błąd podczas próby przypisania nowych kategorii do zapytania {0}'
+                , ENG: 'Error when trying to assign the given categories to query {0}'
+            },
+            QueryActivated: {
+                  POL: 'Zapytanie {0} zostało aktywowane'
+                , ENG: 'Query {0} has been activated'
+            },
+            QueryActivatedError: {
+                  POL: 'Błąd podczas próby aktywacji zapytania {0}'
+                , ENG: 'Error when trying to activate query {0}'
+            },
+            QueryDeactivated: {
+                  POL: 'Zapytanie {0} zostało zdeaktywowane'
+                , ENG: 'Query {0} has been deactivated'
+            },
+            QueryDeactivatedError: {
+                  POL: 'Błąd podczas próby deaktywacji zapytania {0}'
+                , ENG: 'Error when trying to deactivate query {0}'
+            },
+            QueryUpdateWeight: {
+                  POL: 'Zapytanie {0} zmieniło wagę na {1}'
+                , ENG: 'Query {0} has changed its weight to {1}'
+            },
+            QueryUpdateWeightError: {
+                  POL: 'Błąd podczas zmiany wagi dla zapytania {0}'
+                , ENG: 'Error when trying to change the weight of the query {0}'
+            },
+            QueryUpdate: {
+                  POL: 'Właściwości zapytania {0} zostały zmienione'
+                , ENG: 'Query {0} has been updated'
+            },
+            QueryUpdateError: {
+                  POL: 'Błąd podczas próby zmiany właściwości zapytania {0}'
+                , ENG: 'Error when trying to update query {0}'
+            },
+            QueryAdded: {
+                  POL: 'Zapytanie {0} zostało dodane do bazy'
+                , ENG: 'Query {0} has been added'
+            },
+            QueryAddedError: {
+                  POL: 'Błąd podczas próby dodania zapytania {0} do bazy'
+                , ENG: 'Error when trying to add query {0}'
+            },
+            GetQueryOptionsError: {
+                  POL: 'Błąd podczas próby pobrania opcji dla zapytania {0}'
+                , ENG: 'Error when trying to fetch options for query {0}'
+            },
+            GetQueryVariantSetsError: {
+                  POL: 'Błąd podczas próby pobrania wariant-setów dla zapytania {0}'
+                , ENG: 'Error when trying to fetch variant sets for query {0}'
+            }
         };
 
         addEntries(entries);

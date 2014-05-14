@@ -41,7 +41,7 @@ namespace Typer.Web
                 //, "~/Scripts/app/common/search.js"
                 //, "~/Scripts/app/common/list/listController.js"
                 //, "~/Scripts/app/common/list/list.js"
-                //, "~/Scripts/app/questions/questions.js"
+                //, "~/Scripts/app/questions/queries.js"
                 //, "~/Scripts/app/questions/variants.js"
                 //, "~/Scripts/app/questions/variants3.js"
                 //, "~/Scripts/app/questions/options.js"

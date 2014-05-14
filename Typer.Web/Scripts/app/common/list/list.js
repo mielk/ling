@@ -91,3 +91,36 @@ ListManager.prototype.getLanguagesIds = function () {
 };    
     
 };
+
+
+
+
+WordListManager:
+
+
+    $(function () {
+        //var controller = new WordViewController({
+        var manager = new WordListManager({
+            pageItems: 10,
+            currentPage: 1,
+            columns: ['id', 'name', 'weight', 'type', 'categories'],
+            filters: ['wordtype', 'weight', 'categories', 'text']
+        });
+        manager.start();
+    });
+
+
+
+
+
+QuestionListManager:
+
+$(function () {
+    var manager = new QuestionListManager({
+        pageItems: 10,
+        currentPage: 1,
+        columns: ['id', 'name', 'weight', 'categories'],
+        filters: ['weight', 'categories', 'text']
+    });
+    manager.start();
+});
