@@ -325,7 +325,6 @@
 
 
 
-
     //Modules
 
     var objects = (function () {
@@ -1124,30 +1123,38 @@
 
     })();
 
+    var fn = (function() {
+
+        function run(f, param) {
+            if (f && typeof(f) === 'function') {
+                f(param);
+            }
+        }
+
+        return {
+            run: run
+    };
+
+    })();
 
     /*
      * Wrapper for functions defined above.
      */
     var mielk = {
-        hashTable: function (obj) {
-            return new HashTable(obj);
-        },
-        eventHandler: function () {
-            return new EventHandler();
-        },
-        resizableDiv: function (params) {
-            return new ResizableDiv(params);
-        },
-        notify: notify,
-        objects: objects,
-        validation: validation,
-        db: db,
-        ui: ui,
-        spinner: spinner,
-        arrays: arrays,
-        numbers: numbers,
-        text: text,
-        dates: dates
+          hashTable: function (obj) { return new HashTable(obj); }
+        , eventHandler: function () { return new EventHandler(); }
+        , resizableDiv: function (params) { return new ResizableDiv(params); }
+        , notify: notify
+        , objects: objects
+        , validation: validation
+        , db: db
+        , ui: ui
+        , spinner: spinner
+        , arrays: arrays
+        , numbers: numbers
+        , text: text
+        , dates: dates
+        , fn: fn
     };
 
 

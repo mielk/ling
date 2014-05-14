@@ -81,13 +81,12 @@ $(function () {
                     traditional: true,
                     callback: function (result) {
                         metaword.setCategories(categories);
-                        mielk.notify.display(successMessage, true);
-                        if (callback && typeof(callback) === 'function') {
-                            callback(result);
-                        }
+                        mielk.notify.display(success, true);
+                        mielk.fn.run(callback, result);
                     },
                     errorCallback: function() {
-                        mielk.notify.display(errorMessage, false);
+                        mielk.notify.display(error, false);
+                        mielk.fn.run(callback, false);
                     }
                 });
             
@@ -97,106 +96,158 @@ $(function () {
         function activate(id, name, callback) {
             var success = dict.MetawordActivated.get([name]);
             var error = dict.MetawordActivatedError.get([name]);
-            
 
+            mielk.db.fetch('Words', 'Activate', {
+                    'id': id
+                }, {                
+                    async: true,
+                    cache: false,
+                    callback: function(result) {
+                        mielk.notify.display(success, true);
+                        mielk.fn.run(callback, result);
+                    },
+                    errorCallback: function() {
+                        mielk.notify.display(error, false);
+                        mielk.fn.run(callback, false);
+                    }
+                });
 
         }
 
-        activate: function(e) {
-            dbOperation({                
-                functionName: 'Activate',
-                data: { 'id': e.id },
-                success: 
-                error: ',
-                callback: e.callback
-            });
-        },
-        deactivate: function(e) {
-            dbOperation({
-                functionName: 'Deactivate',
-                data: { 'id': e.id },
-                success: 'Word ' + e.name + ' has been deactivated',
-                error: 'Error when trying to deactivate word ' + e.name,
-                callback: e.callback
-            });
-        },
-        updateWeight: function(e) {
-            dbOperation({
-                functionName: 'UpdateWeight',
-                data: {
-                    'id': e.id,
-                    'weight': e.weight
-                },
-                success: 'Word ' + e.name + ' has changed its weight to ' + e.weight,
-                error: 'Error when trying to change the weight of the word ' + e.name,
-                callback: e.callback
-            });
-        },
-        update: function (e) {
-            dbOperation({
-                functionName: 'Update',
-                data: {
-                    'id': e.word.id,
-                    'name': e.name,
-                    'weight': e.weight,
-                    'categories': e.categories,
-                    'wordtype': e.wordtype,
-                    'removed': e.removed,
-                    'edited': e.edited,
-                    'added': e.added,
-                    'properties': e.properties,
-                    'forms': e.details
-                },
-                traditional: true,
-                success: 'Word ' + e.word.name + ' has been updated',
-                error: 'Error when trying to update the word ' + e.word.name,
-                callback: e.callback
-            });
-        },
-        add: function (e) {
-            dbOperation({
-                functionName: 'Add',
-                data: {
-                    'name': e.name,
-                    'weight': e.weight,
-                    'categories': e.categories,
-                    'wordtype': e.wordtype,
-                    'added': e.added,
-                    'properties': e.properties
-                }, traditional: true,
-                success: 'Word ' + e.name + ' has been added',
-                error: 'Error when trying to add the word ' + e.name,
-                callback: e.callback
-            });
-        },
-        getWords: function (id, languages) {
-            var words;
-            $.ajax({
-                url: '/Words/GetWords',
-                type: "GET",
-                data: {
-                    'id': id,
-                    'languages': languages
-                },
-                datatype: "json",
-                async: false,
+        //Funkcja ustawiająca podany wyraz na nieaktywny.
+        function deactivate(id, name, callback) {
+            var success = dict.MetawordDeactivated.get([name]);
+            var error = dict.MetawordDeactivatedError.get([name]);
+
+            mielk.db.fetch('Words', 'Deactivate', {
+                'id': id
+            }, {                
+                async: true,
                 cache: false,
-                traditional: true,
-                success: function (result) {
-                    words = result;
+                callback: function(result) {
+                    mielk.notify.display(success, true);
+                    mielk.fn.run(callback, result);
                 },
-                error: function (msg) {
-                    alert("[register.js::nameAlreadyExists] " + msg.status + " | " + msg.statusText);
+                errorCallback: function() {
+                    mielk.notify.display(error, false);
+                    mielk.fn.run(callback, false);
                 }
             });
 
-            return words;
+        }
+        
+        //Funkcja zmieniająca wagę podanego metawyrazu.
+        function updateWeight(id, name, weight, callback) {
+            var success = dict.MetawordUpdateWeight.get([name, weight]);
+            var error = dict.MetawordUpdateWeightError.get([name]);
+
+            mielk.db.fetch('Words', 'UpdateWeight', {
+                'id': id,
+                'weight': weight
+            }, {                
+                async: true,
+                cache: false,
+                callback: function(result) {
+                    mielk.notify.display(success, true);
+                    mielk.fn.run(callback, result);
+                },
+                errorCallback: function() {
+                    mielk.notify.display(error, false);
+                    mielk.fn.run(callback, false);
+                }
+            });
+        }
+                
+        //Funkcja zmieniająca właściwości podanego metawyrazu.
+        function update(e) {
+            var success = dict.MetawordUpdate.get([e.word.name]);
+            var error = dict.MetawordUpdateError.get([e.word.name]);
+
+            mielk.db.fetch('Words', 'Update', {
+                'id': e.word.id,
+                'name': e.name,
+                'weight': e.weight,
+                'categories': e.categories,
+                'wordtype': e.wordtype,
+                'removed': e.removed,
+                'edited': e.edited,
+                'added': e.added,
+                'properties': e.properties,
+                'forms': e.details
+            }, {                
+                async: true,
+                cache: false,
+                traditional: true,
+                callback: function(result) {
+                    mielk.notify.display(success, true);
+                    mielk.fn.run(e.callback, result);
+                },
+                errorCallback: function() {
+                    mielk.notify.display(error, false);
+                    mielk.fn.run(e.callback, false);
+                }
+            });
+        }
+
+        //Funkcja dodająca podany metawyraz do bazy danych.
+        function add(e) {
+            var success = dict.MetawordAdded.get([e.word.name]);
+            var error = dict.MetawordAddedError.get([e.word.name]);
+
+            mielk.db.fetch('Words', 'Add', {
+                'name': e.name,
+                'weight': e.weight,
+                'categories': e.categories,
+                'wordtype': e.wordtype,
+                'added': e.added,
+                'properties': e.properties
+            }, {                
+                async: true,
+                cache: false,
+                traditional: true,
+                callback: function(result) {
+                    mielk.notify.display(success, true);
+                    mielk.fn.run(e.callback, result);
+                },
+                errorCallback: function() {
+                    mielk.notify.display(error, false);
+                    mielk.fn.run(e.callback, false);
+                }
+            });
+        }
+
+        //Funkcja zwracająca wyrazy dla podanego metawyrazu.
+        function getWords(id, name, languages) {
+            var error = dict.GetMetawordWordsError.get([name]);
+            
+            mielk.db.fetch('Words', 'GetWords', {
+                'id': id,
+                'languages': languages
+            }, {                
+                async: false,
+                cache: false,
+                traditional: true,
+                callback: function(result) {
+                    return result;
+                },
+                errorCallback: function() {
+                    mielk.notify.display(error, false);
+                    return [];
+                }
+            });
 
         }
+
 
         return {
               nameAlreadyExists: nameAlreadyExists
             , updateCategories: updateCategories
+            , activate: activate
+            , deactivate: deactivate
+            , updateWeight: updateWeight
+            , update: update
+            , add: add
+            , getWords: getWords
         };
 
     })();
@@ -207,40 +258,6 @@ $(function () {
 });
 
 
-
-
-
-
-my.words = my.words || (function () {
-
-    function dbOperation(properties) {
-        $.ajax({
-            url: "/Words/" + properties.functionName,
-            type: "POST",
-            data: properties.data,
-            datatype: "json",
-            async: false,
-            traditional: properties.traditional || false,
-            success: function (result) {
-                my.notify.display(result ? properties.success : properties.error, result);
-                if (properties.callback) {
-                    properties.callback(result);
-                }
-            },
-            error: function (msg) {
-                my.notify.display(properties.error + ' (' + msg.status + ')', false);
-                if (properties.callback) {
-                    properties.callback(false);
-                }
-            }
-        });
-    }
-
-    return{
-
-    };
-
-})();
 
 $(function () {
     //var controller = new WordViewController({

@@ -185,9 +185,51 @@ $(function () {
             MetawordCategoryAssignedError: {
                   POL: 'Błąd podczas próby przypisania nowych kategorii do wyrazu {0}'
                 , ENG: 'Error when trying to assign the given categories to word {0}'
+            },
+            MetawordActivated: {
+                  POL: 'Wyraz {0} został aktywowany'
+                , ENG: 'Metaword {0} has been activated'
+            },
+            MetawordActivatedError: {
+                  POL: 'Błąd podczas próby aktywacji metawyrazu {0}'
+                , ENG: 'Error when trying to activate metaword {0}'
+            },
+            MetawordDeactivated: {
+                  POL: 'Wyraz {0} został zdeaktywowany'
+                , ENG: 'Metaword {0} has been deactivated'
+            },
+            MetawordDeactivatedError: {
+                  POL: 'Błąd podczas próby deaktywacji metawyrazu {0}'
+                , ENG: 'Error when trying to deactivate metaword {0}'
+            },
+            MetawordUpdateWeight: {
+                  POL: 'Wyraz {0} zmienił wagę na {1}'
+                , ENG: 'Metaword {0} has changed its weight to {1}'
+            },
+            MetawordUpdateWeightError: {
+                  POL: 'Błąd podczas zmiany wagi dla metawyrazu {0}'
+                , ENG: 'Error when trying to change the weight of the word {0}'
+            },
+            MetawordUpdate: {
+                  POL: 'Właściwości metawyrazu {0} zostały zmienione'
+                , ENG: 'Metaword {0} has been updated'
+            },
+            MetawordUpdateError: {
+                  POL: 'Błąd podczas próby zmiany właściwości metawyrazu {0}'
+                , ENG: 'Error when trying to update metaword {0}'
+            },
+            MetawordAdded: {
+                  POL: 'Metawyraz {0} został dodany do bazy'
+                , ENG: 'Metaword {0} has been added'
+            },
+            MetawordAddedError: {
+                  POL: 'Błąd podczas próby dodania metawyrazu {0} do bazy'
+                , ENG: 'Error when trying to add metaword {0}'
+            },
+            GetMetawordWordsError: {
+                  POL: 'Błąd podczas próby pobrania wyrazów dla metawyrazu {0}'
+                , ENG: 'Error when trying to get words for metaword {0}'
             }
-
-
 
         };
 

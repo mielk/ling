@@ -108,9 +108,11 @@ $(function () {
                 callback: function (result) {
                     mielk.notify.display(result ? success : error, result);
                     e.node.object.name = e.name;
+                    mielk.fn.run(e.callback, result);
                 },
                 errorCallback: function() {
                     mielk.notify.display(error);
+                    mielk.fn.run(e.callback, false);
                 }
             });
             
@@ -128,9 +130,11 @@ $(function () {
                 callback: function (result) {
                     mielk.notify.display(result ? success : error, result);
                     e.node.object.parent = e.to;
+                    mielk.fn.run(e.callback, result);
                 },
                 errorCallback: function() {
                     mielk.notify.display(error);
+                    mielk.fn.run(e.callback, false);
                 }
             });
             
@@ -147,9 +151,11 @@ $(function () {
                 callback: function (result) {
                     mielk.notify.display(result ? success : error, result);
                     e.node.object.parent = e.to;
+                    mielk.fn.run(e.callback, result);
                 },
                 errorCallback: function () {
                     mielk.notify.display(error);
+                    mielk.fn.run(e.callback, false);
                 }
             });
 
