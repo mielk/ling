@@ -1,229 +1,83 @@
-﻿my = my || {};
+﻿/*
+ * Categories
+ *
+ * Date: 2014-05-14 11:29
+ *
+ */
 
-function Category(parent, properties) {
-    var me = this;
-    this.Category = true;
-    this.key = properties.key;
-    this.name = properties.name;
-    this.parent = parent;
-    this.expanded = true;
-    this.children = {};
-    this.items = function () {
-        return my.array.objectToArray(me.children);
-    };
-    
-    this.loadChildren(properties.children);
-    my.categories.addToFlyweight(this);
-}
-Category.prototype.addChild = function(category) {
-    this.children[category.key] = category;
-};
-Category.prototype.removeChild = function(category) {
-    delete this.children[category.key ? category.key : category];
-};
-Category.prototype.loadChildren = function(children) {
-    for (var i = 0; i < children.length; i++) {
-        var child = children[i];
-        var category = new Category(this, categoryProperties(child));
-        // ReSharper disable once PossiblyUnassignedProperty
-        this.addChild(category);
-    }
-};
-Category.prototype.path = function() {
-    if (!this.parent) return '';
-    var parentPath = this.parent.path();
-    return parentPath + (parentPath ? ' > ' : '') + this.name;
-};
-Category.prototype.getDescendants = function () {
-    var array = [];
-    var counter = 0;
-    for (var key in this.children) {
-        if (this.children.hasOwnProperty(key)) {
-            var child = this.children[key];
-            var descendants = child.getDescendants();
-            for (var i = 0; i < descendants.length; i++) {
-                array[counter++] = descendants[i];
-            }
-        }
-    }
-    array[counter++] = this;
-    return array;
-};
+$(function () {
 
+    'use strict';
 
-function categoryProperties(properties) {
-    return {        
-        key: properties.Id,
-        name: properties.Name,
-        parentId: properties.ParentId,
-        children: properties.Children
-    };
-}
+    var categories = (function () {
+        var root;
+        var flyweight = mielk.hashTable();
 
-
-
-my.categories = my.categories || (function () {
-    var root;
-    var flyweight = new HashTable(null);
-
-    function loadRoot() {
-        var $root;
-        $.ajax({
-            url: "/Categories/GetCategories",
-            type: "GET",
-            datatype: "json",
-            async: false,
-            success: function (result) {
-                $root = result;
-            },
-            cache: false,
-            error: function (msg) {
-                alert(msg.status + " | " + msg.statusText);
-            }
-        });
-
-        return new Category(null, categoryProperties($root));
-
-    }
-
-    function dbOperation(properties) {
-        $.ajax({
-            url: "/Categories/" + properties.functionName,
-            type: "POST",
-            data: properties.data,
-            datatype: "json",
-            async: false,
-            success: function (result) {
-                my.notify.display(result ? properties.success : properties.error, result);
-                if (properties.callback) {
-                    properties.callback(result);
+        function load() {
+            mielk.db.fetch('Categories', 'GetCategories', {}, {
+                async: true,
+                cache: false,
+                callback: function (result) {
+                    root = new Category(null, categoryProperties(result));
                 }
-            },
-            error: function (msg) {
-                my.notify.display(properties.error + ' (' + msg.status + ')', false);
-                properties.callback(false);
-            }
-        });
-    }
-
-    function getCategory(id) {
-        if (!root) {
-            root = loadRoot();
+            });
         }
-        return flyweight.getItem(id);
-    }
 
-    return {
-        getRoot: function() {
-            if (!root) {
-                root = loadRoot();
-            }
+
+        //Returns the root object of this categories collection.
+        function getRoot() {
+            if (!root) load();
             return root;
-        },
-        updateName: function (e) {
-            dbOperation({
-                functionName: 'UpdateName',
-                data: {
-                    'id': e.node.key,
-                    'name': e.name,
-                },
-                success: 'Category ' + e.previous + ' changed its name to ' + e.name,
-                error: 'Error when trying to change category name from ' + e.previous + ' to ' + e.name,
-                // ReSharper disable once UnusedParameter
-                callback: function() {
-                    e.node.object.name = e.name;
-                }
-            });
+        }
+            
 
-        },
-        updateParent: function(e) {
-            dbOperation({
-                functionName: 'UpdateParentId',
-                data: {
-                    'id': e.node.key,
-                    'parentId': e.to.key,
-                },
-                success: 'Category ' + e.node.name + ' has been moved to ' + e.to.name,
-                error: 'Error when trying to move category ' + e.node.name + ' to ' + e.to.name,
-                // ReSharper disable once UnusedParameter
-                callback: function() {
-                    e.node.object.parent = e.to;
-                }
-            });
-        },
-        remove: function(e) {
-            dbOperation({
-                functionName: 'RemoveCategory',
-                data: {
-                    'id': e.node.key,
-                },
-                success: 'Category ' + e.node.name + ' has been removed',
-                error: 'Error when trying to remove category ' + e.node.name,
-                callback: function () {
+        //Returns a category with the specified index number.
+        function getCategory(id) {
+            if (!root) {
+                root = load();
+            }
+            return flyweight.getItem(id);
+        }
 
-                }
-            });
-        },
-        addNew: function (e) {
-            var node = e.node;
-            dbOperation({
-                functionName: 'AddCategory',
-                data: {
-                    'name': node.name,
-                    'parentId': node.parent.key
-                },
-                success: 'Category ' + node.name + ' has been added',
-                error: 'Error when trying to add new category',
-                callback: function(key) {
-                    if (key === false) {
-                        node.cancel();
-                    } else {
-                        node.key = key;
-                        var category = new Category(node.parent.object, {
-                            key: key,
-                            name: node.name,
-                            children: {}
-                        });
-                        node.object = category;
-                        node.parent.object.addChild(category);
-                    }
-                }
-            });
-        },
-        addToFlyweight: function (category) {
-            flyweight.setItem(category.key, category);
-        },
-        getCategory: function (id) {
-            return getCategory(id);
-        },
-        getCategories: function (objects) {
+        //Convert given objects array into the collection of underlying categories. 
+        //Given array can contain IDs only or other type of objects
+        //having [id] or [key] property consistent with categories ids.
+        function getCategories(objects) {
 
             if (!objects || !objects.length) return [];
 
-            var categories = [];
+            var $categories = [];
             for (var i = 0; i < objects.length; i++) {
                 var object = objects[i];
-                var id = object.id || object.key || 0;
+                var id = object.id || object.key || object || 0;
                 var category = getCategory(id);
                 if (category) {
-                    categories.push(category);
+                    $categories.push(category);
                 }
             }
             return categories;
-        },
-        toString: function (categories) {
-                var categoriesString = '';
-                for (var i = 0; i < categories.length; i++) {
-                    var category = categories[i];
-                    categoriesString += (categoriesString ? ' | ' : '');
-                    categoriesString += category.path();
-                }
-                return categoriesString;
-        },
-        toIntArray: function (categories) {
+        }
+        
+
+        //Returns a string representing this categories collection.
+        //Each category is presented as its full path containing
+        //this category and all its parents.
+        function toString($categories) {
+            var categoriesString = '';
+            for (var i = 0; i < $categories.length; i++) {
+                var category = $categories[i];
+                categoriesString += (categoriesString ? ' | ' : '');
+                categoriesString += category.path();
+            }
+            return categoriesString;
+        }
+        
+
+        //Returns an array of categories Ids.
+        function toIntArray($categories) {
             var array = [];
-            for (var i = 0; i < categories.length; i++) {
-                var category = categories[i];
+            for (var i = 0; i < $categories.length; i++) {
+                var category = $categories[i];
                 var descendants = category.getDescendants();
                 for (var j = 0; j < descendants.length; j++) {
                     var item = descendants[j];
@@ -232,9 +86,233 @@ my.categories = my.categories || (function () {
             }
             return array;
         }
-    }; 
 
-})();
+
+        //Add a given category to the 'flyweight' collection.
+        function addToFlyweight(category) {
+            flyweight.setItem(category.key, category);
+        }
+
+
+
+        //function dbOperation(properties) {
+        //    $.ajax({
+        //        url: "/Categories/" + properties.functionName,
+        //        type: "POST",
+        //        data: properties.data,
+        //        datatype: "json",
+        //        async: false,
+        //        success: function (result) {
+        //            
+        //            if (properties.callback) {
+        //                properties.callback(result);
+        //            }
+        //        },
+        //        error: function (msg) {
+        //            my.notify.display(properties.error + ' (' + msg.status + ')', false);
+        //            properties.callback(false);
+        //        }
+        //    });
+        //}
+        
+        //DB OPERATIONS
+        function updateName(e) {
+            var successMessage = 'Category ' + e.previous + ' changed its name to ' + e.name;
+            var errorMessage = 'Error when trying to change category name from ' + e.previous + ' to ' + e.name;
+
+            mielk.db.fetch('Categories', 'UpdateName', {
+                  'id': e.node.key
+                , 'name': e.name
+            }, {
+                async: true,
+                callback: function (result) {
+                    mielk.notify.display(result ? successMessage : errorMessage, result);
+                    e.node.object.name = e.name;
+                },
+                errorCallback: function() {
+                    mielk.notify.display(errorMessage);
+                }
+            });
+            
+        }
+        
+        function updateParent(e) {
+            var successMessage = 'Category ' + e.node.name + ' has been moved to ' + e.to.name;
+            var errorMessage = 'Error when trying to move category ' + e.node.name + ' to ' + e.to.name;
+
+            mielk.db.fetch('Categories', 'UpdateParentId', {
+                  'id': e.node.key
+                , 'parentId': e.to.key
+            }, {
+                async: true,
+                callback: function (result) {
+                    mielk.notify.display(result ? successMessage : errorMessage, result);
+                    e.node.object.parent = e.to;
+                },
+                errorCallback: function() {
+                    mielk.notify.display(errorMessage);
+                }
+            });
+            
+        }
+        
+        function remove(e) {
+            var successMessage = 'Category ' + e.node.name + ' has been removed';
+            var errorMessage = 'Error when trying to remove category ' + e.node.name;
+
+            mielk.db.fetch('Categories', 'RemoveCategory', {
+                'id': e.node.key
+            }, {
+                async: true,
+                callback: function (result) {
+                    mielk.notify.display(result ? successMessage : errorMessage, result);
+                    e.node.object.parent = e.to;
+                },
+                errorCallback: function () {
+                    mielk.notify.display(errorMessage);
+                }
+            });
+
+        }
+        
+        function addNew(e) {
+            var node = e.node;
+            var successMessage = 'Category ' + node.name + ' has been added';
+            var errorMessage = 'Error when trying to add new category';
+
+            mielk.db.fetch('Categories', 'AddCategory', {
+                  'name': node.name
+                , 'parentId': node.parent.key
+            }, {
+                async: true,
+                callback: function (key) {
+                    mielk.notify.display(key ? successMessage : errorMessage, key ? true : false);
+                    
+                    if (key === false) {
+                        node.cancel();
+                    } else {
+                        node.key = key;
+                        node.object = createNewCategory(node.parent.object, key, node.name);
+                    }
+
+                },
+                errorCallback: function () {
+                    mielk.notify.display(errorMessage);
+                }
+            });
+
+        }
+        
+
+        function createNewCategory(parent, key, name) {
+            var category = new Category(parent, {
+                key: key,
+                name: name,
+                children: {}
+            });
+            parent.addChild(category);
+            return category;
+        }
+
+
+        return {
+              load: load
+            , getRoot: getRoot
+            , updateName: updateName
+            , updateParent: updateParent
+            , remove: remove
+            , addNew: addNew
+            , addToFlyweight: addToFlyweight
+            , getCategory: getCategory
+            , getCategories: getCategories
+            , toString: toString
+            , toIntArray: toIntArray
+            
+        };
+
+    })();
+
+
+
+    // ReSharper disable once InconsistentNaming // Class name
+    function Category(parent, properties) {
+        var self = this;
+        
+        //Class signature.
+        self.Category = true;
+        
+        //Instance properties.
+        self.key = properties.key;
+        self.name = properties.name;
+        self.parent = parent;
+        self.expanded = true;
+        self.children = {};
+        self.items = function () {
+            return mielk.arrays.fromObject(self.children);
+        };
+
+        (function initialize() {
+            self.loadChildren(properties.children);
+            categories.addToFlyweight(self);
+        })();
+
+    }
+    Category.prototype = {        
+        addChild: function(category) {
+            this.children[category.key] = category;
+        },
+        removeChild: function (category) {
+            delete this.children[category.key ? category.key : category];
+        },
+        loadChildren: function (children) {
+            for (var i = 0; i < children.length; i++) {
+                var child = children[i];
+                var category = new Category(this, categoryProperties(child));
+                // ReSharper disable once PossiblyUnassignedProperty
+                this.addChild(category);
+            }
+        },
+        path: function () {
+            if (!this.parent) return '';
+            var parentPath = this.parent.path();
+            return parentPath + (parentPath ? ' > ' : '') + this.name;
+        },
+        getDescendants: function () {
+            var array = [];
+            var counter = 0;
+            for (var key in this.children) {
+                if (this.children.hasOwnProperty(key)) {
+                    var child = this.children[key];
+                    var descendants = child.getDescendants();
+                    for (var i = 0; i < descendants.length; i++) {
+                        array[counter++] = descendants[i];
+                    }
+                }
+            }
+            array[counter++] = this;
+            return array;
+        }
+    };
+
+
+    function categoryProperties(properties) {
+        return {        
+            key: properties.Id,
+            name: properties.Name,
+            parentId: properties.ParentId,
+            children: properties.Children
+        };
+    }
+
+
+    // Expose ling to the global object
+    LING.CATEGORIES = categories;
+    
+    // Initialize categories collection.
+    categories.load();
+
+});
+
 
 $(function () {
     var controller = new CategoryViewController();

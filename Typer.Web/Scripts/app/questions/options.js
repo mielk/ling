@@ -147,7 +147,7 @@ function Word(metaword, properties) {
     this.Word = true;
     this.service = my.words;
 }
-extend(OptionEntity, Word);
+mielk.objects.extend(OptionEntity, Word);
 Word.prototype.editOptionPanel = function (editItem, properties) {
     return new WordOptionEditPanel(this, editItem, properties);
 };
@@ -267,7 +267,7 @@ function Option(question, properties) {
     this.Option = true;
     this.service = my.questions;
 }
-extend(OptionEntity, Option);
+mielk.objects.extend(OptionEntity, Option);
 Option.prototype.editOptionPanel = function (editItem, properties) {
     return new QuestionOptionEditPanel(this, editItem, properties);
 };
@@ -348,7 +348,7 @@ function WordOptionEditEntity(properties) {
     OptionEditEntity.call(this, properties);
     this.WordOptionEditEntity = true;
 }
-extend(OptionEditEntity, WordOptionEditEntity);
+mielk.objects.extend(OptionEditEntity, WordOptionEditEntity);
 WordOptionEditEntity.prototype.createPropertyManager = function () {
     return new WordPropertyManager(this, {});
 };
@@ -363,7 +363,7 @@ function QuestionOptionEditEntity(properties) {
     OptionEditEntity.call(this, properties);
     this.QuestionOptionEditEntity = true;
 }
-extend(OptionEditEntity, QuestionOptionEditEntity);
+mielk.objects.extend(OptionEditEntity, QuestionOptionEditEntity);
 QuestionOptionEditEntity.prototype.createPropertyManager = function () {
     return new QuestionPropertyManager(this, {});
 };
@@ -412,7 +412,7 @@ function WordPropertyManager(editObject) {
     this.loadProperties();
     this.loadValues();
 }
-extend(PropertyManager, WordPropertyManager);
+mielk.objects.extend(PropertyManager, WordPropertyManager);
 WordPropertyManager.prototype.loadProperties = function () {
     var metaword = this.entity.parent;
     var languageId = this.entity.languageId;
@@ -566,7 +566,7 @@ function QuestionPropertyManager(editObject) {
     this.QuestionPropertyManager = true;
     this.ui.hide();
 }
-extend(PropertyManager, QuestionPropertyManager);
+mielk.objects.extend(PropertyManager, QuestionPropertyManager);
 
 
 function DetailsManager(object) {
@@ -622,7 +622,7 @@ function GrammarManager(object, properties) {
     this.render();
 
 }
-extend(DetailsManager, GrammarManager);
+mielk.objects.extend(DetailsManager, GrammarManager);
 GrammarManager.prototype.renderSearchPanel = function (name) {
     var self = this;
 
@@ -989,7 +989,7 @@ function OptionManager(object, properties) {
     //this.render();
 
 }
-extend(DetailsManager, OptionManager);
+mielk.objects.extend(DetailsManager, OptionManager);
 
 
 
@@ -1232,7 +1232,7 @@ function WordOptionEditPanel(object, editObject, line) {
     EditOptionPanel.call(this, object, editObject, line);
     this.WordOptionEditPanel = true;
 }
-extend(EditOptionPanel, WordOptionEditPanel);
+mielk.objects.extend(EditOptionPanel, WordOptionEditPanel);
 
 
 
@@ -1240,4 +1240,4 @@ function QuestionOptionEditPanel(object, editObject, line) {
     EditOptionPanel.call(this, object, editObject, line);
     this.QuestionOptionEditPanel = true;
 }
-extend(EditOptionPanel, QuestionOptionEditPanel);
+mielk.objects.extend(EditOptionPanel, QuestionOptionEditPanel);

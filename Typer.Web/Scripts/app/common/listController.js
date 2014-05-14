@@ -85,7 +85,7 @@ function WordListManager(properties) {
     this.name = 'Words';
     this.WordListManager = true;
 }
-extend(ListManager, WordListManager);
+mielk.objects.extend(ListManager, WordListManager);
 WordListManager.prototype.createObject = function (properties) {
     return new Metaword(properties);
 };
@@ -116,7 +116,7 @@ function QuestionListManager(properties) {
     this.name = 'Questions';
     this.QuestionListManager = true;
 }
-extend(ListManager, QuestionListManager);
+mielk.objects.extend(ListManager, QuestionListManager);
 QuestionListManager.prototype.createObject = function (properties) {
     return new Question(properties);
 };
@@ -208,7 +208,7 @@ function ListFilterManager(controller, filters) {
     };
 
 }
-extend(ListManagerPanel, ListFilterManager);
+mielk.objects.extend(ListManagerPanel, ListFilterManager);
 ListFilterManager.prototype.filterManagerCreatingObject = function(filters) {
     var array = filters ? filters : [];
     var result = {};
@@ -334,7 +334,7 @@ function ListPager(controller, properties) {
     })();
 
 }
-extend(ListManagerPanel, ListPager);
+mielk.objects.extend(ListManagerPanel, ListPager);
 ListPager.prototype.setTotalItems = function (items) {
     this.totalItems = items;
     this.totalPages = Math.max(Math.floor(this.totalItems / this.pageItems) + (this.totalItems % this.pageItems ? 1 : 0), 1);
@@ -363,7 +363,7 @@ function ListItemsManager(controller) {
     });
 
 }
-extend(ListManagerPanel, ListItemsManager);
+mielk.objects.extend(ListManagerPanel, ListItemsManager);
 ListItemsManager.prototype.refresh = function (items) {
     this.clear();
     
@@ -415,7 +415,7 @@ function WordListItem(manager, properties) {
     this.name = 'word';
     this.view = new WordListItemView(self.manager, self);
 }
-extend(ListItem, WordListItem);
+mielk.objects.extend(ListItem, WordListItem);
 
 
 function QuestionListItem(manager, properties) {
@@ -425,7 +425,7 @@ function QuestionListItem(manager, properties) {
     this.name = 'question';
     this.view = new QuestionListItemView(self.manager, self, {className: this.name });
 }
-extend(ListItem, QuestionListItem);
+mielk.objects.extend(ListItem, QuestionListItem);
 
 
 
@@ -519,7 +519,7 @@ function WordListItemView(manager, item) {
     });
 
 }
-extend(ListItemView, WordListItemView);
+mielk.objects.extend(ListItemView, WordListItemView);
 WordListItemView.prototype.loadDetails = function () {
     var self = this;
     var object = self.object;
@@ -578,7 +578,7 @@ function QuestionListItemView(manager, item) {
     ListItemView.call(this, manager, item);
     this.QuestionListItemView = true;
 }
-extend(ListItemView, QuestionListItemView);
+mielk.objects.extend(ListItemView, QuestionListItemView);
 QuestionListItemView.prototype.loadDetails = function () {
     var self = this;
     var object = self.object;
@@ -775,7 +775,7 @@ function Metaword(properties) {
     this.service = my.words;
     this.wordtype = WORDTYPE.getItem(properties.Type);
 }
-extend(Entity, Metaword);
+mielk.objects.extend(Entity, Metaword);
 Metaword.prototype.editItem = function () {
     var self = this;
     return new WordEditEntity({
@@ -1001,7 +1001,7 @@ function Question(properties) {
     this.Question = true;
     this.service = my.questions;
 }
-extend(Entity, Question);
+mielk.objects.extend(Entity, Question);
 Question.prototype.editItem = function () {
     var self = this;
     return new QuestionEditEntity({
@@ -1339,7 +1339,7 @@ function WordEditEntity(properties) {
     this.WordEditEntity = true;
     this.wordtype = properties.wordtype;
 }
-extend(EditEntity, WordEditEntity);
+mielk.objects.extend(EditEntity, WordEditEntity);
 WordEditEntity.prototype.setWordtype = function (params) {
     var wordtype = params.wordtype;
     var line = params.line;
@@ -1374,7 +1374,7 @@ function QuestionEditEntity(properties) {
     EditEntity.call(this, properties);
     this.QuestionEditEntity = true;
 }
-extend(EditEntity, QuestionEditEntity);
+mielk.objects.extend(EditEntity, QuestionEditEntity);
 QuestionEditEntity.prototype.loadItems = function () {
     this.loadOptions();
     this.loadVariants();
@@ -1746,7 +1746,7 @@ function WordEditPanel(object, editObject) {
     EditPanel.call(this, object, editObject);
     this.WordEditPanel = true;
 }
-extend(EditPanel, WordEditPanel);
+mielk.objects.extend(EditPanel, WordEditPanel);
 WordEditPanel.prototype.render = function () {
     var self = this;
     //[Wordtype]
@@ -1778,7 +1778,7 @@ function QuestionEditPanel(object, editObject) {
     EditPanel.call(this, object, editObject);
     this.QuestionEditPanel = true;
 }
-extend(EditPanel, QuestionEditPanel);
+mielk.objects.extend(EditPanel, QuestionEditPanel);
 QuestionEditPanel.prototype.render = function () {
     //[Button for running variant panel]
     var variantButtonsPanel = new VariantButtonsPanel(this, self.editObject);

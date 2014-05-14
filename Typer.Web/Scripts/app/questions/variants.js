@@ -1496,7 +1496,7 @@ function VariantOptionsManager(parent) {
     initialize();
 
 }
-extend(VariantSubpanel, VariantOptionsManager);
+mielk.objects.extend(VariantSubpanel, VariantOptionsManager);
 
 
 
@@ -2341,7 +2341,7 @@ function VariantConnectionsManager(parent) {
     initialize();
 
 }
-extend(VariantSubpanel, VariantConnectionsManager);
+mielk.objects.extend(VariantSubpanel, VariantConnectionsManager);
 
 
 
@@ -2653,7 +2653,7 @@ function VariantDependenciesManager(parent) {
     };
     
 }
-extend(VariantSubpanel, VariantDependenciesManager);
+mielk.objects.extend(VariantSubpanel, VariantDependenciesManager);
 
 
 
@@ -3505,7 +3505,7 @@ function VariantLimitsManager(parent) {
 }
 
 
-extend(VariantSubpanel, VariantLimitsManager);
+mielk.objects.extend(VariantSubpanel, VariantLimitsManager);
 
 
 

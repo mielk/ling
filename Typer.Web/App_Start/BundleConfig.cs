@@ -46,7 +46,10 @@ namespace Typer.Web
                 , "~/Scripts/app/questions/variants3.js"
                 , "~/Scripts/app/questions/options.js"
                 , "~/Scripts/app/words/words.js"
-                , "~/Scripts/app/test/test.js"
+            ));
+
+            bundles.Add(new ScriptBundle("~/bundles/test").Include(
+                  "~/Scripts/app/test/test.js"
             ));
 
 

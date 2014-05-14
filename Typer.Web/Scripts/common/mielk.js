@@ -515,7 +515,8 @@
         return {
             fetch: function (controller, method, data, params) {
                 var $result;
-                var callback = (params && params.callback && typeof (params.callback) === 'function' ? params.callback : null);
+                var successCallback = (params && params.callback && typeof (params.callback) === 'function' ? params.callback : null);
+                var errorCallback = (params && params.errorCallback && typeof (params.errorCallback) === 'function' ? params.errorCallback : null);
 
                 $.ajax({
                     url: '/' + controller + '/' + method,
@@ -526,18 +527,22 @@
                     cache: false,
                     traditional: (params && params.traditional ? true : false),
                     success: function (result) {
-                        if (callback) {
-                            $result = callback(result);
+                        if (successCallback) {
+                            $result = successCallback(result);
                         } else {
                             $result = result;
                         }
+                        return $result;
                     },
                     error: function (msg) {
-                        alert(msg.status + ' | ' + msg.statusText);
+                        if (errorCallback) {
+                            errorCallback(msg);
+                        } else {
+                            alert(msg.status + ' | ' + msg.statusText);
+                        }
                     }
                 });
 
-                return $result;
             }
         };
 

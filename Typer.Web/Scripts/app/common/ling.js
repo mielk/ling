@@ -1,4 +1,9 @@
-﻿/*
+﻿var my;
+if (my === undefined) {
+    my = [];
+}
+
+/*
  * Ling main JavaScript module
  *
  * Date: 2014-05-13 16:26
