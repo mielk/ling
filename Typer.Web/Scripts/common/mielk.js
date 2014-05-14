@@ -951,6 +951,11 @@
             if (chars > base.length) return base;
             return base.substring(0, base.length - chars);
         }
+        
+        function replaceGlobal(original, oldSubstring, newSubstring) {
+            var regex = new RegExp(oldSubstring, "g");
+            return original.replace(regex, newSubstring);
+        }
 
         return {
             cut: cut,
@@ -963,7 +968,8 @@
             startsWith: startsWith,
             valueToText: valueToText,
             matchEnd: matchEnd,
-            parse: parse
+            parse: parse,
+            replaceGlobal: replaceGlobal
         };
 
     })();

@@ -27,7 +27,6 @@ namespace Typer.Web
                 , "~/Scripts/common/dropdown.js"
                 //, "~/Scripts/common/util.js"                        
                 , "~/Scripts/common/mielk.js"
-                , "~/Scripts/common/internationalization.js"
             ));
 
             bundles.Add(new ScriptBundle("~/bundles/authentication").Include(
@@ -39,6 +38,7 @@ namespace Typer.Web
             bundles.Add(new ScriptBundle("~/bundles/app").Include(
                   "~/Scripts/app/common/ling.js"
                 , "~/Scripts/app/common/search.js"
+                , "~/Scripts/app/common/internationalization.js"
                 , "~/Scripts/app/categories/categories.js"
                 , "~/Scripts/app/common/listController.js"
                 , "~/Scripts/app/questions/questions.js"

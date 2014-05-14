@@ -277,7 +277,7 @@
     <Content Include="Scripts\external\notify.js" />
     <Content Include="Scripts\jquery-1.7.2.min.js" />
     <Content Include="Scripts\jquery.sizes.js" />
-    <Content Include="Scripts\common\internationalization.js" />
+    <Content Include="Scripts\app\common\internationalization.js" />
     <Content Include="Scripts\authentication\register.js" />
     <Content Include="Scripts\authentication\mailValidation.js" />
     <Content Include="Scripts\app\questions\variants3.js" />
