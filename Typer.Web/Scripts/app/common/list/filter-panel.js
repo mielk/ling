@@ -233,12 +233,13 @@ function FilterCollapser(panel, visibility) {
     })();
 
 }
+
 FilterCollapser.prototype = {
-    view: function(){
+    view: function() {
         return this.ui.view;
     },
 
-    changeStatus: function (value) {
+    changeStatus: function(value) {
         var state = (value !== undefined ? value : !this.visible);
         this.visible = state;
         if (state) {
@@ -248,7 +249,7 @@ FilterCollapser.prototype = {
         }
 
     }
-}
+};
 
 
 
@@ -429,130 +430,188 @@ WeightFilter.prototype = {
 
 
 
+//Klasa obsługująca filtr wg kategorii.
+function CategoryFilter(panel) {
 
+    'use strict';
 
-
-//function CategoryFilter(manager) {
-//    var me = this;
-//    this.manager = manager;
-//    this.name = 'categories';
-//    this.categories = [];
-//    this.value = [];
-
-//    this.container = jQuery('<div/>', {
-//        'class': 'content-container'
-//    });
-
-//    this.addButton = jQuery('<div/>', {
-//        'class': 'search-select-categories-button'
-//    });
-//    $(this.addButton).appendTo($(this.container));
+    var self = this;
     
-//    this.tree = new Tree({
-//        'mode': MODE.MULTI,
-//        'root': Ling.CATEGORIES.getRoot(),
-//        'selected': me.value,
-//        'blockOtherElements': true,
-//        'showSelection': true,
-//        'hidden': true
-//    });
+    //Class signature.
+    self.CategoryFilter = true;
+    self.name = 'categories';
 
-//    this.tree.reset({ unselect: false, collapse: false });
-//    this.tree.eventHandler.bind({
-//        confirm: function (e) {
-//            me.changeCategories(e.item);
-//            me.tree.hide();
-//        },
-//        add: function (e) {
-//            my.categories.addNew(e);
-//        },
-//        remove: function (e) {
-//            my.categories.remove(e);
-//        },
-//        rename: function (e) {
-//            my.categories.updateName(e);
-//        },
-//        transfer: function (e) {
-//            my.categories.updateParent(e);
-//        }
-//    });
+    self.panel = panel;
+    self.categories = [];
+    self.value = [];
+
+    self.ui = (function() {
+        var container = jQuery('<div/>', {
+            'class': 'content-container'
+        });
+
+        var addButton = jQuery('<div/>', {
+            'class': 'search-select-categories-button'
+        }).bind({
+            click: function() {
+                self.showTree();
+            }
+        });
+        $(addButton).appendTo(container);
 
 
-//    $(this.addButton).bind({
-//        click: function() {
-//            me.tree.show();
-//        } 
-//    });
+        //Funkcja dodająca nową kategorię.
+        function addCategory(category) {
+            $(category).appendTo(container);
+        }
 
-//    this.panel = new FilterPanel(this, {
-//        name: 'categories',
-//        content: me.container
-//    });
+        //Funkcja usuwająca wszystkie dotychczasowe kategorie.
+        function clear() {
+            $(container).find('.category').remove();
+        }
 
-//}
-//CategoryFilter.prototype.changeCategories = function (items) {
-//    this.value = [];
-//    $(this.container).find('.category').remove();
+        return {            
+              view: container
+            , addCategory: addCategory
+            , clear: clear
+        };
+
+    })();
+
+    self.container = new FilterContainer(self, { name: self.name, content: self.ui.view });
+
+}
+CategoryFilter.prototype = {
     
-//    for (var i = 0; i < items.length; i++) {
-//        var node = items[i];
-//        var category = node.object;
-//        var selected = new SelectedCategory(this, node);
-//        selected.container.appendTo($(this.container));
-//        this.categories.push(category);
-//    }
-//};
-//CategoryFilter.prototype.remove = function (category) {
-//    var array = [];
-//    for (var i = 0; i < this.categories.length; i++) {
-//        var item = this.categories[i];
-//        if (item !== category) {
-//            array.push(item);
-//        }
-//    }
+    view: function() {
+        return this.ui.view;
+    },
     
-//    this.categories = array;
+    changeCategories: function (items) {
+        var self = this;
+        self.value.length = 0;
+        self.ui.clear();
+
+        mielk.arrays.each(items, function(item) {
+            self.addCategory(item);
+        });
+
+        for (var i = 0; i < items.length; i++) {
+        }
+    },
     
-//};
-//CategoryFilter.prototype.refresh = function () {
-//    var array = [];
-//    for (var i = 0; i < this.categories.length; i++) {
-//        var category = this.categories[i];
-//        var descendants = category.getDescendants();
-//        for (var j = 0; j < descendants.length; j++) {
-//            var item = descendants[j];
-//            array.push(item.key);
-//        }
-//    }
-//    this.value = array;
-//};
+    addCategory: function(item) {
+        var node = item;
+        var category = node.object;
+        var selected = function($parent, $node) {
+            var $category = $node.object;
 
-//function SelectedCategory(parent, node) {
-//    var me = this;
-//    this.node = node;
-//    this.category = node.object;
-//    this.parent = parent;
+
+            // ReSharper disable UnusedLocals
+            var ui = (function() {
+
+                var container = jQuery('<div/>', {
+                    'class': 'category'
+                });
+                
+                var remove = jQuery('<div/>', {
+                    'class': 'remove-category'
+                }).appendTo(container);
+                
+                var name = jQuery('<div/>', {
+                    'class': 'category-name',
+                    html: $category.path()
+                }).appendTo(container);
+
+                $(remove).bind({
+                    click: function () {
+                        $node.select(false, true, true, true);
+                        $(container).remove();
+                        $parent.remove($category);
+                    }
+                });
+
+                return {
+                    container: container
+                };
+
+            })();
+            // ReSharper restore UnusedLocals
+
+        }(self, node);
+
+        self.ui.addCategory(selected.container);
+        self.categories.push(category);
+
+    },
     
-//    this.container = jQuery('<div/>', {
-//        'class': 'category'
-//    });
-//    this.remove = jQuery('<div/>', {
-//        'class': 'remove-category'
-//    }).appendTo($(this.container));
-//    this.name = jQuery('<div/>', {
-//        'class': 'category-name',
-//        html: me.category.path()
-//    }).appendTo($(this.container));
+    remove: function (category) {
+        var array = [];
 
-//    $(this.remove).bind({
-//        click: function () {
-//            me.node.select(false, true, true, true);
-//            $(me.container).remove();
-//            me.parent.remove(me.category);
-//        }
-//    });
+        mielk.arrays.each(this.categories, function(item) {
+            if (item !== category) {
+                array.push(item);
+            }
+        });
 
-//}
+        this.categories = array;
+
+    },
+    
+    refresh: function () {
+        var array = [];
+        mielk.arrays.each(this.categories, function(category) {
+            var descendants = category.getDescendants();
+            mielk.arrays.each(descendants, function(item) {
+                array.push(item.key);
+            });
+        });
+
+        this.value = array;
+        
+    },
+    
+    showTree: function () {
+        var self = this;
+        
+        //Destroy previous tree if it is still open.
+        if (self.tree) {
+            self.tree.destroy();
+        }
+        
+        //Create new tree view.
+        self.tree = new Tree({
+             'mode': MODE.MULTI
+            ,'root': Ling.Categories.getRoot()
+            ,'selected': self.value
+            ,'blockOtherElements': true
+            ,'showSelection': true
+            ,'hidden': true
+        });
+        self.tree.reset({ unselect: false, collapse: false });
+
+        self.tree.eventHandler.bind({
+            confirm: function (e) {
+                self.changeCategories(e.item);
+                self.tree.destroy();
+            },
+            add: function (e) {
+                Ling.Categories.addNew(e);
+            },
+            remove: function (e) {
+                Ling.Categories.remove(e);
+            },
+            rename: function (e) {
+                Ling.Categories.updateName(e);
+            },
+            transfer: function (e) {
+                Ling.Categories.updateParent(e);
+            }
+        });
+
+    }
+    
+};
 
 
 

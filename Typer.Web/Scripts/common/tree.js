@@ -20,7 +20,6 @@
  */
 function Tree(properties) {
 
-    return null;
 
     // ReSharper disable once UnusedLocals
     var me = this;

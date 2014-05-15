@@ -292,7 +292,7 @@ $(function () {
 
 
     // Expose ling to the global object
-    Ling.CATEGORIES = categories;
+    Ling.Categories = categories;
     
     // Initialize categories collection.
     categories.load();
