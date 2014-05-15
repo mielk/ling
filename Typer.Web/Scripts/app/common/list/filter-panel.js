@@ -10,7 +10,7 @@ function FilterPanel(properties) {
 
     self.filters = mielk.hashTable();
     self.eventHandler = mielk.eventHandler();
-    self.view = new FilterPanelView(self, properties);
+    self.ui = new FilterPanelView(self, properties);
 
     self.setFilters(properties);
     self.addConfirmationButton();
@@ -29,29 +29,39 @@ FilterPanel.prototype = {
     },
 
     collapse: function () {
-        this.view.collapse();
+        this.ui.collapse();
     },
 
     expand: function () {
-        this.view.expand();
+        this.ui.expand();
     },
 
     setFilters: function(properties){
-        if (properties.wordtype) this.addFilter('wordtype', new WordTypeFilter(this));
-        if (properties.weight) this.addFilter('weight', new WeightFilter(this));
-        if (properties.text) this.addFilter('text', new TextFilter(this));
-        if (properties.categories) this.addFilter('categories', new CategoryFilter(this));
+        var self = this;
+
+        if (properties.wordtype) self.addFilter('wordtype', new WordTypeFilter(self));
+        if (properties.weight) self.addFilter('weight', new WeightFilter(self));
+        if (properties.text) self.addFilter('text', new TextFilter(self));
+        if (properties.categories) self.addFilter('categories', new CategoryFilter(self));
+
+        //Renderowanie filtrów. Odbywa się osobno, ponieważ w momencie renderowania
+        //pierwszego filtra potrzebna jest już informacja ile będzie łącznie filtrów,
+        //żeby odpowiednio rozmieścić je w panelu.
+        this.filters.each(function (key, value) {
+            self.ui.addFilter(key, value);
+        });
+
     },
 
     addConfirmationButton: function(){
         this.button = new FilterButton(this);
-        this.view.append(this.button, 'buttons');
+        this.ui.append(this.button, 'buttons');
     },
 
     addCollapser: function(flag, visible){
         if (flag !== false) {
             this.collapser = new FilterCollapser(this, visible ? true : false);
-            this.view.append(this.collapser);
+            this.ui.append(this.collapser);
         }
     },
 
@@ -79,11 +89,10 @@ FilterPanel.prototype = {
 
     addFilter: function (name, filter) {
         this.filters.setItem(name, filter);
-        this.view.addFilter(name, filter);
     },
 
     view: function () {
-        return this.view.container;
+        return this.ui.view();
     }
 
 };
@@ -158,6 +167,10 @@ FilterPanelView.prototype = {
         //panelu (lewego czy prawego) powinien trafić kolejny filtr.
         this.added.setItem(key, filter);
 
+    },
+
+    view: function () {
+        return this.container;
     }
 
     //UI components.
@@ -269,15 +282,25 @@ function FilterContainer(filter, properties) {
     self.filter = filter;
     self.ui = (function () {
         var container = jQuery('<div/>', { 'class': 'single-panel' });
-        var labelContainer = jQuery('<div/>', { 'class': 'label-container' }).appendTo(container);
+        var labelContainer = jQuery('<div/>', { 'class': 'label-container' }).appendTo($(container));
         // ReSharper disable UnusedLocals
         var label = jQuery('<div/>', { 'class': 'label', html: properties.name }).
-            appendTo(jQuery('<div/>', { 'class': 'label-table' }).appendTo(labelContainer));
+            appendTo(jQuery('<div/>', { 'class': 'label-table' }).appendTo($(labelContainer)));
         var content = $(properties.content).appendTo(container);
         // ReSharper restore UnusedLocals        
+
+        return {
+            container: container
+        };
+
     })();
 
 }
+FilterContainer.prototype = {
+    view: function () {
+        return this.ui.container;
+    }
+};
 
 
 
@@ -331,7 +354,7 @@ WordTypeFilter.prototype = {
     },
 
     view: function () {
-        return this.ui.view;
+        return this.container.view();
     }
 
 };
@@ -369,7 +392,6 @@ function WeightFilter(panel) {
         var valueField = function (name) {
             
             var label = jQuery('<div/>', { 'class': 'label', html: name }).
-
                 appendTo(jQuery('<div/>', { 'class': 'label-table' }).
                 appendTo(jQuery('<div/>', { 'class': 'lbl' }).appendTo(container)));
 
@@ -417,7 +439,7 @@ function WeightFilter(panel) {
 WeightFilter.prototype = {
     
     view: function() {
-        return this.ui.view;
+        return this.container.view();
     },
     
     refresh: function() {
@@ -483,7 +505,7 @@ function CategoryFilter(panel) {
 CategoryFilter.prototype = {
     
     view: function() {
-        return this.ui.view;
+        return this.container.view();
     },
     
     changeCategories: function (items) {
@@ -670,7 +692,7 @@ TextFilter.prototype = {
     },
     
     view: function() {
-        return this.ui.view;
+        return this.container.view();
     }
     
 };

@@ -44,7 +44,7 @@ mielk.objects.addProperties(ListFilterManager.prototype, {
     },
 
     view: function() {
-        return this.manager.view;
+        return this.panel.view();
     },
 
     filter: function(e) {

@@ -146,7 +146,7 @@ ListView.prototype = {
     },
 
     render: function (properties) {
-        this.append(properties.filter.view);
+        this.append(properties.filter);
         this.addHeaderRow(properties.columns);
         if (properties.items) this.append(properties.items);
         this.createAddButton();
