@@ -31,7 +31,7 @@ Enum.prototype = {
     //Możliwe jest podanie funkcji ograniczającej zwracany zestaw.
     getValues: function (filter) {
         var array = [];
-        mielk.objects.each(this.items, function (item) {
+        mielk.objects.each(this.items, function (key, item) {
             if (item && (!filter || mielk.fn.run(filter))) {
                 var object = {
                     id: item.id || key,

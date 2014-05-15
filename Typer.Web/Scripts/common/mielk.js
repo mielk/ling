@@ -361,11 +361,11 @@
 
         //Funkcja wywołująca podaną funkcję fn
         //dla każdego elementu obiektu object.
-        function each(object, fn) {
+        function each(object, $fn) {
             for (var key in object) {
                 if (object.hasOwnProperty(key)) {
                     var item = object[key];
-                    fn(item);
+                    $fn(key, item);
                 }
             }
         }
@@ -859,11 +859,17 @@
             return x1 + x2;
         }
 
+        function checkValue(value, min, max) {
+            var $value = Number(value);
+            if (!$.isNumeric($value) || $value === 0) return 0;
+            return Math.max(Math.min(max, $value), min);
+        }
 
         return {
-            generateUUID: generateUuid,
-            log10: log10,
-            addThousandSeparator: addThousandSeparator
+              generateUUID: generateUuid
+            , log10: log10
+            , addThousandSeparator: addThousandSeparator
+            , checkValue: checkValue
         };
 
     })();

@@ -38,8 +38,8 @@ FilterPanel.prototype = {
 
     setFilters: function(properties){
         if (properties.wordtype) this.addFilter('wordtype', new WordTypeFilter(this));
-        //if (properties.weight) this.addFilter('weight', new WeightFilter(this));
-        //if (properties.text) this.addFilter('text', new TextFilter(this));
+        if (properties.weight) this.addFilter('weight', new WeightFilter(this));
+        if (properties.text) this.addFilter('text', new TextFilter(this));
         //if (properties.categories) this.addFilter('categories', new CategoryFilter(this));
     },
 
@@ -166,8 +166,8 @@ FilterPanelView.prototype = {
 
 
 
-//Przycisk służący do zatwierdzania ustawionych filtrów
-//i rozpoczęcia filtrowania listy.
+//Przycisk służący do zatwierdzania ustawionych 
+//filtrów i rozpoczęcia filtrowania listy.
 function FilterButton(panel) {
 
     'use strict';
@@ -270,12 +270,15 @@ function FilterContainer(filter, properties) {
     self.ui = (function () {
         var container = jQuery('<div/>', { 'class': 'single-panel' });
         var labelContainer = jQuery('<div/>', { 'class': 'label-container' }).appendTo(container);
+        // ReSharper disable UnusedLocals
         var label = jQuery('<div/>', { 'class': 'label', html: properties.name }).
             appendTo(jQuery('<div/>', { 'class': 'label-table' }).appendTo(labelContainer));
         var content = $(properties.content).appendTo(container);
+        // ReSharper restore UnusedLocals        
     })();
 
 }
+
 
 
 
@@ -335,72 +338,99 @@ WordTypeFilter.prototype = {
 
 
 
+//Filtr wg wagi wyrazu.
+function WeightFilter(panel) {
 
-//function WeightFilter(manager) {
-//    var me = this;
-//    this.minWeight = 1;
-//    this.maxWeight = 10;
-//    this.manager = manager;
-//    this.name = 'weight';
-//    this.value = {
-//        from: 0,
-//        to: 0
-//    };
+    'use strict';
+
+    var self = this;
+    
+    //Class signature.
+    self.WeightFilter = true;
+    self.name = 'weight';
     
 
-//    this.container = jQuery('<div/>', {
-//        'class': 'content-container'
-//    });
+    self.panel = panel;
+    self.minWeight = 1;
+    self.maxWeight = 10;
+    self.value = {
+        from: 0,
+        to: 0
+    };
+
+    self.ui = (function () {
+        
+        // ReSharper disable UnusedLocals
+
+        var container = jQuery('<div/>', {
+            'class': 'content-container'
+        });
+
+        var valueField = function (name) {
+            
+            var label = jQuery('<div/>', { 'class': 'label', html: name }).
+
+                appendTo(jQuery('<div/>', { 'class': 'label-table' }).
+                appendTo(jQuery('<div/>', { 'class': 'lbl' }).appendTo(container)));
+
+            var input = jQuery('<input/>', { type: 'text' }).
+                bind({
+                    click: function () {
+                        this.select(); this.focus();
+                    },
+                    blur: function () {
+                        var value = mielk.numbers.checkValue($(this).val());
+                        self.value[name] = value;
+                        $(this).val(value ? value : '');
+                    }
+                }).
+                appendTo(container);
+
+            return {
+                value: function() {
+                    mielk.numbers.checkValue($(input).val(), self.minWeight, self.maxWeight);
+                }
+            };
+
+        };
+
+        var from = valueField('from');
+        var to = valueField('to');
+
+        return {
+              view: container
+            , from: function() {
+                return from.value();
+            }
+            , to: function() {
+                return to.value();
+            }
+        };
+
+        // ReSharper restore UnusedLocals
+
+    })();
+
+    self.container = new FilterContainer(self, { name: self.name, content: self.ui.view });
+
+}
+WeightFilter.prototype = {
     
-//    // ReSharper disable once UnusedLocals
-//    var fromLabel = jQuery('<div/>', { 'class' : 'label', html: 'from' }).
-//        appendTo(jQuery('<div/>', { 'class' : 'label-table' }).
-//        appendTo(jQuery('<div/>', { 'class' : 'lbl' }).appendTo($(this.container))));
+    view: function() {
+        return this.ui.view;
+    },
+    
+    refresh: function() {
+        this.value.from = this.ui.from();
+        this.value.to = this.ui.to();
+    }
 
-//    this.fromInput = jQuery('<input/>', { type: 'text' }).
-//        bind({        
-//            click: function () {
-//                this.select(); this.focus();
-//            },
-//            blur: function () {
-//                me.value.from = me.getProperValue($(this).val());
-//                $(this).val(me.value.from ? me.value.from : '');
-//            }
-//        });
-//    $(this.fromInput).appendTo($(this.container));
+};
 
-//    // ReSharper disable once UnusedLocals
-//    var toLabel = jQuery('<div/>', { 'class' : 'label', html: 'to' }).
-//        appendTo(jQuery('<div/>', { 'class' : 'label-table' }).
-//        appendTo(jQuery('<div/>', { 'class' : 'lbl' }).appendTo($(this.container))));
 
-//    this.toInput = jQuery('<input/>', { type: 'text' }).
-//        bind({        
-//            click: function () {
-//                this.select(); this.focus();
-//            },
-//            blur: function () {
-//                me.value.to = me.getProperValue($(this).val());
-//                $(this).val(me.value.to ? me.value.to : '');
-//            }
-//        });
-//    $(this.toInput).appendTo($(this.container));
 
-//    this.panel = new FilterPanel(this, {
-//        name: 'weight',
-//        content: me.container
-//    });
 
-//}
-//WeightFilter.prototype.refresh = function() {
-//    this.value.from = this.getProperValue($(this.fromInput).val());
-//    this.value.to = this.getProperValue($(this.toInput).val());
-//};
-//WeightFilter.prototype.getProperValue = function(value) {
-//    var $value = Number(value);
-//    if (!$.isNumeric($value) || $value === 0) return 0;
-//    return Math.max(Math.min(this.maxWeight, $value), this.minWeight);
-//};
+
 
 //function CategoryFilter(manager) {
 //    var me = this;
@@ -525,37 +555,64 @@ WordTypeFilter.prototype = {
 //}
 
 
-//function TextFilter(manager) {
-//    var me = this;
-//    this.manager = manager;
-//    this.name = 'text';
-//    this.value = '';
-//    this.container = jQuery('<div/>', {
-//        'class': 'content-container'
-//    });
-//    this.textbox = jQuery('<input/>', {
-//        id: 'text-contain',
-//        'class': 'contain',
-//        type: 'text'
-//    }).bind({        
-//        click: function() {
-//            this.select();
-//            this.focus();
-//        },
-//        keyup: function () {
-//            setTimeout(function () {
-//                me.refresh();
-//            }, 50);   
-//        }
-//    });
-//    $(this.textbox).appendTo($(this.container));
 
-//    this.panel = new FilterPanel(this, {
-//        name: 'text',
-//        content: me.container
-//    });
+//Klasa obsługująca filtrowanie wyników wg tekstu.
+function TextFilter(panel) {
 
-//}
-//TextFilter.prototype.refresh = function() {
-//    this.value = $(this.textbox).val();
-//};
+    'use strict';
+
+    var self = this;
+    
+    //Class signature.
+    self.TextFilter = true;
+    self.name = 'text';
+
+    self.panel = panel;
+    self.value = '';
+
+    self.ui = (function() {
+        var container = jQuery('<div/>', {
+            'class': 'content-container'
+        });
+        
+        var textbox = jQuery('<input/>', {
+            id: 'text-contain',
+            'class': 'contain',
+            type: 'text'
+        }).bind({        
+            click: function() {
+                this.select();
+                this.focus();
+            },
+            keyup: function () {
+                setTimeout(function () {
+                    self.refresh();
+                }, 50);
+            }
+        }).appendTo(container);
+
+        function value() {
+            return $(textbox).val();
+        }
+
+        return {
+              view: container
+            , value: value
+    };
+
+    })();
+    
+    self.container = new FilterContainer(self, { name: self.name, content: self.ui.view });
+
+}
+TextFilter.prototype = {
+    
+    refresh: function() {
+        this.value = this.ui.value();
+    },
+    
+    view: function() {
+        return this.ui.view;
+    }
+    
+};
