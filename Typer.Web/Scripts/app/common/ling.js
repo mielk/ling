@@ -24,7 +24,7 @@ if (my === undefined) {
 
 
     // Expose ling to the global object
-    window.LING = ling;
+    window.Ling = ling;
 
 
 })(window);

@@ -267,12 +267,14 @@
     <Content Include="Content\app\site.css" />
     <Compile Include="App_Start\NinjectWebCommon.Bindings.cs" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
+    <Content Include="Scripts\app\common\enums.js" />
     <Content Include="Scripts\app\common\ling.js" />
     <Content Include="Scripts\app\categories\categories.js" />
     <Content Include="Scripts\app\common\list\Copy of listController.js" />
+    <Content Include="Scripts\app\common\list\list-filter-manager.js" />
     <Content Include="Scripts\app\common\list\list.js" />
-    <Content Include="Scripts\app\queries\queryList.js" />
-    <Content Include="Scripts\app\words\wordList.js" />
+    <Content Include="Scripts\app\queries\query-list.js" />
+    <Content Include="Scripts\app\words\word-list.js" />
     <Content Include="Scripts\common\mielk.js" />
     <Content Include="Scripts\external\select2.js" />
     <Content Include="Scripts\external\spin.js" />
@@ -288,7 +290,7 @@
     <Content Include="Scripts\app\common\list\listController.js" />
     <Content Include="Scripts\app\queries\options.js" />
     <Content Include="Scripts\app\queries\variants.js" />
-    <Content Include="Scripts\app\common\search.js" />
+    <Content Include="Scripts\app\common\list\filter-panel.js" />
     <Content Include="Scripts\app\words\words.js" />
     <Content Include="Scripts\app\queries\queries.js" />
     <Content Include="Scripts\app\test\test.js" />
@@ -355,7 +357,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\images\xcf\" />
-    <Folder Include="Scripts\lists\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

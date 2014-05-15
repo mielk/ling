@@ -2,8 +2,8 @@
 function DropDown(properties) {
     this.DropDown = true;
     var self = this;
-    self.options = new HashTable(null);
-    self.data = new HashTable(null);
+    self.options = mielk.hashTable();
+    self.data = mielk.hashTable();
     self.params = {
         placeholder: properties.placeholder,
         allowClear: properties.allowClear
@@ -14,13 +14,13 @@ function DropDown(properties) {
         'class': 'dropdown-select'
     }).appendTo($(self.container));
 
-    self.eventHandler = new EventHandler();
+    self.eventHandler = mielk.eventHandler();
     self.loadData(properties.data);
 
 }
 DropDown.prototype.loadData = function (data) {
 
-    this.data = new HashTable(null);
+    this.data = mielk.hashTable();
 
     if (data) {
         for (var i = 0; i < data.length; i++) {

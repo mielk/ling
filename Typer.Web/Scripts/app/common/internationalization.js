@@ -8,6 +8,7 @@
 $(function () {
     
     'use strict';
+
     var dict = {};
     var entry = function ($name, $translations) {
         var name = $name;
@@ -18,7 +19,7 @@ $(function () {
 
                 //Check type of language parameter. It can be passed
                 //as a text or as a object of Language class.
-                var lng = (language && language.Language ? language : LING.LOCALIZATION.getCurrentLanguage());
+                var lng = (language && language.Language ? language : Ling.Localization.getCurrentLanguage());
 
                 var text = translations.hasOwnProperty(lng.code) ? translations[lng.code] : name;
 
@@ -315,15 +316,9 @@ $(function () {
 
     var localizationManager = (function () {
 
-        var languages = {
-            POL: { code: 'POL', name: 'polski' },
-            ENG: { code: 'ENG', name: 'English' }
-        };
-
-        var currentLanguage = languages.POL;
+        var currentLanguage = Ling.Enums.Languages.POL;
 
         return {
-            languages: languages,
             getCurrentLanguage: function() {
                 return currentLanguage;
             },
@@ -336,6 +331,6 @@ $(function () {
 
 
     //Add as an item of STOCK library.
-    LING.LOCALIZATION = localizationManager;
+    Ling.Localization = localizationManager;
     
 });

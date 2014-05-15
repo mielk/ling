@@ -36,9 +36,9 @@ namespace Typer.Web
 
             bundles.Add(new ScriptBundle("~/bundles/app").Include(
                   "~/Scripts/app/common/ling.js"
+                , "~/Scripts/app/common/enums.js"
                 , "~/Scripts/app/common/internationalization.js"
                 , "~/Scripts/app/categories/categories.js"
-                //, "~/Scripts/app/common/search.js"
                 //, "~/Scripts/app/common/list/listController.js"
                 //, "~/Scripts/app/common/list/list.js"
                 //, "~/Scripts/app/queries/variants.js"
@@ -48,13 +48,17 @@ namespace Typer.Web
 
             bundles.Add(new ScriptBundle("~/bundles/words").Include(
                   "~/Scripts/app/common/list/list.js"
-                , "~/Scripts/app/common/list/wordList.js"
+                , "~/Scripts/app/common/list/list-filter-manager.js"
+                , "~/Scripts/app/common/list/filter-panel.js"
+                , "~/Scripts/app/words/word-list.js"
                 , "~/Scripts/app/words/words.js"
             ));
 
             bundles.Add(new ScriptBundle("~/bundles/queries").Include(
                   "~/Scripts/app/common/list/list.js"
-                , "~/Scripts/app/common/list/queryList.js"
+                , "~/Scripts/app/common/list/list-filter-manager.js"
+                , "~/Scripts/app/common/list/filter-panel.js"
+                , "~/Scripts/app/queries/query-list.js"
                 , "~/Scripts/app/queries/queries.js"
             ));
 

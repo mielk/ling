@@ -358,10 +358,23 @@
             return object;
         }
 
+
+        //Funkcja wywołująca podaną funkcję fn
+        //dla każdego elementu obiektu object.
+        function each(object, fn) {
+            for (var key in object) {
+                if (object.hasOwnProperty(key)) {
+                    var item = object[key];
+                    fn(item);
+                }
+            }
+        }
+
         return {
             extend: extend,
             isFunction: isFunction,
-            addProperties: addProperties
+            addProperties: addProperties,
+            each: each
         };
 
 
@@ -793,6 +806,17 @@
             var x = 1;
         }
 
+        //Metoda wywołująca podaną funkcję fn dla każdego
+        //elementu z tablicy array.
+        function each(array, fn) {
+            if (array && Array.isArray(array)) {
+                for (var i = 0; i < array.length; i++) {
+                    var item = array[i];
+                    fn(item);
+                }
+            }
+        }
+
         return {
             getLastItem: getLastItem,
             fromObject: fromObject,
@@ -801,7 +825,8 @@
             getMax: getMax,
             getMin: getMin,
             findItem: findItem,
-            firstGreater: firstGreater
+            firstGreater: firstGreater,
+            each: each
         };
 
     })();
@@ -1127,7 +1152,7 @@
 
         function run(f, param) {
             if (f && typeof(f) === 'function') {
-                f(param);
+                return f(param);
             }
         }
 

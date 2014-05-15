@@ -34,7 +34,7 @@ $(function () {
     var words = (function () {
 
         //Obiekt kontrolujący przepływem danych na ekranie wyrazów.
-        var controller;
+        var controller = 1;
 
         //Funkcja sprawdzająca czy w bazie istnieje już wyraz o podanej nazwie.
         function nameAlreadyExists(id, name) {
@@ -261,6 +261,6 @@ $(function () {
     })();
 
     // Expose ling to the global object
-    LING.WORDS = words;
+    Ling.Words = words;
 
 });

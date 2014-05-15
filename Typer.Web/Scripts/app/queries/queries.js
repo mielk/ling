@@ -286,6 +286,6 @@ $(function () {
     })();
 
     // Expose ling to the global object
-    LING.QUERIES = queries;
+    Ling.Queries = queries;
 
 });
