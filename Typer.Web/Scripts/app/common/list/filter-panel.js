@@ -40,7 +40,7 @@ FilterPanel.prototype = {
         if (properties.wordtype) this.addFilter('wordtype', new WordTypeFilter(this));
         if (properties.weight) this.addFilter('weight', new WeightFilter(this));
         if (properties.text) this.addFilter('text', new TextFilter(this));
-        //if (properties.categories) this.addFilter('categories', new CategoryFilter(this));
+        if (properties.categories) this.addFilter('categories', new CategoryFilter(this));
     },
 
     addConfirmationButton: function(){
@@ -233,7 +233,6 @@ function FilterCollapser(panel, visibility) {
     })();
 
 }
-
 FilterCollapser.prototype = {
     view: function() {
         return this.ui.view;
