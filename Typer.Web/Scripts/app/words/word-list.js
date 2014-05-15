@@ -24,16 +24,16 @@ function WordListManager(properties) {
     
 }
 mielk.objects.extend(ListManager, WordListManager);
-
-WordListManager.prototype = {    
+mielk.objects.addProperties(WordListManager.prototype, {
+    
     createObject: function (properties) {
         return new Metaword(properties);
     },
-
+    
     createListItem: function (object) {
         //return new WordListItem(this, object);
     },
-    
+
     emptyItem: function () {
         //var filters = this.filterManager.filters;
         //return new Metaword({
@@ -51,5 +51,5 @@ WordListManager.prototype = {
         //    'new': true
         //});
     }
-    
-};
+
+});

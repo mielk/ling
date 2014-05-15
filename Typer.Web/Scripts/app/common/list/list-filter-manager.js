@@ -36,21 +36,20 @@ function ListFilterManager(controller, filters) {
 
 }
 mielk.objects.extend(ListManagerPanel, ListFilterManager);
-
-ListFilterManager.prototype = {
-
+mielk.objects.addProperties(ListFilterManager.prototype, {
+    
     //Funkcja zmieniająca ustawienie podanego filtra.
-    changeFilterValue: function (key, value) {
+    changeFilterValue: function(key, value) {
         if (value !== null && value !== undefined) {
             this.filters[key] = value;
         }
     },
 
-    view: function () {
+    view: function() {
         return this.manager.view;
     },
 
-    filter: function (e) {
+    filter: function(e) {
         var self = this;
 
         //Update filters values array.
@@ -77,7 +76,7 @@ ListFilterManager.prototype = {
             datatype: "json",
             async: false,
             cache: false,
-            success: function (result) {
+            success: function(result) {
                 self.controller.trigger({
                     type: 'filter',
                     items: result.items,
@@ -85,11 +84,11 @@ ListFilterManager.prototype = {
                     page: e.page || 1
                 });
             },
-            error: function (msg) {
+            error: function(msg) {
                 alert(msg.status + " | " + msg.statusText);
                 return null;
             }
         });
 
     }
-}
+});

@@ -125,7 +125,7 @@ ListView.prototype = {
     },
 
     append: function (element) {
-        $(element).appendTo($(this.container));
+        $(element).appendTo(this.container);
     },
 
     addHeaderRow: function (columns) {
@@ -148,7 +148,7 @@ ListView.prototype = {
     },
 
     render: function (properties) {
-        this.append(properties.filter);
+        this.append(properties.filter.view);
         this.addHeaderRow(properties.columns);
         this.append(properties.items);
         this.createAddButton();

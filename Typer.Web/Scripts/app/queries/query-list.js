@@ -24,17 +24,17 @@ function QueryListManager(properties) {
 
 }
 mielk.objects.extend(ListManager, QueryListManager);
-
-QueryListManager.prototype = {
-    createObject: function (properties) {
+mielk.objects.addProperties(QueryListManager.prototype, {
+    
+    createObject: function(properties) {
         return new Query(properties);
     },
 
-    createListItem: function (object) {
+    createListItem: function(object) {
         //return new QuestionListItem(this, object);
     },
 
-    emptyItem: function () {
+    emptyItem: function() {
         //var filters = this.filterManager.filters;
         //return new Question({
         //    Id: 0,
@@ -50,5 +50,5 @@ QueryListManager.prototype = {
         //    'new': true
         //});
     }
-
-};
+    
+});
