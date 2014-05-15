@@ -116,8 +116,6 @@ function ListView(manager) {
     self.manager = manager;
     self.container = $(document.body);
 
-
-
 }
 ListView.prototype = {
     clear: function () {
@@ -150,9 +148,9 @@ ListView.prototype = {
     render: function (properties) {
         this.append(properties.filter.view);
         this.addHeaderRow(properties.columns);
-        this.append(properties.items);
+        if (properties.items) this.append(properties.items);
         this.createAddButton();
-        this.append(properties.pager);
+        if (properties.pager) this.append(properties.pager);
     }
 
 };
@@ -161,19 +159,20 @@ ListView.prototype = {
 
 
 // Interface
-function ListManagerPanel(manager) {
+function ListManagerPanel(controller) {
 
     'use strict';
 
     var self = this;
     self.ListManagerPanel = true;
-    self.manager = manager;
+    self.controller = controller;
 }
 ListManagerPanel.prototype = {
     view: function () {
+        alert('Must be defined in class implemeneted this class');
         return this.container;
     }
-}
+};
 
 
 
