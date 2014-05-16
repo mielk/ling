@@ -266,43 +266,44 @@ FilterCollapser.prototype = {
 
 
 
-
-
-
-//Klasa obsługująca kontener graficzny dla filtrów.
-function FilterContainer(filter, properties) {
+//Klasa abstrakcyjna po której dziedziczą wszystkie filtry.
+function AbstractFilter(panel) {
 
     'use strict';
 
     var self = this;
-
+    
     //Class signature.
-    self.FilterContainer = true;
+    self.AbstractFilter = true;
 
-    self.filter = filter;
+    self.panel = panel;
     self.ui = (function () {
         var container = jQuery('<div/>', { 'class': 'single-panel' });
         var labelContainer = jQuery('<div/>', { 'class': 'label-container' }).appendTo($(container));
         // ReSharper disable UnusedLocals
-        var label = jQuery('<div/>', { 'class': 'label', html: properties.name }).
+        var label = jQuery('<div/>', { 'class': 'label', html: self.name }).
             appendTo(jQuery('<div/>', { 'class': 'label-table' }).appendTo($(labelContainer)));
-        var content = $(properties.content).appendTo(container);
+        var content = $(self.content.view).appendTo(container);
         // ReSharper restore UnusedLocals        
 
         return {
-            container: container
+            view: container
         };
 
     })();
 
 }
-FilterContainer.prototype = {
+AbstractFilter.prototype = {    
+
     view: function () {
-        return this.ui.container;
+        return this.ui.view;
+    },
+    
+    refresh: function() {
+        alert('Must be defined in implementing class');
     }
+
 };
-
-
 
 
 //Filtr wg typu wyrazu.
@@ -314,12 +315,8 @@ function WordTypeFilter(panel) {
 
     //Class signature.
     self.WordTypeFilter = true;
-
-    self.panel = panel;
     self.name = 'wordtype';
-    self.value = null;
-
-    self.ui = (function () {
+    self.content = (function () {
 
         var container = jQuery('<div/>', {
             id: 'word-type',
@@ -328,8 +325,8 @@ function WordTypeFilter(panel) {
 
         var dropdownData = Ling.Enums.Wordtypes.getValues();
         var dropdown = new DropDown({
-              container: container
-            , data: dropdownData
+            container: container
+            ,data: dropdownData
         });
 
         dropdown.bind({
@@ -343,21 +340,19 @@ function WordTypeFilter(panel) {
         };
 
     })();
+    self.value = null;
 
-    self.container = new FilterContainer(self, { name: self.name, content: self.ui.view });
+    AbstractFilter.call(self, panel);
 
 }
-WordTypeFilter.prototype = {
-
-    refresh: function () {
+mielk.objects.extend(AbstractFilter, WordTypeFilter);
+mielk.objects.addProperties(WordTypeFilter.prototype, {
+    
+    refresh: function() {
         this.value = this.value || 0;
-    },
-
-    view: function () {
-        return this.container.view();
     }
 
-};
+});
 
 
 
@@ -371,18 +366,14 @@ function WeightFilter(panel) {
     //Class signature.
     self.WeightFilter = true;
     self.name = 'weight';
-    
-
-    self.panel = panel;
     self.minWeight = 1;
     self.maxWeight = 10;
     self.value = {
         from: 0,
         to: 0
     };
+    self.content = (function () {
 
-    self.ui = (function () {
-        
         // ReSharper disable UnusedLocals
 
         var container = jQuery('<div/>', {
@@ -390,7 +381,7 @@ function WeightFilter(panel) {
         });
 
         var valueField = function (name) {
-            
+
             var label = jQuery('<div/>', { 'class': 'label', html: name }).
                 appendTo(jQuery('<div/>', { 'class': 'label-table' }).
                 appendTo(jQuery('<div/>', { 'class': 'lbl' }).appendTo(container)));
@@ -409,7 +400,7 @@ function WeightFilter(panel) {
                 appendTo(container);
 
             return {
-                value: function() {
+                value: function () {
                     mielk.numbers.checkValue($(input).val(), self.minWeight, self.maxWeight);
                 }
             };
@@ -420,11 +411,11 @@ function WeightFilter(panel) {
         var to = valueField('to');
 
         return {
-              view: container
-            , from: function() {
+            view: container
+            , from: function () {
                 return from.value();
             }
-            , to: function() {
+            , to: function () {
                 return to.value();
             }
         };
@@ -432,22 +423,19 @@ function WeightFilter(panel) {
         // ReSharper restore UnusedLocals
 
     })();
-
-    self.container = new FilterContainer(self, { name: self.name, content: self.ui.view });
+    
+    AbstractFilter.call(self, panel);
 
 }
-WeightFilter.prototype = {
-    
-    view: function() {
-        return this.container.view();
-    },
-    
-    refresh: function() {
+mielk.objects.extend(AbstractFilter, WeightFilter);
+mielk.objects.addProperties(WeightFilter.prototype, {
+
+    refresh: function () {
         this.value.from = this.ui.from();
         this.value.to = this.ui.to();
     }
 
-};
+});
 
 
 
@@ -461,12 +449,9 @@ function CategoryFilter(panel) {
     //Class signature.
     self.CategoryFilter = true;
     self.name = 'categories';
-
-    self.panel = panel;
     self.categories = [];
     self.value = [];
-
-    self.ui = (function() {
+    self.content = (function() {
         var container = jQuery('<div/>', {
             'class': 'content-container'
         });
@@ -499,46 +484,43 @@ function CategoryFilter(panel) {
 
     })();
 
-    self.container = new FilterContainer(self, { name: self.name, content: self.ui.view });
+    AbstractFilter.call(self, panel);
 
 }
-CategoryFilter.prototype = {
-    
-    view: function() {
-        return this.container.view();
-    },
-    
+mielk.objects.extend(AbstractFilter, CategoryFilter);
+mielk.objects.addProperties(CategoryFilter.prototype, {    
+
     changeCategories: function (items) {
         var self = this;
         self.value.length = 0;
         self.ui.clear();
 
-        mielk.arrays.each(items, function(item) {
+        mielk.arrays.each(items, function (item) {
             self.addCategory(item);
         });
 
         for (var i = 0; i < items.length; i++) {
         }
     },
-    
-    addCategory: function(item) {
+
+    addCategory: function (item) {
         var node = item;
         var category = node.object;
-        var selected = function($parent, $node) {
+        var selected = function ($parent, $node) {
             var $category = $node.object;
 
 
             // ReSharper disable UnusedLocals
-            var ui = (function() {
+            var ui = (function () {
 
                 var container = jQuery('<div/>', {
                     'class': 'category'
                 });
-                
+
                 var remove = jQuery('<div/>', {
                     'class': 'remove-category'
                 }).appendTo(container);
-                
+
                 var name = jQuery('<div/>', {
                     'class': 'category-name',
                     html: $category.path()
@@ -565,11 +547,11 @@ CategoryFilter.prototype = {
         self.categories.push(category);
 
     },
-    
+
     remove: function (category) {
         var array = [];
 
-        mielk.arrays.each(this.categories, function(item) {
+        mielk.arrays.each(this.categories, function (item) {
             if (item !== category) {
                 array.push(item);
             }
@@ -578,36 +560,36 @@ CategoryFilter.prototype = {
         this.categories = array;
 
     },
-    
+
     refresh: function () {
         var array = [];
-        mielk.arrays.each(this.categories, function(category) {
+        mielk.arrays.each(this.categories, function (category) {
             var descendants = category.getDescendants();
-            mielk.arrays.each(descendants, function(item) {
+            mielk.arrays.each(descendants, function (item) {
                 array.push(item.key);
             });
         });
 
         this.value = array;
-        
+
     },
-    
+
     showTree: function () {
         var self = this;
-        
+
         //Destroy previous tree if it is still open.
         if (self.tree) {
             self.tree.destroy();
         }
-        
+
         //Create new tree view.
         self.tree = new Tree({
-             'mode': MODE.MULTI
-            ,'root': Ling.Categories.getRoot()
-            ,'selected': self.value
-            ,'blockOtherElements': true
-            ,'showSelection': true
-            ,'hidden': true
+            'mode': MODE.MULTI
+            , 'root': Ling.Categories.getRoot()
+            , 'selected': self.value
+            , 'blockOtherElements': true
+            , 'showSelection': true
+            , 'hidden': true
         });
         self.tree.reset({ unselect: false, collapse: false });
 
@@ -632,7 +614,7 @@ CategoryFilter.prototype = {
 
     }
     
-};
+});
 
 
 
@@ -646,11 +628,8 @@ function TextFilter(panel) {
     //Class signature.
     self.TextFilter = true;
     self.name = 'text';
-
-    self.panel = panel;
     self.value = '';
-
-    self.ui = (function() {
+    self.content = (function() {
         var container = jQuery('<div/>', {
             'class': 'content-container'
         });
@@ -681,18 +660,13 @@ function TextFilter(panel) {
     };
 
     })();
-    
-    self.container = new FilterContainer(self, { name: self.name, content: self.ui.view });
+
+    AbstractFilter.call(self, panel);
 
 }
-TextFilter.prototype = {
-    
-    refresh: function() {
+mielk.objects.extend(AbstractFilter, TextFilter);
+mielk.objects.addProperties(TextFilter.prototype, {    
+    refresh: function () {
         this.value = this.ui.value();
-    },
-    
-    view: function() {
-        return this.container.view();
     }
-    
-};
+});
