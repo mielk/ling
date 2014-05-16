@@ -66,25 +66,24 @@ FilterPanel.prototype = {
     },
 
     filter: function () {
-        //var e = {};
+        var eventParams = {
+            type: 'filter'
+        };
 
-        //this.refreshFilterValues();
+        this.refreshFilterValues();
 
-        //this.filters.each(function (key, filter) {
-        //    e[filter.name] = filter.value;
-        //});
+        this.filters.each(function(key, filter) {
+            eventParams[filter.name] = filter.value;
+        });
 
-        //e.type = 'filter';
-        //this.eventHandler.trigger(e);
+        this.eventHandler.trigger(eventParams);
 
     },
 
     refreshFilterValues: function () {
-        //this.filters.each(function (key, filter) {
-        //    if (filter.refresh && typeof (filter.refresh) === 'function') {
-        //        filter.refresh();
-        //    }
-        //});
+        this.filters.each(function (key, filter) {
+            if (filter.AbstractFilter) filter.refresh();
+        });
     },
 
     addFilter: function (name, filter) {
@@ -306,6 +305,7 @@ AbstractFilter.prototype = {
 };
 
 
+
 //Filtr wg typu wyrazu.
 function WordTypeFilter(panel) {
 
@@ -330,8 +330,8 @@ function WordTypeFilter(panel) {
         });
 
         dropdown.bind({
-            select: function (e) {
-                self.value = e.object && e.object.id ? e.object.id : 0;
+            change: function (e) {
+                self.value = e.item && e.item.id ? e.item.id : 0;
             }
         });
 
@@ -340,7 +340,7 @@ function WordTypeFilter(panel) {
         };
 
     })();
-    self.value = null;
+    self.value = 1;
 
     AbstractFilter.call(self, panel);
 
@@ -392,7 +392,7 @@ function WeightFilter(panel) {
                         this.select(); this.focus();
                     },
                     blur: function () {
-                        var value = mielk.numbers.checkValue($(this).val());
+                        var value = mielk.numbers.checkValue($(this).val(), self.minWeight, self.maxWeight);
                         self.value[name] = value;
                         $(this).val(value ? value : '');
                     }
@@ -401,7 +401,7 @@ function WeightFilter(panel) {
 
             return {
                 value: function () {
-                    mielk.numbers.checkValue($(input).val(), self.minWeight, self.maxWeight);
+                    return mielk.numbers.checkValue($(input).val(), self.minWeight, self.maxWeight);
                 }
             };
 
@@ -431,8 +431,8 @@ mielk.objects.extend(AbstractFilter, WeightFilter);
 mielk.objects.addProperties(WeightFilter.prototype, {
 
     refresh: function () {
-        this.value.from = this.ui.from();
-        this.value.to = this.ui.to();
+        this.value.from = this.content.from();
+        this.value.to = this.content.to();
     }
 
 });
@@ -493,7 +493,7 @@ mielk.objects.addProperties(CategoryFilter.prototype, {
     changeCategories: function (items) {
         var self = this;
         self.value.length = 0;
-        self.ui.clear();
+        self.content.clear();
 
         mielk.arrays.each(items, function (item) {
             self.addCategory(item);
@@ -528,7 +528,7 @@ mielk.objects.addProperties(CategoryFilter.prototype, {
 
                 $(remove).bind({
                     click: function () {
-                        $node.select(false, true, true, true);
+                        $node.select(false, true, true, true);  //TreeNode.prototype.select = function (value, applyForChildren, applyForParent, refreshSelected)
                         $(container).remove();
                         $parent.remove($category);
                     }
@@ -541,10 +541,16 @@ mielk.objects.addProperties(CategoryFilter.prototype, {
             })();
             // ReSharper restore UnusedLocals
 
-        }(self, node);
+            return {
+                view: function() {
+                    return ui.container;
+                }
+            };
 
-        self.ui.addCategory(selected.container);
-        self.categories.push(category);
+        }(this, node);
+
+        this.content.addCategory(selected.view());
+        this.categories.push(category);
 
     },
 
@@ -612,6 +618,8 @@ mielk.objects.addProperties(CategoryFilter.prototype, {
             }
         });
 
+        self.tree.show();
+
     }
     
 });
@@ -667,6 +675,6 @@ function TextFilter(panel) {
 mielk.objects.extend(AbstractFilter, TextFilter);
 mielk.objects.addProperties(TextFilter.prototype, {    
     refresh: function () {
-        this.value = this.ui.value();
+        this.value = this.content.value();
     }
 });

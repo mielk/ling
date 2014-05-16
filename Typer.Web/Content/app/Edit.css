@@ -66,7 +66,7 @@ a {
     height: 32px !important;
     padding: 0 !important;
     margin: 0 !important;
-    background-image: url('images/close.png') !important;
+    background-image: url('../images/close.png') !important;
     background-position: center;
     background-color: transparent !important;
 }
@@ -236,14 +236,14 @@ input[type=submit].centered
 
 .iconValid
 {
-    background-image: url('images/icon_valid.png');
+    background-image: url('../images/icon_valid.png');
     background-position: center;
     /*background-color: green;*/
 }
 
 .iconInvalid
 {
-    background-image: url('images/icon_invalid.png');
+    background-image: url('../images/icon_invalid.png');
     background-position: center;
     /*background-color: red;*/
 }
@@ -480,11 +480,11 @@ div.pager a.selected {
 }
 
 .complete {
-    background-image: url('images/green.png');
+    background-image: url('../images/green.png');
 }
 
 .incomplete {
-    background-image: url('images/red.png');
+    background-image: url('../images/red.png');
 }
 
 .edit-panel {
@@ -503,7 +503,7 @@ div.pager a.selected {
     margin-left: 12px;
     margin-right: 12px;
     padding: 3px;
-    background-image: url('images/edit.png');
+    background-image: url('../images/edit.png');
     border: 1px solid transparent;
     color: transparent;
     cursor: pointer;
@@ -712,7 +712,7 @@ div.pager a.selected {
     height: 16px;
     margin: 3px 6px;
     margin-left: 0;
-    background-image: url('images/delete-node.png') !important;
+    background-image: url('../images/delete-node.png') !important;
 }
 
 .category-name {
@@ -870,12 +870,12 @@ a.weight
     margin-right: 3px;
     font-size: 0;
     border: 1px solid transparent;
-    background-image: url('images/gray_star.png');
+    background-image: url('../images/gray_star.png');
 }
 
 a.checked
 {
-    background-image: url('images/gold_star.png');
+    background-image: url('../images/gold_star.png');
 }
 
 
@@ -945,35 +945,35 @@ a.checked
 }
 
 .pl {
-    background-image: url('images/flags/pol.png') !important;
+    background-image: url('../images/flags/pol.png') !important;
 }
 
 .pl-small {
-    background-image: url('images/flags/pol_small.png') !important;
+    background-image: url('../images/flags/pol_small.png') !important;
 }
 
 .uk {
-    background-image: url('images/flags/gbr.png') !important;
+    background-image: url('../images/flags/gbr.png') !important;
 }
 
 .uk-small {
-    background-image: url('images/flags/gbr_small.png') !important;
+    background-image: url('../images/flags/gbr_small.png') !important;
 }
 
 .es {
-    background-image: url('images/flags/esp.png') !important;
+    background-image: url('../images/flags/esp.png') !important;
 }
 
 .es-small {
-    background-image: url('images/flags/esp_small.png') !important;
+    background-image: url('../images/flags/esp_small.png') !important;
 }
 
 .it {
-    background-image: url('images/flags/ita.png') !important;
+    background-image: url('../images/flags/ita.png') !important;
 }
 
 .it-small {
-    background-image: url('images/flags/ita_small.png') !important;
+    background-image: url('../images/flags/ita_small.png') !important;
 }
 
 .language .name
@@ -1197,11 +1197,11 @@ a.checked
 }
 
 .option .delete {
-    background-image: url('images/delete.png');
+    background-image: url('../images/delete.png');
 }
 
 .option .edit {
-    background-image: url('images/edit.png');
+    background-image: url('../images/edit.png');
 }
 
 .option .content {
@@ -1437,7 +1437,7 @@ input[type=submit].variant-button-edit {
     width: 16px;
     height: 16px;
     visibility: hidden;
-    background-image: url('images/delete-node.png');
+    background-image: url('../images/delete-node.png');
 }
 
 .variant-block-mover {
@@ -1655,7 +1655,7 @@ input.set-name:focus
     width: 16px;
     height: 16px;
     margin: 8px 9px 8px 0;
-    background-image: url('images/delete-node.png');
+    background-image: url('../images/delete-node.png');
 }
 
 .keys-content .variant-key-container:first-child {

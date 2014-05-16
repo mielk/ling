@@ -150,7 +150,7 @@ function TreeView(tree, container, x, y) {
             return jQuery('<div/>', {
                  'class': 'tree-background'
             }).
-            css({ 'z-index': 9999 }). //mielk.ui.addTopLayer() }).
+            css({ 'z-index': mielk.ui.topLayer() }). //mielk.ui.addTopLayer() }).
             appendTo($(document.body));
         }
     })(); 
@@ -221,7 +221,7 @@ TreeView.prototype.show = function () {
     show(this.container);
     if (!this.embedded) {
         $(this.background).css({
-            'z-index': my.ui.addTopLayer()
+            'z-index': mielk.ui.topLayer()
         });
     }
 };
@@ -253,7 +253,7 @@ SearchPanel.prototype.hide = function() {
 SearchPanel.prototype.show = function() {
     display(this.container, true);
     $(this.container).css({
-        'z-index': my.ui.addTopLayer()
+        'z-index': mielk.ui.topLayer()
     });    
 };
 SearchPanel.prototype.activate = function () {

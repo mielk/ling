@@ -625,11 +625,16 @@
 
             //}
         }
+        
+        function topLayer() {
+            return 9999;
+        }
 
         return {
-            getPosition: getPosition,
-            getPositionInElement: getPositionInElement,
-            findPosition: findPosition
+              getPosition: getPosition
+            , getPositionInElement: getPositionInElement
+            , findPosition: findPosition
+            , topLayer: topLayer
         };
 
     })();
