@@ -26,7 +26,7 @@ function ListFilterManager(controller, filters) {
     });
 
     self.filters = {
-        wordtype: 0,
+        wordtype: Ling.Enums.Wordtypes.getDefault().id,
         categories: [],
         text: '',
         weight: { from: 0, to: 0 }
@@ -47,46 +47,43 @@ mielk.objects.addProperties(ListFilterManager.prototype, {
         return this.panel.view();
     },
 
-    filter: function(e) {
-        //var self = this;
+    filter: function (e) {
 
-        ////Update filters values array.
-        //for (var key in this.filters) {
-        //    if (e.hasOwnProperty(key)) {
-        //        var value = e[key];
-        //        this.filters[key] = value;
-        //    }
-        //}
+        var self = this;
+        var controller = self.controller;
+        
+        //Update filters values array.
+        for (var key in this.filters) {
+            if (e.hasOwnProperty(key)) {
+                var value = e[key];
+                this.filters[key] = value;
+            }
+        }
 
-        //$.ajax({
-        //    url: '/' + self.controller.name + '/Filter',
-        //    type: "GET",
-        //    data: {
-        //        'wordtype': this.filters.wordtype,
-        //        'lowWeight': this.filters.weight.from,
-        //        'upWeight': this.filters.weight.to,
-        //        'categories': this.filters.categories,
-        //        'text': this.filters.text,
-        //        'page': e.page || 1,
-        //        'pageSize': e.pageItems || self.controller.pageItems()
-        //    },
-        //    traditional: true,
-        //    datatype: "json",
-        //    async: false,
-        //    cache: false,
-        //    success: function(result) {
-        //        self.controller.trigger({
-        //            type: 'filter',
-        //            items: result.items,
-        //            total: result.total,
-        //            page: e.page || 1
-        //        });
-        //    },
-        //    error: function(msg) {
-        //        alert(msg.status + " | " + msg.statusText);
-        //        return null;
-        //    }
-        //});
+        mielk.db.fetch(controller.name, 'Filter', {
+            'wordtype': self.filters.wordtype,
+            'lowWeight': self.filters.weight.from,
+            'upWeight': self.filters.weight.to,
+            'categories': self.filters.categories,
+            'text': self.filters.text,
+            'page': e.page || 1,
+            'pageSize': e.pageSize || controller.pageItems()
+        }, {
+            async: false,
+            cache: false,
+            traditional: true,
+            callback: function(result) {
+                controller.trigger({
+                    type: 'filter',
+                    items: result.items,
+                    total: result.total,
+                    page: e.page || 1
+                });
+            },
+            errorCallback: function() {
+                mielk.notify.display('Error when trying to filter [' + controller.name + ']', false);
+            }
+        });
 
     }
 });

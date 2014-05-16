@@ -492,15 +492,12 @@ mielk.objects.addProperties(CategoryFilter.prototype, {
 
     changeCategories: function (items) {
         var self = this;
-        self.value.length = 0;
+        self.categories.length = 0;
         self.content.clear();
 
         mielk.arrays.each(items, function (item) {
             self.addCategory(item);
         });
-
-        for (var i = 0; i < items.length; i++) {
-        }
     },
 
     addCategory: function (item) {
@@ -590,9 +587,9 @@ mielk.objects.addProperties(CategoryFilter.prototype, {
 
         //Create new tree view.
         self.tree = new Tree({
-            'mode': MODE.MULTI
+              'mode': MODE.MULTI
             , 'root': Ling.Categories.getRoot()
-            , 'selected': self.value
+            , 'selected': self.categories
             , 'blockOtherElements': true
             , 'showSelection': true
             , 'hidden': true

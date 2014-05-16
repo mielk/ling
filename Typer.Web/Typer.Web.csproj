@@ -272,6 +272,8 @@
     <Content Include="Scripts\app\categories\categories.js" />
     <Content Include="Scripts\app\common\list\Copy of listController.js" />
     <Content Include="Scripts\app\common\list\list-filter-manager.js" />
+    <Content Include="Scripts\app\common\list\list-items-manager.js" />
+    <Content Include="Scripts\app\common\list\list-pager.js" />
     <Content Include="Scripts\app\common\list\list.js" />
     <Content Include="Scripts\app\queries\query-list.js" />
     <Content Include="Scripts\app\words\word-list.js" />

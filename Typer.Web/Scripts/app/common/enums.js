@@ -10,10 +10,10 @@
     self.items = items;
 
 }
-Enum.prototype = {
 
+Enum.prototype = {
     //Funkcja zwraca Enum o podanym kluczu lub id obiektu.
-    getItem: function (value) {
+    getItem: function(value) {
         for (var key in this.items) {
             if (this.items.hasOwnProperty(key)) {
                 var object = this.items[key];
@@ -29,9 +29,9 @@ Enum.prototype = {
 
     //Funkcja zwraca wszystkie wartości tego Enuma w postaci tablicy.
     //Możliwe jest podanie funkcji ograniczającej zwracany zestaw.
-    getValues: function (filter) {
+    getValues: function(filter) {
         var array = [];
-        mielk.objects.each(this.items, function (key, item) {
+        mielk.objects.each(this.items, function(key, item) {
             if (item && (!filter || mielk.fn.run(filter))) {
                 var object = {
                     id: item.id || key,
@@ -44,8 +44,20 @@ Enum.prototype = {
 
         return array;
 
+    },
+    
+    //Funkcja zwracająca domyślną wartość dla tego Enumeration.
+    getDefault: function() {
+        for (var key in this.items) {
+            var item = this.items[key];
+            if (item.isDefault) {
+                return item;
+            }
+        }
+        return null;
     }
-}
+    
+};
 
 
 
@@ -56,14 +68,14 @@ $(function () {
     var enums = (function () {
 
         var wordtypes = new Enum({
-              NOUN: { id: 1, name: 'noun', symbol: 'N' }
+              NOUN: { id: 1, name: 'noun', symbol: 'N', isDefault: true }
             , VERB: { id: 2, name: 'verb', symbol: 'V' }
             , ADJECTIVE: { id: 3, name: 'adjective', symbol: 'A' }
             , OTHER: { id: 4, name: 'other', symbol: 'O' }
         });
 
         var languages = new Enum({
-              POL: { code: 'POL', name: 'polski' }
+              POL: { code: 'POL', name: 'polski', isDefault: true }
             , ENG: { code: 'ENG', name: 'English' }
             , ESP: { code: 'ESP', name: 'Espanol' }
         });

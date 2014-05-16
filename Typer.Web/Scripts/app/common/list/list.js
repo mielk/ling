@@ -11,18 +11,16 @@ function ListManager(properties) {
 
     self.eventHandler = mielk.eventHandler();
 
-    self.filterManager = new ListFilterManager(this, properties.filters);
+    self.filterManager = new ListFilterManager(self, properties.filters);
+    this.itemsManager = new ListItemsManager(this);
+    self.pagerManager = new ListPager(self, properties);
 
-    //this.itemsManager = new ListItemsManager(this);
-
-    //this.pagerManager = new ListPager(this, properties);
-
-    this.view = new ListView(this, properties);
-    this.view.render({
+    self.view = new ListView(self, properties);
+    self.view.render({
           columns: properties.columns
         , filter: self.filterManager.view()
-        //, items: self.itemsManager.view()
-        //, pager: self.pagerManager.view()
+        , items: self.itemsManager.view()
+        , pager: self.pagerManager.view()
     });
 
 }
@@ -41,7 +39,7 @@ ListManager.prototype = {
     },
     
     filter: function (e) {
-        //this.filterManager.filter(e);
+        this.filterManager.filter(e);
     },
 
     moveToPage: function (page) {
@@ -58,7 +56,7 @@ ListManager.prototype = {
     },
     
     pageItems: function () {
-//        return this.pagerManager.pageItems;
+        return this.pagerManager.pageItems;
     },
     
     createObject: function () {
@@ -170,129 +168,5 @@ function ListManagerPanel(controller) {
 ListManagerPanel.prototype = {
     view: function () {
         alert('Must be defined in class implemeneted this class');
-        return this.container;
-    }
-};
-
-
-
-
-function ListPager(controller, properties) {
-    ListManagerPanel.call(this, controller);
-    this.ListPager = true;
-    var self = this;
-    this.pageItems = properties.pageItems || 10;
-    this.page = properties.page || 1;
-    this.totalItems = properties.totalItems || 0;
-    this.totalPages = 1;
-
-    this.controller.bind({
-        filter: function (e) {
-            self.page = e.page;
-            self.setTotalItems(e.total);
-            self.refresh();
-        }
-    });
-
-    this.ui = (function () {
-        var container = jQuery('<div/>', {
-            'class': 'pager'
-        });
-
-        // ReSharper disable UnusedLocals
-        var first = element('first', 'First', function () { self.controller.moveToPage(1); });
-        var previous = element('previous', 'Previous', function () { self.controller.moveToPage(self.page - 1); });
-        var current = element('current', '', function () { });
-        var next = element('next', 'Next', function () { self.controller.moveToPage(self.page + 1); });
-        var last = element('last', 'Last', function () { self.controller.moveToPage(self.totalPages); });
-        // ReSharper restore UnusedLocals
-
-        function element(cssClass, caption, clickCallback) {
-            return jQuery('<div/>', {
-                'class': 'pager-item ' + cssClass,
-                html: caption
-            }).bind({
-                click: clickCallback
-            }).appendTo($(container));
-        }
-
-        return {
-            view: function () {
-                return container;
-            },
-            currentHtml: function (value) {
-                if (value === undefined) {
-                    return current.innerHTML;
-                } else {
-                    $(current).html(value);
-                }
-                return true;
-            },
-            enablePrevious: function (value) {
-                display(first, value);
-                display(previous, value);
-            },
-            enableNext: function (value) {
-                display(next, value);
-                display(last, value);
-            }
-        };
-
-    })();
-
-}
-mielk.objects.extend(ListManagerPanel, ListPager);
-ListPager.prototype.setTotalItems = function (items) {
-    this.totalItems = items;
-    this.totalPages = Math.max(Math.floor(this.totalItems / this.pageItems) + (this.totalItems % this.pageItems ? 1 : 0), 1);
-};
-ListPager.prototype.view = function () {
-    return this.ui.view();
-};
-ListPager.prototype.refresh = function () {
-    this.ui.currentHtml(this.page + '/' + this.totalPages);
-    this.ui.enablePrevious(this.page !== 1);
-    this.ui.enableNext(this.page !== this.totalPages);
-};
-
-
-function ListItemsManager(controller) {
-    ListManagerPanel.call(this, controller);
-    this.ListItemsManager = true;
-    var self = this;
-    this.container = jQuery('<div/>');
-    this.items = [];
-
-    this.controller.bind({
-        filter: function (e) {
-            self.refresh(e.items);
-        }
-    });
-
-}
-mielk.objects.extend(ListManagerPanel, ListItemsManager);
-ListItemsManager.prototype.refresh = function (items) {
-    this.clear();
-
-    for (var i = 0; i < items.length; i++) {
-        var object = this.controller.createObject(items[i]);
-        var item = this.controller.createListItem(object);
-        object.injectListItem(item);
-        item.appendTo($(this.container));
-        this.items[i] = item;
-    }
-
-    this.loadDetails();
-
-};
-ListItemsManager.prototype.clear = function () {
-    for (var i = 0; i < this.items.length; i++) {
-        this.items[i].remove();
-    }
-};
-ListItemsManager.prototype.loadDetails = function () {
-    for (var i = 0; i < this.items.length; i++) {
-        var item = this.items[i];
-        item.loadDetails();
     }
 };
