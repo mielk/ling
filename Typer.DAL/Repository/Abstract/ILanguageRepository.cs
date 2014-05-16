@@ -8,6 +8,6 @@ namespace Typer.DAL.Repositories
     {
         IEnumerable<LanguageDto> GetLanguages();
         LanguageDto GetLanguage(int id);
-        IEnumerable<LanguageDto> GetUserLanguages(int userId);
+        IEnumerable<int> GetUserLanguages(int userId);
     }
 }

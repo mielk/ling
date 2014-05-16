@@ -80,20 +80,6 @@ ListManager.prototype = {
     
     emptyItem: function () {
         alert('Must be defined in implementing class');
-    },
-    
-    getLanguages: function () {
-        //if (!this.languages) {
-        //    this.languages = my.languages.userLanguages();
-        //}
-        //return this.languages;
-    },
-    
-    getLanguagesIds: function () {
-        //if (!this.languagesIds) {
-        //    this.languagesIds = my.languages.userLanguagesId();
-        //}
-        //return this.languagesIds;
     }
     
 };

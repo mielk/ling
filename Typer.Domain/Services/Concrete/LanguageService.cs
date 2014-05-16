@@ -31,10 +31,9 @@ namespace Typer.Domain.Services
             return LanguageFromDto(dto);
         }
 
-        public IEnumerable<Language> GetUserLanguages(int userId)
+        public IEnumerable<int> GetUserLanguages(int userId)
         {
-            var dataObjects = _repository.GetUserLanguages(userId);
-            return dataObjects.Select(LanguageFromDto).ToList();
+            return _repository.GetUserLanguages(userId);
         }
 
 

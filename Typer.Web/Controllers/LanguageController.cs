@@ -24,5 +24,14 @@ namespace Typer.Web.Controllers
         }
 
 
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult GetLanguages()
+        {
+            var languages = _service.GetLanguages();
+            return Json(languages, JsonRequestBehavior.AllowGet);
+        }
+
+
     }
 }

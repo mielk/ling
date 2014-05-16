@@ -4,7 +4,6 @@
  * Date: 2014-05-13 16:26
  *
  */
-
 $(function () {
     
     'use strict';

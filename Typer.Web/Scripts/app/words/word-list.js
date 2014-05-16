@@ -29,10 +29,6 @@ mielk.objects.addProperties(WordListManager.prototype, {
     createObject: function (properties) {
         return new Metaword(properties);
     },
-    
-    createListItem: function (object) {
-        //return new WordListItem(this, object);
-    },
 
     emptyItem: function () {
         //var filters = this.filterManager.filters;
@@ -53,3 +49,78 @@ mielk.objects.addProperties(WordListManager.prototype, {
     }
 
 });
+
+
+
+
+
+function WordListItemView(manager, item) {
+    ListItemView.call(this, manager, item);
+    this.WordListItemView = true;
+    var self = this;
+
+    //Add panels specific for this type of objects.
+    this.type = jQuery('<div/>', { 'class': 'type', html: self.object.wordtype.symbol }).appendTo($(this.container));
+    $(this.categories).before(this.type);
+
+    this.object.bind({
+        changeWordtype: function (e) {
+            self.type.html(e.wordtype.symbol);
+        }
+    });
+
+}
+mielk.objects.extend(ListItemView, WordListItemView);
+WordListItemView.prototype.loadDetails = function () {
+    var self = this;
+    var object = self.object;
+    var spinner = new SpinnerWrapper($(this.details));
+
+    $.ajax({
+        url: '/Words/GetWords',
+        type: "GET",
+        data: {
+            'id': object.id,
+            'languages': self.manager.getLanguagesIds()
+        },
+        datatype: "json",
+        async: true,
+        cache: false,
+        traditional: true,
+        success: function (result) {
+            self.renderItems(result);
+            spinner.stop();
+        },
+        error: function () {
+            spinner.stop();
+            self.loadDetails();
+        }
+    });
+
+};
+WordListItemView.prototype.renderItems = function (words) {
+    var self = this;
+    var languages = self.manager.getLanguages();
+    var columns = {};
+
+    for (var i = 0; i < languages.length; i++) {
+        var language = languages[i];
+        var column = jQuery('<div/>', {
+            'class': 'details-column'
+        }).appendTo(self.details);
+        columns[language.id] = column;
+    }
+
+    for (var j = 0; j < words.length; j++) {
+        var word = words[j];
+        var languageId = word.LanguageId;
+        var languageColumn = columns[languageId];
+        var icon = jQuery('<div/>', {
+            'class': 'details-icon',
+            title: word.Name
+        }).appendTo(languageColumn);
+        $(icon).addClass(word.IsCompleted ? 'complete' : 'incomplete');
+    }
+
+};
+

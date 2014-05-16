@@ -48,12 +48,13 @@ mielk.objects.addProperties(ListItemsManager.prototype, {
 
         self.clear();
 
-        mielk.arrays.each(items, function(item) {
-            var object = this.controller.createObject(item);
-            mielk.notify.display('list-items-manager.js :: usunięta zmienna listItem, od teraz będzie zawarta w obiekcie typu Metaword / Query', false);
-            //var listItem = this.controller.createListItem(object);
-            self.ui.addItem(object.view);
+        mielk.arrays.each(items, function (item) {
+            var object = self.controller.createObject(item);
+            var view = object.toListItem();
+
+            self.ui.addItem(view);
             self.items[counter++] = item;
+
         });
 
         this.loadDetails();

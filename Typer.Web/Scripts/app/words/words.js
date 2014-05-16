@@ -1,32 +1,4 @@
-﻿/*
- * Word
- *
- * Date: 2014-05-14 14:11
- *
- */
-function Metaword() {
-
-    'use strict';
-
-    var self = this;
-    
-    //Class signature.
-    self.Metaword = true;
-    
-    //Instance properties.
-    
-
-}
-Metaword.prototype = {
-    
-
-    setCategories: function(categories) {
-        
-    }
-};
-
-
-
+﻿
 $(function () {
 
     'use strict';

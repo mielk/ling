@@ -98,16 +98,3 @@ C:\Users\Tomek\Documents\Visual Studio 2012\Projects\ling\Typer.DAL\bin\Debug\Ty
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\ling\Typer.DAL\bin\Debug\Typer.Common.pdb
 C:\Users\txmieln\Documents\Visual Studio 2012\Projects\typer\Typer.DAL\bin\Debug\Typer.Common.dll
 C:\Users\txmieln\Documents\Visual Studio 2012\Projects\typer\Typer.DAL\bin\Debug\Typer.Common.pdb
-C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.DAL\bin\Debug\Typer.DAL.dll.config
-C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.DAL\bin\Debug\Typer.DAL.dll
-C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.DAL\bin\Debug\Typer.DAL.pdb
-C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.DAL\bin\Debug\EntityFramework.dll
-C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.DAL\bin\Debug\Ninject.dll
-C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.DAL\bin\Debug\Typer.Common.dll
-C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.DAL\bin\Debug\Typer.Common.pdb
-C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.DAL\bin\Debug\EntityFramework.xml
-C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.DAL\bin\Debug\Ninject.pdb
-C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.DAL\bin\Debug\Ninject.xml
-C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.DAL\obj\Debug\Typer.DAL.csprojResolveAssemblyReference.cache
-C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.DAL\obj\Debug\Typer.DAL.dll
-C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.DAL\obj\Debug\Typer.DAL.pdb

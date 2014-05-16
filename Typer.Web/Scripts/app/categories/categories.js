@@ -66,8 +66,10 @@ $(function () {
             var categoriesString = '';
             for (var i = 0; i < $categories.length; i++) {
                 var category = $categories[i];
-                categoriesString += (categoriesString ? ' | ' : '');
-                categoriesString += category.path();
+                if (category) {
+                    categoriesString += (categoriesString ? ' | ' : '');
+                    categoriesString += category.path();
+                }
             }
             return categoriesString;
         }

@@ -170,6 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\app\categories.css" />
+    <Content Include="Content\app\list.css" />
     <Content Include="Content\common\dropdown.css" />
     <Content Include="Content\app\edit.css" />
     <Content Include="Content\images\close-image-36.png" />
@@ -267,6 +268,9 @@
     <Content Include="Content\app\site.css" />
     <Compile Include="App_Start\NinjectWebCommon.Bindings.cs" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
+    <Content Include="Scripts\app\common\languages.js" />
+    <Content Include="Scripts\app\common\list\list-entity.js" />
+    <Content Include="Scripts\app\common\users.js" />
     <Content Include="Scripts\app\common\enums.js" />
     <Content Include="Scripts\app\common\ling.js" />
     <Content Include="Scripts\app\categories\categories.js" />
@@ -276,6 +280,7 @@
     <Content Include="Scripts\app\common\list\list-pager.js" />
     <Content Include="Scripts\app\common\list\list.js" />
     <Content Include="Scripts\app\queries\query-list.js" />
+    <Content Include="Scripts\app\words\metaword.js" />
     <Content Include="Scripts\app\words\word-list.js" />
     <Content Include="Scripts\common\mielk.js" />
     <Content Include="Scripts\external\select2.js" />

@@ -668,9 +668,14 @@
             if ($spinner) $spinner.stop();
         }
 
+        function innerSpinner(container) {
+            new SpinnerWrapper($(container));
+        }
+
         return {
-            start: start,
-            stop: stop
+              start: start
+            , stop: stop
+            , innerSpinner: innerSpinner
         };
 
     })();

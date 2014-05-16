@@ -38,24 +38,30 @@ namespace Typer.DAL.Repositories
         }
 
 
-        public IEnumerable<LanguageDto> GetUserLanguages(int userId)
+        public IEnumerable<int> GetUserLanguages(int userId)
         {
-            IEnumerable<UserLanguageDto> languageUserObjects = Context.UserLanguages.Where(l => l.UserId == userId);
-
-
-            //IEnumerable<Language> languages = from l in context.Languages
-            //                                  join u in context.UserLanguages
-            //                                  on l.Id equals u.LanguageId
-            //                                  where u.UserId == userId
-            //                                  select new Language
-            //                                  {
-            //                                      Id = l.Id,
-            //                                      Name = l.Name
-            //                                  };
-
-            return languageUserObjects.Select(ul => GetLanguage(ul.LanguageId)).ToList();
-
+            IEnumerable<int> languageUserObjects = Context.UserLanguages.Where(l => l.UserId == userId).Select(l => l.Id);
+            return languageUserObjects;
         }
+
+        //public IEnumerable<LanguageDto> GetUserLanguages2(int userId)
+        //{
+        //    IEnumerable<UserLanguageDto> languageUserObjects = Context.UserLanguages.Where(l => l.UserId == userId);
+
+
+        //    //IEnumerable<Language> languages = from l in context.Languages
+        //    //                                  join u in context.UserLanguages
+        //    //                                  on l.Id equals u.LanguageId
+        //    //                                  where u.UserId == userId
+        //    //                                  select new Language
+        //    //                                  {
+        //    //                                      Id = l.Id,
+        //    //                                      Name = l.Name
+        //    //                                  };
+
+        //    return languageUserObjects.Select(ul => GetLanguage(ul.LanguageId)).ToList();
+
+        //}
 
     }
 }
