@@ -16,12 +16,14 @@ User.prototype = {
 
     //Funkcja zwracająca listę języków przypisanych do tego usera.
     getLanguages: function () {
+        'use strict';
         if (!this.languages) this.loadLanguages();
         return this.languages;
     },
 
     //Funkcja zwracająca tablicę zawierającą numery Id języków przypisanych do tego usera.
-    getLanguagesIds: function(){
+    getLanguagesIds: function () {
+        'use strict';
         if (!this.languages) this.loadLanguages();
 
         var ids = [];
@@ -34,6 +36,7 @@ User.prototype = {
     },
 
     loadLanguages: function () {
+        'use strict';
         var self = this;
         var languages = [];
 
@@ -91,85 +94,3 @@ $(function () {
     Ling.Users = users;
 
 });
-
-
-
-
-my.languages = (function () {
-
-    var used = null;
-
-    function loadLanguages() {
-
-        var userId = my.user.id();
-
-        $.ajax({
-            url: '/Language/GetUserLanguages',
-            type: "GET",
-            data: {
-                'userId': userId,
-            },
-            datatype: "json",
-            async: false,
-            traditional: false,
-            success: function (result) {
-                used = [];
-                for (var i = 0; i < result.length; i++) {
-                    var object = result[i];
-                    var language = new Language({
-                        id: object.Id,
-                        name: object.Name,
-                        flag: object.Flag
-                    });
-                    used.push(language);
-                }
-            },
-            error: function () {
-                my.notify.display('Error when trying to load user languages', false);
-            }
-        });
-
-
-
-    }
-
-    return {
-        userLanguages: function () {
-            if (!used) {
-                loadLanguages();
-            }
-            return used;
-        },
-        userLanguagesId: function () {
-            if (!used) {
-                loadLanguages();
-            }
-
-            var ids = [];
-            for (var i = 0; i < used.length; i++) {
-                var language = used[i];
-                ids.push(language.id);
-            }
-
-            return ids;
-        },
-        get: function (id) {
-            if (!used) {
-                loadLanguages();
-            }
-
-            for (var i = 0; i < used.length; i++) {
-                var language = used[i];
-                if (language.id === id) {
-                    return language;
-                }
-            }
-
-            return null;
-
-        }
-
-
-    };
-
-})();

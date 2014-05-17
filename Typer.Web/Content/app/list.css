@@ -9,3 +9,56 @@
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
 }
+
+
+div.pager {
+    display: block;
+    float: right;
+    width: auto;
+    height: 32px;
+    margin: 12px;
+}
+
+div.pager a:hover { 
+    background-color: silver; 
+}
+
+div.pager a.selected { 
+    background-color: #353535; 
+    color: white;
+}
+
+div.pager-label{
+    display: block;
+    position: relative;
+    float: left;
+    height: 26px;
+    width: 26px;
+    padding: 6px 0;
+    line-height: 12px;
+    font-size: 10px;
+    color: #555;
+    font-weight: bold;
+    border: 1px solid #888;
+    background-color: #FBFFDA;
+    text-align: center;
+    cursor: pointer;
+    margin: 0 3px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+div.pager-label.active{
+    background-color: #64F143;
+}
+
+div.pager-label:hover{
+    background-color: #F1C244;
+}
+
+div.pager-label.separator{
+    background-color: transparent;
+    border: none;
+    cursor: default;
+}

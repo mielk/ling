@@ -28,47 +28,58 @@ function ListPager(controller, properties) {
 
     self.ui = (function () {
         
+        var labels = [];
+
         var container = jQuery('<div/>', {
             'class': 'pager'
         });
 
-        mielk.notify.display('Zmienić sposób prezentacji podstron w list-pager.js', false);
-
-        // ReSharper disable UnusedLocals
-        var first =     element('first',    'First',    function () { self.controller.moveToPage(1); });
-        var previous =  element('previous', 'Previous', function () { self.controller.moveToPage(self.page - 1); });
-        var current =   element('current',  '',         function () { });
-        var next =      element('next',     'Next',     function () { self.controller.moveToPage(self.page + 1); });
-        var last =      element('last',     'Last',     function () { self.controller.moveToPage(self.totalPages); });
-        // ReSharper restore UnusedLocals
-
-        function element(cssClass, caption, callback) {
+        function label(i) {
             return jQuery('<div/>', {
-                'class': 'pager-item ' + cssClass,
-                html: caption
+                'class': 'pager-label' + (i === self.page ? ' active' : ''),
+                html: i
             }).bind({
-                click: callback
-            }).appendTo($(container));
+                click: function () {
+                    self.controller.moveToPage(i);
+                }
+            }).appendTo(container);
+        }
+
+        function addSeparator() {
+            return jQuery('<div/>', {
+                  'class': 'pager-label separator'
+                , 'html': '...'
+            }).appendTo(container);
+        }
+
+        function addLabels(numbers) {
+            var current = 0;
+            clear();
+
+            mielk.arrays.each(numbers, function (index) {
+
+                if (current !== (index - 1)) {
+                    //Jeżeli jest różnica większa niż 1, wstawia ...
+                    addSeparator();
+                }
+
+                var lbl = label(index);
+                labels.push(lbl);
+
+                current = index;
+
+            });
+
+        }
+            
+        function clear(){
+            $(container).empty();
+            labels.length = 0;
         }
 
         return {
-            view: container,
-            currentHtml: function (value) {
-                if (value === undefined) {
-                    return current.innerHTML;
-                } else {
-                    $(current).html(value);
-                }
-                return true;
-            },
-            enablePrevious: function (value) {
-                display(first, value);
-                display(previous, value);
-            },
-            enableNext: function (value) {
-                display(next, value);
-                display(last, value);
-            }
+              view: container
+            , addLabels: addLabels
         };
 
     })();
@@ -84,10 +95,58 @@ mielk.objects.addProperties(ListPager.prototype, {
     view: function () {
         return this.ui.view;
     },
-    
+
     refresh: function () {
-        this.ui.currentHtml(this.page + '/' + this.totalPages);
-        this.ui.enablePrevious(this.page !== 1);
-        this.ui.enableNext(this.page !== this.totalPages);
-    }  
+        var numbers = this.calculateDisplayedPages();
+        this.ui.addLabels(numbers);
+    },
+
+    //Funkcja wyznaczająca, które numery podstron mają być widoczne
+    //w zależności od aktualnie aktywnej podstrony i łącznej liczby
+    //podstron.
+    calculateDisplayedPages: function(){
+        var START_ITEMS = 3;
+        var END_ITEMS = 3;
+        var NEIGHBOUR_ITEMS = 4;
+        var total = START_ITEMS + END_ITEMS + 2 * NEIGHBOUR_ITEMS + 1;
+
+        var array = [];
+        if (this.totalPages <= total) {
+            for (var i = 1; i <= this.totalPages; i++) {
+                array.push(i);
+            }
+        } else {
+
+            var j = 1;
+            var left = (this.page - NEIGHBOUR_ITEMS <= START_ITEMS ? total - END_ITEMS : START_ITEMS);
+            var right = (this.page + NEIGHBOUR_ITEMS >= this.totalPages - END_ITEMS ? total - START_ITEMS : END_ITEMS);
+
+            //Dodaje pierwsze podstrony.
+            for (j = 1; j <= left; j++) {
+                array.push(j);
+            }
+
+            //Dodaje aktualnie wybraną podstronę oraz po cztery
+            //sąsiednie podstrony ([!] ale tylko w sytuacji, kiedy
+            //podstrony nie zostały dołączone do grupy początkowych
+            //lub końcowych podstron - stąd to sprawdzenie czy left
+            //i right mają normalną długość, czy też są powiększone
+            //o aktualnie wyświetlaną stronę i jej sąsiadów. W przeciwnym
+            //razie w ogóle nie są wyświetlane w oddzielnej pętli.
+            if (left === START_ITEMS && right === END_ITEMS) {
+                for (j = this.page - NEIGHBOUR_ITEMS; j <= this.page + NEIGHBOUR_ITEMS; j++) {
+                    array.push(j);
+                }
+            }
+
+            //Dodaje ostatnie podstrony.
+            for (j = this.totalPages - right + 1; j <= this.totalPages; j++) {
+                array.push(j);
+            }
+
+        }
+
+        return array;
+
+    }
 });
