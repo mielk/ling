@@ -60,7 +60,7 @@ Entity.prototype = {
                 category = Ling.Categories.getCategory(object);
             }
 
-            array.push(category);
+            if (category) array.push(category);
 
         });
 
@@ -299,7 +299,8 @@ function ListItemView(entity) {
 
 
         return {
-              activate: activate
+              view: container
+            , activate: activate
             , addDetails: addDetails
             , addSpinner: addSpinner
             , addItem: addItem
@@ -308,7 +309,7 @@ function ListItemView(entity) {
     })();
 
     //Od razu przy tworzeniu ładowane są szczegóły elementów tego Entity.
-    self.loadDetails();
+    //self.loadDetails();
 
 }
 ListItemView.prototype = {
@@ -342,6 +343,10 @@ ListItemView.prototype = {
 
     addItemToUi: function (item, before) {
         this.ui.addItem(item, before);
+    },
+
+    view: function () {
+        return this.ui.view;
     }
 
 };

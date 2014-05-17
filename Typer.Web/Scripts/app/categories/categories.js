@@ -15,7 +15,7 @@ $(function () {
 
         function load() {
             mielk.db.fetch('Categories', 'GetCategories', {}, {
-                async: true,
+                async: false,
                 cache: false,
                 callback: function (result) {
                     root = new Category(null, categoryProperties(result));
@@ -33,9 +33,7 @@ $(function () {
 
         //Returns a category with the specified index number.
         function getCategory(id) {
-            if (!root) {
-                root = load();
-            }
+            if (!root) load();
             return flyweight.getItem(id);
         }
 

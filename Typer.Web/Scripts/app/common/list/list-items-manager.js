@@ -50,10 +50,10 @@ mielk.objects.addProperties(ListItemsManager.prototype, {
 
         mielk.arrays.each(items, function (item) {
             var object = self.controller.createObject(item);
-            var view = object.toListItem();
+            var listItem = object.toListItem();
 
-            self.ui.addItem(view);
-            self.items[counter++] = item;
+            self.ui.addItem(listItem.view());
+            self.items[counter++] = object;
 
         });
 
@@ -67,8 +67,8 @@ mielk.objects.addProperties(ListItemsManager.prototype, {
     },
     
     loadDetails: function () {
-        mielk.arrays.each(this.items, function(item) {
-            item.loadDetails();
+        mielk.arrays.each(this.items, function(entity) {
+            entity.listItem.loadDetails();
         });
     },
     
