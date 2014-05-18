@@ -269,6 +269,7 @@
     <Compile Include="App_Start\NinjectWebCommon.Bindings.cs" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\app\common\languages.js" />
+    <Content Include="Scripts\app\common\list\edit-panel.js" />
     <Content Include="Scripts\app\common\list\list-entity.js" />
     <Content Include="Scripts\app\common\users.js" />
     <Content Include="Scripts\app\common\enums.js" />
@@ -279,6 +280,7 @@
     <Content Include="Scripts\app\common\list\list-items-manager.js" />
     <Content Include="Scripts\app\common\list\list-pager.js" />
     <Content Include="Scripts\app\common\list\list.js" />
+    <Content Include="Scripts\app\queries\query.js" />
     <Content Include="Scripts\app\queries\query-list.js" />
     <Content Include="Scripts\app\words\metaword.js" />
     <Content Include="Scripts\app\words\word-list.js" />

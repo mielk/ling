@@ -11,6 +11,7 @@ $(function () {
         //Funkcja sprawdzająca czy w bazie istnieje już wyraz o podanej nazwie.
         function nameAlreadyExists(id, name) {
             var error = dict.MetawordCheckIfNameExistsError.get([name]);
+            var value = true;
 
             mielk.db.fetch('Words', 'CheckName', {
                 'id': id,
@@ -19,12 +20,14 @@ $(function () {
                 async: false,
                 cache: false,
                 callback: function(result) {
-                    return (result.IsExisting === true);
+                    value = (result.IsExisting === true);
                 },
                 errorCallback: function() {
                     alert(error);
                 }
             });
+
+            return value;
 
         }
         
@@ -191,6 +194,7 @@ $(function () {
         //Funkcja zwracająca wyrazy dla podanego metawyrazu.
         function getWords(id, name, languages) {
             var error = dict.GetMetawordWordsError.get([name]);
+            var words = [];
             
             mielk.db.fetch('Words', 'GetWords', {
                 'id': id,
@@ -200,13 +204,14 @@ $(function () {
                 cache: false,
                 traditional: true,
                 callback: function(result) {
-                    return result;
+                    words = result;
                 },
                 errorCallback: function() {
                     mielk.notify.display(error, false);
-                    return [];
                 }
             });
+
+            return words;
 
         }
 

@@ -28,23 +28,23 @@ function ListManager(properties) {
 ListManager.prototype = {    
     bind: function (e) {
         this.eventHandler.bind(e);
-    },
+    }
     
-    trigger: function (e) {
+    , trigger: function (e) {
         this.eventHandler.trigger(e);
-    },
+    }
     
-    start: function () {
-        this.filter({ page: 1, pageSize: 10 });
-    },
+    , start: function () {
+        this.filter({ page: 1, pageSize: Ling.Config.entities.pageSize });
+    }
     
-    filter: function (e) {
+    , filter: function (e) {
         this.filterManager.filter(e);
-    },
+    }
 
-    moveToPage: function (page) {
+    , moveToPage: function (page) {
         this.filter({ page: page });
-    },
+    }
     
     //newItem: function () {
     //    //var e = this.filterValues;
@@ -55,17 +55,13 @@ ListManager.prototype = {
 
     //},
     
-    pageItems: function () {
+    , pageItems: function () {
         return this.pagerManager.pageItems;
-    },
-    
-    createObject: function () {
-        alert('Must be defined in implementing class');
     }
     
-    //createListItem: function () {
-    //    alert('Must be defined in implementing class');
-    //},
+    , createObject: function () {
+        alert('Must be defined in implementing class');
+    }
     
     //createNewItem: function () {
     //    //var self = this;

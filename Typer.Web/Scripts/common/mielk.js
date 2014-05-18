@@ -370,11 +370,39 @@
             }
         }
 
+
+        //Funkcja klonująca podaną wartość, niezależnie od jej typu.
+        function clone(value) {
+            if ($.isArray(value)) {
+                return mielk.arrays.clone(value);
+            } else if (value instanceof Object) {
+                return cloneObject(value);
+            } else {
+                //Primitive values.
+                return value;
+            }
+        }
+
+
+        //Funkcja klonująca wartości obiektowe.
+        function cloneObject(object, deepCopy) {
+            var $clone = {};
+
+            each(object, function (key, value) {
+                if (typeof (value) !== 'function') {
+                    $clone[key] = deepCopy ? clone(value) : value;
+                }
+            });
+
+            return $clone;
+        }
+
         return {
-            extend: extend,
-            isFunction: isFunction,
-            addProperties: addProperties,
-            each: each
+            extend: extend
+            , isFunction: isFunction
+            , addProperties: addProperties
+            , each: each
+            , clone: clone
         };
 
 
@@ -513,10 +541,41 @@
         }
 
 
+        function validator(object) {
+
+            var instance = (function (obj) {
+                var invalid = mielk.hashTable();
+
+                return {
+                    validation: function (e) {
+                        if (e.status) {
+                            invalid.removeItem(e.id);
+                        } else {
+                            invalid.setItem(e.id, e.id);
+                        }
+
+                        if (obj.trigger && typeof (obj.trigger) === 'function') {
+                            obj.trigger({
+                                type: 'validation',
+                                status: invalid.size() === 0
+                            });
+                        }
+
+                    }
+                };
+
+            })(object);
+
+            return instance;
+
+        }
+
+
         return {
-            coalesce: coalesce,
-            isNumber: isNumber,
-            isString: isString
+              coalesce: coalesce
+            , isNumber: isNumber
+            , isString: isString
+            , validator: validator
         };
 
 
@@ -827,16 +886,29 @@
             }
         }
 
+        //Funkcja klonująca podaną tablicę.
+        function clone(array) {
+            var $clone = [];
+
+            each(array, function (item) {
+                $clone.push(item);
+            });
+
+            return $clone;
+
+        }
+
         return {
-            getLastItem: getLastItem,
-            fromObject: fromObject,
-            equal: equal,
-            remove: remove,
-            getMax: getMax,
-            getMin: getMin,
-            findItem: findItem,
-            firstGreater: firstGreater,
-            each: each
+              getLastItem: getLastItem
+            , fromObject: fromObject
+            , equal: equal
+            , remove: remove
+            , getMax: getMax
+            , getMin: getMin
+            , findItem: findItem
+            , firstGreater: firstGreater
+            , each: each
+            , clone: clone
         };
 
     })();

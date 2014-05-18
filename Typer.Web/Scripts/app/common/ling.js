@@ -19,6 +19,7 @@ if (my === undefined) {
         , entities: {
                   minWeight: 1
                 , maxWeight: 10
+                , pageSize: 15
             }
     };
 

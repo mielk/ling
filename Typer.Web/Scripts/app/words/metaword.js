@@ -23,7 +23,11 @@ function Metaword(properties) {
 mielk.objects.extend(Entity, Metaword);
 mielk.objects.addProperties(Metaword.prototype, {
 
-    setCategories: function (categories) {
+    detailsMethodName: 'GetWords'
+
+    , controllerName: 'Words'
+
+    , setCategories: function (categories) {
 
     }
 
@@ -53,6 +57,22 @@ mielk.objects.addProperties(Metaword.prototype, {
 
         return array;
 
+
+    }
+
+    //Tworzy obiekt zależny względem tego entity, np. Word dla Metaword
+    //albo QueryOption dla Query.
+    , createSubItem: function (properties) {
+        return {
+            test: 1
+        };
+    }
+
+    //Zwraca tablicę zawierającą definicję zestawu danych
+    //specyficzne dla klasy Metaword.
+    , getSpecificDatalinesDefinitions: function () {
+        
+        var x = 1;
 
     }
 

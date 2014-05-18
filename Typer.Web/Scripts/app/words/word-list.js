@@ -5,7 +5,7 @@ function WordListManager(properties) {
 
     //Default properties for this type of list.
     var defaultParams = {
-          pageItems: 10
+          pageItems: Ling.Config.entities.pageSize
         , currentPage: 1
         , columns: ['id', 'name', 'weight', 'type', 'categories']
         , filters: ['wordtype', 'weight', 'categories', 'text']
@@ -49,54 +49,3 @@ mielk.objects.addProperties(WordListManager.prototype, {
     //}
 
 });
-
-
-
-
-
-function WordListItemView(manager, item) {
-    ListItemView.call(this, manager, item);
-    this.WordListItemView = true;
-    var self = this;
-
-    //Add panels specific for this type of objects.
-    this.type = jQuery('<div/>', { 'class': 'type', html: self.object.wordtype.symbol }).appendTo($(this.container));
-    $(this.categories).before(this.type);
-
-    this.object.bind({
-        changeWordtype: function (e) {
-            self.type.html(e.wordtype.symbol);
-        }
-    });
-
-}
-mielk.objects.extend(ListItemView, WordListItemView);
-//WordListItemView.prototype.loadDetails = function () {
-//    var self = this;
-//    var object = self.object;
-//    var spinner = new SpinnerWrapper($(this.details));
-
-//    $.ajax({
-//        url: '/Words/GetWords',
-//        type: "GET",
-//        data: {
-//            'id': object.id,
-//            'languages': self.manager.getLanguagesIds()
-//        },
-//        datatype: "json",
-//        async: true,
-//        cache: false,
-//        traditional: true,
-//        success: function (result) {
-//            self.renderItems(result);
-//            spinner.stop();
-//        },
-//        error: function () {
-//            spinner.stop();
-//            self.loadDetails();
-//        }
-//    });
-
-//};
-
-

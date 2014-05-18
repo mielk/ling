@@ -1,34 +1,9 @@
 ﻿/*
- * Questions
+ * Queries
  *
  * Date: 2014-05-14 15:49
  *
  */
-
-
-function Query() {
-
-    'use strict';
-
-    var self = this;
-
-    //Class signature.
-    self.Query = true;
-
-    //Instance properties.
-
-
-}
-Query.prototype = {
-
-    setCategories: function (categories) {
-
-    }
-    
-};
-
-
-
 
 $(function () {
 
@@ -39,6 +14,7 @@ $(function () {
         //Funkcja sprawdzająca czy w bazie istnieje już zapytanie o podanej nazwie.
         function nameAlreadyExists(id, name) {
             var error = dict.QueryCheckIfNameExistsError.get([name]);
+            var value = true;
 
             mielk.db.fetch('Questions', 'CheckName', {
                 'id': id,
@@ -47,12 +23,14 @@ $(function () {
                 async: false,
                 cache: false,
                 callback: function (result) {
-                    return (result.IsExisting === true);
+                    value = (result.IsExisting === true);
                 },
                 errorCallback: function () {
                     alert(error);
                 }
             });
+
+            return value;
 
         }
 
@@ -221,7 +199,8 @@ $(function () {
         //Funkcja zwracająca wszystkie opcje dla podanego zapytania.
         function getOptions(id, name, languages) {
             var error = dict.GetQueryOptionsError.get([name]);
-            
+            var options = [];
+
             mielk.db.fetch('Questions', 'GetOptions', {
                 'id': id,
                 'languages': languages
@@ -230,13 +209,14 @@ $(function () {
                 cache: false,
                 traditional: true,
                 callback: function(result) {
-                    return result;
+                    options = result;
                 },
                 errorCallback: function() {
                     mielk.notify.display(error, false);
-                    return [];
                 }
             });
+
+            return options;
 
         }
         

@@ -24,16 +24,16 @@ function Entity(properties) {
     self.categories = self.loadCategories(properties.Categories) || [];
     self.new = properties.new || false;
 
+    //Subitems assigned to this entity (i.e. words for Metaword, options for Query).
+    self.items = {};
+
     //Views.
     self.listItem = null;
 
 }
-
-
-
 Entity.prototype = {
 
-    detailsMethodName: 'GetWords'
+      detailsMethodName: 'GetWords'
 
     , controllerName: 'Words'
 
@@ -67,7 +67,6 @@ Entity.prototype = {
         return array;
 
     }
-    
 
     , toListItem: function () {
         this.listItem = this.listItem || new ListItemView(this);
@@ -149,9 +148,121 @@ Entity.prototype = {
 
     }
 
-    //, editPanel: function () {
-    //    alert('Must be defined by implementing class');
-    //}
+    , loadDetails: function () {
+        var self = this;
+        
+        var fnSuccess = function (result) {
+            //Clear previous items collection.
+            self.items = mielk.hashTable();
+
+            mielk.arrays.each(result, function (value) {
+                var languageId = value.LanguageId;
+
+                if (!self.items.hasItem(languageId)) {
+                    self.items.setItem(languageId, mielk.hashTable());
+                }
+
+                var set = self.items.getItem(languageId);
+                var subitem = self.createSubItem(value);
+                set.setItem(subitem.name, subitem);
+
+            });
+
+        }
+
+        var fnError = function () {
+            mielk.notify.display('Error when trying to get items of the entity | Group: ' + self.controllerName + ' | Id: ' + self.id, false);
+        }
+
+        self.getDetails(fnSuccess, fnError);
+
+    }
+
+
+
+    //Editing entity.
+    , edit: function () {
+        //Zapewnia, że przed wyświetleniem panelu edycji,
+        //odpowiednie składniki zostaną załadowane do tego Entity.
+        this.loadDetails();
+
+        var editPanel = new EditPanel(this);
+        editPanel.show();
+    }
+
+    //Tworzy obiekt zależny względem tego entity, np. Word dla Metaword
+    //albo QueryOption dla Query.
+    , createSubItem: function (properties) {
+        alert('Must be defined in implemented class');
+    }
+
+    //Zwraca tablicę zawierającą definicję zestawu danych, które
+    //mają być wyświetlane w panelu edycji tego Entity.
+    , getDatalinesDefinitions: function (object) {
+        var datalines = [];
+
+        //[Id]
+        datalines.push({
+              property: 'id'
+            , label: dict.Id.get()
+            , value: object.id
+            , callback: function (value) {
+                object.id = value;
+            }
+            , inputCss: {
+                  'width': '60px'
+                , 'text-align': 'center'
+                , 'border': '1px solid #777'
+                , 'background-color': 'white'
+            }
+        });
+
+
+        //[Name]
+        datalines.push({
+              property: 'name'
+            , label: dict.Name.get()
+            , value: object.name
+            , callback: function (value) {
+                object.name = value;
+            }
+            , validation: function (params) {
+                return object.entity.checkName(params.value);
+            }
+            , editable: true
+        });
+
+
+        return datalines;
+
+    }
+
+    //Zwraca tablicę zawierającą definicję zestawu danych
+    //specyficzne dla danej podklasy typu Entity.
+    , getSpecificDatalinesDefinitions: function () {
+        alert('Must be defined in implemented class');
+    }
+
+    //Funkcja sprawdzająca czy Entity o takiej nazwie już istnieje.
+    , checkName: function (name) {
+        var maxLength = 255;
+
+        if (!name.trim()) {
+            return dict.NameCannotBeEmpty.get();
+        } else if (name.length > maxLength) {
+            return dict.NameCannotBeLongerThan.get([maxLength]);
+        } else {
+            var nameExists = this.service.nameAlreadyExists(this.id, name);
+            if (nameExists) {
+                return dict.NameAlreadyExists.get();
+            } else {
+                return true;
+            }
+        }
+
+    }
+
+
 
     //, editItem: function () {
     //    alert('Must be defined by implementing class');
@@ -164,25 +275,9 @@ Entity.prototype = {
     //    return null;
     //}
 
-    //, checkName: function (name) {
-    //    alert('list-entity.js:checkName');
-    //    var maxLength = 255;
 
-    //    if (!name.trim()) {
-    //        return MessageBundle.get(dict.NameCannotBeEmpty);
-    //    } else if (name.length > maxLength) {
-    //        return MessageBundle.get(dict.NameCannotBeLongerThan, [maxLength]);
-    //    } else {
-    //        var nameExists = this.service.nameAlreadyExists(this.id, name);
-    //        if (nameExists) {
-    //            return MessageBundle.get(dict.NameAlreadyExists);
-    //        } else {
-    //            return true;
-    //        }
 
-    //    }
 
-    //}
 
     //, update: function () {
     //    alert('Must by defined by implementing class');
@@ -199,6 +294,8 @@ Entity.prototype = {
 
 
 };
+
+
 
 
 function ListItemView(entity) {
@@ -396,38 +493,6 @@ ListItemView.prototype = {
     }
 
 };
-
-
-//WordListItemView.prototype.renderItems = function (words) {
-//    var self = this;
-//    var languages = self.manager.getLanguages();
-//    var columns = {};
-
-//    for (var i = 0; i < languages.length; i++) {
-//        var language = languages[i];
-//    }
-
-//    for (var j = 0; j < words.length; j++) {
-//        var word = words[j];
-//        var languageId = word.LanguageId;
-//        var languageColumn = columns[languageId];
-//        var icon = jQuery('<div/>', {
-//            'class': 'details-icon',
-//            title: word.Name
-//        }).appendTo(languageColumn);
-//        $(icon).addClass(word.IsCompleted ? 'complete' : 'incomplete');
-//    }
-
-//};
-
-
-
-
-
-
-
-
-
 
 
 

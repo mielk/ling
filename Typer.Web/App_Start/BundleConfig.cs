@@ -55,6 +55,7 @@ namespace Typer.Web
                 , "~/Scripts/app/common/list/list-items-manager.js"
                 , "~/Scripts/app/common/list/filter-panel.js"
                 , "~/Scripts/app/common/list/list-entity.js"
+                , "~/Scripts/app/common/list/edit-panel.js"
                 , "~/Scripts/app/words/word-list.js"
                 , "~/Scripts/app/words/words.js"
                 , "~/Scripts/app/words/metaword.js"
@@ -67,6 +68,7 @@ namespace Typer.Web
                 , "~/Scripts/app/common/list/list-items-manager.js"
                 , "~/Scripts/app/common/list/filter-panel.js"
                 , "~/Scripts/app/common/list/list-entity.js"
+                , "~/Scripts/app/common/list/edit-panel.js"
                 , "~/Scripts/app/queries/query-list.js"
                 , "~/Scripts/app/queries/queries.js"
             ));
@@ -92,7 +94,7 @@ namespace Typer.Web
                 , "~/Content/app/edit.css"
                 , "~/Content/app/test.css"
                 , "~/Content/app/userPanel.css"
-                , "~/Content/app/login.css"
+                //, "~/Content/app/login.css"
                 , "~/Content/app/site.css"
                 , "~/Content/app/list.css"
             ));
