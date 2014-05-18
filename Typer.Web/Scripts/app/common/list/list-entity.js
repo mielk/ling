@@ -350,8 +350,41 @@ ListItemView.prototype = {
 
     },
 
+    //Funkcja wyświetlająca dane dotyczące szczegółów dla 
+    //tego entity. Np. dla metawyrazów wyświetla graficzną 
+    //informację ile słów jest przypisanych do tego metawyrazu
+    //w każdym z języków i czy ich odmiana gramatyczna jest
+    //już kompletna.
     renderItems: function (items) {
-        //Zwraca widok HTML do wstawienia w panelu Details.
+        var self = this;
+        var languages = Ling.Users.Current.getLanguages();
+        var container = jQuery('<div/>');
+        var columns = {};
+
+        //Iteruje przez wszystkie dostępne języki i dla każdego z nich
+        //sprawdza ile wyrazów/podzapytań jest dodanych w bazie.
+        mielk.arrays.each(languages, function (language) {
+            var column = jQuery('<div/>', {
+                'class': 'details-column'
+            }).appendTo(container);
+            columns[language.id] = column;
+        });
+
+
+        //Iteruje po wszystkich znalezionych słowach i przydziela je
+        //do odpowiednich kolumn.
+        mielk.arrays.each(items, function(item){
+            var languageId = item.LanguageId;
+            var languageColumn = columns[languageId];
+            var icon = jQuery('<div/>', {
+                'class': 'details-icon',
+                title: item.Name
+            }).appendTo(languageColumn);
+            $(icon).addClass(item.IsCompleted ? 'complete' : 'incomplete');
+        })
+
+        return container;
+
     },
 
     addItemToUi: function (item, before) {
@@ -365,6 +398,27 @@ ListItemView.prototype = {
 };
 
 
+//WordListItemView.prototype.renderItems = function (words) {
+//    var self = this;
+//    var languages = self.manager.getLanguages();
+//    var columns = {};
+
+//    for (var i = 0; i < languages.length; i++) {
+//        var language = languages[i];
+//    }
+
+//    for (var j = 0; j < words.length; j++) {
+//        var word = words[j];
+//        var languageId = word.LanguageId;
+//        var languageColumn = columns[languageId];
+//        var icon = jQuery('<div/>', {
+//            'class': 'details-icon',
+//            title: word.Name
+//        }).appendTo(languageColumn);
+//        $(icon).addClass(word.IsCompleted ? 'complete' : 'incomplete');
+//    }
+
+//};
 
 
 
