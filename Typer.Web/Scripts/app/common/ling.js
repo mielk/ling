@@ -14,12 +14,16 @@ if (my === undefined) {
     'use strict';
 
     var config = {        
-        applicationName: 'ling',
-        applicationVersion: '0.0.1'
+          applicationName: 'ling'
+        , applicationVersion: '0.0.1'
+        , entities: {
+                  minWeight: 1
+                , maxWeight: 10
+            }
     };
 
     var ling = {
-        config: config
+        Config: config
     };
 
 

@@ -9,6 +9,12 @@
 
     self.items = items;
 
+    //Dodaje wartości przypisane do tej enumeracji,
+    //jako metody tego obiektu.
+    mielk.objects.each(items, function (key, item) {
+        self[key] = item;
+    });
+
 }
 
 Enum.prototype = {

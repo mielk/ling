@@ -100,27 +100,32 @@ Entity.prototype = {
 
     }
 
+    //Metoda ustawiająca wagę tego Entity do podanej wartości.
+    , setWeight: function (weight) {
 
-    //, setWeight: function (weight) {
-    //    //Leave the function if weight has not been changed.
-    //    if (weight === this.weight) return;
+        //Sprawdź czy waga w ogóle została zmieniona.
+        if (weight === this.weight) return;
 
-    //    var self = this;
-    //    this.weight = Math.max(Math.min(weight, 10), 1);
-    //    this.service.updateWeight({
-    //        id: self.id,
-    //        weight: weight,
-    //        name: self.name,
-    //        callback: function (result) {
-    //            if (result !== false) {
-    //                self.trigger({
-    //                    type: 'changeWeight',
-    //                    weight: weight
-    //                });
-    //            }
-    //        }
-    //    });
-    //}
+        var self = this;
+        var minWeight = Ling.Config.entities.minWeight;
+        var maxWeight = Ling.Config.entities.maxWeight;
+        self.weight = mielk.numbers.checkValue(weight, minWeight, maxWeight);
+
+        self.service.updateWeight({
+            id: self.id,
+            weight: self.weight,
+            name: self.name,
+            callback: function (result) {
+                if (result !== false) {
+                    self.trigger({
+                        type: 'changeWeight',
+                        weight: weight
+                    });
+                }
+            }
+        });
+
+    }
 
     //, activate: function (value) {
     //    var self = this;
@@ -384,8 +389,8 @@ function WeightPanel(entity, listItemView, properties) {
     //Class signature.
     self.WeightPanel = true;
 
-    self.minWeight = 1;
-    self.maxWeight = 10;
+    self.minWeight = Ling.Config.entities.minWeight;
+    self.maxWeight = Ling.Config.entities.maxWeight;
     self.entity = entity;
     self.listItemView = listItemView;       //Odnosi się do obiektu ListItemView, w którym znajdzie się ten WeightPanel.
 
