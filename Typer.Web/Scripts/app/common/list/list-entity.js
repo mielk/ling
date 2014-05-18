@@ -111,46 +111,43 @@ Entity.prototype = {
         var maxWeight = Ling.Config.entities.maxWeight;
         self.weight = mielk.numbers.checkValue(weight, minWeight, maxWeight);
 
-        self.service.updateWeight({
-            id: self.id,
-            weight: self.weight,
-            name: self.name,
-            callback: function (result) {
-                if (result !== false) {
-                    self.trigger({
-                        type: 'changeWeight',
-                        weight: weight
-                    });
-                }
+        self.service.updateWeight(self.id, self.name, self.weight, function(result){
+            if (result !== false) {
+                self.trigger({
+                    type: 'changeWeight',
+                    weight: weight
+                });
             }
         });
 
     }
 
-    //, activate: function (value) {
-    //    var self = this;
-    //    var status = (value === undefined ? !this.isActive : value);
-    //    var e = {
-    //        id: self.id,
-    //        name: self.name,
-    //        callback: function (result) {
-    //            self.isActive = status;
-    //            if (result !== false) {
-    //                self.trigger({
-    //                    type: 'activate',
-    //                    value: status
-    //                });
-    //            }
-    //        }
-    //    };
+    //Funkcja służąca do aktywacji lub deaktywacji tego Entity.
+    , activate: function (value) {
 
-    //    if (status) {
-    //        this.service.activate(e);
-    //    } else {
-    //        this.service.deactivate(e);
-    //    }
+        var self = this;
 
-    //}
+        //Jeżeli funkcja została wywołana bez podania wartości,
+        //ustawiana jest wartość odwrotna do aktualnej.
+        var status = (value === undefined ? !this.isActive : value);
+
+        var callback = function (result) {
+            self.isActive = status;
+            if (result !== false) {
+                self.trigger({
+                    type: 'activate',
+                    value: status
+                });
+            }
+        };
+
+        if (status) {
+            this.service.activate(self.id, self.name, callback);
+        } else {
+            this.service.deactivate(self.id, self.name, callback);
+        }
+
+    }
 
     //, editPanel: function () {
     //    alert('Must be defined by implementing class');

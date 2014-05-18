@@ -101,45 +101,45 @@ namespace Typer.Web.Controllers
             }
 
 
-            [HttpPost]
+            [HttpGet]
             [AllowAnonymous]
             public ActionResult UpdateWeight(int id, int weight)
             {
                 var result = _service.ChangeWeight(id, weight);
-                return Json(result);
+                return Json(result, JsonRequestBehavior.AllowGet);
                 //return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
             }
 
 
-            [HttpPost]
+            [HttpGet]
             [AllowAnonymous]
             public ActionResult UpdateCategories(int[] categories, int id)
             {
                 var result = _service.UpdateCategories(id, categories);
-                return Json(result);
+                return Json(result, JsonRequestBehavior.AllowGet);
             }
 
 
-            [HttpPost]
+            [HttpGet]
             [AllowAnonymous]
             public ActionResult Update(int id, string name, int wordtype, int weight, int[] categories, int[] removed,
                 string[] edited, string[] added, string[] properties, string[] forms)
             {
                 var result = _service.Update(id, name, wordtype, weight, categories, removed, edited, added, properties, forms);
-                return Json(result);
+                return Json(result, JsonRequestBehavior.AllowGet);
             }
 
 
-            [HttpPost]
+            [HttpGet]
             [AllowAnonymous]
             public ActionResult Add(string name, int wordtype, int weight, int[] categories, string[] added, string[] properties, string[] forms)
             {
                 var id = _service.AddMetaword(name, wordtype, weight, categories, added, properties, forms);
-                return Json(id > 0);
+                return Json(id > 0, JsonRequestBehavior.AllowGet);
             }
 
 
-            [HttpPost]
+            [HttpGet]
             [AllowAnonymous]
             public ActionResult Deactivate(int id)
             {
@@ -149,7 +149,7 @@ namespace Typer.Web.Controllers
             }
 
 
-            [HttpPost]
+            [HttpGet]
             [AllowAnonymous]
             public ActionResult Activate(int id)
             {
