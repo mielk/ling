@@ -27,6 +27,35 @@ mielk.objects.addProperties(Metaword.prototype, {
 
     }
 
+    //Metoda abstrakcyjna, musi być zaimplementowana w każdej klasie
+    //dziedziczączej po tej - określa zestaw kontrolek specyficznych 
+    //dla danego podtypu entity, które mają być wyświetlone w ListView, 
+    //np. dla wyrazów dodatkowym elementem będzie właściwość [Wordtype].
+    , additionalViewItems: function () {
+        var array = [];
+
+        //Wordtype label.
+        var type = jQuery('<div/>', {
+            'class': 'type',
+            html: (this.wordtype ? this.wordtype.symbol : '')
+        });
+        this.bind({
+            changeWordtype: function (e) {
+                type.html(e.wordtype.symbol);
+            }
+        });
+        array.push({
+              item: type
+            , before: 'categories'
+        });
+        //Wordtype label.
+
+
+        return array;
+
+
+    }
+
 });
 
 

@@ -33,20 +33,20 @@ function Entity(properties) {
 
 Entity.prototype = {
 
-    detailsMethodName: 'GetWords',
+    detailsMethodName: 'GetWords'
 
-    controllerName: 'Words',
+    , controllerName: 'Words'
 
-    trigger: function (e) {
+    , trigger: function (e) {
         this.eventHandler.trigger(e);
-    },
+    }
 
-    bind: function (e) {
+    , bind: function (e) {
         this.eventHandler.bind(e);
-    },
+    }
 
     //Funkcja zwracająca obiekty typu Category przypisane do tego Entity.
-    loadCategories: function (categories) {
+    , loadCategories: function (categories) {
         var array = [];
 
         mielk.arrays.each(categories, function (object) {
@@ -66,117 +66,26 @@ Entity.prototype = {
 
         return array;
 
-    },
+    }
+    
 
-
-
-    setWeight: function (weight) {
-        //Leave the function if weight has not been changed.
-        if (weight === this.weight) return;
-
-        var self = this;
-        this.weight = Math.max(Math.min(weight, 10), 1);
-        this.service.updateWeight({
-            id: self.id,
-            weight: weight,
-            name: self.name,
-            callback: function (result) {
-                if (result !== false) {
-                    self.trigger({
-                        type: 'changeWeight',
-                        weight: weight
-                    });
-                }
-            }
-        });
-    },
-
-    activate: function (value) {
-        var self = this;
-        var status = (value === undefined ? !this.isActive : value);
-        var e = {
-            id: self.id,
-            name: self.name,
-            callback: function (result) {
-                self.isActive = status;
-                if (result !== false) {
-                    self.trigger({
-                        type: 'activate',
-                        value: status
-                    });
-                }
-            }
-        };
-
-        if (status) {
-            this.service.activate(e);
-        } else {
-            this.service.deactivate(e);
-        }
-
-    },
-
-    editPanel: function () {
-        alert('Must be defined by implementing class');
-    },
-
-    editItem: function () {
-        alert('Must be defined by implementing class');
-    },
-
-    getProperty: function (key) {
-        if (this.hasOwnProperty(key)) {
-            return this[key];
-        }
-        return null;
-    },
-
-    checkName: function (name) {
-        alert('list-entity.js:checkName');
-        var maxLength = 255;
-
-        if (!name.trim()) {
-            return MessageBundle.get(dict.NameCannotBeEmpty);
-        } else if (name.length > maxLength) {
-            return MessageBundle.get(dict.NameCannotBeLongerThan, [maxLength]);
-        } else {
-            var nameExists = this.service.nameAlreadyExists(this.id, name);
-            if (nameExists) {
-                return MessageBundle.get(dict.NameAlreadyExists);
-            } else {
-                return true;
-            }
-
-        }
-
-    },
-
-    update: function () {
-        alert('Must by defined by implementing class');
-    },
-
-    edit: function () {
-        alert('list-entity.js:edit');
-        var editItem = this.editItem();
-        var editPanel = this.editPanel(editItem);
-        editPanel.display();
-    },
-
-
-
-    toListItem: function () {
+    , toListItem: function () {
         this.listItem = this.listItem || new ListItemView(this);
         return this.listItem;
-    },
+    }
 
-    loadDetails: function () {
-        //this.view.loadDetails();
-    },
+    //Metoda abstrakcyjna, musi być zaimplementowana w każdej klasie
+    //dziedziczączej po tej - określa zestaw kontrolek specyficznych 
+    //dla danego podtypu entity, które mają być wyświetlone w ListView, 
+    //np. dla wyrazów dodatkowym elementem będzie właściwość [Wordtype].
+    , additionalViewItems: function () {
+        alert('Must be defined in implementing class');
+    }
 
     //Pobiera informacje na temat elementów przypisanych do obiektu
     //reprezentowanego przez ten ListItem. Np. dla Metaword wyświetla
     //stan wszystkich przypisanych do niego wyrazów.
-    getDetails: function (fnSuccess, fnError) {
+    , getDetails: function (fnSuccess, fnError) {
 
         mielk.db.fetch(this.controllerName, this.detailsMethodName, {
             'id': this.id,
@@ -190,6 +99,102 @@ Entity.prototype = {
         });
 
     }
+
+
+    //, setWeight: function (weight) {
+    //    //Leave the function if weight has not been changed.
+    //    if (weight === this.weight) return;
+
+    //    var self = this;
+    //    this.weight = Math.max(Math.min(weight, 10), 1);
+    //    this.service.updateWeight({
+    //        id: self.id,
+    //        weight: weight,
+    //        name: self.name,
+    //        callback: function (result) {
+    //            if (result !== false) {
+    //                self.trigger({
+    //                    type: 'changeWeight',
+    //                    weight: weight
+    //                });
+    //            }
+    //        }
+    //    });
+    //}
+
+    //, activate: function (value) {
+    //    var self = this;
+    //    var status = (value === undefined ? !this.isActive : value);
+    //    var e = {
+    //        id: self.id,
+    //        name: self.name,
+    //        callback: function (result) {
+    //            self.isActive = status;
+    //            if (result !== false) {
+    //                self.trigger({
+    //                    type: 'activate',
+    //                    value: status
+    //                });
+    //            }
+    //        }
+    //    };
+
+    //    if (status) {
+    //        this.service.activate(e);
+    //    } else {
+    //        this.service.deactivate(e);
+    //    }
+
+    //}
+
+    //, editPanel: function () {
+    //    alert('Must be defined by implementing class');
+    //}
+
+    //, editItem: function () {
+    //    alert('Must be defined by implementing class');
+    //}
+
+    //, getProperty: function (key) {
+    //    if (this.hasOwnProperty(key)) {
+    //        return this[key];
+    //    }
+    //    return null;
+    //}
+
+    //, checkName: function (name) {
+    //    alert('list-entity.js:checkName');
+    //    var maxLength = 255;
+
+    //    if (!name.trim()) {
+    //        return MessageBundle.get(dict.NameCannotBeEmpty);
+    //    } else if (name.length > maxLength) {
+    //        return MessageBundle.get(dict.NameCannotBeLongerThan, [maxLength]);
+    //    } else {
+    //        var nameExists = this.service.nameAlreadyExists(this.id, name);
+    //        if (nameExists) {
+    //            return MessageBundle.get(dict.NameAlreadyExists);
+    //        } else {
+    //            return true;
+    //        }
+
+    //    }
+
+    //}
+
+    //, update: function () {
+    //    alert('Must by defined by implementing class');
+    //}
+
+    //, edit: function () {
+    //    alert('list-entity.js:edit');
+    //    var editItem = this.editItem();
+    //    var editPanel = this.editPanel(editItem);
+    //    editPanel.display();
+    //}
+
+
+
 
 };
 
@@ -209,7 +214,7 @@ function ListItemView(entity) {
     self.ui = (function () {
 
         var container = jQuery('<div/>', {
-            'class': 'item'
+            'class': 'item' + (self.entity.isActive ? '' : ' inactive' )
         });
 
         var id = jQuery('<div/>', { 'class': 'id', html: self.entity.id }).appendTo(container);
@@ -230,7 +235,7 @@ function ListItemView(entity) {
         }).appendTo(container);
 
         var edit = jQuery('<div/>', {
-            'class': 'edit-item'
+            'class': 'list-item-icon edit-list-item'
         }).bind({
             click: function () {
                 self.entity.edit();
@@ -238,7 +243,7 @@ function ListItemView(entity) {
         }).appendTo(container);
 
         var activateButton = jQuery('<a/>', {
-            html: self.entity.isActive ? 'Deactivate' : 'Activate'
+            'class': 'list-item-icon' + (self.entity.isActive ? ' deactivate-list-item' : ' activate-list-item')
         }).bind({
             click: function () {
                 self.entity.activate();
@@ -265,11 +270,13 @@ function ListItemView(entity) {
 
         function activate(value) {
             if (value) {
-                activateButton.html('Deactivate');
                 $(container).removeClass('inactive');
+                $(activateButton).removeClass('activate-list-item');
+                $(activateButton).addClass('deactivate-list-item');
             } else {
-                activateButton.html('Activate');
                 $(container).addClass('inactive');
+                $(activateButton).removeClass('deactivate-list-item');
+                $(activateButton).addClass('activate-list-item');
             }
         }
 
@@ -284,17 +291,24 @@ function ListItemView(entity) {
         }
 
         function addItem(item, before) {
-            var beforeControl = $('.' + before)[0];
+            var beforeControl = $(container).find('.' + before)[0];
 
             if (beforeControl) {
-                $(item).before(beforeControl);
+                $(beforeControl).before(item);
             } else {
                 $(item).appendTo(container);
             }
         }
 
+        function addSpecificViewItems(items) {
+            mielk.arrays.each(items, function (object) {
+                addItem(object.item, object.before);
+            });
+        }
+
         (function initialize() {
             activate(self.entity.isActive);
+            addSpecificViewItems(self.entity.additionalViewItems());
         })();
 
 
@@ -307,10 +321,7 @@ function ListItemView(entity) {
         };
 
     })();
-
-    //Od razu przy tworzeniu ładowane są szczegóły elementów tego Entity.
-    //self.loadDetails();
-
+    
 }
 ListItemView.prototype = {
 

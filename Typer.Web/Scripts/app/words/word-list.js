@@ -71,33 +71,33 @@ function WordListItemView(manager, item) {
 
 }
 mielk.objects.extend(ListItemView, WordListItemView);
-WordListItemView.prototype.loadDetails = function () {
-    var self = this;
-    var object = self.object;
-    var spinner = new SpinnerWrapper($(this.details));
+//WordListItemView.prototype.loadDetails = function () {
+//    var self = this;
+//    var object = self.object;
+//    var spinner = new SpinnerWrapper($(this.details));
 
-    $.ajax({
-        url: '/Words/GetWords',
-        type: "GET",
-        data: {
-            'id': object.id,
-            'languages': self.manager.getLanguagesIds()
-        },
-        datatype: "json",
-        async: true,
-        cache: false,
-        traditional: true,
-        success: function (result) {
-            self.renderItems(result);
-            spinner.stop();
-        },
-        error: function () {
-            spinner.stop();
-            self.loadDetails();
-        }
-    });
+//    $.ajax({
+//        url: '/Words/GetWords',
+//        type: "GET",
+//        data: {
+//            'id': object.id,
+//            'languages': self.manager.getLanguagesIds()
+//        },
+//        datatype: "json",
+//        async: true,
+//        cache: false,
+//        traditional: true,
+//        success: function (result) {
+//            self.renderItems(result);
+//            spinner.stop();
+//        },
+//        error: function () {
+//            spinner.stop();
+//            self.loadDetails();
+//        }
+//    });
 
-};
+//};
 WordListItemView.prototype.renderItems = function (words) {
     var self = this;
     var languages = self.manager.getLanguages();

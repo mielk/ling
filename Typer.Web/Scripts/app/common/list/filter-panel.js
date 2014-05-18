@@ -600,6 +600,7 @@ mielk.objects.addProperties(CategoryFilter.prototype, {
             confirm: function (e) {
                 self.changeCategories(e.item);
                 self.tree.destroy();
+                self.tree = null;
             },
             add: function (e) {
                 Ling.Categories.addNew(e);

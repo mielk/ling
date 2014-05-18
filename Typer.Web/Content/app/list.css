@@ -62,3 +62,37 @@ div.pager-label.separator{
     border: none;
     cursor: default;
 }
+
+
+.list-item-icon{
+    display: block !important;
+    position: relative;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 25px !important;
+    height: 25px !important;
+    margin-left: 12px;
+    margin-right: 12px;
+    padding: 3px;
+    border: 1px solid transparent;
+    color: transparent;
+    cursor: pointer;
+}
+
+.edit-list-item
+{
+    background-image: url('../images/edit.png');
+}
+
+.activate-list-item{
+    background-image: url('../images/activate.png');
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.deactivate-list-item{
+    background-image: url('../images/deactivate.png');
+    background-position: center;
+    background-repeat: no-repeat;
+}

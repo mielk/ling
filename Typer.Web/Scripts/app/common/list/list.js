@@ -46,14 +46,14 @@ ListManager.prototype = {
         this.filter({ page: page });
     },
     
-    newItem: function () {
-        //var e = this.filterValues;
-        //e.Categories = [];
-        //e.UserLanguages = my.languages.userLanguages();
+    //newItem: function () {
+    //    //var e = this.filterValues;
+    //    //e.Categories = [];
+    //    //e.UserLanguages = my.languages.userLanguages();
 
-        //return this.creator(e);
+    //    //return this.creator(e);
 
-    },
+    //},
     
     pageItems: function () {
         return this.pagerManager.pageItems;
@@ -61,26 +61,26 @@ ListManager.prototype = {
     
     createObject: function () {
         alert('Must be defined in implementing class');
-    },
-    
-    createListItem: function () {
-        alert('Must be defined in implementing class');
-    },
-    
-    createNewItem: function () {
-        //var self = this;
-        //var item = this.emptyItem();
-        //item.bind({
-        //    add: function () {
-        //        self.filterManager.filter({});
-        //    }
-        //});
-        //item.edit();
-    },
-    
-    emptyItem: function () {
-        alert('Must be defined in implementing class');
     }
+    
+    //createListItem: function () {
+    //    alert('Must be defined in implementing class');
+    //},
+    
+    //createNewItem: function () {
+    //    //var self = this;
+    //    //var item = this.emptyItem();
+    //    //item.bind({
+    //    //    add: function () {
+    //    //        self.filterManager.filter({});
+    //    //    }
+    //    //});
+    //    //item.edit();
+    //},
+    
+    //emptyItem: function () {
+    //    alert('Must be defined in implementing class');
+    //}
     
 };
 
