@@ -60,13 +60,13 @@ $(function () {
         //Returns a string representing this categories collection.
         //Each category is presented as its full path containing
         //this category and all its parents.
-        function toString($categories) {
+        function toString($categories, fullPath) {
             var categoriesString = '';
             for (var i = 0; i < $categories.length; i++) {
                 var category = $categories[i];
                 if (category) {
                     categoriesString += (categoriesString ? ' | ' : '');
-                    categoriesString += category.path();
+                    categoriesString += (fullPath ? category.path() : category.name);
                 }
             }
             return categoriesString;

@@ -15,7 +15,7 @@ function Entity(properties) {
     self.id = properties.Id || 0;
     self.name = properties.Name;
     self.weight = properties.Weight || 1;
-    self.isActive = properties.IsActive || true;
+    self.isActive = (properties.IsActive !== undefined ? properties.IsActive : true);
     self.creatorId = properties.CreatorId || 1;
     self.createDate = properties.CreateDate || new Date().getDate;
     self.isApproved = properties.IsApproved || false;
@@ -228,7 +228,7 @@ function ListItemView(entity) {
 
         var categories = jQuery('<div/>', {
             'class': 'categories',
-            html: Ling.Categories.toString(self.entity.categories)
+            html: Ling.Categories.toString(self.entity.categories, false)
         }).appendTo(container);
 
         var details = jQuery('<div/>', {
