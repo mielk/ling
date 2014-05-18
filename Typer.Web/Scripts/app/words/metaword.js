@@ -70,9 +70,26 @@ mielk.objects.addProperties(Metaword.prototype, {
 
     //Zwraca tablicę zawierającą definicję zestawu danych
     //specyficzne dla klasy Metaword.
-    , getSpecificDatalinesDefinitions: function () {
+    , getSpecificDatalinesDefinitions: function (object) {
         
-        var x = 1;
+        var datalines = [];
+
+        //[Wordtype]
+        var wordtypePanel = new WordtypePanel({
+              value: object.wordtype
+            , callback: function (result) {
+                object.wordtype = result
+            }
+        });
+        datalines.push({
+            property: 'wordtype'
+            , index: 1
+            , label: dict.Wordtype.get()
+            , value: object.wordtype
+            , panel: wordtypePanel.view()
+        });
+
+        return datalines;
 
     }
 
@@ -298,3 +315,62 @@ mielk.objects.addProperties(Metaword.prototype, {
 //};
 
 
+
+
+//Klasa reprezentująca panel do ustawiania właściwości [Wordtype].
+function WordtypePanel(params) {
+
+    'use strict';
+
+    var self = this;
+
+    //Class signature.
+    self.WordtypePanel = true;
+    self.value = params.value;
+    self.callback = params.callback;
+
+    self.ui = (function () {
+
+        var container = jQuery('<div/>', {
+            'class': 'wordtype-dropdown-container'
+        });
+
+        var dropdown = new DropDown({
+              container: container
+            , data: Ling.Enums.Wordtypes.getValues()
+            , slots: 5
+            , caseSensitive: false
+            , confirmWithFirstClick: true
+        });
+
+        if (self.value) {
+            dropdown.trigger({
+                type: 'select',
+                object: self.value
+            });
+        }
+
+        dropdown.bind({
+            select: function (e) {
+                mielk.fn.run(self.callback, e.object);
+            },
+            change: function (e) {
+                if (!e.value) {
+                    mielk.fn.run(self.callback, null);
+                }
+            }
+        });
+
+
+        return {
+            view: container
+        };
+
+    })();
+
+}
+WordtypePanel.prototype = {
+    view: function () {
+        return this.ui.view;
+    }
+};

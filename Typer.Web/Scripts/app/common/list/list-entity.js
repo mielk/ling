@@ -204,6 +204,7 @@ Entity.prototype = {
         //[Id]
         datalines.push({
               property: 'id'
+            , index: 0
             , label: dict.Id.get()
             , value: object.id
             , callback: function (value) {
@@ -221,6 +222,7 @@ Entity.prototype = {
         //[Name]
         datalines.push({
               property: 'name'
+            , index: 1
             , label: dict.Name.get()
             , value: object.name
             , callback: function (value) {
@@ -233,13 +235,55 @@ Entity.prototype = {
         });
 
 
+        //[Weight]
+        var weightPanel = new WeightPanel({
+              value: object.weight
+            , callback: function (value) {
+                object.weight = value;
+            }
+            , css: { 'margin': '9px 0', 'height': '16px' }
+        });
+        datalines.push({
+              property: 'weight'
+            , index: 2
+            , label: dict.Weight.get()
+            , value: object.weight
+            , panel: weightPanel.view()
+        });
+
+
+        //[Category]
+        var categoryPanel = new CategoryPanel({
+              categories: object.categories
+            , callback: function (result) {
+                object.categories = result;
+            }
+        });
+        datalines.push({
+              property: 'category'
+            , index: 3
+            , label: dict.Categories.get()
+            , value: object.categories
+            , panel: categoryPanel.view()
+        });
+
+
+        //Add class-specific fields.
+        mielk.arrays.each(this.getSpecificDatalinesDefinitions(object), function (item) {
+            datalines.push(item);
+        });
+
+        datalines.sort(function (a, b) {
+            return a.index < b.index ? -1 : 1;
+        });
+
         return datalines;
 
     }
 
     //Zwraca tablicę zawierającą definicję zestawu danych
     //specyficzne dla danej podklasy typu Entity.
-    , getSpecificDatalinesDefinitions: function () {
+    , getSpecificDatalinesDefinitions: function (object) {
         alert('Must be defined in implemented class');
     }
 
@@ -320,7 +364,12 @@ function ListItemView(entity) {
 
         var name = jQuery('<div/>', { 'class': 'name', html: self.entity.name }).appendTo(container);
 
-        var weight = new WeightPanel(self.entity, self, {});
+        var weight = new WeightPanel({
+              value: self.entity.weight
+            , callback: function (value) {
+                self.entity.setWeight(value);
+            }
+        });
         $(weight.view()).appendTo(container);
 
         var categories = jQuery('<div/>', {
@@ -496,7 +545,7 @@ ListItemView.prototype = {
 
 
 
-function WeightPanel(entity, listItemView, properties) {
+function WeightPanel(params) {
 
     'use strict';
 
@@ -507,8 +556,9 @@ function WeightPanel(entity, listItemView, properties) {
 
     self.minWeight = Ling.Config.entities.minWeight;
     self.maxWeight = Ling.Config.entities.maxWeight;
-    self.entity = entity;
-    self.listItemView = listItemView;       //Odnosi się do obiektu ListItemView, w którym znajdzie się ten WeightPanel.
+    //self.entity = entity;
+    //self.listItemView = listItemView;       //Odnosi się do obiektu ListItemView, w którym znajdzie się ten WeightPanel.
+    self.callback = params.callback;          //Funkcja odpalana po zmianie wartości właściwości Weight.
 
     self.ui = (function () {
         var container = null;
@@ -521,8 +571,8 @@ function WeightPanel(entity, listItemView, properties) {
         };
 
         function applyCustomCss() {
-            if (properties && properties.css) {
-                $(container).css(properties.css);
+            if (params && params.css) {
+                $(container).css(params.css);
             }
         };
 
@@ -533,7 +583,7 @@ function WeightPanel(entity, listItemView, properties) {
                     'class': 'weight'
                 }).bind({
                     click: function () {
-                        self.entity.setWeight(index + 1);
+                        self.changeValue(index + 1);
                     }
                 }).appendTo(container);
 
@@ -567,7 +617,7 @@ function WeightPanel(entity, listItemView, properties) {
             createContainer();
             applyCustomCss();
             createIcons();
-            refresh(self.entity.weight || 1);
+            refresh(params.value || 1);
         })();
 
         return {
@@ -577,12 +627,6 @@ function WeightPanel(entity, listItemView, properties) {
 
     })();
 
-    self.entity.bind({
-        changeWeight: function (e) {
-            self.ui.refresh(e.weight);
-        }
-    });
-
 }
 WeightPanel.prototype = {
 
@@ -590,4 +634,125 @@ WeightPanel.prototype = {
         return this.ui.view;
     }
 
+    , changeValue: function (value) {
+        mielk.fn.run(this.callback, value);
+        this.ui.refresh(value);
+    }
+
 };
+
+
+
+
+
+//Klasa reprezentująca panel do wybierania kategorii.
+function CategoryPanel(params) {
+
+    'use strict';
+
+    var self = this;
+
+    //Class signature.
+    self.CategoryPanel = true;
+
+    self.categories = params.categories;
+    self.callback = params.callback;
+
+    self.ui = (function () {
+
+        var container = jQuery('<span/>', {
+            'class': 'block'
+        });
+
+        // ReSharper disable once UnusedLocals
+        var editButton = jQuery('<input/>', {
+            'id': 'select-categories',
+            'class': 'select-categories-button',
+            'type': 'submit',
+            'value': '...'
+        }).css({
+            'float': 'right'
+        }).on({
+            'click': function () {
+                self.selectCategories();
+            }
+        }).appendTo(container);
+
+        var value = jQuery('<span/>', {
+            'class': 'selected-categories block'
+        }).css({
+
+        }).appendTo(container);
+
+        return {
+              refresh: function () {
+                $(value).html(Ling.Categories.toString(self.categories, true));
+            }
+            , view: container
+        };
+
+    })();
+
+    (function initialize() {
+        self.refresh();
+    })();
+
+}
+CategoryPanel.prototype = {
+
+      refresh: function(){
+        this.ui.refresh();
+    }
+
+    , view: function(){
+        return this.ui.view;
+    }
+
+    , selectCategories: function () {
+        var self = this;
+        var tree = new Tree({
+              'mode': MODE.MULTI
+            , 'root': Ling.Categories.getRoot()
+            , 'selected': self.categories
+            , 'blockOtherElements': true
+            , 'showSelection': true
+            , 'hidden': true
+        });
+
+        tree.reset({
+            unselect: false,
+            collapse: false
+        });
+
+        tree.eventHandler.bind({
+            confirm: function (e) {
+                var categories = [];
+                mielk.arrays.each(e.item, function (category) {
+                    categories.push(category.object);
+                });
+
+                self.categories = categories;
+                mielk.fn.run(self.callback(categories));
+                self.refresh();
+                tree.destroy();
+
+            },
+            add: function (e) {
+                Ling.Categories.addNew(e);
+            },
+            remove: function (e) {
+                Ling.Categories.remove(e);
+            },
+            rename: function (e) {
+                Ling.Categories.updateName(e);
+            },
+            transfer: function (e) {
+                Ling.Categories.updateParent(e);
+            }
+        });
+
+        tree.show();
+
+    }
+
+}

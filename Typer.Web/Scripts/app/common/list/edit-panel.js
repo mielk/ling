@@ -64,27 +64,6 @@ EditPanel.prototype = {
 
         self.ui.append(container);
 
-
-
-        //    //[Weight]
-        //    var weightPanel = new WeightPanel(this, self.editObject, {
-        //        css: { 'margin': '9px 0', 'height': '16px' }
-        //    });
-        //    this.meta.addLine(new EditDataLine(this, {
-        //        property: 'weight', label: 'Weight', value: self.editObject.weight,
-        //        panel: weightPanel.view()
-        //    }));
-
-        //    //[Category]
-        //    var categoryPanel = new CategoryPanel(this, self.editObject);
-        //    this.meta.addLine(new EditDataLine(this, {
-        //        property: 'categories', label: 'Categories', value: self.editObject.categories,
-        //        panel: categoryPanel.view()
-        //    }));
-
-        //    this.render();
-
-
     }
 
     , getDataLine: function (property) {
