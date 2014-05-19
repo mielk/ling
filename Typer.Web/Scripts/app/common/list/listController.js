@@ -84,18 +84,6 @@ WordEditEntity.prototype.setWordtype = function (params) {
         line: line
     });
 };
-WordEditEntity.prototype.loadItems = function () {
-    var words = my.words.getWords(this.id, this.getLanguagesIds());
-
-    for (var i = 0; i < words.length; i++) {
-        var object = words[i];
-        var word = new Word(this, object);
-        var languageId = word.getLanguageId();
-        var language = this.languages.getItem(languageId);
-        language.addItem(word);
-    }
-
-};
 WordEditEntity.prototype.newItem = function (languageId) {
     return new Word(this, {
         LanguageId: languageId,

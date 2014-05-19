@@ -25,7 +25,7 @@ function Entity(properties) {
     self.new = properties.new || false;
 
     //Subitems assigned to this entity (i.e. words for Metaword, options for Query).
-    self.items = self.createItemsMap(properties.Words || properties.Options);
+    self.items = self.createItemsMap(properties.Words || properties.Options || []);
 
     //Views.
     self.listItem = null;
@@ -315,36 +315,16 @@ Entity.prototype = {
 
     }
 
-
-
-    //, editItem: function () {
-    //    alert('Must be defined by implementing class');
-    //}
-
-    //, getProperty: function (key) {
-    //    if (this.hasOwnProperty(key)) {
-    //        return this[key];
-    //    }
-    //    return null;
-    //}
-
-
-
-
+    , getProperty: function (key) {
+        if (this.hasOwnProperty(key)) {
+            return this[key];
+        }
+        return null;
+    }
 
     //, update: function () {
     //    alert('Must by defined by implementing class');
     //}
-
-    //, edit: function () {
-    //    alert('list-entity.js:edit');
-    //    var editItem = this.editItem();
-    //    var editPanel = this.editPanel(editItem);
-    //    editPanel.display();
-    //}
-
-
-
 
 };
 

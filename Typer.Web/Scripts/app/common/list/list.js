@@ -62,21 +62,32 @@ ListManager.prototype = {
     , createObject: function () {
         alert('Must be defined in implementing class');
     }
+
+    , createNewItem: function () {
+        var self = this;
+        
+        //Aktualnie podane filtry są przekazywane jako parametr,
+        //żeby ustawić domyślne wartości dla nowo tworzonego 
+        //elementu, np. jeżeli aktualnie wyświetlone są rzeczowniki
+        //o wadze 5, to po wciśnięciu przycisku [Add], nowy metawyraz
+        //domyślnie również będzie rzeczownikiem o wadze 5.
+        var item = self.emptyItem(self.filterManager.filters);
+        
+        //Update view after adding a new item.
+        item.bind({
+            add: function () {
+                self.filterManager.filter({});
+            }
+        });
+        
+        //Edit new item.
+        item.edit();
+        
+    }
     
-    //createNewItem: function () {
-    //    //var self = this;
-    //    //var item = this.emptyItem();
-    //    //item.bind({
-    //    //    add: function () {
-    //    //        self.filterManager.filter({});
-    //    //    }
-    //    //});
-    //    //item.edit();
-    //},
-    
-    //emptyItem: function () {
-    //    alert('Must be defined in implementing class');
-    //}
+    , emptyItem: function () {
+        alert('Must be defined in implementing class');
+    }
     
 };
 

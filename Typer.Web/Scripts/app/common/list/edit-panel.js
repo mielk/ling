@@ -640,7 +640,7 @@ function LanguagePanel(panel, language) {
 }
 LanguagePanel.prototype = {
     
-    view: function() {
+      view: function() {
         return this.ui.view;
     }
     
@@ -670,19 +670,16 @@ LanguagePanel.prototype = {
         this.ui.refresh();
     }
     
+    , addNew: function () {
+
+        alert('Not implemented yet: edit-panel.js:LanguagePanel.addNew');
+
+        //    var item = this.item.newItem(this.language.id);
+        //    item.injectLanguageEntity(this.languageEntity);
+        //    item.edit({ languagePanel: this });        
+    }
 };
 
-
-
-
-//LanguagePanel.prototype.addNew = function () {
-//    var item = this.item.newItem(this.language.id);
-//    item.injectLanguageEntity(this.languageEntity);
-//    item.edit({ languagePanel: this });
-//};
-//LanguagePanel.prototype.add = function (item) {
-//    this.addOption(item);
-//};
 
 
 
@@ -737,6 +734,7 @@ function OptionPanel(item, parent) {
         var completness = jQuery('<div/>', {
             'class': 'completness ' + (self.item.isCompleted ? 'complete' : 'incomplete')
         }).appendTo(container);
+
 
 
         function hide() {

@@ -271,6 +271,7 @@
     <Content Include="Scripts\app\common\languages.js" />
     <Content Include="Scripts\app\common\list\edit-panel.js" />
     <Content Include="Scripts\app\common\list\list-entity.js" />
+    <Content Include="Scripts\app\common\list\list-subentity.js" />
     <Content Include="Scripts\app\common\users.js" />
     <Content Include="Scripts\app\common\enums.js" />
     <Content Include="Scripts\app\common\ling.js" />
@@ -280,6 +281,7 @@
     <Content Include="Scripts\app\common\list\list-items-manager.js" />
     <Content Include="Scripts\app\common\list\list-pager.js" />
     <Content Include="Scripts\app\common\list\list.js" />
+    <Content Include="Scripts\app\queries\Copy of options.js" />
     <Content Include="Scripts\app\queries\query.js" />
     <Content Include="Scripts\app\queries\query-list.js" />
     <Content Include="Scripts\app\words\word.js" />

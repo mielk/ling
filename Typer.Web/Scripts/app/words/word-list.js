@@ -30,22 +30,21 @@ mielk.objects.addProperties(WordListManager.prototype, {
         return new Metaword(properties);
     },
 
-    //emptyItem: function () {
-    //    //var filters = this.filterManager.filters;
-    //    //return new Metaword({
-    //    //    Id: 0,
-    //    //    Name: '',
-    //    //    Weight: (filters.weight && filters.weight.from && filters.weight.from === filters.weight.to ? filters.weight.from : 1),
-    //    //    Type: filters.wordtype || 0,
-    //    //    IsActive: true,
-    //    //    CreatorId: 1,
-    //    //    CreateDate: new Date().getTime,
-    //    //    IsApprover: false,
-    //    //    Positive: 0,
-    //    //    Negative: 0,
-    //    //    Categories: (filters.categories && filters.categories.length === 1 ? filters.categories : []),
-    //    //    'new': true
-    //    //});
-    //}
+    emptyItem: function (filters) {
+        return new Metaword({            
+            Id: 0
+            , Name: ''
+            , Weight: (filters.weight && filters.weight.from && filters.weight.from === filters.weight.to ? filters.weight.from : 1)
+            , Type: filters.wordtype ? filters.wordtype.id : 0
+            , IsActive: true
+            , CreatorId: Ling.Users.Current.id
+            , CreateDate: new Date().getTime
+            , IsApproved: false
+            , Positive: 0
+            , Negative: 0
+            , Categories: (filters.categories && filters.categories.length === 1 ? filters.categories : [])
+            , 'new': true
+        });
+    }
 
 });
