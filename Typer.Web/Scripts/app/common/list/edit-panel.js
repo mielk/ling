@@ -674,6 +674,7 @@ LanguagePanel.prototype = {
 
 
 
+
 //LanguagePanel.prototype.addNew = function () {
 //    var item = this.item.newItem(this.language.id);
 //    item.injectLanguageEntity(this.languageEntity);
@@ -682,9 +683,6 @@ LanguagePanel.prototype = {
 //LanguagePanel.prototype.add = function (item) {
 //    this.addOption(item);
 //};
-
-
-
 
 
 
@@ -713,6 +711,7 @@ function OptionPanel(item, parent) {
         }).bind({
             click: function () {
                 self.item.remove();
+                hide();
             }
         }).appendTo(container);
 
@@ -740,17 +739,21 @@ function OptionPanel(item, parent) {
         }).appendTo(container);
 
 
-
+        function hide() {
+            $(container).css({                
+                'display': 'none'
+            });
+        }
 
         function destroy() {
             $(container).remove();
         }
 
         function update($content, $weight, $complete) {
-                $(content).html(self.contentToHtml($content));
-                $(weight).html($weight);
-                $(completness).addClass($complete ? 'complete' : 'incomplete');
-                $(completness).removeClass($complete ? 'incomplete' : 'complete');
+            $(content).html(self.contentToHtml($content));
+            $(weight).html($weight);
+            $(completness).addClass($complete ? 'complete' : 'incomplete');
+            $(completness).removeClass($complete ? 'incomplete' : 'complete');
         }
 
 
@@ -760,6 +763,7 @@ function OptionPanel(item, parent) {
               view: container
             , destroy: destroy
             , update: update
+            , hide: hide
         };
 
     })();
@@ -767,11 +771,6 @@ function OptionPanel(item, parent) {
 
     self.events = (function () {
         self.item.bind({
-            
-            remove: function () {
-                self.ui.destroy();
-            },
-            
             update: function(e) {
                 self.update(e.content, e.weight, e.complete);
             }
@@ -779,19 +778,18 @@ function OptionPanel(item, parent) {
         });
     })();
 
-
 }
 OptionPanel.prototype = {
     
     view: function() {
         return this.ui.view;
-    },
+    }
     
-    update: function(content, weight, complete) {
+    , update: function(content, weight, complete) {
         this.ui.update(content, weight, complete);
-    },
+    }
     
-    toHtml: function($content) {
+    , toHtml: function($content) {
         var content = $content || this.item.name;
         var weight = this.item.weight;
 
@@ -804,9 +802,9 @@ OptionPanel.prototype = {
 
         return html;
 
-    },
+    }
     
-    contentToHtml: function() {
+    , contentToHtml: function() {
         var content = this.item.name;
         var replaced = content.replace(/\[/g, '|$').replace(/\]/g, '|');
         var parts = replaced.split("|");
@@ -820,19 +818,10 @@ OptionPanel.prototype = {
         
         return result;
 
-    },
+    }
     
-    isUniqueContent: function() {
+    , isUniqueContent: function() {
         return false;
-    },
-    
-    removeItem: function(item) {
-        if (this.items) {
-            var set = this.items.getItem(item.language.id);
-            if (set) {
-                set.removeItem(item.name);
-            }
-        }
     }
     
 };

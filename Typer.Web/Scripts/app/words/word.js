@@ -37,9 +37,8 @@ Word.prototype = {
     }
     
     , remove: function () {
-        var self = this;
-        //self.metaword.removeItem(self);
-
+        this.metaword.removeItem(this);
+        this.trigger({ type: 'remove' });
     }
     
     , clone: function () {

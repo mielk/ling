@@ -101,6 +101,15 @@ mielk.objects.addProperties(Metaword.prototype, {
         }
     }
     
+    , removeItem: function(item) {
+        if (this.items) {
+            var set = this.items.getItem(item.language.id);
+            if (set) {
+                set.removeItem(item.name);
+            }
+        }
+    }
+
     , clone: function () {
         var self = this;
         
