@@ -12,7 +12,7 @@ namespace Typer.DAL.TransferObjects
         public string Name { get; set; }
         public int Weight { get; set; }
         public bool IsActive { get; set; }
-        public bool GrammarCompleted { get; set; }
+        public bool IsCompleted { get; set; }
         public int CreatorId { get; set; }
         public DateTime CreateDate { get; set; }
         public bool IsApproved { get; set; }

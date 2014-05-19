@@ -105,10 +105,10 @@ mielk.objects.addProperties(ListPager.prototype, {
     //w zależności od aktualnie aktywnej podstrony i łącznej liczby
     //podstron.
     calculateDisplayedPages: function(){
-        var START_ITEMS = 3;
-        var END_ITEMS = 3;
-        var NEIGHBOUR_ITEMS = 4;
-        var total = START_ITEMS + END_ITEMS + 2 * NEIGHBOUR_ITEMS + 1;
+        var startItems = 3;
+        var endItems = 3;
+        var neighbourItems = 4;
+        var total = startItems + endItems + 2 * neighbourItems + 1;
 
         var array = [];
         if (this.totalPages <= total) {
@@ -117,9 +117,9 @@ mielk.objects.addProperties(ListPager.prototype, {
             }
         } else {
 
-            var j = 1;
-            var left = (this.page - NEIGHBOUR_ITEMS <= START_ITEMS ? total - END_ITEMS : START_ITEMS);
-            var right = (this.page + NEIGHBOUR_ITEMS >= this.totalPages - END_ITEMS ? total - START_ITEMS : END_ITEMS);
+            var j;
+            var left = (this.page - neighbourItems <= startItems ? total - endItems : startItems);
+            var right = (this.page + neighbourItems >= this.totalPages - endItems ? total - startItems : endItems);
 
             //Dodaje pierwsze podstrony.
             for (j = 1; j <= left; j++) {
@@ -133,8 +133,8 @@ mielk.objects.addProperties(ListPager.prototype, {
             //i right mają normalną długość, czy też są powiększone
             //o aktualnie wyświetlaną stronę i jej sąsiadów. W przeciwnym
             //razie w ogóle nie są wyświetlane w oddzielnej pętli.
-            if (left === START_ITEMS && right === END_ITEMS) {
-                for (j = this.page - NEIGHBOUR_ITEMS; j <= this.page + NEIGHBOUR_ITEMS; j++) {
+            if (left === startItems && right === endItems) {
+                for (j = this.page - neighbourItems; j <= this.page + neighbourItems; j++) {
                     array.push(j);
                 }
             }

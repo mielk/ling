@@ -10,7 +10,7 @@
 
     //Classes
 
-    function HashTable(obj) {
+    function hashTable(obj) {
         var self = this;
         self.HashTable = true;
         self.length = 0;
@@ -31,7 +31,7 @@
         })();
 
         this.setItem = function (key, value) {
-            var previous;
+            var previous = null;
             if (this.hasItem(key)) {
                 previous = this.items[key];
             } else {
@@ -80,10 +80,10 @@
             return values;
         };
 
-        this.each = function (fn) {
+        this.each = function ($fn) {
             for (var k in this.items) {
                 if (this.hasItem(k)) {
-                    fn(k, this.items[k]);
+                    $fn(k, this.items[k]);
                 }
             }
         };
@@ -111,7 +111,7 @@
 
     }
 
-    function EventHandler() {
+    function eventHandler() {
         this.EventHandler = true;
         var listener = {};
 
@@ -126,10 +126,10 @@
 
     }
 
-    function ResizableDiv(params) {
+    function resizableDiv(params) {
         var self = this;
         self.ResizableDiv = true;
-        self.eventHandler = new EventHandler();
+        self.eventHandler = new eventHandler();
 
         self.id = params.id || 'id';
         self.parent = params.parent;
@@ -160,7 +160,7 @@
                 id: self.id + menuBarId,
                 html: self.id,
                 'class': 'menuBar'
-            }).dblclick(function (e) {
+            }).dblclick(function () {
                 if (self.isMinimized) {
                     self.maximize();
                 } else {
@@ -233,6 +233,7 @@
         })();
 
         //Events binder.
+        // ReSharper disable once UnusedLocals
         var events = (function () {
 
             $(document).bind({
@@ -240,7 +241,7 @@
                     e.preventDefault();
                     self.resize(e);
                 },
-                mouseup: function (e) {
+                mouseup: function () {
                     self.setAsResizable(false);
                 }
             });
@@ -248,7 +249,7 @@
         })();
 
     }
-    ResizableDiv.prototype = {
+    resizableDiv.prototype = {
         bind: function (e) {
             this.eventHandler.bind(e);
         },
@@ -622,7 +623,8 @@
     var ui = (function () {
 
         function getPosition(e) {
-            var x, y;
+            var x = 0;
+            var y = 0;
 
             if (!e) e = window.event;
             if (e.pageX || e.pageY) {
@@ -802,13 +804,13 @@
 
         }
 
-        function getMax(array, fn, start, end) {
+        function getMax(array, f, start, end) {
             var result = null;
             var $start = start || 0;
             var $end = Math.min(end, array.length - 1) || array.length - 1;
             for (var i = $start; i < $end; i++) {
                 var item = array[i];
-                var value = fn(item);
+                var value = f(item);
                 if (!result || value > result) result = value;
             }
 
@@ -816,13 +818,13 @@
 
         }
 
-        function getMin(array, fn, start, end) {
+        function getMin(array, f, start, end) {
             var result = null;
             var $start = start || 0;
             var $end = Math.min(end, array.length - 1) || array.length - 1;
             for (var i = $start; i < $end; i++) {
                 var item = array[i];
-                var value = fn(item);
+                var value = f(item);
                 if (!result || value < result) result = value;
             }
 
@@ -830,7 +832,7 @@
 
         }
 
-        function firstGreater(array, value, fn, returnIndex) {
+        function firstGreater(array, value, f, returnIndex) {
 
             if (array) {
                 var size = array.length;
@@ -839,7 +841,7 @@
 
                 //If the first item is greater than value searched
                 //or the last item is less than value searched, null is returned.
-                if (fn(array[start], value) === 1 && fn(array[end], value) === -1) {
+                if (fn(array[start], value) === 1 && f(array[end], value) === -1) {
                     return null;
                 }
 
@@ -848,7 +850,7 @@
                     var index = Math.round((end - start) / 2) + start;
 
                     var item = array[index];
-                    var result = fn(item, value);
+                    var result = f(item, value);
                     if (result === true) {
                         return returnIndex ? index : item;
                     } else if (result === 1) {
@@ -865,23 +867,13 @@
 
         }
 
-        function findItem(array, value, fn) {
-            var size = array.length;
-            var start = 0;
-            var end = size - 1;
-            var index = Math.round((end - start) / 2);
-
-            var item = array[index];
-            var x = 1;
-        }
-
         //Metoda wywołująca podaną funkcję fn dla każdego
         //elementu z tablicy array.
-        function each(array, fn) {
+        function each(array, $fn) {
             if (array && Array.isArray(array)) {
                 for (var i = 0; i < array.length; i++) {
                     var item = array[i];
-                    fn(item);
+                    $fn(item);
                 }
             }
         }
@@ -905,7 +897,6 @@
             , remove: remove
             , getMax: getMax
             , getMin: getMin
-            , findItem: findItem
             , firstGreater: firstGreater
             , each: each
             , clone: clone
@@ -923,7 +914,7 @@
                 return (c == 'x' ? r : (r & 0x7 | 0x8)).toString(16);
             });
             return uuid;
-        };
+        }
 
         function log10(x) {
             return Math.log(x) / Math.LN10;
@@ -1245,7 +1236,11 @@
             if (f && typeof(f) === 'function') {
                 return f(param);
             }
+
+            return null;
+
         }
+
 
         return {
             run: run
@@ -1257,9 +1252,9 @@
      * Wrapper for functions defined above.
      */
     var mielk = {
-          hashTable: function (obj) { return new HashTable(obj); }
-        , eventHandler: function () { return new EventHandler(); }
-        , resizableDiv: function (params) { return new ResizableDiv(params); }
+          hashTable: function (obj) { return new hashTable(obj); }
+        , eventHandler: function () { return new eventHandler(); }
+        , resizableDiv: function (params) { return new resizableDiv(params); }
         , notify: notify
         , objects: objects
         , validation: validation

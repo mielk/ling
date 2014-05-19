@@ -308,7 +308,7 @@ namespace Typer.DAL.Repositories
             if (option == null) return false;
             option.Name = name;
             option.Weight = weight;
-            option.GrammarCompleted = complete;
+            option.IsCompleted = complete;
 
             return true;
 
@@ -486,7 +486,7 @@ namespace Typer.DAL.Repositories
                 Weight = weight,
                 CreateDate = DateTime.Now,
                 CreatorId = 1,
-                GrammarCompleted = completed,
+                IsCompleted = completed,
                 IsActive = true,
                 Negative = 0,
                 Positive = 0,

@@ -29,7 +29,7 @@
     //    }
     //});
 
-    //radio.bind({        
+    //radio.bind({
     //    click: function(e) {
     //        $(result).html(e.caption);
     //    }

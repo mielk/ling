@@ -16,9 +16,11 @@
     self.validator = mielk.validation.validator(self);
     self.ui = new EditPanelView(self);
     self.dataLines = mielk.hashTable();
+    self.languages = mielk.hashTable();
     
     (function initialize() {
         self.insertMetadata();
+        self.insertDetails();
     })();
 
 }
@@ -40,6 +42,15 @@ EditPanel.prototype = {
         this.ui.destroy();
     }
 
+    , confirm: function () {
+        //Update object.
+        this.destroy();
+    }
+
+    , cancel: function () {
+        this.destroy();
+    }
+
     , insertMetadata: function () {
 
         var self = this;
@@ -56,19 +67,38 @@ EditPanel.prototype = {
         var datalines = this.entity.getDatalinesDefinitions(this.editObject);
 
         mielk.arrays.each(datalines, function (data) {
-            var dataline = new EditDataLine(self, data)
+            var dataline = new EditDataLine(self, data);
             self.dataLines.setItem(dataline.property, dataline);
             $(dataline.view()).appendTo(container);
         });
 
 
-        self.ui.append(container);
+        self.ui.appendMetadata(container);
 
     }
 
     , getDataLine: function (property) {
         return this.dataLines.getItem(property);
     }
+
+    , insertDetails: function() {
+        var self = this;
+        
+        //Tworzy kontener do przechowywania szczegółowych informacji.
+        var container = jQuery('<div/>', {
+            id: 'languages-container'
+        });
+
+        var languages = Ling.Users.Current.getLanguages();
+        mielk.arrays.each(languages, function (language) {
+            var panel = new LanguagePanel(self, language);
+            $(panel.view()).appendTo(container);
+        });
+
+        self.ui.appendDetailsView(container);
+
+    }
+
 };
 
 
@@ -95,9 +125,6 @@ function EditPanelView(panel) {
         'class': 'edit-frame'
     }).appendTo(self.background);
 
-    self.container = jQuery('<div/>', {
-        'class': 'edit-container'
-    }).appendTo(self.frame);
 
     self.close = jQuery('<div/>', {
         'class': 'edit-close'
@@ -106,6 +133,59 @@ function EditPanelView(panel) {
             self.destroy();
         }
     }).appendTo(self.frame);
+
+    self.container = jQuery('<div/>', {
+        'class': 'edit-container'
+    }).appendTo(self.frame);
+
+    self.metadata = jQuery('<div/>').appendTo(self.container);
+    
+    self.details = jQuery('<div/>').appendTo(self.container);
+
+    self.buttons = (function() {
+        var $panel = jQuery('<div/>', {
+            'class': 'edit-buttons-panel'
+        }).appendTo(self.container);
+
+        var $container = jQuery('<div/>', {
+            'class': 'edit-buttons-container'
+        }).appendTo($panel);
+
+        var ok = jQuery('<input/>', {
+            'class': 'edit-button',
+            'type': 'submit',
+            'value': 'OK'
+        }).bind({
+            'click': function () {
+                self.panel.confirm();
+            }
+        }).appendTo($container);
+
+        // ReSharper disable once UnusedLocals
+        var cancel = jQuery('<input/>', {
+            'class': 'edit-button',
+            'type': 'submit',
+            'value': 'Cancel'
+        }).bind({
+            'click': function () {
+                self.panel.cancel();
+            }
+        }).appendTo($container);
+
+        // ReSharper disable once UnusedLocals
+        var events = (function () {
+            self.panel.bind({
+                validation: function (e) {
+                    if (e.status) {
+                        $(ok).removeAttr('disabled');
+                    } else {
+                        $(ok).attr('disabled', 'disabled');
+                    }
+                }
+            });
+        })();
+
+    })();
 
 }
 EditPanelView.prototype = {
@@ -124,11 +204,15 @@ EditPanelView.prototype = {
     , append: function (element) {
         $(element).appendTo(this.container);
     }
-
-    , appendDataLine: function (dataLine) {
-        $(dataLine.view).appendTo(self.dataLines);
+    
+    , appendMetadata: function(element) {
+        $(element).appendTo(this.metadata);
     }
-
+    
+    , appendDetailsView: function(element) {
+        $(element).appendTo(this.details);
+    }
+    
 };
 
 
@@ -173,8 +257,8 @@ function EditDataLine(panel, params) {
             return $(valuePanel).val();
         }
 
-        function format(value) {
-            if (value === true) {
+        function format($value) {
+            if ($value === true) {
                 $(valuePanel).removeClass('invalid').addClass('valid');
                 $(errorContainer).css({ 'display': 'none' });
                 $(errorIcon).removeClass('iconInvalid').addClass('iconValid');
@@ -182,7 +266,7 @@ function EditDataLine(panel, params) {
                 $(valuePanel).removeClass('valid').addClass('invalid');
                 $(errorContainer).css({ 'display': 'table' });
                 $(errorIcon).removeClass('iconValid').addClass('iconInvalid');
-                $(error).text(value);
+                $(error).text($value);
             }
         }
 
@@ -232,35 +316,35 @@ function EditDataLine(panel, params) {
 
         }
 
-        function applyPanel(panel, editable, value) {
+        function applyPanel($panel, $editable, $value) {
 
-            if (panel) {
-                //Jeżeli gotowy panel jest przekazany do konstruktora 
+            if ($panel) {
+                //Jeżeli gotowy panel jest przekazany do konstruktora
                 //jest on wstawiany w miejsce standardowego value panela.
-                applyCustomPanel(panel);
-            } else if (!editable) {
+                applyCustomPanel($panel);
+            } else if (!$editable) {
                 //Sytuacja, kiedy linia ma być nieedytowalna.
-                applyNonEditablePanel(value);
+                applyNonEditablePanel($value);
             } else {
                 //Sytuacja, kiedy linia ma być edytowalna.
-                applyEditablePanel(value);
+                applyEditablePanel($value);
             }
 
         }
 
-        function applyCustomPanel(panel) {
-            valuePanel = panel;
-            $(panel).appendTo(container);
+        function applyCustomPanel($panel) {
+            valuePanel = $panel;
+            $($panel).appendTo(container);
         }
 
-        function applyNonEditablePanel(value) {
+        function applyNonEditablePanel($value) {
             valuePanel = jQuery('<label/>', {
                 'class': 'value',
-                html: value
+                html: $value
             }).appendTo(container);
         }
 
-        function applyEditablePanel(value) {
+        function applyEditablePanel($value) {
 
             valuePanel = jQuery('<input/>', {
                 'class': 'field default',
@@ -300,7 +384,7 @@ function EditDataLine(panel, params) {
             }).appendTo(container);
 
             //Ustawia początkową wartość i dodaje panel do głównego kontenera.
-            $(valuePanel).val(value);
+            $(valuePanel).val($value);
             $(valuePanel).appendTo(span);
 
         }
@@ -318,14 +402,14 @@ function EditDataLine(panel, params) {
         }
 
         function validate(delay) {
-            var value = $(valuePanel).val();
+            var $value = $(valuePanel).val();
 
             if (!delay) {
-                self.validate(value);
+                self.validate($value);
             } else {
                 if (timer) clearTimeout(timer);
                 timer = setTimeout(function () {
-                    self.validate(value);
+                    self.validate($value);
                 }, delay);
             }
 
@@ -429,107 +513,314 @@ EditDataLine.prototype = {
 
 
 
-///*
-//    * Class:           EditPanel
-//    * Description:     Responsible for displaying properties of the 
-//    *                  given object in a separate modal window.
-//    * Parameters:      
-//    *  ListItem item   List item that the object edited is assigned to.
-//    */
-//function EditPanel(object, editObject) {
+//Klasa reprezentująca panel pojedynczego języka zawierający
+//wyrazy lub opcje zapytania.
+function LanguagePanel(panel, language) {
+
+    'use strict';
+
+    var self = this;
+    
+    //Class signature.
+    self.LanguagePanel = true;
+
+    self.panel = panel;
+    self.language = language;
+    self.object = panel.editObject;
+    self.items = mielk.hashTable();
+
+    // ReSharper disable UnusedLocals
+    self.ui = (function() {
+
+        var collapsed = false;
+        
+        var container = jQuery('<div/>', {
+            'class': 'language'
+        });
+
+        var info = jQuery('<div/>', {
+            'class': 'info'
+        }).appendTo(container);
+
+        var collapseButton = jQuery('<div/>', {
+            'class': 'collapse'
+        }).bind({
+            'click': function () {
+                if (collapsed === true) {
+                    expand();
+                } else {
+                    collapse();
+                }
+            }
+        }).appendTo(info);
+        
+        var flag = jQuery('<div/>', {
+            'class': 'flag ' + self.language.flag
+        }).appendTo(info);
+
+        var name = jQuery('<div/>', {
+            'class': 'name',
+            'html': self.language.name
+        }).appendTo(info);
+
+        var options = jQuery('<div/>', {
+            'class': 'options'
+        }).css({
+            'display': self.items.size() ? 'block' : 'none'
+        }).appendTo(container);
+
+        var buttons = jQuery('<div/>', {
+            'class': 'buttons'
+        }).appendTo(container);
 
 
 
 
-//    this.languages = (function () {
-//        var items = new HashTable(null);
+        function showOptionsPanel() {
+            $(options).css({
+                'display': self.items.size() ? 'block' : 'none'
+            });
+        }
+        
+        function collapse() {
+            collapsed = true;
 
-//        var container = jQuery('<div/>', {
-//            id: 'languages-container'
-//        });
-//        self.ui.append($(container));
+            $(options).css({
+                'display': 'none'
+            });
+            $(buttons).css({
+                'display': 'none'
+            });
+        }
 
-//        return {
-//            add: function (panel) {
-//                items.setItem(panel.id, panel);
-//                $(panel.view()).appendTo($(container));
-//            }
-//        };
-//    })();
+        function expand() {
+            collapsed = false;
+            showOptionsPanel();
+            $(buttons).css({
+                'display': 'block'
+            });
+        }
 
-//    this.buttons = (function () {
-//        var panel = jQuery('<div/>', {
-//            'class': 'edit-buttons-panel'
-//        });
+        function addButtons() {
+            var add = jQuery('<input/>', {
+                'class': 'button add',
+                'type': 'submit',
+                'value': dict.Add.get()
+            }).bind({
+                'click': function () {
+                    //self.addNew();
+                }
+            }).appendTo(buttons);
+        }
 
-//        var container = jQuery('<div/>', {
-//            'class': 'edit-buttons-container'
-//        }).appendTo($(panel));
+        function addOption(option, optionView) {
+            self.items.setItem(option.name, optionView);
+            $(optionView).appendTo(options);
+            showOptionsPanel();
+        }
 
-//        var ok = jQuery('<input/>', {
-//            'class': 'edit-button',
-//            'type': 'submit',
-//            'value': 'OK'
-//        }).bind({
-//            'click': function () {
-//                self.confirm();
-//            }
-//        }).appendTo($(container));
+        (function initialize() {
+            addButtons();
+        })();
 
-//        // ReSharper disable once UnusedLocals
-//        var cancel = jQuery('<input/>', {
-//            'class': 'edit-button',
-//            'type': 'submit',
-//            'value': 'Cancel'
-//        }).bind({
-//            'click': function () {
-//                self.cancel();
-//            }
-//        }).appendTo($(container));
 
-//        self.ui.append(panel);
+        return {
+              view: container
+            , refresh: showOptionsPanel
+            , addOption: addOption
+        };
 
-//        self.object.bind({
-//            validation: function (e) {
-//                if (e.status) {
-//                    $(ok).removeAttr('disabled');
-//                } else {
-//                    $(ok).attr('disabled', 'disabled');
-//                }
-//            }
-//        });
+    })();
+    // ReSharper restore UnusedLocals
 
-//    })();
+    (function initialize() {
+        self.loadItems();
+    })();
 
-//    this.generalRender();
+}
+LanguagePanel.prototype = {
+    
+    view: function() {
+        return this.ui.view;
+    }
+    
+    , loadItems: function () {
+        var self = this;
+        var set = self.object.items.getItem(self.language.id);
+        if (set) {
 
-//    this.renderLanguages();
+            set.each(function(key, item) {
+                var optionPanel = new OptionPanel(item);
+                self.ui.addOption(item, optionPanel.view());
+            });
 
-//}
-//EditPanel.prototype.confirm = function () {
-//    this.object.update(this.editObject);
-//    this.ui.destroy();
+        }
+    }
+    
+};
+
+
+
+//LanguagePanel.prototype.addOption = function (option) {
+//    var panel = new OptionPanel(option, this);
+//    this.items.setItem(option.id || option.name, panel);
+//    this.ui.addOption(panel.view());
 //};
-//EditPanel.prototype.generalRender = function () {
+//LanguagePanel.prototype.remove = function (item) {
+//    this.items.removeItem(item.id);
+//    this.ui.refresh();
+//};
+//LanguagePanel.prototype.addNew = function () {
+//    var item = this.item.newItem(this.language.id);
+//    item.injectLanguageEntity(this.languageEntity);
+//    item.edit({ languagePanel: this });
+//};
+//LanguagePanel.prototype.add = function (item) {
+//    this.addOption(item);
+//};
 
-//    var self = this;
 
-//    this.render();
-//};
-//EditPanel.prototype.render = function () {
-//    alert('Must be defined by implementing class');
-//};
-//EditPanel.prototype.getProperty = function (key) {
-//    if (this.editPanel.hasOwnProperty(key)) {
-//        return this.editPanel[key];
-//    }
-//    return null;
-//};
-//EditPanel.prototype.renderLanguages = function () {
-//    var self = this;
-//    var languages = this.editObject.languages;
-//    languages.each(function (key, object) {
-//        var panel = new LanguagePanel(self.editObject, self, object);
-//        self.languages.add(panel);
-//    });
-//};
+
+
+
+
+
+function OptionPanel(item, parent) {
+
+    'use strict';
+
+    var self = this;
+    
+    //Class signature.
+    self.OptionPanel = true;
+    
+    //Instance properties.
+    self.item = item;
+    self.parent = parent;   // <- EditPanel.editObject
+    
+    // ReSharper disable UnusedLocals
+    self.ui = (function () {
+
+        var container = jQuery('<div/>', { 'class': 'option' });
+
+        var deleteButton = jQuery('<div/>', {
+            'class': 'button delete',
+            'title': dict.DeleteThisItem.get()
+        }).bind({
+            click: function () {
+                self.item.remove();
+            }
+        }).appendTo(container);
+
+        var edit = jQuery('<div/>', {
+            'class': 'button edit',
+            'title': dict.EditThisItem.get()
+        }).bind({
+            click: function () {
+                self.item.edit();
+            }
+        }).appendTo(container);
+
+        var content = jQuery('<div/>', {
+            'class': 'content',
+            'html': self.contentToHtml()
+        }).appendTo(container);
+
+        var weight = jQuery('<div/>', {
+            'class': 'weight',
+            'html': self.item.weight
+        }).appendTo(container);
+
+        var completness = jQuery('<div/>', {
+            'class': 'completness ' + (self.item.isCompleted ? 'complete' : 'incomplete')
+        }).appendTo(container);
+
+
+
+
+        function destroy() {
+            $(container).remove();
+        }
+
+        function update($content, $weight, $complete) {
+                $(content).html(self.contentToHtml($content));
+                $(weight).html($weight);
+                $(completness).addClass($complete ? 'complete' : 'incomplete');
+                $(completness).removeClass($complete ? 'incomplete' : 'complete');
+        }
+
+
+
+
+        return {
+              view: container
+            , destroy: destroy
+            , update: update
+        };
+
+    })();
+    // ReSharper restore UnusedLocals
+
+    self.events = (function () {
+        self.item.bind({
+            
+            remove: function () {
+                self.ui.destroy();
+            },
+            
+            update: function(e) {
+                self.update(e.content, e.weight, e.complete);
+            }
+
+        });
+    })();
+
+
+}
+
+OptionPanel.prototype = {
+    
+    view: function() {
+        return this.ui.view;
+    },
+    
+    update: function(content, weight, complete) {
+        this.ui.update(content, weight, complete);
+    },
+    
+    toHtml: function($content) {
+        var content = $content || this.item.name;
+        var weight = this.item.weight;
+
+        var html = '<div class="button delete" title="' + dict.DeleteThisItem.get() + '"></div>';
+        html += '<div class="button edit" title="' + dict.EditThisItem.get() + '"></div>';
+        html += '<div class="content" data-value="' + content + '">';
+        html += this.contentToHtml(content);
+        html += '</div>';
+        html += '<div class="weight" data-value="' + weight + '">' + weight + '</div>';
+
+        return html;
+
+    },
+    
+    contentToHtml: function() {
+        var content = this.item.name;
+        var replaced = content.replace(/\[/g, '|$').replace(/\]/g, '|');
+        var parts = replaced.split("|");
+
+        var result = '';
+        mielk.arrays.each(parts, function(part) {
+            if (part.length > 0) {
+                result += '<span class="' + (mielk.text.startsWith(part, '$') ? 'complex' : 'plain') + '">' + part.replace("$", "") + '</span>';
+            }
+        });
+        
+        return result;
+
+    },
+    
+    isUniqueContent: function() {
+        return false;
+    }
+    
+};

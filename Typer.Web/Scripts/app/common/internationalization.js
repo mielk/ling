@@ -44,7 +44,7 @@ $(function () {
                 dict[key] = entry(key, $translations);
             }
         }
-    };
+    }
 
     //Actual translations.
     (function initializeDictionary() {
@@ -181,7 +181,7 @@ $(function () {
             , MetawordCategoryAssigned: {
                   POL: 'Kategorie {1} zostały przypisane do wyrazu {0}'
                 , ENG: 'Categories {1} have been assigned to word {0}'
-            } 
+            }
             , MetawordCategoryAssignedError: {
                   POL: 'Błąd podczas próby przypisania nowych kategorii do wyrazu {0}'
                 , ENG: 'Error when trying to assign the given categories to word {0}'
@@ -239,7 +239,7 @@ $(function () {
             , QueryCategoryAssigned: {
                   POL: 'Kategorie {1} zostały przypisane do zapytania {0}'
                 , ENG: 'Categories {1} have been assigned to query {0}'
-            } 
+            }
             , QueryCategoryAssignedError: {
                   POL: 'Błąd podczas próby przypisania nowych kategorii do zapytania {0}'
                 , ENG: 'Error when trying to assign the given categories to query {0}'
@@ -307,12 +307,24 @@ $(function () {
                 , ENG: 'Weight'
             }
             , Categories: {
-                  POL: 'Kategories'
+                  POL: 'Kategorie'
                 , ENG: 'Categories'
             }
             , Wordtype: {
                   POL: 'Część mowy'
                 , ENG: 'Wordtype'
+            }
+            , Add: {
+                  POL: 'Dodaj'
+                , ENG: 'Add'
+            }
+            , DeleteThisItem: {
+                  POL: 'Usuń ten element'
+                , ENG: 'Delete this item'
+            }
+            , EditThisItem: {
+                  POL: 'Edytuj ten element'
+                , ENG: 'Edit this item'
             }
 
         };

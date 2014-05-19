@@ -194,7 +194,7 @@ $(function () {
         //Funkcja zwracająca wyrazy dla podanego metawyrazu.
         function getWords(id, name, languages) {
             var error = dict.GetMetawordWordsError.get([name]);
-            var words = [];
+            var $words = [];
             
             mielk.db.fetch('Words', 'GetWords', {
                 'id': id,
@@ -204,14 +204,14 @@ $(function () {
                 cache: false,
                 traditional: true,
                 callback: function(result) {
-                    words = result;
+                    $words = result;
                 },
                 errorCallback: function() {
                     mielk.notify.display(error, false);
                 }
             });
 
-            return words;
+            return $words;
 
         }
 

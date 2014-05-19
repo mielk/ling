@@ -32,8 +32,8 @@ mielk.objects.addProperties(Metaword.prototype, {
     }
 
     //Metoda abstrakcyjna, musi być zaimplementowana w każdej klasie
-    //dziedziczączej po tej - określa zestaw kontrolek specyficznych 
-    //dla danego podtypu entity, które mają być wyświetlone w ListView, 
+    //dziedziczączej po tej - określa zestaw kontrolek specyficznych
+    //dla danego podtypu entity, które mają być wyświetlone w ListView,
     //np. dla wyrazów dodatkowym elementem będzie właściwość [Wordtype].
     , additionalViewItems: function () {
         var array = [];
@@ -62,10 +62,8 @@ mielk.objects.addProperties(Metaword.prototype, {
 
     //Tworzy obiekt zależny względem tego entity, np. Word dla Metaword
     //albo QueryOption dla Query.
-    , createSubItem: function (properties) {
-        return {
-            test: 1
-        };
+    , createSubItem: function (params) {
+        return new Word(this, params);
     }
 
     //Zwraca tablicę zawierającą definicję zestawu danych
@@ -78,7 +76,7 @@ mielk.objects.addProperties(Metaword.prototype, {
         var wordtypePanel = new WordtypePanel({
               value: object.wordtype
             , callback: function (result) {
-                object.wordtype = result
+                object.wordtype = result;
             }
         });
         datalines.push({

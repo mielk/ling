@@ -74,8 +74,8 @@ Entity.prototype = {
     }
 
     //Metoda abstrakcyjna, musi być zaimplementowana w każdej klasie
-    //dziedziczączej po tej - określa zestaw kontrolek specyficznych 
-    //dla danego podtypu entity, które mają być wyświetlone w ListView, 
+    //dziedziczączej po tej - określa zestaw kontrolek specyficznych
+    //dla danego podtypu entity, które mają być wyświetlone w ListView,
     //np. dla wyrazów dodatkowym elementem będzie właściwość [Wordtype].
     , additionalViewItems: function () {
         alert('Must be defined in implementing class');
@@ -84,13 +84,13 @@ Entity.prototype = {
     //Pobiera informacje na temat elementów przypisanych do obiektu
     //reprezentowanego przez ten ListItem. Np. dla Metaword wyświetla
     //stan wszystkich przypisanych do niego wyrazów.
-    , getDetails: function (fnSuccess, fnError) {
+    , getDetails: function (fnSuccess, fnError, async) {
 
         mielk.db.fetch(this.controllerName, this.detailsMethodName, {
             'id': this.id,
             'languages': Ling.Users.Current.getLanguagesIds()
         }, {
-            async: true,
+            async: async !== undefined ? async : true,
             traditional: true,
             cache: false,
             callback: fnSuccess,
@@ -150,12 +150,12 @@ Entity.prototype = {
 
     , loadDetails: function () {
         var self = this;
-        
-        var fnSuccess = function (result) {
+
+        var fnSuccess = function(result) {
             //Clear previous items collection.
             self.items = mielk.hashTable();
 
-            mielk.arrays.each(result, function (value) {
+            mielk.arrays.each(result, function(value) {
                 var languageId = value.LanguageId;
 
                 if (!self.items.hasItem(languageId)) {
@@ -168,16 +168,15 @@ Entity.prototype = {
 
             });
 
-        }
+        };
 
-        var fnError = function () {
+        var fnError = function() {
             mielk.notify.display('Error when trying to get items of the entity | Group: ' + self.controllerName + ' | Id: ' + self.id, false);
-        }
+        };
 
-        self.getDetails(fnSuccess, fnError);
+        self.getDetails(fnSuccess, fnError, false);
 
     }
-
 
 
     //Editing entity.
@@ -192,7 +191,7 @@ Entity.prototype = {
 
     //Tworzy obiekt zależny względem tego entity, np. Word dla Metaword
     //albo QueryOption dla Query.
-    , createSubItem: function (properties) {
+    , createSubItem: function () {
         alert('Must be defined in implemented class');
     }
 
@@ -283,7 +282,7 @@ Entity.prototype = {
 
     //Zwraca tablicę zawierającą definicję zestawu danych
     //specyficzne dla danej podklasy typu Entity.
-    , getSpecificDatalinesDefinitions: function (object) {
+    , getSpecificDatalinesDefinitions: function () {
         alert('Must be defined in implemented class');
     }
 
@@ -360,6 +359,7 @@ function ListItemView(entity) {
             'class': 'item' + (self.entity.isActive ? '' : ' inactive' )
         });
 
+        // ReSharper disable once UnusedLocals
         var id = jQuery('<div/>', { 'class': 'id', html: self.entity.id }).appendTo(container);
 
         var name = jQuery('<div/>', { 'class': 'name', html: self.entity.name }).appendTo(container);
@@ -382,6 +382,7 @@ function ListItemView(entity) {
             'id': 'details_' + self.entity.id
         }).appendTo(container);
 
+        // ReSharper disable once UnusedLocals
         var edit = jQuery('<div/>', {
             'class': 'list-item-icon edit-list-item'
         }).bind({
@@ -398,6 +399,7 @@ function ListItemView(entity) {
             }
         }).appendTo(container);
 
+        // ReSharper disable once UnusedLocals
         var events = (function () {
             self.entity.bind({
                 activate: function (e) {
@@ -482,27 +484,26 @@ ListItemView.prototype = {
         var self = this;
         var spinner = self.ui.addSpinner();
 
-        var fnSuccess = function (result) {
+        var fnSuccess = function(result) {
             var content = self.renderItems(result);
             self.ui.addDetails(content);
             spinner.stop();
-        }
+        };
 
-        var fnError = function () {
+        var fnError = function() {
             spinner.stop();
-        }
+        };
 
         self.entity.getDetails(fnSuccess, fnError);
 
     },
 
-    //Funkcja wyświetlająca dane dotyczące szczegółów dla 
-    //tego entity. Np. dla metawyrazów wyświetla graficzną 
+    //Funkcja wyświetlająca dane dotyczące szczegółów dla
+    //tego entity. Np. dla metawyrazów wyświetla graficzną
     //informację ile słów jest przypisanych do tego metawyrazu
     //w każdym z języków i czy ich odmiana gramatyczna jest
     //już kompletna.
     renderItems: function (items) {
-        var self = this;
         var languages = Ling.Users.Current.getLanguages();
         var container = jQuery('<div/>');
         var columns = {};
@@ -519,7 +520,7 @@ ListItemView.prototype = {
 
         //Iteruje po wszystkich znalezionych słowach i przydziela je
         //do odpowiednich kolumn.
-        mielk.arrays.each(items, function(item){
+        mielk.arrays.each(items, function(item) {
             var languageId = item.LanguageId;
             var languageColumn = columns[languageId];
             var icon = jQuery('<div/>', {
@@ -527,7 +528,7 @@ ListItemView.prototype = {
                 title: item.Name
             }).appendTo(languageColumn);
             $(icon).addClass(item.IsCompleted ? 'complete' : 'incomplete');
-        })
+        });
 
         return container;
 
@@ -568,13 +569,13 @@ function WeightPanel(params) {
             container = jQuery('<div/>', {
                 'class': 'weight-panel'
             });
-        };
+        }
 
         function applyCustomCss() {
             if (params && params.css) {
                 $(container).css(params.css);
             }
-        };
+        }
 
         function createIcons() {
 
@@ -602,7 +603,7 @@ function WeightPanel(params) {
             for (var i = 0; i < self.maxWeight; i++) {
                 icons[i] = createIcon(i);
             }
-        };
+        }
 
         function refresh(value) {
             for (var j = 0; j < value; j++) {

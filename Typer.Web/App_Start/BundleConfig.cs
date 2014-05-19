@@ -59,6 +59,7 @@ namespace Typer.Web
                 , "~/Scripts/app/words/word-list.js"
                 , "~/Scripts/app/words/words.js"
                 , "~/Scripts/app/words/metaword.js"
+                , "~/Scripts/app/words/word.js"
             ));
 
             bundles.Add(new ScriptBundle("~/bundles/queries").Include(
