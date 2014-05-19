@@ -649,27 +649,31 @@ LanguagePanel.prototype = {
         var set = self.object.items.getItem(self.language.id);
         if (set) {
 
-            set.each(function(key, item) {
+            set.each(function (key, item) {
+
+                item.bind({                    
+                    remove: function() {
+                        self.removeItem(item);
+                    }
+                });
+
                 var optionPanel = new OptionPanel(item);
                 self.ui.addOption(item, optionPanel.view());
+                
             });
 
         }
+    }
+    
+    , removeItem: function(item) {
+        this.items.removeItem(item.name);
+        this.ui.refresh();
     }
     
 };
 
 
 
-//LanguagePanel.prototype.addOption = function (option) {
-//    var panel = new OptionPanel(option, this);
-//    this.items.setItem(option.id || option.name, panel);
-//    this.ui.addOption(panel.view());
-//};
-//LanguagePanel.prototype.remove = function (item) {
-//    this.items.removeItem(item.id);
-//    this.ui.refresh();
-//};
 //LanguagePanel.prototype.addNew = function () {
 //    var item = this.item.newItem(this.language.id);
 //    item.injectLanguageEntity(this.languageEntity);
@@ -777,7 +781,6 @@ function OptionPanel(item, parent) {
 
 
 }
-
 OptionPanel.prototype = {
     
     view: function() {
@@ -821,6 +824,15 @@ OptionPanel.prototype = {
     
     isUniqueContent: function() {
         return false;
+    },
+    
+    removeItem: function(item) {
+        if (this.items) {
+            var set = this.items.getItem(item.language.id);
+            if (set) {
+                set.removeItem(item.name);
+            }
+        }
     }
     
 };

@@ -18,7 +18,8 @@ function Word(metaword, params) {
     self.id = params.Id || params.id;
     self.name = params.Name || params.name;
     self.weight = params.Weight || params.weight;
-    self.isCompleted = params.IsCompleted || false;
+    self.language = Ling.Languages.getLanguage(params.LanguageId);
+    self.isCompleted = params.IsCompleted || params.isCompleted || false;
 
     //Services.
     self.eventHandler = mielk.eventHandler();
@@ -33,6 +34,29 @@ Word.prototype = {
     
     , trigger: function(e) {
         this.eventHandler.trigger(e);
+    }
+    
+    , remove: function () {
+        var self = this;
+        //self.metaword.removeItem(self);
+
+    }
+    
+    , clone: function () {
+        var self = this;
+
+        //Create a copy instance of Metaword with all primitive
+        //properties given as initialize parameters.
+        var obj = new Word(self.metaword, {
+              id: self.id
+            , name: self.name
+            , weight: self.weight
+            , LanguageId: self.language.id
+            , isCompleted: self.isCompleted
+        });
+
+        return obj;
+
     }
     
 };

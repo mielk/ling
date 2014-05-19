@@ -97,11 +97,12 @@
             this.length = 0;
         };
 
-        this.clone = function () {
-            var clone = {};
+        this.clone = function (deep) {
+            var clone = new hashTable(null);
             for (var key in self.items) {
                 if (self.items.hasOwnProperty(key)) {
-                    clone[key] = self.items[key];
+                    var item = self.items[key];
+                    clone.setItem(key, deep ? mielk.objects.clone(item, deep) : item);
                 }
             }
 
@@ -373,11 +374,14 @@
 
 
         //Funkcja klonująca podaną wartość, niezależnie od jej typu.
-        function clone(value) {
-            if ($.isArray(value)) {
-                return mielk.arrays.clone(value);
+        function clone(value, deep) {
+            
+            if (value.clone && typeof(value.clone) === 'function') {
+                return value.clone(deep);
+            } else if ($.isArray(value)) {
+                return mielk.arrays.clone(value, deep);
             } else if (value instanceof Object) {
-                return cloneObject(value);
+                return cloneObject(value, deep);
             } else {
                 //Primitive values.
                 return value;

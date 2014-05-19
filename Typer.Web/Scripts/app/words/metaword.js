@@ -6,6 +6,8 @@
  */
 function Metaword(properties) {
 
+    //Id, Name, Weight, Type, IsActive, Categories, Words
+
     'use strict';
 
     var self = this;
@@ -90,26 +92,47 @@ mielk.objects.addProperties(Metaword.prototype, {
         return datalines;
 
     }
+    
+    , checkWordtype: function(wordtype) {
+        if (!wordtype || !wordtype.id) {
+            return dict.WordtypeCannotBeEmpty.get();
+        } else {
+            return true;
+        }
+    }
+    
+    , clone: function () {
+        var self = this;
+        
+        //Create a copy instance of Metaword with all primitive
+        //properties given as initialize parameters.
+        var obj = new Metaword({
+            Id: self.id
+            , Name: self.name
+            , Weight: self.weight
+            , IsActive: self.isActive
+            , CreatorId: self.creatorId
+            , CreateDate: self.createDate
+            , IsApproved: self.isApproved
+            , Positive: self.positive
+            , Negative: self.negative
+            , 'new': self.new
+        });
 
+        //Complex properties are set directly.
+        obj.categories = mielk.arrays.clone(self.categories);
+        obj.wordtype = self.wordtype;
+        obj.items = self.items.clone(true);
+        
+        return obj;
+        
+    }
+    
 });
 
 
 
 
-
-//Metaword.prototype.editItem = function () {
-//    var self = this;
-//    return new WordEditEntity({
-//        object: self,
-//        id: self.id,
-//        name: self.name,
-//        wordtype: self.wordtype,
-//        weight: self.weight,
-//        isActive: self.isActive,
-//        categories: self.categories,
-//        options: self.options
-//    });
-//};
 //Metaword.prototype.update = function (params) {
 //    if (!params.WordEditEntity) {
 //        alert('Illegal argument passed to function Metaword.update');
@@ -221,16 +244,7 @@ mielk.objects.addProperties(Metaword.prototype, {
 //    }
 
 //};
-//Metaword.prototype.checkWordtype = function (wordtype) {
-//    if (!wordtype || !wordtype.id) {
-//        return MessageBundle.get(dict.WordtypeCannotBeEmpty);
-//    } else {
-//        return true;
-//    }
-//};
-//Metaword.prototype.editPanel = function (editItem) {
-//    return new WordEditPanel(this, editItem);
-//};
+
 //Metaword.prototype.removedLogs = function (logs) {
 //    var tag = 'remove';
 //    var array = [];

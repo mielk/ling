@@ -25,7 +25,7 @@ function Entity(properties) {
     self.new = properties.new || false;
 
     //Subitems assigned to this entity (i.e. words for Metaword, options for Query).
-    self.items = {};
+    self.items = self.createItemsMap(properties.Words || properties.Options);
 
     //Views.
     self.listItem = null;
@@ -151,23 +151,8 @@ Entity.prototype = {
     , loadDetails: function () {
         var self = this;
 
-        var fnSuccess = function(result) {
-            //Clear previous items collection.
-            self.items = mielk.hashTable();
-
-            mielk.arrays.each(result, function(value) {
-                var languageId = value.LanguageId;
-
-                if (!self.items.hasItem(languageId)) {
-                    self.items.setItem(languageId, mielk.hashTable());
-                }
-
-                var set = self.items.getItem(languageId);
-                var subitem = self.createSubItem(value);
-                set.setItem(subitem.name, subitem);
-
-            });
-
+        var fnSuccess = function (result) {
+            self.items = self.createItemsMap(result);
         };
 
         var fnError = function() {
@@ -177,14 +162,39 @@ Entity.prototype = {
         self.getDetails(fnSuccess, fnError, false);
 
     }
+      
 
+    //Funkcja rozdzielająca podane itemy (Word/QuestionOption) 
+    //do odpowiednich kolekcji.
+    , createItemsMap: function (items) {
+        var self = this;
+
+        //Clear previous items collection.
+        var table = mielk.hashTable();
+
+        //Create language subcollections.
+        mielk.arrays.each(Ling.Users.Current.getLanguages(), function(language) {
+            var languageId = language.id;
+            table.setItem(languageId, mielk.hashTable());
+        });
+
+        //Add items to subcollections (ignore words of
+        //languages not assigned to current user).
+        mielk.arrays.each(items, function (value) {
+            var languageId = value.LanguageId;
+            var set = table.getItem(languageId);
+            if (set) {
+                var subitem = self.createSubItem(value);
+                set.setItem(subitem.name, subitem);
+            }
+        });
+
+        return table;
+
+    }
 
     //Editing entity.
     , edit: function () {
-        //Zapewnia, że przed wyświetleniem panelu edycji,
-        //odpowiednie składniki zostaną załadowane do tego Entity.
-        this.loadDetails();
-
         var editPanel = new EditPanel(this);
         editPanel.show();
     }
@@ -481,20 +491,32 @@ ListItemView.prototype = {
 
     //Odświeża widok reprezentujący poditemy przypisane do tego wyrazu/zapytania.
     loadDetails: function () {
-        var self = this;
-        var spinner = self.ui.addSpinner();
+        
+        if (this.entity.items) {
+            //Jeżeli itemy są już załadowane, od razu 
+            //przekazywane  są do metody renderującej.
+            var $content = this.renderItems(this.entity.items);
+            this.ui.addDetails($content);
+            
+        } else {
+            
+            //Jeżeli wyrazy/podzapytania nie są jeszcze wczytane, 
+            //są w tym momencie pobierane z bazy danych.
+            var self = this;
+            var spinner = self.ui.addSpinner();
 
-        var fnSuccess = function(result) {
-            var content = self.renderItems(result);
-            self.ui.addDetails(content);
-            spinner.stop();
-        };
+            var fnSuccess = function (result) {
+                var content = self.renderItems(result);
+                self.ui.addDetails(content);
+                spinner.stop();
+            };
 
-        var fnError = function() {
-            spinner.stop();
-        };
+            var fnError = function () {
+                spinner.stop();
+            };
 
-        self.entity.getDetails(fnSuccess, fnError);
+            self.entity.getDetails(fnSuccess, fnError);
+        }
 
     },
 
@@ -504,12 +526,23 @@ ListItemView.prototype = {
     //w każdym z języków i czy ich odmiana gramatyczna jest
     //już kompletna.
     renderItems: function (items) {
+        //Jeżeli itemy przekazane są w postaci HashMapy, dodawanie
+        //odbywa się w inny sposób niż w przypadku tablicy.
+        if (items.HashTable) {
+            return this.renderItemsFromHashMap(items);
+        } else {
+            return this.renderItemsFromArray(items);
+        }
+
+    },
+    
+    renderItemsFromArray: function(items) {
         var languages = Ling.Users.Current.getLanguages();
         var container = jQuery('<div/>');
         var columns = {};
 
-        //Iteruje przez wszystkie dostępne języki i dla każdego z nich
-        //sprawdza ile wyrazów/podzapytań jest dodanych w bazie.
+        //Iteruje przez wszystkie dostępne języki i dla 
+        //każdego z nich tworzy oddzielną kolumnę.
         mielk.arrays.each(languages, function (language) {
             var column = jQuery('<div/>', {
                 'class': 'details-column'
@@ -517,10 +550,9 @@ ListItemView.prototype = {
             columns[language.id] = column;
         });
 
-
         //Iteruje po wszystkich znalezionych słowach i przydziela je
         //do odpowiednich kolumn.
-        mielk.arrays.each(items, function(item) {
+        mielk.arrays.each(items, function (item) {
             var languageId = item.LanguageId;
             var languageColumn = columns[languageId];
             var icon = jQuery('<div/>', {
@@ -532,6 +564,31 @@ ListItemView.prototype = {
 
         return container;
 
+    },
+    
+    renderItemsFromHashMap: function(items) {
+        var container = jQuery('<div/>');
+
+        //Iteruje przez wszystkie dostępne języki, dla 
+        //każdego z nich tworzy oddzielną kolumnę i dodaje
+        //do niej przypisane do tego języka wyrazy.
+        items.each(function(key, language) {
+            var column = jQuery('<div/>', {
+                'class': 'details-column'
+            }).appendTo(container);
+
+            language.each(function(k, v) {
+                var icon = jQuery('<div/>', {
+                    'class': 'details-icon',
+                    title: v.Name || v.name
+                }).appendTo(column);
+                $(icon).addClass(v.IsCompleted || v.isCompleted ? 'complete' : 'incomplete');
+            });
+
+        });
+
+        return container;
+        
     },
 
     addItemToUi: function (item, before) {
