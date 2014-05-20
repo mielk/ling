@@ -230,7 +230,7 @@ Word.prototype.loadProperties = function () {
             value: my.text.parse(set.Value)
         };
         this.properties.setItem(property.id, property);
-    };
+    }
 };
 Word.prototype.getPropertiesFromRepository = function (wordId) {
     return my.db.fetch('Words', 'GetPropertyValues', { 'wordId': wordId });

@@ -12,16 +12,16 @@ function Entity(properties) {
     self.eventHandler = mielk.eventHandler();
 
     //Properties.
-    self.id = properties.Id || 0;
-    self.name = properties.Name;
-    self.weight = properties.Weight || 1;
+    self.id = properties.Id || properties.id || 0;
+    self.name = properties.Name || properties.name;
+    self.weight = properties.Weight || properties.weight || 1;
     self.isActive = (properties.IsActive !== undefined ? properties.IsActive : true);
-    self.creatorId = properties.CreatorId || 1;
-    self.createDate = properties.CreateDate || new Date().getDate;
-    self.isApproved = properties.IsApproved || false;
-    self.positive = properties.Positive || 0;
-    self.negative = properties.Negative || 0;
-    self.categories = self.loadCategories(properties.Categories) || [];
+    self.creatorId = properties.CreatorId || properties.creatorId || 1;
+    self.createDate = properties.CreateDate || properties.createDate || new Date().getDate;
+    self.isApproved = properties.IsApproved || properties.isApproved || false;
+    self.positive = properties.Positive || properties.positive || 0;
+    self.negative = properties.Negative || properties.negative || 0;
+    self.categories = self.loadCategories(properties.Categories || properties.categories) || [];
     self.new = properties.new || false;
 
     //Subitems assigned to this entity (i.e. words for Metaword, options for Query).

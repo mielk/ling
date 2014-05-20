@@ -359,7 +359,15 @@
             }
             return object;
         }
-
+        
+        function deleteProperties(object, properties) {
+            mielk.arrays.each(properties, function(property) {
+                if (object.hasOwnProperty(property)) {
+                    delete object[property];
+                }
+            });
+        }
+        
 
         //Funkcja wywołująca podaną funkcję fn
         //dla każdego elementu obiektu object.
@@ -406,6 +414,7 @@
             extend: extend
             , isFunction: isFunction
             , addProperties: addProperties
+            , deleteProperties: deleteProperties
             , each: each
             , clone: clone
         };
