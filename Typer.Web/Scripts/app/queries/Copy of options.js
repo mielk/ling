@@ -249,7 +249,7 @@ Word.prototype.loadDetails = function () {
             value: set.Content
         };
         this.details.setItem(form.id, form);
-    };
+    }
 };
 Word.prototype.getFormsFromRepository = function (wordId) {
     return my.db.fetch('Words', 'GetGrammarForms', { 'wordId': wordId });
@@ -865,10 +865,10 @@ GrammarForm.prototype.setListeners = function () {
 
         var property = this.manager.propertiesManager.items.getItem(key);
         if (property) {
-            self.activate(property.value != value);
+            self.activate(property.value !== value);
             property.bind({
                 change: function (e) {
-                    self.activate(e.value != value);
+                    self.activate(e.value !== value);
                 }
             });
         }

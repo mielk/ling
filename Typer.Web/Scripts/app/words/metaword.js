@@ -136,7 +136,7 @@ mielk.objects.addProperties(Metaword.prototype, {
         return obj;
         
     }
-    
+
 });
 
 

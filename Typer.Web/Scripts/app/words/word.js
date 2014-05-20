@@ -33,8 +33,8 @@ function Word(metaword, params) {
 
 
 mielk.objects.extend(Entity, Word);
-mielk.objects.deleteProperties(Word.prototype, ['loadCategories', 'toListItem', 'createItemsMap', 'createSubitem']);
-mielk.objects.addProperties(Word.prototype, {    
+mielk.objects.deleteProperties(Word.prototype, ['loadCategories', 'toListItem', 'createItemsMap', 'createSubitem', 'getItemByName']);
+mielk.objects.addProperties(Word.prototype, {
     //inherited bind
     //inherited trigger
     //inherited setWeight
@@ -71,9 +71,17 @@ mielk.objects.addProperties(Word.prototype, {
     //dziedziczączej po tej - określa zestaw kontrolek specyficznych
     //dla danego podtypu entity, które mają być wyświetlone w ListView,
     //np. dla wyrazów dodatkowym elementem będzie właściwość [Wordtype].
-    , additionalViewItems: function() {
-        alert('additionalViewItems: Must be defined in Word.js');
+    , additionalViewItems: function () {
+        mielk.notify.display('additionalViewItems: Must be defined in Word.js', false);
     }
+
+
+    //Editing entity.
+    , edit: function () {
+        var editPanel = new EditItemPanel(this);
+        editPanel.show();
+    }
+      
 
     //Pobiera informacje na temat elementów przypisanych do obiektu
     //reprezentowanego przez ten ListItem. Np. dla Metaword wyświetla
@@ -124,24 +132,22 @@ mielk.objects.addProperties(Word.prototype, {
     //Zwraca tablicę zawierającą definicję zestawu danych
     //specyficzne dla danej podklasy typu Entity.
     , getSpecificDatalinesDefinitions: function () {
-        alert('Must be defined in implemented class');
+        mielk.notify.display('Must be defined in implemented class', false);
     }
 
     //[Override]
     //Funkcja sprawdzająca czy Entity o takiej nazwie już istnieje.
     , checkName: function (name) {
-        if (!name) return MessageBundle.get(dict.NameCannotBeEmpty);
 
-        var language = this.language;
-        var items = language ? language.items : [];
-        for (var i = 0; i < items.length; i++) {
-            var item = items[i];
-            var itemName = item.name;
-            if (itemName === name && item !== this) {
-                return MessageBundle.get(dict.NameAlreadyExists);
-            }
-        }
+        //Check if name is not empty.
+        if (!name) return dict.NameCannotBeEmpty.get();
+        
+        //Check if name already exists in this language for its parent.
+        var word = this.parent.getItemByName(this.language.id, name);
+        if (word && word.id !== this.id) return dict.NameAlreadyExists.get();
+
         return true;
+        
     }
 
     //, update: function () {

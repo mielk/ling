@@ -117,8 +117,15 @@ function EditPanelView(panel) {
 
     //UI components.
     self.background = jQuery('<div/>', {
-        'class': 'edit-background'
-        ,'z-index': mielk.ui.topLayer()
+          'class': 'edit-background'
+        , 'z-index': mielk.ui.topLayer()
+    }).bind({
+        'click': function (e) {
+            if (!self.clickedOnContainer(e.pageX, e.pageY)){
+                self.panel.cancel();
+            }
+        }
+
     }).appendTo($(document.body));
 
     self.frame = jQuery('<div/>', {
@@ -212,6 +219,19 @@ EditPanelView.prototype = {
         $(element).appendTo(this.details);
     }
     
+    , clickedOnContainer: function (x, y) {
+        var offset = $(this.container).offset();
+        var height = $(this.container).height();
+        var width = $(this.container).width();
+
+        if (x < offset.left) return false;
+        if (y < offset.top) return false;
+        if (x > offset.left + width) return false;
+        if (y > offset.top + height) return false;
+
+        return true;
+
+    }
 };
 
 
@@ -650,7 +670,7 @@ LanguagePanel.prototype = {
 
             set.each(function (key, item) {
 
-                item.bind({                    
+                item.bind({
                     remove: function() {
                         self.removeItem(item);
                     }
@@ -675,14 +695,15 @@ LanguagePanel.prototype = {
 
         //    var item = this.item.newItem(this.language.id);
         //    item.injectLanguageEntity(this.languageEntity);
-        //    item.edit({ languagePanel: this });        
+        //    item.edit({ languagePanel: this });
     }
 };
 
 
 
 
-
+//Klasa reprezentująca pojedynczą linię z sub-itemem, np. jeden
+//wyraz lub jedno QueryOption.
 function OptionPanel(item, parent) {
 
     'use strict';
@@ -737,7 +758,7 @@ function OptionPanel(item, parent) {
 
 
         function hide() {
-            $(container).css({                
+            $(container).css({
                 'display': 'none'
             });
         }
@@ -822,3 +843,42 @@ OptionPanel.prototype = {
     }
     
 };
+
+
+
+//Podklasa reprezentująca panel edycji dla subitemów.
+//Dziedziczy po głównej klasie edycji.
+function EditItemPanel(entity) {
+
+    'use strict';
+
+    var self = this;
+
+    self.EditItemPanel = true;
+
+    EditPanel.call(self, entity);
+
+}
+mielk.objects.extend(EditPanel, EditItemPanel);
+mielk.objects.addProperties(EditItemPanel.prototype, {    
+
+    //[Override]
+    insertDetails: function() {
+        var self = this;
+        
+        //Tworzy kontener do przechowywania szczegółowych informacji.
+        var container = jQuery('<div/>', {
+            id: 'languages-container'
+        });
+
+        //var languages = Ling.Users.Current.getLanguages();
+        //mielk.arrays.each(languages, function (language) {
+        //    var panel = new LanguagePanel(self, language);
+        //    $(panel.view()).appendTo(container);
+        //});
+
+        self.ui.appendDetailsView(container);
+
+    }
+
+});

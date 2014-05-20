@@ -50,7 +50,7 @@ ListManager.prototype.createObject = function() {
 };
 ListManager.prototype.createListItem = function() {
     alert('Must be defined in implementing class');
-}; 
+};
 ListManager.prototype.createNewItem = function () {
     var self = this;
     var item = this.emptyItem();
@@ -1022,7 +1022,7 @@ Question.prototype.update = function (params) {
     var self = this;
     var name = (this.name === params.name ? '' : params.name);
     var weight = (this.weight === params.weight ? 0 : params.weight);
-    var categories = (my.array.equal(params.categories, this.categories) ? [] : params.categories);    
+    var categories = (my.array.equal(params.categories, this.categories) ? [] : params.categories);
     //removed sets
     //added sets
     var editedSets = this.editedSetsLogs(params.logs);
@@ -1509,9 +1509,9 @@ LanguageEntity.prototype.isDependable = function(wordtypeId) {
 
 /*
     * Class:           EditPanel
-    * Description:     Responsible for displaying properties of the 
+    * Description:     Responsible for displaying properties of the
     *                  given object in a separate modal window.
-    * Parameters:      
+    * Parameters:
     *  ListItem item   List item that the object edited is assigned to.
     */
 function EditPanel(object, editObject) {
@@ -1693,7 +1693,7 @@ EditPanel.prototype.generalRender = function () {
     this.meta.addLine(new EditDataLine(this, {
         property: 'id', label: 'ID', value: self.editObject.id,
         callback: function (value) {self.editObject.id = value; },
-        inputCss: {'width': '60px', 'text-align': 'center', 'border': '1px solid #777', 'background-color': 'white' } 
+        inputCss: {'width': '60px', 'text-align': 'center', 'border': '1px solid #777', 'background-color': 'white' }
     }));
 
     //[Name]
@@ -1753,7 +1753,7 @@ WordEditPanel.prototype.render = function () {
     var wordtypePanel = new WordtypePanel(this, self.editObject);
     var wordtypeLine = new EditDataLine(this, {
         property: 'wordtype', label: 'Type', value: self.editObject.wordtype,
-        panel: wordtypePanel.view(), editable: true, 
+        panel: wordtypePanel.view(), editable: true,
         validation: function (params) {
             return self.object.checkWordtype(params.value);
         },
@@ -1783,7 +1783,7 @@ QuestionEditPanel.prototype.render = function () {
     //[Button for running variant panel]
     var variantButtonsPanel = new VariantButtonsPanel(this, self.editObject);
     var variantLine = new EditDataLine(this, {
-        property: 'editVariants', label: '', 
+        property: 'editVariants', label: '',
         panel: variantButtonsPanel.view(), editable: true
     });
     this.meta.addLine(variantLine);
@@ -2127,7 +2127,7 @@ LanguagePanel.prototype.addOption = function (option) {
 LanguagePanel.prototype.remove = function (item) {
     this.items.removeItem(item.id);
     this.ui.refresh();
-}; 
+};
 LanguagePanel.prototype.addNew = function () {
     var item = this.item.newItem(this.language.id);
     item.injectLanguageEntity(this.languageEntity);
@@ -2461,7 +2461,7 @@ function WordtypePanel(line, object) {
             'class': 'wordtype-dropdown-container'
         });
 
-        var dropdown = new DropDown({    
+        var dropdown = new DropDown({
             container: container,
             data: WORDTYPE.getValues(),
             slots: 5,

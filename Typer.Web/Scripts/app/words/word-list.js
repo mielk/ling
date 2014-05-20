@@ -31,7 +31,7 @@ mielk.objects.addProperties(WordListManager.prototype, {
     },
 
     emptyItem: function (filters) {
-        return new Metaword({            
+        return new Metaword({
             Id: 0
             , Name: ''
             , Weight: (filters.weight && filters.weight.from && filters.weight.from === filters.weight.to ? filters.weight.from : 1)

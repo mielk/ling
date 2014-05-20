@@ -24,7 +24,7 @@ function ListItemsManager(controller) {
             $(container).empty();
         }
 
-        return {            
+        return {
               view: container
             , addItem: addItem
             , clear: clear
@@ -40,7 +40,7 @@ function ListItemsManager(controller) {
 
 }
 mielk.objects.extend(ListManagerPanel, ListItemsManager);
-mielk.objects.addProperties(ListItemsManager.prototype, {    
+mielk.objects.addProperties(ListItemsManager.prototype, {
     
     refresh: function (items) {
         var self = this;

@@ -606,7 +606,7 @@ GrammarForm.prototype.setListeners = function () {
 
         var property = this.manager.propertiesManager.items.getItem(key);
         if (property) {
-            self.activate(property.value != value);
+            self.activate(property.value !== value);
             property.bind({
                 change: function (e) {
                     self.activate(e.value != value);

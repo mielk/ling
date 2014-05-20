@@ -164,7 +164,7 @@ Entity.prototype = {
     }
       
 
-    //Funkcja rozdzielająca podane itemy (Word/QuestionOption) 
+    //Funkcja rozdzielająca podane itemy (Word/QuestionOption)
     //do odpowiednich kolekcji.
     , createItemsMap: function (items) {
         var self = this;
@@ -345,9 +345,28 @@ Entity.prototype = {
         return null;
     }
 
+    , getItemByName: function (languageId, name) {
+        var item = null;
+        var language = this.items.getItem(languageId);
+        if (language) {
+            language.each(function(key, value) {
+                if (!item) {
+                    if (value.name === name) {
+                        item = value;
+                    }
+                }
+            });
+        }
+        
+        return item;
+
+    }
+
     //, update: function () {
     //    alert('Must by defined by implementing class');
     //}
+
+
 
 };
 
@@ -496,14 +515,14 @@ ListItemView.prototype = {
     loadDetails: function () {
         
         if (this.entity.items) {
-            //Jeżeli itemy są już załadowane, od razu 
+            //Jeżeli itemy są już załadowane, od razu
             //przekazywane  są do metody renderującej.
             var $content = this.renderItems(this.entity.items);
             this.ui.addDetails($content);
             
         } else {
             
-            //Jeżeli wyrazy/podzapytania nie są jeszcze wczytane, 
+            //Jeżeli wyrazy/podzapytania nie są jeszcze wczytane,
             //są w tym momencie pobierane z bazy danych.
             var self = this;
             var spinner = self.ui.addSpinner();
@@ -544,7 +563,7 @@ ListItemView.prototype = {
         var container = jQuery('<div/>');
         var columns = {};
 
-        //Iteruje przez wszystkie dostępne języki i dla 
+        //Iteruje przez wszystkie dostępne języki i dla
         //każdego z nich tworzy oddzielną kolumnę.
         mielk.arrays.each(languages, function (language) {
             var column = jQuery('<div/>', {
@@ -572,7 +591,7 @@ ListItemView.prototype = {
     renderItemsFromHashMap: function(items) {
         var container = jQuery('<div/>');
 
-        //Iteruje przez wszystkie dostępne języki, dla 
+        //Iteruje przez wszystkie dostępne języki, dla
         //każdego z nich tworzy oddzielną kolumnę i dodaje
         //do niej przypisane do tego języka wyrazy.
         items.each(function(key, language) {
@@ -759,25 +778,23 @@ function CategoryPanel(params) {
     })();
 
 }
+
 CategoryPanel.prototype = {
-
-      refresh: function(){
+    refresh: function() {
         this.ui.refresh();
-    }
-
-    , view: function(){
+    },
+    view: function() {
         return this.ui.view;
-    }
-
-    , selectCategories: function () {
+    },
+    selectCategories: function() {
         var self = this;
         var tree = new Tree({
-              'mode': MODE.MULTI
-            , 'root': Ling.Categories.getRoot()
-            , 'selected': self.categories
-            , 'blockOtherElements': true
-            , 'showSelection': true
-            , 'hidden': true
+            'mode': MODE.MULTI,
+            'root': Ling.Categories.getRoot(),
+            'selected': self.categories,
+            'blockOtherElements': true,
+            'showSelection': true,
+            'hidden': true
         });
 
         tree.reset({
@@ -786,9 +803,9 @@ CategoryPanel.prototype = {
         });
 
         tree.eventHandler.bind({
-            confirm: function (e) {
+            confirm: function(e) {
                 var categories = [];
-                mielk.arrays.each(e.item, function (category) {
+                mielk.arrays.each(e.item, function(category) {
                     categories.push(category.object);
                 });
 
@@ -798,16 +815,16 @@ CategoryPanel.prototype = {
                 tree.destroy();
 
             },
-            add: function (e) {
+            add: function(e) {
                 Ling.Categories.addNew(e);
             },
-            remove: function (e) {
+            remove: function(e) {
                 Ling.Categories.remove(e);
             },
-            rename: function (e) {
+            rename: function(e) {
                 Ling.Categories.updateName(e);
             },
-            transfer: function (e) {
+            transfer: function(e) {
                 Ling.Categories.updateParent(e);
             }
         });
@@ -815,5 +832,4 @@ CategoryPanel.prototype = {
         tree.show();
 
     }
-
-}
+};
