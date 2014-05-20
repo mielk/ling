@@ -82,7 +82,7 @@ mielk.objects.addProperties(Metaword.prototype, {
             }
         });
         datalines.push({
-            property: 'wordtype'
+            property: Ling.Enums.Properties.Wordtype
             , index: 1
             , label: dict.Wordtype.get()
             , value: object.wordtype

@@ -86,9 +86,18 @@ $(function () {
             , ESP: { code: 'ESP', name: 'Espanol' }
         });
 
+        var properties = new Enum({            
+              Id: { name: 'id' }
+            , Name: { name: 'name' }
+            , Weight: { name: 'weight' }
+            , Categories: { name: 'categories' }
+            , Wordtype: { name: 'wordtype' }
+        });
+
         return {
               Languages: languages
             , Wordtypes: wordtypes
+            , Properties: properties
         };
 
     })();

@@ -209,72 +209,84 @@ Entity.prototype = {
     //mają być wyświetlane w panelu edycji tego Entity.
     , getDatalinesDefinitions: function (object) {
         var datalines = [];
+        var properties = object.getEditedPropertiesList();
 
         //[Id]
-        datalines.push({
-              property: 'id'
-            , index: 0
-            , label: dict.Id.get()
-            , value: object.id
-            , callback: function (value) {
-                object.id = value;
-            }
-            , inputCss: {
-                  'width': '60px'
-                , 'text-align': 'center'
-                , 'border': '1px solid #777'
-                , 'background-color': 'white'
-            }
-        });
+        if ($.inArray(Ling.Enums.Properties.Id, properties) > -1) {
+            datalines.push({
+                    property: Ling.Enums.Properties.Id,
+                    index: 0,
+                    label: dict.Id.get(),
+                    value: object.id,
+                    callback: function(value) {
+                        object.id = value;
+                    },
+                    inputCss: {
+                        'width': '60px',
+                        'text-align': 'center',
+                        'border': '1px solid #777',
+                        'background-color': 'white'
+                    }
+            });
+        }
 
 
         //[Name]
-        datalines.push({
-              property: 'name'
-            , index: 1
-            , label: dict.Name.get()
-            , value: object.name
-            , callback: function (value) {
-                object.name = value;
-            }
-            , validation: function (params) {
-                return object.entity.checkName(params.value);
-            }
-            , editable: true
-        });
-
-
+        if ($.inArray(Ling.Enums.Properties.Name, properties) > -1) {
+            datalines.push({
+                    property: Ling.Enums.Properties.Name,
+                    index: 1,
+                    label: dict.Name.get(),
+                    value: object.name,
+                    callback: function(value) {
+                        object.name = value;
+                    },
+                    validation: function(params) {
+                        return object.entity.checkName(params.value);
+                    },
+                    editable: true
+            });
+        }
+        
+        
         //[Weight]
-        var weightPanel = new WeightPanel({
-              value: object.weight
-            , callback: function (value) {
-                object.weight = value;
-            }
-            , css: { 'margin': '9px 0', 'height': '16px' }
-        });
-        datalines.push({
-              property: 'weight'
-            , index: 2
-            , label: dict.Weight.get()
-            , value: object.weight
-            , panel: weightPanel.view()
-        });
-
+        if ($.inArray(Ling.Enums.Properties.Weight, properties) > -1) {
+            var weightPanel = new WeightPanel({
+                value: object.weight
+                , callback: function (value) {
+                    object.weight = value;
+                }
+                , css: { 'margin': '9px 0', 'height': '16px' }
+            });
+            datalines.push({
+                property: 'weight',
+                index: 2,
+                label: dict.Weight.get(),
+                value: object.weight,
+                panel: weightPanel.view()
+            });
+        }
+        
 
         //[Category]
-        var categoryPanel = new CategoryPanel({
-              categories: object.categories
-            , callback: function (result) {
-                object.categories = result;
-            }
-        });
-        datalines.push({
-              property: 'category'
-            , index: 3
-            , label: dict.Categories.get()
-            , value: object.categories
-            , panel: categoryPanel.view()
-        });
+        if ($.inArray(Ling.Enums.Properties.Categories, properties) > -1) {
+            var categoryPanel = new CategoryPanel({
+                categories: object.categories || []
+                , callback: function (result) {
+                    object.categories = result;
+                }
+            });
+            datalines.push({
+                property: 'category'
+                , index: 3
+                , label: dict.Categories.get()
+                , value: object.categories
+                , panel: categoryPanel.view()
+            });
+        }
+        
+
+
 
 
         //Add class-specific fields.
@@ -288,6 +300,17 @@ Entity.prototype = {
 
         return datalines;
 
+    }
+
+    //Zwraca listę właściwości, które mają być edytowane w panelu edycji
+    //dla tego typu Entity.
+    , getEditedPropertiesList: function() {
+        return [
+              Ling.Enums.Properties.Id
+            , Ling.Enums.Properties.Name
+            , Ling.Enums.Properties.Weight
+            , Ling.Enums.Properties.Categories
+        ];
     }
 
     //Zwraca tablicę zawierającą definicję zestawu danych

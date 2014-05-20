@@ -125,7 +125,6 @@ function EditPanelView(panel) {
         'class': 'edit-frame'
     }).appendTo(self.background);
 
-
     self.close = jQuery('<div/>', {
         'class': 'edit-close'
     }).bind({
@@ -473,7 +472,7 @@ EditDataLine.prototype = {
         self.verifyLinked();
         var validationResult = mielk.fn.run(self.validation, {
               value: self.value
-            , property: self.property
+            , property: self.property.name
             , id: self.entity.id
         });
 
@@ -482,7 +481,7 @@ EditDataLine.prototype = {
         self.ui.format(validationResult);
 
         self.panel.validator.validation({
-            id: self.property,
+            id: self.property.name,
             status: (validationResult === true ? true : false)
         });
 
