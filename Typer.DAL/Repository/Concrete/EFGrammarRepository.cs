@@ -21,6 +21,11 @@ namespace Typer.DAL.Repositories
             return Context.GrammarPropertyOptions.Where(gpo => propertiesIds.Contains(gpo.PropertyId));
         }
 
+        public IEnumerable<WordPropertyRequirementDto> GetWordRequiredProperties(int[] languages)
+        {
+            return Context.WordPropertyRequirements.Where(wpr => languages.Contains(wpr.LanguageId));
+        }
+
 
         //public IEnumerable<GrammarFormDefinitonDto> GetGrammarDefinitions(int languageId, int wordtypeId)
         //{

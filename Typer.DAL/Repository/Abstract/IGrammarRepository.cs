@@ -11,6 +11,7 @@ namespace Typer.DAL.Repositories
 
         IEnumerable<GrammarPropertyDefinitionDto> GetProperties(int[] languages);
         IEnumerable<GrammarPropertyOptionDto> GetOptions(IEnumerable<int> propertiesIds);
+        IEnumerable<WordPropertyRequirementDto> GetWordRequiredProperties(int[] languages);
 
         //IEnumerable<GrammarFormDefinitonDto> GetGrammarFormsDefinitions(int[] languages);
         //IEnumerable<GrammarFormDefinitionPropertyDto> GetGrammarFormsProperties(int[] languages);

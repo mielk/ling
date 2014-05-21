@@ -18,11 +18,11 @@ namespace Typer.DAL.Infrastructure
         public DbSet<CategoryDto> Categories { get; set; }
         public DbSet<WordCategoryDto> MatchWordCategory { get; set; }
         public DbSet<QuestionCategoryDto> MatchQuestionCategory { get; set; }
-        public DbSet<WordPropertyDefinitionDto> WordPropertyDefinitions { get; set; }
+        public DbSet<WordPropertyRequirementDto> WordPropertyRequirements { get; set; }
         public DbSet<GrammarPropertyDefinitionDto> GrammarPropertyDefinitions { get; set; }
         public DbSet<GrammarPropertyOptionDto> GrammarPropertyOptions { get; set; }
         public DbSet<GrammarFormDefinitonDto> GrammarDefinitions { get; set; }
-        public DbSet<WordtypePropertyValueDto> WordtypePropertyValues { get; set; }
+        public DbSet<WordPropertyDto> WordPropertyValues { get; set; }
         public DbSet<GrammarFormDto> GrammarForms { get; set; }
         public DbSet<VariantSetDto> VariantSets { get; set; }
         public DbSet<VariantDto> Variants { get; set; }
@@ -46,9 +46,9 @@ namespace Typer.DAL.Infrastructure
             modelBuilder.Entity<CategoryDto>().ToTable("Categories");
             modelBuilder.Entity<WordCategoryDto>().ToTable("MatchWordCategory");
             modelBuilder.Entity<QuestionCategoryDto>().ToTable("MatchQuestionCategory");
-            modelBuilder.Entity<WordPropertyDefinitionDto>().ToTable("WordtypeRequiredProperties");
+            modelBuilder.Entity<WordPropertyRequirementDto>().ToTable("WordRequiredProperties");
             modelBuilder.Entity<GrammarFormDefinitonDto>().ToTable("GrammarFormDefinitions");
-            modelBuilder.Entity<WordtypePropertyValueDto>().ToTable("WordsProperties");
+            modelBuilder.Entity<WordPropertyDto>().ToTable("WordsProperties");
             modelBuilder.Entity<GrammarFormDto>().ToTable("GrammarForms");
             modelBuilder.Entity<VariantSetDto>().ToTable("VariantSets");
             modelBuilder.Entity<VariantDto>().ToTable("Variants");

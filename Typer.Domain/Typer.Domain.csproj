@@ -56,7 +56,7 @@
     <Compile Include="Entities\GrammarPropertyOption.cs" />
     <Compile Include="Entities\Variant.cs" />
     <Compile Include="Entities\VariantSet.cs" />
-    <Compile Include="Entities\WordPropertyDefinition.cs" />
+    <Compile Include="Entities\WordPropertyRequirement.cs" />
     <Compile Include="Entities\Word.cs" />
     <Compile Include="Entities\Metaword.cs" />
     <Compile Include="Entities\Language.cs" />
@@ -75,7 +75,7 @@
     <Compile Include="Services\Abstract\IMailSender.cs" />
     <Compile Include="Services\Abstract\IQuestionService.cs" />
     <Compile Include="Services\Abstract\IUserService.cs" />
-    <Compile Include="Entities\WordtypePropertyValue.cs" />
+    <Compile Include="Entities\WordProperty.cs" />
     <Compile Include="Entities\VariantSetPropertyDefinition.cs" />
     <Compile Include="Entities\VariantSetPropertyValue.cs" />
     <Compile Include="Services\Concrete\CategoryService.cs" />

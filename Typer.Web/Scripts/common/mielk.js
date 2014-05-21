@@ -620,6 +620,7 @@
                         return $result;
                     },
                     error: function (msg) {
+                        mielk.notify.display('Error in mielk.db.fetch: ' + controller + '.' + method, false);
                         if (errorCallback) {
                             errorCallback(msg);
                         } else {

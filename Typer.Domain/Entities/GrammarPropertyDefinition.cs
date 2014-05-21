@@ -11,6 +11,11 @@ namespace Typer.Domain.Entities
         public bool Default { get; set; }
         public IEnumerable<GrammarPropertyOption> Options { get; set; }
 
+        public GrammarPropertyDefinition()
+        {
+            Options = new List<GrammarPropertyOption>();
+        }
+
         public void AddOption(GrammarPropertyOption option)
         {
             var list = (List<GrammarPropertyOption>) Options;

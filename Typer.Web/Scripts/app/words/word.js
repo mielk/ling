@@ -19,6 +19,8 @@ function Word(metaword, params) {
     self.parent = metaword;
     self.isCompleted = (params.IsCompleted || params.isCompleted ? true : false);
     self.language = Ling.Languages.getLanguage(params.languageId || params.LanguageId);
+    self.properties = mielk.hashTable();
+    self.grammarForms = mielk.hashTable();
     
     //Services.
     self.service = Ling.Words;
@@ -66,6 +68,8 @@ mielk.objects.addProperties(Word.prototype, {
 
     //Editing entity.
     , edit: function () {
+        this.loadDetails();
+        
         var editPanel = new EditItemPanel(this);
         editPanel.show();
     }
@@ -74,14 +78,11 @@ mielk.objects.addProperties(Word.prototype, {
     //Pobiera informacje na temat elementów przypisanych do obiektu
     //reprezentowanego przez ten ListItem. Np. dla Metaword wyświetla
     //stan wszystkich przypisanych do niego wyrazów.
-    , getDetails: function (fnSuccess, fnError, async) {
+    , getDetails: function (methodName, fnSuccess, fnError) {
 
-        mielk.db.fetch(this.controllerName, this.detailsMethodName, {
-            'id': this.id
+        mielk.db.fetch(this.controllerName, methodName, {
+            'wordId': this.id
         }, {
-            async: async !== undefined ? async : true,
-            traditional: true,
-            cache: false,
             callback: fnSuccess,
             errorCallback: fnError
         });
@@ -89,18 +90,43 @@ mielk.objects.addProperties(Word.prototype, {
     }
 
     , loadDetails: function () {
+        this.loadRequiredProperties();
+        this.loadPropertiesValues();
+        this.loadGrammarForms();
+    }
+      
+    //[private]
+    , loadRequiredProperties: function () {
         var self = this;
+        var languageId = self.language.id;
+        var wordtypeId = self.parent.wordtype.id;
+        var requiredProperties = Ling.Grammar.getRequiredProperties(languageId, wordtypeId);
 
-        var fnSuccess = function (result) {
-            
+        mielk.arrays.each(requiredProperties, function(property) {
+            self.properties.setItem(property.id, null);
+        });
+
+    }
+      
+    //[private]
+    , loadPropertiesValues: function () {
+        var self = this;
+        
+        var fnSuccess = function(results) {
+            var x = 1;
         };
 
         var fnError = function() {
-            mielk.notify.display('Error when trying to get items of the entity | Group: ' + self.controllerName + ' | Id: ' + self.id, false);
+            mielk.notify.display(dict.LoadingWordPropertiesError.get(), false, []);
         };
 
-        self.getDetails(fnSuccess, fnError, false);
+        self.getDetails('GetPropertyValues', fnSuccess, fnError);
 
+    }
+      
+    //[private]
+    , loadGrammarForms: function() {
+        
     }
 
 
@@ -121,6 +147,7 @@ mielk.objects.addProperties(Word.prototype, {
     //specyficzne dla danej podklasy typu Entity.
     , getSpecificDatalinesDefinitions: function () {
         var self = this;
+
         mielk.notify.display('Must be defined in implemented class', false);
     }
 

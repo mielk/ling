@@ -23,7 +23,7 @@ namespace Typer.Domain.Services
         IEnumerable<Category> GetCategories(int metawordId);
         IEnumerable<Metaword> Filter(int wordType, int lowWeight, int upWeight, int[] categories, string text);
         //Return properties of the given word, i.e. word Polska is of femininum etc.
-        IEnumerable<WordtypePropertyValue> GetPropertyValues(int wordId);
+        IEnumerable<WordProperty> GetPropertyValues(int wordId);
         IEnumerable<GrammarForm> GetGrammarForms(int wordId);
         IEnumerable<GrammarForm> GetGrammarForms(int definition, int[] wordsIds);
         IEnumerable<Word> GetWords(int languageId, int wordtype, string word);

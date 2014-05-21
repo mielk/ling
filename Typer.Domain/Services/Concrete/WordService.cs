@@ -113,7 +113,7 @@ namespace Typer.Domain.Services
             return dtos.Select(dto => _categoryService.GetCategory(dto.CategoryId)).ToList();
         }
 
-        public IEnumerable<WordtypePropertyValue> GetPropertyValues(int wordId)
+        public IEnumerable<WordProperty> GetPropertyValues(int wordId)
         {
             var dtos = _repository.GetPropertyValues(wordId);
             return dtos.Select(WordtypePropertyValueFromDto).ToList();
@@ -175,12 +175,12 @@ namespace Typer.Domain.Services
         }
 
 
-        private static WordtypePropertyValue WordtypePropertyValueFromDto(WordtypePropertyValueDto dto)
+        private static WordProperty WordtypePropertyValueFromDto(WordPropertyDto dto)
         {
-            return new WordtypePropertyValue
+            return new WordProperty
             {
                 PropertyId = dto.PropertyId,
-                Value = dto.Value,
+                ValueId = dto.ValueId,
                 WordId = dto.WordId
             };
         }

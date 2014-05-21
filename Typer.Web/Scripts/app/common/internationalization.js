@@ -327,6 +327,12 @@ $(function () {
                 , ENG: 'Edit this item'
             }
 
+            //Words
+            , LoadingWordPropertiesError: {
+                  POL: 'Błąd podczas ładowania właściwości wyrazu {0}'
+                , ENG: 'Error when loading properties for word {0}'
+            }
+
         };
 
         addEntries(entries);

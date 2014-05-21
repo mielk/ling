@@ -868,7 +868,7 @@ mielk.objects.addProperties(EditItemPanel.prototype, {
         
         //Tworzy kontener do przechowywania szczegółowych informacji.
         var container = jQuery('<div/>', {
-            id: 'languages-container'
+            'class': 'subitem-properties-container'
         });
 
         //var languages = Ling.Users.Current.getLanguages();

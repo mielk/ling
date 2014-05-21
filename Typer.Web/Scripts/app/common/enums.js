@@ -61,6 +61,17 @@ Enum.prototype = {
             }
         }
         return null;
+    },
+    
+    getByProperty: function(property, value) {
+        for (var key in this.items) {
+            var item = this.items[key];
+
+            if (item[property] === value) {
+                return item;
+            }
+        }
+        return null;
     }
     
 };
@@ -94,10 +105,17 @@ $(function () {
             , Wordtype: { name: 'wordtype' }
         });
 
+        var dataTypes = new Enum({            
+              Boolean: { name: 'boolean', id: 1 }
+            , Single: { name: 'single', id: 2 }
+            , Multi: { name: 'multi', id: 3 }
+        });
+            
         return {
               Languages: languages
             , Wordtypes: wordtypes
             , Properties: properties
+            , DataTypes: dataTypes
         };
 
     })();

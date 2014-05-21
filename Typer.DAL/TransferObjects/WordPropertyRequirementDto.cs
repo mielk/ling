@@ -1,6 +1,7 @@
-﻿namespace Typer.Domain.Entities
+﻿namespace Typer.DAL.TransferObjects
 {
-    public class WordPropertyDefinition
+
+    public class WordPropertyRequirementDto
     {
         public int Id { get; set; }
         public int LanguageId { get; set; }

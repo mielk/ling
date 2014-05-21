@@ -26,5 +26,16 @@ namespace Typer.Web.Controllers
 
         }
 
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult GetWordsRequiredProperties(int[] languages)
+        {
+
+            var properties = _service.GetWordRequiredProperties(languages);
+            return Json(properties, JsonRequestBehavior.AllowGet);
+            
+        }
+
     }
 }

@@ -12,8 +12,6 @@ namespace Typer.Domain.Services
     {
 
         private readonly IGrammarRepository _repository;
-        private static readonly Dictionary<int, Dictionary<int, IEnumerable<GrammarPropertyDefinition>>> WordPropertiesMap =
-            new Dictionary<int, Dictionary<int, IEnumerable<GrammarPropertyDefinition>>>();
 
         public GrammarService(IGrammarRepository repository)
         {
@@ -25,17 +23,39 @@ namespace Typer.Domain.Services
         public IEnumerable<GrammarPropertyDefinition> GetProperties(int[] languages)
         {
 
+            //Fetch data from the database as DTO objecs.
             var definitions = _repository.GetProperties(languages);
             var options = _repository.GetOptions(definitions.Select(d => d.Id).ToList());
 
-            return null;
+            //Create a dictionary of GrammarPropertyDefinitions.
+            var dict = definitions.ToList().Select(PropertyDefinitionFromDto).ToDictionary(definition => definition.Id);
 
+            foreach (var dto in options)
+            {
+                GrammarPropertyDefinition definition;
+                dict.TryGetValue(dto.PropertyId, out definition);
+                if (definition != null)
+                {
+                    definition.AddOption(PropertyOptionFromDto(dto));
+                }
+            }
+
+
+            return dict.Values.ToList();
+
+        }
+
+
+        public IEnumerable<WordPropertyRequirement> GetWordRequiredProperties(int[] languages)
+        {
+            var properties = _repository.GetWordRequiredProperties(languages);
+            return properties.Select(PropertyRequirementFromDto).ToList();
         }
 
 
 
 
-        private GrammarPropertyDefinition PropertyDefinitionFromDto(GrammarPropertyDefinitionDto dto)
+        private static GrammarPropertyDefinition PropertyDefinitionFromDto(GrammarPropertyDefinitionDto dto)
         {
             return new GrammarPropertyDefinition
             {
@@ -47,7 +67,7 @@ namespace Typer.Domain.Services
             };
         }
 
-        private GrammarPropertyOption PropertyOptionFromDto(GrammarPropertyOptionDto dto)
+        private static GrammarPropertyOption PropertyOptionFromDto(GrammarPropertyOptionDto dto)
         {
             return new GrammarPropertyOption
             {
@@ -55,9 +75,20 @@ namespace Typer.Domain.Services
                 , Name = dto.Name
                 , PropertyId = dto.PropertyId
                 , Value = dto.Value
+                , Default = dto.Default
             };
         }
 
+        private static WordPropertyRequirement PropertyRequirementFromDto(WordPropertyRequirementDto dto)
+        {
+            return new WordPropertyRequirement
+            {
+                  Id = dto.Id
+                , LanguageId = dto.LanguageId
+                , PropertyId = dto.PropertyId
+                , WordtypeId = dto.WordtypeId
+            };
+        }
 
     }
 }

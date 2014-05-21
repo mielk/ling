@@ -37,10 +37,6 @@ namespace Typer.DAL.Repositories
             return dtos.Select(dto => dto.MetawordId).ToList();
         }
 
-        public IEnumerable<WordtypePropertyValueDto> GetPropertyValues(int wordId)
-        {
-            throw new NotImplementedException();
-        }
 
 
         public bool AddMetaword(MetawordDto metaword)
@@ -56,6 +52,99 @@ namespace Typer.DAL.Repositories
                 return false;
             }
         }
+
+        public int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options, string[] properties, string[] forms)
+        {
+
+            var completed = false;
+            using (var scope = new TransactionScope())
+            {
+                var metaword = new MetawordDto
+                {
+                    CreateDate = DateTime.Now,
+                    CreatorId = 1,
+                    Name = name,
+                    Type = wordtype,
+                    Weight = weight,
+                    IsActive = true
+                };
+
+                Context.Metawords.Add(metaword);
+                Context.SaveChanges();
+                var id = metaword.Id;
+
+                if (id > 0)
+                {
+
+                    try
+                    {
+
+                        var result = UpdateCategories(id, categories);
+
+
+                        //Added
+                        if (options != null)
+                        {
+                            for (var i = 0; i < options.Length; i++)
+                            {
+                                var s = options[i];
+                                var _result = AddOption(s, id);
+                                if (!_result) result = false;
+                            }
+                        }
+
+
+                        //Properties
+                        if (properties != null)
+                        {
+                            for (var i = 0; i < properties.Length; i++)
+                            {
+                                var s = properties[i];
+                                if (!AddWordProperty(id, s)) result = false;
+                            }
+                        }
+
+                        //Forms
+                        if (forms != null)
+                        {
+                            for (var i = 0; i < forms.Length; i++)
+                            {
+                                var s = forms[i];
+                                if (!AddGrammarForm(id, s)) result = false;
+                            }
+                        }
+
+                        if (result)
+                        {
+                            Context.SaveChanges();
+                            scope.Complete();
+                            completed = true;
+                            return id;
+                        }
+
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                    finally
+                    {
+                        if (!completed)
+                        {
+                            scope.Dispose();
+                        }
+                    }
+
+                }
+
+                return 0;
+
+            }
+
+        }
+
+
+
 
 
 
@@ -128,26 +217,17 @@ namespace Typer.DAL.Repositories
 
 
 
+        #region Categories
 
-        public bool UpdateCategories(int wordId, int[] categories){
+        public bool UpdateCategories(int metawordId, int[] categories){
 
             try{
 
-                if (!DeleteCategories(wordId)) return false;
+                if (!DeleteCategories(metawordId)) return false;
 
-                foreach (var categoryId in categories)
+                foreach (var dto in categories.Select(categoryId => CreateWordCategoryDto(categoryId, metawordId)))
                 {
-                    var dto = new WordCategoryDto
-                    {
-                        CategoryId = categoryId,
-                        MetawordId = wordId,
-                        CreatorId = 1,
-                        CreateDate = DateTime.Now,
-                        IsActive = true
-                    };
-
                     Context.MatchWordCategory.Add(dto);
-                    
                 }
 
                 Context.SaveChanges();
@@ -158,11 +238,11 @@ namespace Typer.DAL.Repositories
             }
         }
 
-        public bool DeleteCategories(int wordId)
+        public bool DeleteCategories(int metawordId)
         {
             try
             {
-                IEnumerable<WordCategoryDto> dtos = Context.MatchWordCategory.Where(c => c.MetawordId == wordId);
+                IEnumerable<WordCategoryDto> dtos = Context.MatchWordCategory.Where(c => c.MetawordId == metawordId);
                 foreach (var dto in dtos)
                 {
                     Context.MatchWordCategory.Remove(dto);
@@ -176,6 +256,23 @@ namespace Typer.DAL.Repositories
             }
 
         }
+
+        private static WordCategoryDto CreateWordCategoryDto(int categoryId, int metawordId)
+        {
+            return new WordCategoryDto
+            {
+                CategoryId = categoryId,
+                MetawordId = metawordId,
+                CreatorId = 1,
+                CreateDate = DateTime.Now,
+                IsActive = true
+            };
+        }
+
+        #endregion Categories
+
+
+
 
         public bool Update(int id, string name, int wordtype, int weight, int[] categories, int[] removed, 
             string[] edited, string[] added, string[] properties, string[] forms)
@@ -361,20 +458,20 @@ namespace Typer.DAL.Repositories
         private bool AddWordProperty(int wordId, int propertyId, int value)
         {
             //Dto object.
-            WordtypePropertyValueDto dto = GetPropertyValue(wordId, propertyId);
+            WordPropertyDto dto = GetPropertyValue(wordId, propertyId);
             if (dto != null)
             {
-                dto.Value = value;
+                dto.ValueId = value;
             }
             else
             {
-                dto = new WordtypePropertyValueDto
+                dto = new WordPropertyDto
                 {
                     PropertyId = propertyId,
                     WordId = wordId,
-                    Value = value
+                    ValueId = value
                 };
-                Context.WordtypePropertyValues.Add(dto);
+                Context.WordPropertyValues.Add(dto);
             }
 
             return true;
@@ -556,9 +653,9 @@ namespace Typer.DAL.Repositories
 
 
 
-        public WordtypePropertyValueDto GetPropertyValue(int wordId, int propertyId)
+        public WordPropertyDto GetPropertyValue(int wordId, int propertyId)
         {
-            return Context.WordtypePropertyValues.SingleOrDefault(wpv => wpv.WordId == wordId && wpv.PropertyId == propertyId);
+            return Context.WordPropertyValues.SingleOrDefault(wpv => wpv.WordId == wordId && wpv.PropertyId == propertyId);
         }
 
 
@@ -578,15 +675,6 @@ namespace Typer.DAL.Repositories
         {
             return Context.GrammarForms.Where(gf => gf.FormId == definition && wordsIds.Contains(gf.WordId));
         }
-
-
-        public IEnumerable<int> GetPropertiesIds(int languageId, int wordtypeId)
-        {
-            return Context.WordPropertyDefinitions.
-                Where(wp => wp.LanguageId == languageId && wp.WordtypeId == wordtypeId).
-                Select(wp => wp.PropertyId).ToList();
-        }
-
 
         public IEnumerable<GrammarFormDto> GetGrammarForms(int wordId)
         {
@@ -649,14 +737,17 @@ namespace Typer.DAL.Repositories
 
 
 
-        public IEnumerable<WordDto> GetWords(int metawordId)
-        {
-            return Context.Words.Where(o => o.MetawordId == metawordId && o.IsActive);
-        }
+        //WORDS
+        #region Word
 
         public WordDto GetWord(int wordId)
         {
             return Context.Words.SingleOrDefault(w => w.Id == wordId);
+        }
+
+        public IEnumerable<WordDto> GetWords(int metawordId)
+        {
+            return Context.Words.Where(o => o.MetawordId == metawordId && o.IsActive);
         }
 
         public IEnumerable<WordDto> GetWords(int metawordId, int[] languages)
@@ -664,100 +755,16 @@ namespace Typer.DAL.Repositories
             return Context.Words.Where(o => o.MetawordId == metawordId && o.IsActive && languages.Contains(o.LanguageId));
         }
 
+        public IEnumerable<WordPropertyDto> GetPropertyValues(int wordId)
+        {
+            return Context.WordPropertyValues.Where(wpv => wpv.WordId == wordId).ToList();
+        }
+
         public IEnumerable<WordDto> GetWords(int languageId, int wordtype, string word)
         {
             return Context.Words.Where(w => w.LanguageId == languageId && w.Name.EndsWith(word.Substring(word.Length - 2)) && !w.Name.Equals(word));
         }
 
-        public int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options, string[] properties, string[] forms)
-        {
-
-            var completed = false;
-            using (var scope = new TransactionScope())
-            {
-                var result = true;
-                var metaword = new MetawordDto
-                {
-                    CreateDate = DateTime.Now,
-                    CreatorId = 1,
-                    Name = name,
-                    Type = wordtype,
-                    Weight = weight,
-                    IsActive = true
-                };
-
-                Context.Metawords.Add(metaword);
-                Context.SaveChanges();
-                var id = metaword.Id;
-
-                if (id > 0)
-                {
-
-                    try{
-
-                        result = UpdateCategories(id, categories);
-
-
-                        //Added
-                        if (options != null)
-                        {
-                            for (var i = 0; i < options.Length; i++)
-                            {
-                                var s = options[i];
-                                var _result = AddOption(s, id);
-                                if (!_result) result = false;
-                            }
-                        }
-
-
-                        //Properties
-                        if (properties != null)
-                        {
-                            for (var i = 0; i < properties.Length; i++)
-                            {
-                                var s = properties[i];
-                                if (!AddWordProperty(id, s)) result = false;
-                            }
-                        }
-
-                        //Forms
-                        if (forms != null)
-                        {
-                            for (var i = 0; i < forms.Length; i++)
-                            {
-                                var s = forms[i];
-                                if (!AddGrammarForm(id, s)) result = false;
-                            }
-                        }
-
-                        if (result)
-                        {
-                            Context.SaveChanges();
-                            scope.Complete();
-                            completed = true;
-                            return id;
-                        }
-
-                    }
-                    catch (Exception)
-                    {
-
-                    }
-                    finally
-                    {
-                        if (!completed)
-                        {
-                            scope.Dispose();
-                        }
-                    }
-
-                }
-
-                return 0;
-
-                }
-   
-            }
-
+        #endregion Word
     }
 }

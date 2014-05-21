@@ -84,8 +84,8 @@
     <Compile Include="TransferObjects\QuestionDto.cs" />
     <Compile Include="TransferObjects\UserDto.cs" />
     <Compile Include="TransferObjects\UserLanguageDto.cs" />
-    <Compile Include="TransferObjects\WordPropertyDefinitionDto.cs" />
-    <Compile Include="TransferObjects\WordtypePropertyValueDto.cs" />
+    <Compile Include="TransferObjects\WordPropertyRequirementDto.cs" />
+    <Compile Include="TransferObjects\WordPropertyDto.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Typer.Common\Typer.Common.csproj">
