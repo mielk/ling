@@ -48,6 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Infrastructure\EFDbContext.cs" />
+    <Compile Include="Repository\Abstract\IGrammarRepository.cs" />
+    <Compile Include="Repository\Concrete\EFGrammarRepository.cs" />
     <Compile Include="TransferObjects\GrammarFormDefinitionPropertyDto.cs" />
     <Compile Include="TransferObjects\VariantSetPropertyDefinitionDto.cs" />
     <Compile Include="TransferObjects\VariantSetPropertyValueDto.cs" />

@@ -34,11 +34,8 @@ namespace Typer.Domain.Services
 
         public IEnumerable<Category> GetCategories(IEnumerable<int> ids)
         {
-            if (_categories == null)
-                LoadCategories();
-
-            return _categories.Where(c => ids.Contains(c.Id));
-
+            if (_categories == null) LoadCategories();
+            return _categories == null ? new List<Category>() : _categories.Where(c => ids.Contains(c.Id));
         }
 
         private static void LoadCategories()
@@ -160,20 +157,6 @@ namespace Typer.Domain.Services
         {
             return new Category(dto.Id, dto.Name, dto.ParentId){ IsActive = dto.IsActive };
         }
-
-
-/*
-        private static CategoryDto CategoryToDto(Category category)
-        {
-            return new CategoryDto
-            {
-                Id = category.Id,
-                IsActive = category.IsActive,
-                Name = category.Name,
-                ParentId = category.ParentId
-            };
-        }
-*/
 
 
     }

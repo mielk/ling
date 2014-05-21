@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Typer.Domain.Services;
 
 namespace Typer.Domain.Entities
 {
@@ -12,11 +11,11 @@ namespace Typer.Domain.Entities
         public bool Default { get; set; }
         public IEnumerable<GrammarPropertyOption> Options { get; set; }
 
-        //public void LoadOptions()
-        //{
-        //    var service = WordServicesFactory.Instance().GetService();
-        //    Options = service.GetGrammarPropertyOptions(Id);
-        //}
+        public void AddOption(GrammarPropertyOption option)
+        {
+            var list = (List<GrammarPropertyOption>) Options;
+            list.Add(option);
+        }
 
     }
 }

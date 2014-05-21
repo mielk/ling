@@ -85,18 +85,6 @@ OptionEditEntity.prototype.createDetailsManager = function () {
 
 
 
-function WordOptionEditEntity(properties) {
-    OptionEditEntity.call(this, properties);
-    this.WordOptionEditEntity = true;
-}
-mielk.objects.extend(OptionEditEntity, WordOptionEditEntity);
-WordOptionEditEntity.prototype.createPropertyManager = function () {
-    return new WordPropertyManager(this, {});
-};
-WordOptionEditEntity.prototype.createDetailsManager = function (params) {
-    return new GrammarManager(this, params);
-};
-
 
 
 

@@ -367,7 +367,7 @@ namespace Typer.DAL.Repositories
                         }
 
                     }
-                    catch (Exception exception)
+                    catch (Exception)
                     {
                     }
                 }

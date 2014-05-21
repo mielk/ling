@@ -86,7 +86,7 @@ $(function () {
             , ESP: { code: 'ESP', name: 'Espanol' }
         });
 
-        var properties = new Enum({            
+        var properties = new Enum({
               Id: { name: 'id' }
             , Name: { name: 'name' }
             , Weight: { name: 'weight' }
@@ -103,7 +103,7 @@ $(function () {
     })();
 
 
-    //Add as an item of STOCK library.
+    //Add as an item of Ling library.
     Ling.Enums = enums;
 
 });

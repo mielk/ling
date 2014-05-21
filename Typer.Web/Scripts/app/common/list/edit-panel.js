@@ -860,7 +860,7 @@ function EditItemPanel(entity) {
 
 }
 mielk.objects.extend(EditPanel, EditItemPanel);
-mielk.objects.addProperties(EditItemPanel.prototype, {    
+mielk.objects.addProperties(EditItemPanel.prototype, {
 
     //[Override]
     insertDetails: function() {

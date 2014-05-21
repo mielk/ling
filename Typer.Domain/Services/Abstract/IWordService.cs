@@ -22,14 +22,10 @@ namespace Typer.Domain.Services
         IEnumerable<Word> GetWords(int metawordId, int[] languages);
         IEnumerable<Category> GetCategories(int metawordId);
         IEnumerable<Metaword> Filter(int wordType, int lowWeight, int upWeight, int[] categories, string text);
-        IEnumerable<GrammarPropertyDefinition> GetProperties(int languageId, int wordtypeId);
-        IEnumerable<GrammarFormDefinition> GetGrammarFormDefinitions(int languageId, int wordtypeId);
         //Return properties of the given word, i.e. word Polska is of femininum etc.
         IEnumerable<WordtypePropertyValue> GetPropertyValues(int wordId);
         IEnumerable<GrammarForm> GetGrammarForms(int wordId);
         IEnumerable<GrammarForm> GetGrammarForms(int definition, int[] wordsIds);
         IEnumerable<Word> GetWords(int languageId, int wordtype, string word);
-        IEnumerable<GrammarPropertyOption> GetGrammarPropertyOptions(int propertyId);
-        GrammarPropertyDefinition GetProperty(int id);
     }
 }

@@ -37,6 +37,11 @@ namespace Typer.DAL.Repositories
             return dtos.Select(dto => dto.MetawordId).ToList();
         }
 
+        public IEnumerable<WordtypePropertyValueDto> GetPropertyValues(int wordId)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public bool AddMetaword(MetawordDto metaword)
         {
@@ -551,31 +556,29 @@ namespace Typer.DAL.Repositories
 
 
 
+        public WordtypePropertyValueDto GetPropertyValue(int wordId, int propertyId)
+        {
+            return Context.WordtypePropertyValues.SingleOrDefault(wpv => wpv.WordId == wordId && wpv.PropertyId == propertyId);
+        }
+
+
+        public GrammarFormDto GetGrammarForm(int wordId, int formId)
+        {
+            return Context.GrammarForms.SingleOrDefault(gf => gf.WordId == wordId && gf.FormId == formId);
+        }
+
 
         public IEnumerable<WordCategoryDto> GetCategories(int metawordId)
         {
             return Context.MatchWordCategory.Where(m => m.MetawordId == metawordId);
         }
 
-        public IEnumerable<GrammarPropertyDefinitionDto> GetProperties(IEnumerable<int> ids)
-        {
-            return Context.GrammarPropertyDefinitions.Where(gpd => ids.Contains(gpd.Id));
-        }
 
         public IEnumerable<GrammarFormDto> GetGrammarForms(int definition, int[] wordsIds)
         {
             return Context.GrammarForms.Where(gf => gf.FormId == definition && wordsIds.Contains(gf.WordId));
         }
 
-        public IEnumerable<GrammarPropertyOptionDto> GetGrammarPropertyOptions(int propertyId)
-        {
-            return Context.GrammarPropertyOptions.Where(gpo => gpo.PropertyId == propertyId);
-        }
-
-        public GrammarPropertyDefinitionDto GetProperty(int id)
-        {
-            return Context.GrammarPropertyDefinitions.SingleOrDefault(gpd => gpd.Id == id);
-        }
 
         public IEnumerable<int> GetPropertiesIds(int languageId, int wordtypeId)
         {
@@ -584,29 +587,10 @@ namespace Typer.DAL.Repositories
                 Select(wp => wp.PropertyId).ToList();
         }
 
-        public IEnumerable<GrammarFormDefinitonDto> GetGrammarDefinitions(int languageId, int wordtypeId)
-        {
-            return Context.GrammarDefinitions.Where(gd => gd.LanguageId == languageId && gd.WordtypeId == wordtypeId);
-        }
 
         public IEnumerable<GrammarFormDto> GetGrammarForms(int wordId)
         {
             return Context.GrammarForms.Where(gf => gf.WordId == wordId && gf.IsActive);
-        }
-
-        public IEnumerable<WordtypePropertyValueDto> GetPropertyValues(int wordId)
-        {
-            return Context.WordtypePropertyValues.Where(wpv => wpv.WordId == wordId);
-        }
-
-        public WordtypePropertyValueDto GetPropertyValue(int wordId, int propertyId)
-        {
-            return Context.WordtypePropertyValues.SingleOrDefault(wpv => wpv.WordId == wordId && wpv.PropertyId == propertyId);
-        }
-
-        public GrammarFormDto GetGrammarForm(int wordId, int formId)
-        {
-            return Context.GrammarForms.SingleOrDefault(gf => gf.WordId == wordId && gf.FormId == formId);
         }
 
 

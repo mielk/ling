@@ -211,30 +211,6 @@ namespace Typer.Web.Controllers
             }
 
 
-            [HttpGet]
-            [AllowAnonymous]
-            public ActionResult GetProperties(int languageId, int wordtypeId)
-            {
-                var properties = _service.GetProperties(languageId, wordtypeId);
-                return Json(properties, JsonRequestBehavior.AllowGet);
-            }
-
-            [HttpGet]
-            [AllowAnonymous]
-            public ActionResult GetProperty(int id)
-            {
-                var property = _service.GetProperty(id);
-                return Json(property, JsonRequestBehavior.AllowGet);
-            }
-
-            [HttpGet]
-            [AllowAnonymous]
-            public ActionResult GetGrammarDefinitions(int languageId, int wordtypeId)
-            {
-                var forms = _service.GetGrammarFormDefinitions(languageId, wordtypeId);
-                return Json(forms, JsonRequestBehavior.AllowGet);
-            }
-
 
             [HttpGet]
             [AllowAnonymous]

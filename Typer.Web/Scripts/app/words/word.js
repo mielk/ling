@@ -29,11 +29,8 @@ function Word(metaword, params) {
     delete self.categories;
 
 }
-
-
-
 mielk.objects.extend(Entity, Word);
-mielk.objects.deleteProperties(Word.prototype, ['loadCategories', 'toListItem', 'createItemsMap', 'createSubitem', 'getItemByName']);
+mielk.objects.deleteProperties(Word.prototype, ['loadCategories', 'toListItem', 'createItemsMap', 'createSubitem', 'getItemByName', 'additionalViewItems']);
 mielk.objects.addProperties(Word.prototype, {
     //inherited bind
     //inherited trigger
@@ -52,11 +49,11 @@ mielk.objects.addProperties(Word.prototype, {
         //Create a copy instance of Metaword with all primitive
         //properties given as initialize parameters.
         var obj = new Word(self.parent, {
-            id: self.id
-            , name: self.name
-            , weight: self.weight
-            , languageId: self.language.id
-            , isCompleted: self.isCompleted
+              Id: self.id
+            , Name: self.name
+            , Weight: self.weight
+            , LanguageId: self.language.id
+            , IsCompleted: self.isCompleted
         });
 
         return obj;
@@ -66,15 +63,6 @@ mielk.objects.addProperties(Word.prototype, {
     , detailsMethodName: 'GetGrammarForms'
 
     , controllerName: 'Words'
-
-    //Metoda abstrakcyjna, musi być zaimplementowana w każdej klasie
-    //dziedziczączej po tej - określa zestaw kontrolek specyficznych
-    //dla danego podtypu entity, które mają być wyświetlone w ListView,
-    //np. dla wyrazów dodatkowym elementem będzie właściwość [Wordtype].
-    , additionalViewItems: function () {
-        mielk.notify.display('additionalViewItems: Must be defined in Word.js', false);
-    }
-
 
     //Editing entity.
     , edit: function () {
@@ -132,6 +120,7 @@ mielk.objects.addProperties(Word.prototype, {
     //Zwraca tablicę zawierającą definicję zestawu danych
     //specyficzne dla danej podklasy typu Entity.
     , getSpecificDatalinesDefinitions: function () {
+        var self = this;
         mielk.notify.display('Must be defined in implemented class', false);
     }
 
@@ -312,4 +301,70 @@ mielk.objects.addProperties(Word.prototype, {
 //};
 //Word.prototype.getFormsFromRepository = function (wordId) {
 //    return my.db.fetch('Words', 'GetGrammarForms', { 'wordId': wordId });
+//};
+
+
+
+
+
+
+
+//function OptionEditEntity(properties) {
+//    this.OptionEditEntity = true;
+//    this.id = properties.id;
+//    this.name = properties.name;
+//    this.weight = properties.weight;
+//    this.isActive = properties.isActive;
+//    this.object = properties.object;
+//    this.languageId = properties.languageId;
+//    this.isActive = properties.isActive || true;
+
+//    //Logic.
+//    this.eventHandler = new EventHandler();
+
+//    //Logic.
+//    this.eventHandler = new EventHandler();
+//    this.logs = [];
+
+//    //this.loadDetails();
+
+//}
+//OptionEditEntity.prototype.bind = function (e) {
+//    this.eventHandler.bind(e);
+//};
+//OptionEditEntity.prototype.trigger = function (e) {
+//    this.eventHandler.trigger(e);
+//};
+//OptionEditEntity.prototype.setWeight = function (value) {
+//    this.weight = value;
+//    this.trigger({
+//        type: 'changeWeight',
+//        weight: value
+//    });
+//};
+//OptionEditEntity.prototype.addLog = function (log) {
+//    this.logs.push(log);
+//};
+//OptionEditEntity.prototype.editItem = function () {
+//    alert('Must be defined by implementing class');
+//};
+//OptionEditEntity.prototype.createPropertyManager = function () {
+//    alert('Must be defined by implementing class');
+//};
+//OptionEditEntity.prototype.createDetailsManager = function () {
+//    alert('Must be defined by implementing class');
+//};
+
+
+
+//function WordOptionEditEntity(properties) {
+//    OptionEditEntity.call(this, properties);
+//    this.WordOptionEditEntity = true;
+//}
+//mielk.objects.extend(OptionEditEntity, WordOptionEditEntity);
+//WordOptionEditEntity.prototype.createPropertyManager = function () {
+//    return new WordPropertyManager(this, {});
+//};
+//WordOptionEditEntity.prototype.createDetailsManager = function (params) {
+//    return new GrammarManager(this, params);
 //};

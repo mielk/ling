@@ -69,6 +69,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\GrammarFormDefinition.cs" />
     <Compile Include="Services\Abstract\ICategoryService.cs" />
+    <Compile Include="Services\Abstract\IGrammarService.cs" />
     <Compile Include="Services\Abstract\IWordService.cs" />
     <Compile Include="Services\Abstract\ILanguageService.cs" />
     <Compile Include="Services\Abstract\IMailSender.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="Entities\VariantSetPropertyDefinition.cs" />
     <Compile Include="Entities\VariantSetPropertyValue.cs" />
     <Compile Include="Services\Concrete\CategoryService.cs" />
+    <Compile Include="Services\Concrete\GrammarService.cs" />
     <Compile Include="Services\Concrete\WordService.cs" />
     <Compile Include="Services\Concrete\LanguageService.cs" />
     <Compile Include="Services\Concrete\MailSender.cs" />
@@ -86,6 +88,7 @@
     <Compile Include="Entities\UserRegistrationData.cs" />
     <Compile Include="Services\Concrete\UserService.cs" />
     <Compile Include="Services\Factories\CategoryServiceFactory.cs" />
+    <Compile Include="Services\Factories\GrammarServiceFactory.cs" />
     <Compile Include="Services\Factories\WordServiceFactory.cs" />
     <Compile Include="Services\Factories\QuestionServiceFactory.cs" />
     <Compile Include="Services\Factories\LanguageServiceFactory.cs" />
