@@ -172,6 +172,7 @@
   <ItemGroup>
     <Content Include="Content\app\categories.css" />
     <Content Include="Content\app\list.css" />
+    <Content Include="Content\common\mielk.css" />
     <Content Include="Content\common\dropdown.css" />
     <Content Include="Content\app\edit.css" />
     <Content Include="Content\images\close-image-36.png" />
@@ -196,7 +197,7 @@
     <Content Include="Content\images\icon_valid2.png" />
     <Content Include="Content\images\last_node.png" />
     <Content Include="Content\images\line.png" />
-    <Content Include="Content\images\node.png" />
+    <Content Include="Content\tests\node.png" />
     <Content Include="Content\images\red.png" />
     <Content Include="Content\images\select2-spinner.gif" />
     <Content Include="Content\images\select2.png" />

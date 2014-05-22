@@ -1,0 +1,35 @@
+﻿.radio-container {
+    display: block;
+    position: relative;
+    float: left;
+    width: 100%;
+    height: 32px;
+    padding: 6px;
+}
+
+.radio-container div {
+    display: block;
+    position: relative;
+    float: left;
+    border: none;
+}
+
+.radio-container label {
+    height: 20px;
+    line-height: 20px;
+}
+
+.radio-container input[type='radio'] {
+    height: 20px;
+    line-height: 20px;    
+}
+
+.radio-label {
+    width: 20%;
+    height: 20px;
+    line-height: 20px;
+}
+
+.radio-options-container {
+    width: 80%;
+}

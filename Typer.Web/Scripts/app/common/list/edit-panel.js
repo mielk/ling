@@ -17,11 +17,9 @@
     self.ui = new EditPanelView(self);
     self.dataLines = mielk.hashTable();
     self.languages = mielk.hashTable();
-    
-    (function initialize() {
-        self.insertMetadata();
-        self.insertDetails();
-    })();
+
+    //Initialization.
+    self.initialize();
 
 }
 EditPanel.prototype = {
@@ -49,6 +47,11 @@ EditPanel.prototype = {
 
     , cancel: function () {
         this.destroy();
+    }
+
+    , initialize: function() {
+        this.insertMetadata();
+        this.insertDetails();
     }
 
     , insertMetadata: function () {
@@ -848,36 +851,67 @@ OptionPanel.prototype = {
 
 //Podklasa reprezentująca panel edycji dla subitemów.
 //Dziedziczy po głównej klasie edycji.
-function EditItemPanel(entity) {
+function EditWordPanel(entity) {
 
     'use strict';
 
     var self = this;
 
-    self.EditItemPanel = true;
+    self.EditWordPanel = true;
 
     EditPanel.call(self, entity);
 
 }
-mielk.objects.extend(EditPanel, EditItemPanel);
-mielk.objects.addProperties(EditItemPanel.prototype, {
+mielk.objects.extend(EditPanel, EditWordPanel);
+mielk.objects.addProperties(EditWordPanel.prototype, {
 
     //[Override]
-    insertDetails: function() {
+    initialize: function() {
+        this.insertMetadata();
+        this.insertProperties();
+        this.insertDetails();
+    }
+
+
+    , insertProperties: function() {
         var self = this;
-        
+
         //Tworzy kontener do przechowywania szczegółowych informacji.
         var container = jQuery('<div/>', {
             'class': 'subitem-properties-container'
         });
+
+        //Iterate trough all properties and create a UI for each of them.
+        self.entity.properties.each(function(key, item) {
+            var propertyContainer = jQuery('<div/>', { 'class': 'property-container' });
+            var control = item.property.type.control({
+                  name: item.property.name
+                , container: propertyContainer
+                , value: item.value.id
+                , options: item.property.options
+            });
+
+            if (!control) return;
+
+            $(control.view).appendTo(container);
+            
+        });
+
+        self.ui.appendDetailsView(container);
+
+    }
+
+
+
+    //[Override]
+    , insertDetails: function() {
+        
 
         //var languages = Ling.Users.Current.getLanguages();
         //mielk.arrays.each(languages, function (language) {
         //    var panel = new LanguagePanel(self, language);
         //    $(panel.view()).appendTo(container);
         //});
-
-        self.ui.appendDetailsView(container);
 
     }
 

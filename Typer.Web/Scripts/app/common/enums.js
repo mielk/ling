@@ -105,10 +105,10 @@ $(function () {
             , Wordtype: { name: 'wordtype' }
         });
 
-        var dataTypes = new Enum({            
-              Boolean: { name: 'boolean', id: 1 }
-            , Single: { name: 'single', id: 2 }
-            , Multi: { name: 'multi', id: 3 }
+        var dataTypes = new Enum({
+              Boolean: { name: 'boolean', id: 1, control: function (params) { return mielk.ui.checkbox(params); } }
+            , Single: { name: 'single', id: 2, control: function (params) { return mielk.ui.radio(params); } }
+            , Multi: { name: 'multi', id: 3, control: function (params) { return null; } }
         });
             
         return {

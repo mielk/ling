@@ -105,4 +105,5 @@ div.pager-label.separator{
     padding: 6px;
     width: 100%;
     height: auto;
+    overflow: hidden;
 }

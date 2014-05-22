@@ -89,6 +89,7 @@ namespace Typer.Web
                 , "~/Content/common/select2.css"
                 , "~/Content/common/tree.css"
                 , "~/Content/common/dropdown.css"
+                , "~/Content/common/mielk.css"
             ));
 
             bundles.Add(new StyleBundle("~/Content/app").Include(

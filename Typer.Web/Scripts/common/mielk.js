@@ -705,11 +705,291 @@
             return 9999;
         }
 
+        function radio(params) {
+            var control = (function() {
+                var name = params.name;
+                var options = mielk.hashTable();
+                var evHandler = mielk.eventHandler();
+                var value = params.value || undefined;
+                var total = params.options.length;
+                var selected;
+                // ReSharper disable once UnusedLocals
+                var events = (function() {
+                    evHandler.bind({
+                        click: function(e) {
+                            value = e.object.value;
+                            if (selected) selected.unselect();
+                            selected = e.option;
+                        }
+                    });
+                })();
+                var gui = (function () {
+                    var container;
+                    var label;
+                    var panel;
+                    
+                    function createView() {
+                        container = jQuery('<div/>', {
+                            'class': 'radio-container'
+                        });
+
+                        label = jQuery('<div/>', {
+                              'class': 'radio-label'
+                            , html: name
+                        });
+
+                        panel = jQuery('<div/>', {
+                            'class': 'radio-options-container'
+                        });
+
+
+                        $(label).appendTo(container);
+                        $(panel).appendTo(container);
+                        $(container).appendTo(params.container);
+                    }
+
+                    (function initialize() {
+                        createView();
+                    })();
+
+                    return {  
+                        view: container,
+                        append: function(item) {
+                            $(item).appendTo(panel);
+                        }
+                    };
+
+                })();
+
+                function createOptions() {
+                    params.options.each(function (k, v) {
+                        var opt = option(k, v);
+                        options.setItem(k, opt);
+                    });
+                }
+
+                function option($key, $object) {
+                    var key = $key;
+                    var object = $object;
+                    var caption = object.name || object.caption || object.key;
+                    var optionUi = (function () {
+                        var container;
+                        var input;
+
+                        function createContainer() {
+                            container = jQuery('<div/>').css({
+                                'width': (100 / total) + '%',
+                                'float': 'left'
+                            });
+
+                            gui.append(container);
+
+                        }
+                        
+                        function createInput() {
+                            input = jQuery('<input/>', {
+                                type: 'radio',
+                                name: name,
+                                value: key,
+                                checked: object.checked ? true : false,
+                                'class': 'radio-option'
+                            }).css({
+                                'float': 'left',
+                                'margin-right': '6px',
+                                'border': 'none'
+                            }).bind({
+                                'click': function () {
+                                    evHandler.trigger({
+                                        type: 'click',
+                                        caption: caption,
+                                        object: object,
+                                        value: object.value
+                                    });
+                                }
+                            });
+                            
+
+                            if (object.checked) {
+                                value = object.value;
+                                selected = object;
+                            }
+
+                            var label = jQuery('<label>').
+                                attr('for', input).
+                                css({ 'height': 'auto', 'width': 'auto' }).
+                                text(caption);
+
+                            input.appendTo(label);
+                            label.appendTo(container);
+
+                        }
+                        
+                        function check(val) {
+                            $(input).prop('checked', val);
+                        }
+
+                        function isClicked() {
+                            return $(input).prop('checked');
+                        }
+
+                        (function initialize() {
+                            createContainer();
+                            createInput();
+                        })();
+
+
+
+                        return {
+                              view: container
+                            , select: select
+                            , check: check
+                            , isClicked: isClicked
+                        };
+
+                    })();
+
+                    function select() {
+                        optionUi.check(true);
+                        eventHandler.trigger({
+                              type: 'click'
+                            , caption: caption
+                            , option: this
+                            , object: object
+                            , value: object.value
+                        });
+                    }
+                    
+                    function unselect() {
+                        optionUi.check(false);
+                    }
+
+
+                    return {
+                          select: select
+                        , unselect: unselect
+                        , key: key
+                        , isClicked: optionUi.isClicked
+                        , caption: caption
+                    };
+
+                }
+                
+                function change(val) {
+                    var $selected = options.getItem(val);
+                    if ($selected) {
+                        selected = $selected;
+                        selected.select();
+                    }
+                }
+
+                (function initialize() {
+                    createOptions();
+                })();
+
+
+                return {
+                    bind: function (e) {
+                        eventHandler.bind(e);
+                    }
+                    , trigger: function (e) {
+                        eventHandler.trigger(e);
+                    }
+                    , value: value
+                    , change: change
+                    , view: gui.view
+                };
+
+            })();
+
+            return control;
+
+        }
+
+        function checkbox(params) {
+
+            //            var name = params.name;
+            //            var caption = params.caption || name;
+            //            var checked = params.checked ? true : false;
+            //            var eventHandler = new EventHandler();
+            //            var panel = jQuery('<div/>').css({
+            //                'display': 'block',
+            //                'position': 'relative',
+            //                'float': 'left',
+            //                'width': '100%',
+            //                'height': '100%'
+            //            }).appendTo($(params.container));
+
+            //            var box = jQuery('<input/>', {
+            //                type: 'checkbox',
+            //                checked: checked
+            //            }).css({
+            //                'float': 'left',
+            //                'margin-right': '6px',
+            //                'border': 'none'
+            //            }).bind({
+            //                'click': function () {
+            //                    checked = !checked;
+            //                    eventHandler.trigger({
+            //                        type: 'click',
+            //                        value: checked
+            //                    });
+            //                }
+            //            });
+
+            //            eventHandler.bind({
+            //                click: function (e) {
+            //                    $(box).prop('checked', e.value);
+            //                }
+            //            });
+
+            //            var label = jQuery('<label>').
+            //                attr('for', box).
+            //                css({ 'height': 'auto' }).
+            //                text(caption);
+
+            //            $(box).appendTo(label);
+            //            $(label).appendTo(panel);
+
+            //            function change(value) {
+            //                if (checked !== value) {
+            //                    checked = value;
+            //                    eventHandler.trigger({
+            //                        type: 'click',
+            //                        value: checked
+            //                    });
+            //                }
+            //            }
+
+            //            return {
+            //                bind: function (e) {
+            //                    eventHandler.bind(e);
+            //                },
+            //                trigger: function (e) {
+            //                    eventHandler.trigger(e);
+            //                },
+            //                value: function () {
+            //                    return checked;
+            //                },
+            //                change: function (value) {
+            //                    if (value) {
+            //                        change(true);
+            //                    } else {
+            //                        change(false);
+            //                    }
+            //                }
+            //            };
+
+            //        }
+        }
+
+
         return {
               getPosition: getPosition
             , getPositionInElement: getPositionInElement
             , findPosition: findPosition
             , topLayer: topLayer
+            , radio: radio
+            , checkbox: checkbox
         };
 
     })();
@@ -1292,45 +1572,6 @@
 
 
 
-
-//WORDTYPE = {
-//    NOUN: { id: 1, name: 'noun', symbol: 'N' },
-//    VERB: { id: 2, name: 'verb', symbol: 'V' },
-//    ADJECTIVE: { id: 3, name: 'adjective', symbol: 'A' },
-//    OTHER: { id: 4, name: 'other', symbol: 'O' },
-//    getItem: function (value) {
-//        for (var key in WORDTYPE) {
-//            if (WORDTYPE.hasOwnProperty(key)) {
-//                var object = WORDTYPE[key];
-//                if (object.id === value) {
-//                    return object;
-//                }
-//            }
-//        }
-//        return null;
-//    },
-//    getValues: function () {
-//        var array = [];
-//        for (var key in this) {
-//            if (this.hasOwnProperty(key)) {
-//                var item = this[key];
-//                if (item && item.id) {
-//                    var object = {
-//                        id: item.id,
-//                        name: item.name,
-//                        object: item
-//                    };
-//                    array.push(object);
-//                }
-//            }
-//        }
-//        return array;
-//    }
-//};
-
-
-
-
 //my.ui = (function () {
 
 //    var topLayer = 0;
@@ -1396,203 +1637,6 @@
 //            $(div).css({ 'display': (value ? 'block' : 'none') });
 //        },
 
-//        radio: function (params) {
-//            var name = params.name;
-//            var options = new HashTable(null);
-//            var eventHandler = new EventHandler();
-//            var panel = jQuery('<div/>').css({
-//                'display': 'block',
-//                'position': 'relative',
-//                'float': 'left',
-//                'width': '100%',
-//                'height': '100%'
-//            }).appendTo($(params.container));
-//            var value = params.value || undefined;
-//            var selected;
-
-//            //Create items.
-//            var total = Object.keys(params.options).length;
-//            var option = function ($key, $object) {
-//                var key = $key;
-//                var caption = $object.name || $object.caption || $object.key;
-//                var object = $object;
-//                var container = jQuery('<div/>').css({
-//                    'width': (100 / total) + '%',
-//                    'float': 'left'
-//                }).appendTo(panel);
-
-//                var input = jQuery('<input/>', {
-//                    type: 'radio',
-//                    name: name,
-//                    value: $key,
-//                    checked: $object.checked ? true : false,
-//                    'class': 'radio-option'
-//                }).css({
-//                    'float': 'left',
-//                    'margin-right': '6px',
-//                    'border': 'none'
-//                }).bind({
-//                    'click': function () {
-//                        eventHandler.trigger({
-//                            type: 'click',
-//                            caption: caption,
-//                            object: object,
-//                            value: object.value
-//                        });
-//                    }
-//                });
-
-//                if ($object.checked) {
-//                    value = $object.value;
-//                    selected = $object;
-//                }
-
-//                var label = jQuery('<label>').
-//                    attr('for', input).
-//                    css({ 'height': 'auto', 'width': 'auto' }).
-//                    text(caption);
-//                input.appendTo(label);
-//                label.appendTo(container);
-
-//                return {
-//                    select: function () {
-//                        $(input).prop('checked', true);
-//                        eventHandler.trigger({
-//                            type: 'click',
-//                            caption: caption,
-//                            object: object,
-//                            value: object.value
-//                        });
-//                    },
-//                    unselect: function () {
-//                        $(input).prop('checked', false);
-//                    },
-//                    key: function () {
-//                        return key;
-//                    },
-//                    isClicked: function () {
-//                        return $(input).prop('checked');
-//                    },
-//                    caption: function () {
-//                        return caption;
-//                    }
-//                };
-
-//            };
-
-//            for (var k in params.options) {
-//                if (params.options.hasOwnProperty(k)) {
-//                    var $option = option(k, params.options[k]);
-//                    options.setItem($option.key(), $option);
-//                }
-//            }
-
-//            eventHandler.bind({
-//                click: function (e) {
-//                    value = e.object.value;
-//                    if (selected) selected.
-//                    selected = e.object;
-//                }
-//            });
-
-//            return {
-//                bind: function (e) {
-//                    eventHandler.bind(e);
-//                },
-//                trigger: function (e) {
-//                    eventHandler.trigger(e);
-//                },
-//                value: function () {
-//                    return value;
-//                },
-//                change: function ($value) {
-//                    var $selected = options.getItem($value);
-//                    if ($selected) {
-//                        selected = $selected;
-//                        selected.select();
-//                    }
-//                    //printStates();
-//                }
-//            };
-
-//        },
-
-//        checkbox: function (params) {
-//            var name = params.name;
-//            var caption = params.caption || name;
-//            var checked = params.checked ? true : false;
-//            var eventHandler = new EventHandler();
-//            var panel = jQuery('<div/>').css({
-//                'display': 'block',
-//                'position': 'relative',
-//                'float': 'left',
-//                'width': '100%',
-//                'height': '100%'
-//            }).appendTo($(params.container));
-
-//            var box = jQuery('<input/>', {
-//                type: 'checkbox',
-//                checked: checked
-//            }).css({
-//                'float': 'left',
-//                'margin-right': '6px',
-//                'border': 'none'
-//            }).bind({
-//                'click': function () {
-//                    checked = !checked;
-//                    eventHandler.trigger({
-//                        type: 'click',
-//                        value: checked
-//                    });
-//                }
-//            });
-
-//            eventHandler.bind({
-//                click: function (e) {
-//                    $(box).prop('checked', e.value);
-//                }
-//            });
-
-//            var label = jQuery('<label>').
-//                attr('for', box).
-//                css({ 'height': 'auto' }).
-//                text(caption);
-
-//            $(box).appendTo(label);
-//            $(label).appendTo(panel);
-
-//            function change(value) {
-//                if (checked !== value) {
-//                    checked = value;
-//                    eventHandler.trigger({
-//                        type: 'click',
-//                        value: checked
-//                    });
-//                }
-//            }
-
-//            return {
-//                bind: function (e) {
-//                    eventHandler.bind(e);
-//                },
-//                trigger: function (e) {
-//                    eventHandler.trigger(e);
-//                },
-//                value: function () {
-//                    return checked;
-//                },
-//                change: function (value) {
-//                    if (value) {
-//                        change(true);
-//                    } else {
-//                        change(false);
-//                    }
-//                }
-//            };
-
-//        }
-
-//    };
 
 //})();
 
@@ -1604,103 +1648,6 @@
 
 
 //})();
-
-//function Language(properties) {
-//    this.Language = true;
-//    this.id = properties.id;
-//    this.name = properties.name;
-//    this.flag = properties.flag;
-//}
-//my.languages = (function () {
-
-//    var used = null;
-
-//    function loadLanguages() {
-
-//        var userId = my.user.id();
-
-//        $.ajax({
-//            url: '/Language/GetUserLanguages',
-//            type: 'GET',
-//            data: {
-//                'userId': userId,
-//            },
-//            datatype: 'json',
-//            async: false,
-//            traditional: false,
-//            success: function (result) {
-//                used = [];
-//                for (var i = 0; i < result.length; i++) {
-//                    var object = result[i];
-//                    var language = new Language({
-//                        id: object.Id,
-//                        name: object.Name,
-//                        flag: object.Flag
-//                    });
-//                    used.push(language);
-//                }
-//            },
-//            error: function () {
-//                my.notify.display('Error when trying to load user languages', false);
-//            }
-//        });
-
-
-
-//    }
-
-//    return {
-//        userLanguages: function () {
-//            if (!used) {
-//                loadLanguages();
-//            }
-//            return used;
-//        },
-//        userLanguagesId: function () {
-//            if (!used) {
-//                loadLanguages();
-//            }
-
-//            var ids = [];
-//            for (var i = 0; i < used.length; i++) {
-//                var language = used[i];
-//                ids.push(language.id);
-//            }
-
-//            return ids;
-//        },
-//        get: function (id) {
-//            if (!used) {
-//                loadLanguages();
-//            }
-
-//            for (var i = 0; i < used.length; i++) {
-//                var language = used[i];
-//                if (language.id === id) {
-//                    return language;
-//                }
-//            }
-
-//            return null;
-
-//        }
-
-
-//    };
-
-//})();
-
-//my.user = (function () {
-//    var currentUserId = 1;
-
-//    return {
-//        id: function () {
-//            return currentUserId;
-//        }
-//    };
-
-//})();
-
 
 
 //my.grammarProperties = (function () {
