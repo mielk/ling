@@ -179,6 +179,7 @@ namespace Typer.Domain.Services
         {
             return new WordProperty
             {
+                Id = dto.Id,
                 PropertyId = dto.PropertyId,
                 ValueId = dto.ValueId,
                 WordId = dto.WordId
