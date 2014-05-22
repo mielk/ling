@@ -713,16 +713,6 @@
                 var value = params.value || undefined;
                 var total = params.options.length;
                 var selected;
-                // ReSharper disable once UnusedLocals
-                var events = (function() {
-                    evHandler.bind({
-                        click: function(e) {
-                            value = e.object.value;
-                            if (selected) selected.unselect();
-                            selected = e.option;
-                        }
-                    });
-                })();
                 var gui = (function () {
                     var container;
                     var label;
@@ -850,7 +840,9 @@
 
                     function select() {
                         optionUi.check(true);
-                        eventHandler.trigger({
+                        value = object.value;
+                        selected = this;
+                        evHandler.trigger({
                               type: 'click'
                             , caption: caption
                             , option: this
@@ -876,14 +868,12 @@
                 
                 function change(val) {
                     var $selected = options.getItem(val);
-                    if ($selected) {
-                        selected = $selected;
-                        selected.select();
-                    }
+                    if ($selected) $selected.select();
                 }
 
                 (function initialize() {
                     createOptions();
+                    change(params.value);
                 })();
 
 
