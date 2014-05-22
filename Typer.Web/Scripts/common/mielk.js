@@ -896,80 +896,114 @@
         }
 
         function checkbox(params) {
+            var control = (function (){
+                var name = params.name;
+                var caption = params.caption || name;
+                var options = params.options;
+                var evHandler = mielk.eventHandler();
+                var selected = options.getItem(params.value);
+                var checked = false;
+                
+                var gui = (function () {
+                    var container;
+                    var label;
+                    var box;
+                    
+                    function createView() {
+                        container = jQuery('<div/>', {
+                            'class': 'radio-container'
+                        });
+                        
+                        box = jQuery('<input/>', {
+                            type: 'checkbox',
+                            checked: checked
+                        }).css({
+                            'float': 'left',
+                            'margin-right': '6px',
+                            'border': 'none'
+                        }).bind({
+                            'click': function () {
+                                change(!checked);
+                            }
+                        });
 
-            //            var name = params.name;
-            //            var caption = params.caption || name;
-            //            var checked = params.checked ? true : false;
-            //            var eventHandler = new EventHandler();
-            //            var panel = jQuery('<div/>').css({
-            //                'display': 'block',
-            //                'position': 'relative',
-            //                'float': 'left',
-            //                'width': '100%',
-            //                'height': '100%'
-            //            }).appendTo($(params.container));
+                        label = jQuery('<label>', {
+                            'class': 'bold'
+                        }).attr('for', box)
+                          .css({ 'height': 'auto' })
+                          .text(caption);
 
-            //            var box = jQuery('<input/>', {
-            //                type: 'checkbox',
-            //                checked: checked
-            //            }).css({
-            //                'float': 'left',
-            //                'margin-right': '6px',
-            //                'border': 'none'
-            //            }).bind({
-            //                'click': function () {
-            //                    checked = !checked;
-            //                    eventHandler.trigger({
-            //                        type: 'click',
-            //                        value: checked
-            //                    });
-            //                }
-            //            });
+                        $(box).appendTo(label);
+                        $(label).appendTo(container);
+                        $(container).appendTo(params.container);
+                    }
 
-            //            eventHandler.bind({
-            //                click: function (e) {
-            //                    $(box).prop('checked', e.value);
-            //                }
-            //            });
+                    function check(value) {
+                        $(box).prop('checked', value);
+                    }
 
-            //            var label = jQuery('<label>').
-            //                attr('for', box).
-            //                css({ 'height': 'auto' }).
-            //                text(caption);
+                    (function initialize() {
+                        createView();
+                    })();
 
-            //            $(box).appendTo(label);
-            //            $(label).appendTo(panel);
+                    return {
+                          view: container
+                        , check: check
+                    };
 
-            //            function change(value) {
-            //                if (checked !== value) {
-            //                    checked = value;
-            //                    eventHandler.trigger({
-            //                        type: 'click',
-            //                        value: checked
-            //                    });
-            //                }
-            //            }
+                })();
 
-            //            return {
-            //                bind: function (e) {
-            //                    eventHandler.bind(e);
-            //                },
-            //                trigger: function (e) {
-            //                    eventHandler.trigger(e);
-            //                },
-            //                value: function () {
-            //                    return checked;
-            //                },
-            //                change: function (value) {
-            //                    if (value) {
-            //                        change(true);
-            //                    } else {
-            //                        change(false);
-            //                    }
-            //                }
-            //            };
+                function change(val) {
+                    if (checked !== val) {
+                        checked = val;
+                        selected = getOption(val);
+                        gui.check(val);
+                        evHandler.trigger({
+                              type: 'click'
+                            , value: checked
+                            , option: selected
+                            , object: selected
+                        });
+                    }
+                }
+                
 
-            //        }
+                function getOption(value) {
+                    var option = null;
+                    options.each(function (k, v) {
+                        if (!option && ((value && v.value) || (!value && !v.value))) {
+                            option = v;
+                        }
+                    });
+                    return option;
+                }
+
+
+                (function initialize() {
+                    change(selected.value ? true : false);
+                })();
+
+
+                return {
+                    bind: function (e) {
+                        eventHandler.bind(e);
+                    }
+                    , trigger: function (e) {
+                        eventHandler.trigger(e);
+                    }
+                    , value: function() {
+                        return null;
+                    }
+                    , change: function(val) {
+                        change(val ? true : false);
+                    }
+                    , view: gui.view
+                };
+
+            })();
+            
+            return control;
+            
         }
 
 

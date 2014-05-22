@@ -17,6 +17,13 @@
 .radio-container label {
     height: 20px;
     line-height: 20px;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-weight: normal;
+}
+
+.radio-container label.bold {
+    font-weight: bold;
 }
 
 .radio-container input[type='radio'] {
@@ -24,10 +31,18 @@
     line-height: 20px;    
 }
 
+.radio-container input[type='checkbox'] {
+    height: 20px;
+    line-height: 20px;
+    float: right !important;
+    margin-right: 12px;
+}
+
 .radio-label {
     width: 20%;
     height: 20px;
     line-height: 20px;
+    font-weight: bold;
 }
 
 .radio-options-container {
