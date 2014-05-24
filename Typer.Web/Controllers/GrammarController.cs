@@ -37,5 +37,16 @@ namespace Typer.Web.Controllers
             
         }
 
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult GetGrammarFormGroups(int[] languages)
+        {
+
+            var properties = _service.GetGrammarFormsDefinitions(languages);
+            return Json(properties, JsonRequestBehavior.AllowGet);
+
+        }
+
     }
 }

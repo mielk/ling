@@ -51,6 +51,8 @@
     <Compile Include="Repository\Abstract\IGrammarRepository.cs" />
     <Compile Include="Repository\Concrete\EFGrammarRepository.cs" />
     <Compile Include="TransferObjects\GrammarFormDefinitionPropertyDto.cs" />
+    <Compile Include="TransferObjects\GrammarFormGroupDto.cs" />
+    <Compile Include="TransferObjects\GrammarFormInactiveRuleDto.cs" />
     <Compile Include="TransferObjects\VariantSetPropertyDefinitionDto.cs" />
     <Compile Include="TransferObjects\VariantSetPropertyValueDto.cs" />
     <Compile Include="TransferObjects\GrammarPropertyDefinitionDto.cs" />

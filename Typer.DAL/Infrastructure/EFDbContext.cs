@@ -33,6 +33,8 @@ namespace Typer.DAL.Infrastructure
         public DbSet<VariantSetPropertyDefinitionDto> VariantSetPropertyDefinitions { get; set; }
         public DbSet<VariantSetPropertyValueDto> VariantSetPropertyValues { get; set; }
         public DbSet<GrammarFormDefinitionPropertyDto> GrammarFormDefinitionProperties { get; set; }
+        public DbSet<GrammarFormGroupDto> GrammarFormGroups { get; set; }
+        public DbSet<GrammarFormInactiveRuleDto> GrammarFormInactiveRules { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -47,7 +49,7 @@ namespace Typer.DAL.Infrastructure
             modelBuilder.Entity<WordCategoryDto>().ToTable("MatchWordCategory");
             modelBuilder.Entity<QuestionCategoryDto>().ToTable("MatchQuestionCategory");
             modelBuilder.Entity<WordPropertyRequirementDto>().ToTable("WordRequiredProperties");
-            modelBuilder.Entity<GrammarFormDefinitonDto>().ToTable("GrammarFormDefinitions");
+            modelBuilder.Entity<GrammarFormDefinitonDto>().ToTable("GrammarFormsDefinitions");
             modelBuilder.Entity<WordPropertyDto>().ToTable("WordsProperties");
             modelBuilder.Entity<GrammarFormDto>().ToTable("GrammarForms");
             modelBuilder.Entity<VariantSetDto>().ToTable("VariantSets");
@@ -61,6 +63,8 @@ namespace Typer.DAL.Infrastructure
             modelBuilder.Entity<VariantSetPropertyDefinitionDto>().ToTable("VariantSetRequiredProperties");
             modelBuilder.Entity<VariantSetPropertyValueDto>().ToTable("VariantSetProperties");
             modelBuilder.Entity<GrammarFormDefinitionPropertyDto>().ToTable("GrammarFormsDefinitionsProperties");
+            modelBuilder.Entity<GrammarFormGroupDto>().ToTable("GrammarFormsGroups");
+            modelBuilder.Entity<GrammarFormInactiveRuleDto>().ToTable("GrammarFormsInactiveRules");
         }
 
 

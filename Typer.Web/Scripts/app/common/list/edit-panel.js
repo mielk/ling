@@ -872,7 +872,6 @@ mielk.objects.addProperties(EditWordPanel.prototype, {
         this.insertDetails();
     }
 
-
     , insertProperties: function() {
         var self = this;
 
@@ -893,6 +892,18 @@ mielk.objects.addProperties(EditWordPanel.prototype, {
 
             if (!control) return;
 
+            //Attach events handlers to this control.
+            control.bind({
+                click: function (e) {
+                    item.value = e.object;
+                    self.entity.trigger({
+                          type: 'propertyValueChanged'
+                        , property: item.property
+                        , value: item.value
+                    });
+                }
+            });
+
             $(control.view).appendTo(container);
             
         });
@@ -900,8 +911,6 @@ mielk.objects.addProperties(EditWordPanel.prototype, {
         self.ui.appendDetailsView(container);
 
     }
-
-
 
     //[Override]
     , insertDetails: function() {

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.TransferObjects;
@@ -26,6 +27,25 @@ namespace Typer.DAL.Repositories
             return Context.WordPropertyRequirements.Where(wpr => languages.Contains(wpr.LanguageId));
         }
 
+        public IEnumerable<GrammarFormGroupDto> GetGrammarFormGroups(int[] languages)
+        {
+            return Context.GrammarFormGroups.Where(gfg => languages.Contains(gfg.LanguageId));
+        }
+
+        public IEnumerable<GrammarFormDefinitonDto> GetGrammarFormDefinitions(IEnumerable<int> groups)
+        {
+            return Context.GrammarDefinitions.Where(gfd => groups.Contains(gfd.GroupId));
+        }
+
+        public IEnumerable<GrammarFormDefinitionPropertyDto> GetGrammarFormDefinitionsProperties(IEnumerable<int> formsIds)
+        {
+            return Context.GrammarFormDefinitionProperties.Where(gfdp => formsIds.Contains(gfdp.DefinitionId));
+        }
+
+        public IEnumerable<GrammarFormInactiveRuleDto> GetGrammarFormInactiveRules(IEnumerable<int> formsIds)
+        {
+            return Context.GrammarFormInactiveRules.Where(gfir => formsIds.Contains(gfir.DefinitionId));
+        }
 
         //public IEnumerable<GrammarFormDefinitonDto> GetGrammarDefinitions(int languageId, int wordtypeId)
         //{

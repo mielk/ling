@@ -52,6 +52,8 @@
     <Compile Include="Entities\DependencyDefinition.cs" />
     <Compile Include="Entities\GrammarForm.cs" />
     <Compile Include="Entities\GrammarFormDefinitionProperty.cs" />
+    <Compile Include="Entities\GrammarFormGroup.cs" />
+    <Compile Include="Entities\GrammarFormInactiveRule.cs" />
     <Compile Include="Entities\GrammarPropertyDefinition.cs" />
     <Compile Include="Entities\GrammarPropertyOption.cs" />
     <Compile Include="Entities\Variant.cs" />

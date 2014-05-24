@@ -11,6 +11,7 @@ namespace Typer.Domain.Services
 
         IEnumerable<GrammarPropertyDefinition> GetProperties(int[] languages);
         IEnumerable<WordPropertyRequirement> GetWordRequiredProperties(int[] languages);
+        IEnumerable<GrammarFormGroup> GetGrammarFormsDefinitions(int[] languages);
 
 
         //IEnumerable<GrammarFormDefinition> GetGrammarFormsDefinitions(int[] languages);

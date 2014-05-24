@@ -876,24 +876,27 @@ namespace Typer.DAL.Repositories
         public int GetGrammarDefinitionId(int variantSetId)
         {
 
-            var wordtypeId = Context.VariantSets.Where(vs => vs.Id == variantSetId).Select(vs => vs.WordType).First();
-            var properties = Context.VariantSetPropertyValues.Where(vspv => vspv.VariantSetId == variantSetId);
-            var definitions = Context.GrammarDefinitions.Where(gd => gd.WordtypeId == wordtypeId).Select(gd => gd.Id);
+            //var wordtypeId = Context.VariantSets.Where(vs => vs.Id == variantSetId).Select(vs => vs.WordType).First();
+            //var properties = Context.VariantSetPropertyValues.Where(vspv => vspv.VariantSetId == variantSetId);
+            ////var definitions = Context.GrammarDefinitions.Where(gd => gd.WordtypeId == wordtypeId).Select(gd => gd.Id);
+            //IEnumerable<GrammarFormDefinitonDto> definitions = null;
             
 
-            foreach (var propertyValue in properties)
-            {
-                var value = propertyValue;
-                var numbers = definitions.ToArray();
-                definitions = Context.GrammarFormDefinitionProperties.
-                    Where(d => numbers.Contains(d.IdDefinition) && 
-                        d.IdProperty == value.PropertyId &&
-                        d.Value == value.Value).Select(d => d.IdDefinition);
+            //foreach (var propertyValue in properties)
+            //{
+            //    var value = propertyValue;
+            //    var numbers = definitions.ToArray();
+            //    definitions = Context.GrammarFormDefinitionProperties.
+            //        Where(d => numbers.Contains(d.IdDefinition) && 
+            //            d.IdProperty == value.PropertyId &&
+            //            d.Value == value.Value).Select(d => d.IdDefinition);
 
-            }
+            //}
 
-            var id = definitions.FirstOrDefault();
-            return id;
+            //var id = definitions.FirstOrDefault();
+            //return id;
+
+            return 0;
 
         }
 

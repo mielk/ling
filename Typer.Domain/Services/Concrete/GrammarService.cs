@@ -45,13 +45,67 @@ namespace Typer.Domain.Services
 
         }
 
-
         public IEnumerable<WordPropertyRequirement> GetWordRequiredProperties(int[] languages)
         {
             var properties = _repository.GetWordRequiredProperties(languages);
             return properties.Select(PropertyRequirementFromDto).ToList();
         }
 
+        public IEnumerable<GrammarFormGroup> GetGrammarFormsDefinitions(int[] languages)
+        {
+            var groupsDto = _repository.GetGrammarFormGroups(languages);
+            var formsDto = _repository.GetGrammarFormDefinitions(groupsDto.Select(g => g.Id));
+            var formsIds = formsDto.Select(f => f.Id).ToList();
+            var propertiesDto = _repository.GetGrammarFormDefinitionsProperties(formsIds);
+            var inactiveRulesDto = _repository.GetGrammarFormInactiveRules(formsIds);
+            //Maps.
+            var groupsMap = new Dictionary<int, GrammarFormGroup>();
+            var definitionsMap = new Dictionary<int, GrammarFormDefinition>();
+
+            //Convert grammar groups from DTOs to normal objects.
+            foreach (var dto in groupsDto)
+            {
+                var group = GrammarFormGroupFromDto(dto);
+                groupsMap.Add(group.Id, group);
+            }
+            
+
+            //Match grammar forms with groups.
+            foreach (var dto in formsDto)
+            {
+                var form = GrammarFormDefinitionFromDto(dto);
+                definitionsMap.Add(form.Id, form);
+                //Add to proper group.
+                GrammarFormGroup group;
+                groupsMap.TryGetValue(form.GroupId, out group);
+                if (group != null) group.AddForm(form);
+            }
+
+            //Match properties with forms.
+            foreach (var dto in propertiesDto)
+            {
+                var property = GrammarFormDefinitionPropertyFromDto(dto);
+                GrammarFormDefinition definition;
+                definitionsMap.TryGetValue(property.DefinitionId, out definition);
+
+                if (definition != null) definition.AddProperty(property);
+
+
+            }
+
+
+            //Match inactive rules with forms.
+            foreach (var dto in inactiveRulesDto)
+            {
+                var rule = GrammarFormInactiveRuleFromDto(dto);
+                GrammarFormDefinition definition;
+                definitionsMap.TryGetValue(rule.DefinitionId, out definition);
+                if (definition != null) definition.AddInactiveRule(rule);
+            }
+
+            return groupsMap.Values.ToList();
+
+        }
 
 
 
@@ -87,6 +141,52 @@ namespace Typer.Domain.Services
                 , LanguageId = dto.LanguageId
                 , PropertyId = dto.PropertyId
                 , WordtypeId = dto.WordtypeId
+            };
+        }
+
+        private static GrammarFormGroup GrammarFormGroupFromDto(GrammarFormGroupDto dto)
+        {
+            return new GrammarFormGroup
+            {
+                Id = dto.Id
+                , Index = dto.Index
+                , IsHeader = dto.IsHeader
+                , Name = dto.Name
+                , LanguageId = dto.LanguageId
+                , WordtypeId = dto.WordtypeId
+            };
+        }
+
+        private static GrammarFormDefinition GrammarFormDefinitionFromDto(GrammarFormDefinitonDto dto)
+        {
+            return new GrammarFormDefinition
+            {
+                   Id = dto.Id
+                 , GroupId = dto.GroupId
+                 , Displayed = dto.Displayed
+                 , Index = dto.Index
+            };
+        }
+
+        private static GrammarFormDefinitionProperty GrammarFormDefinitionPropertyFromDto(GrammarFormDefinitionPropertyDto dto)
+        {
+            return new GrammarFormDefinitionProperty
+            {
+                  Id = dto.Id
+                , DefinitionId = dto.DefinitionId
+                , PropertyId = dto.PropertyId
+                , ValueId = dto.ValueId
+            };
+        }
+
+        private static GrammarFormInactiveRule GrammarFormInactiveRuleFromDto(GrammarFormInactiveRuleDto dto)
+        {
+            return new GrammarFormInactiveRule
+            {
+                  Id = dto.Id
+                , DefinitionId = dto.DefinitionId
+                , PropertyId = dto.PropertyId
+                , ValueId = dto.ValueId
             };
         }
 

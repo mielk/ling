@@ -136,7 +136,15 @@ mielk.objects.addProperties(Word.prototype, {
       
     //[private]
     , loadGrammarForms: function() {
-        
+        var self = this;
+        var languageId = self.language.id;
+        var wordtypeId = self.wordtype.id;
+        var requiredForms = Ling.Grammar.getRequiredGrammarForms(languageId, wordtypeId);
+
+        mielk.arrays.each(requiredForms, function (form) {
+
+        });
+
     }
 
 

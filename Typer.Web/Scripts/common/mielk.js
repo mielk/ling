@@ -805,6 +805,11 @@
                             }
 
                             var label = jQuery('<label>').
+                                bind({
+                                    click: function () {
+                                        select();
+                                    }
+                                }).
                                 attr('for', input).
                                 css({ 'height': 'auto', 'width': 'auto' }).
                                 text(caption);
@@ -855,7 +860,6 @@
                         optionUi.check(false);
                     }
 
-
                     return {
                           select: select
                         , unselect: unselect
@@ -879,10 +883,10 @@
 
                 return {
                     bind: function (e) {
-                        eventHandler.bind(e);
+                        evHandler.bind(e);
                     }
                     , trigger: function (e) {
-                        eventHandler.trigger(e);
+                        evHandler.trigger(e);
                     }
                     , value: value
                     , change: change
@@ -922,14 +926,20 @@
                             'margin-right': '6px',
                             'border': 'none'
                         }).bind({
-                            'click': function () {
+                            'click': function (e) {
                                 change(!checked);
+                                e.stopPropagation();
                             }
                         });
 
                         label = jQuery('<label>', {
                             'class': 'bold'
                         }).attr('for', box)
+                          .bind({
+                              click: function () {
+                                  change(!checked);
+                              }
+                            })
                           .css({ 'height': 'auto' })
                           .text(caption);
 
@@ -986,10 +996,10 @@
 
                 return {
                     bind: function (e) {
-                        eventHandler.bind(e);
+                        evHandler.bind(e);
                     }
                     , trigger: function (e) {
-                        eventHandler.trigger(e);
+                        evHandler.trigger(e);
                     }
                     , value: function() {
                         return null;
