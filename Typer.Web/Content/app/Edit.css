@@ -1023,20 +1023,14 @@ a.checked
     float: left;
     width: 100%;
     height: auto;
-    border-top: 1px solid #777;
-    margin-top: 6px;
     padding: 0;
+    overflow: hidden;
 }
 
-
-.property-container {
+.option-details-container div{
     display: block;
     position: relative;
     float: left;
-    width: 100%;
-    height: auto;
-    padding: 12px 0;
-    border-bottom: 1px solid #CCC;
 }
 
 .option-details-container .property-container:last-child {  
@@ -1045,9 +1039,6 @@ a.checked
 }
 
 .grammar-search-panel {
-    display: block;
-    position: relative;
-    float: left;
     width: 100%;
     height: 36px;
     border-bottom: 1px solid #CCC;
@@ -1055,57 +1046,51 @@ a.checked
 }
 
 .grammar-forms-panel {
-    display: block;
-    position: relative;
-    float: left;
     width: 100%;
+    height: auto;
     overflow: auto;
     padding: 6px;
     white-space: nowrap;
 }
 
-.grammar-forms-panel ul {
-    padding: 0;
+.grammar-forms-header-column{
+    width: 250px;
+    height: 100%;
+    border-right: 1px solid #777;
+    padding: 6px;
 }
 
-.grammar-forms-panel li {
-    display: inline-block;
-    *display: inline;/*For IE7*/
-    *zoom: 1;/*For IE7*/
+.grammar-forms-columns-container{
+    position: absolute !important;
+    left: 250px;
+    right: 0;
+    top: 6px;
+    bottom: 6px;
+    padding: 6px;
+}
+
+.grammar-group{
     vertical-align: top;
     width: auto;
-    white-space: normal;    
-    -moz-min-width: 200px;
-    -ms-min-width: 200px;
-    -o-min-width: 200px;
-    -webkit-min-width: 200px;
+    height: auto;
     min-width: 200px;
     padding: 0 6px;
+    white-space: normal;    
 }
 
-.grammar-group {
-    display: block;
-    position: relative;
-    float: left;
-    padding: 0 3px;
+.grammar-form-cell{
     width: 100%;
-}
-
-.grammar-form {
-    display: block;
-    position: relative;
-    float: left;
-    width: 100%;
-    height: 36px;
+    height: 32px;
     border: 1px solid #999;
     margin: 3px 0;
     padding: 6px;
-    line-height: 22px;
+    line-height: 18px;
 }
 
 .grammar-header {
     font-weight: bold;
-    margin-bottom: 3px;
+    margin: 0;
+    margin: 3px 0;
     text-align: center;
     font-size: 14px;
     border: 1px solid transparent;

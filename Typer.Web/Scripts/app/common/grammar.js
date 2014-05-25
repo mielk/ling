@@ -302,22 +302,28 @@ $(function() {
         }
 
         function getRequiredGrammarForms(languageId, wordtypeId) {
+            var language = grammarForms.getItem(languageId);
+            if (!language) return [];
+
+            var array = language.getItem(wordtypeId);
+            return array;
 
         }
 
 
 
-        function initialize() {  
+        function initialize() {
             trigger('GetGrammarProperties', loadProperties);
             trigger('GetWordsRequiredProperties', loadWordsProperties);
             trigger('GetGrammarFormGroups', loadGrammarForms);
         };
 
 
-        return {            
+        return {
               getProperty: getProperty
             , getPropertiesForLanguage: getPropertiesForLanguage
             , getRequiredProperties: getRequiredProperties
+            , getRequiredGrammarForms: getRequiredGrammarForms
             , initialize: initialize
         };
 

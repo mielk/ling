@@ -138,7 +138,7 @@ mielk.objects.addProperties(Word.prototype, {
     , loadGrammarForms: function() {
         var self = this;
         var languageId = self.language.id;
-        var wordtypeId = self.wordtype.id;
+        var wordtypeId = self.parent.wordtype.id;
         var requiredForms = Ling.Grammar.getRequiredGrammarForms(languageId, wordtypeId);
 
         mielk.arrays.each(requiredForms, function (form) {
@@ -195,187 +195,187 @@ mielk.objects.addProperties(Word.prototype, {
 
 
 
-function PropertyManager(object) {
-    this.PropertyManager = true;
-    this.editObject = object;
-    this.entity = object.object;
-    this.items = new HashTable(null);
+//function PropertyManager(object) {
+//    this.PropertyManager = true;
+//    this.editObject = object;
+//    this.entity = object.object;
+//    this.items = new HashTable(null);
 
-    this.ui = (function () {
-        var container = jQuery('<div/>', {
-            'class': 'option-details-container'
-        });
+//    this.ui = (function () {
+//        var container = jQuery('<div/>', {
+//            'class': 'option-details-container'
+//        });
 
-        return {
-            view: function () {
-                return container;
-            },
-            hide: function () {
-                $(container).css('display', 'none');
-            },
-            append: function (element) {
-                $(element).appendTo($(container));
-            }
-        };
+//        return {
+//            view: function () {
+//                return container;
+//            },
+//            hide: function () {
+//                $(container).css('display', 'none');
+//            },
+//            append: function (element) {
+//                $(element).appendTo($(container));
+//            }
+//        };
 
-    })();
+//    })();
 
-}
-PropertyManager.prototype.view = function () {
-    return this.ui.view();
-};
-
-
-function WordPropertyManager(editObject) {
-    PropertyManager.call(this, editObject);
-    this.WordPropertyManager = true;
-    this.loadProperties();
-    this.loadValues();
-}
-mielk.objects.extend(PropertyManager, WordPropertyManager);
-WordPropertyManager.prototype.loadProperties = function () {
-    var metaword = this.entity.parent;
-    var languageId = this.entity.languageId;
-    var wordtypeId = metaword.wordtype.id;
-
-    var $properties = this.getPropertiesFromRepository(languageId, wordtypeId);
-    for (var i = 0; i < $properties.length; i++) {
-        var $property = $properties[i];
-        $property.Value = this.entity.getPropertyValue($property.Id);
-        var property = new WordProperty($property);
-        this.items.setItem(property.id, property);
-        this.ui.append(property.view());
-    }
-
-};
-WordPropertyManager.prototype.getPropertiesFromRepository = function (languageId, wordtypeId) {
-    return my.db.fetch('Words', 'GetProperties', { 'languageId': languageId, 'wordtypeId': wordtypeId });
-};
-WordPropertyManager.prototype.loadValues = function () {
-    var self = this;
-    this.entity.properties.each(function (key, object) {
-        var property = self.items.getItem(key);
-        if (property) {
-            property.setValue(object.value);
-        }
-    });
-
-};
-WordPropertyManager.prototype.copyDetails = function (id) {
-    var self = this;
-    var properties = this.entity.getPropertiesFromRepository(id);
-    for (var i = 0; i < properties.length; i++) {
-        var property = properties[i];
-        var def = self.items.getItem(property.PropertyId);
-        if (def) {
-            def.changeValue(my.text.parse(property.Value));
-        }
-    }
-};
-
-function WordProperty(params) {
-    this.WordProperty = true;
-    this.eventHandler = new EventHandler();
-    var self = this;
-    this.id = params.Id;
-    this.name = params.Name;
-    this.value = params.Value;
-    this.originalValue = params.Type === 'boolean' ? false : 0;
-
-    this.ui = (function () {
+//}
+//PropertyManager.prototype.view = function () {
+//    return this.ui.view();
+//};
 
 
+//function WordPropertyManager(editObject) {
+//    PropertyManager.call(this, editObject);
+//    this.WordPropertyManager = true;
+//    this.loadProperties();
+//    this.loadValues();
+//}
+//mielk.objects.extend(PropertyManager, WordPropertyManager);
+//WordPropertyManager.prototype.loadProperties = function () {
+//    var metaword = this.entity.parent;
+//    var languageId = this.entity.languageId;
+//    var wordtypeId = metaword.wordtype.id;
 
-        var input = (function () {
-            switch (params.Type) {
-                case 2:
-                    return my.ui.radio({
-                        container: container,
-                        name: self.name,
-                        value: self.value,
-                        options: self.parseToRadioOptions(params.Options)
-                    });
-                case 1:
-                    return my.ui.checkbox({
-                        container: container,
-                        name: params.Name,
-                        caption: params.Name,
-                        checked: params.Default
-                    });
-                default:
-                    return null;
-            }
-        })();
+//    var $properties = this.getPropertiesFromRepository(languageId, wordtypeId);
+//    for (var i = 0; i < $properties.length; i++) {
+//        var $property = $properties[i];
+//        $property.Value = this.entity.getPropertyValue($property.Id);
+//        var property = new WordProperty($property);
+//        this.items.setItem(property.id, property);
+//        this.ui.append(property.view());
+//    }
 
-        self.value = input.value();
+//};
+//WordPropertyManager.prototype.getPropertiesFromRepository = function (languageId, wordtypeId) {
+//    return my.db.fetch('Words', 'GetProperties', { 'languageId': languageId, 'wordtypeId': wordtypeId });
+//};
+//WordPropertyManager.prototype.loadValues = function () {
+//    var self = this;
+//    this.entity.properties.each(function (key, object) {
+//        var property = self.items.getItem(key);
+//        if (property) {
+//            property.setValue(object.value);
+//        }
+//    });
 
-        input.bind({
-            click: function (e) {
-                if (e.value !== self.value) {
-                    self.value = e.value;
-                    self.trigger({
-                        type: 'change',
-                        value: self.value
-                    });
-                }
-            }
-        });
+//};
+//WordPropertyManager.prototype.copyDetails = function (id) {
+//    var self = this;
+//    var properties = this.entity.getPropertiesFromRepository(id);
+//    for (var i = 0; i < properties.length; i++) {
+//        var property = properties[i];
+//        var def = self.items.getItem(property.PropertyId);
+//        if (def) {
+//            def.changeValue(my.text.parse(property.Value));
+//        }
+//    }
+//};
 
-        return {
-            view: function () {
-                return container;
-            },
-            change: function (value) {
-                if (input.change) {
-                    input.change(value);
-                }
-            }
-        };
+//function WordProperty(params) {
+//    this.WordProperty = true;
+//    this.eventHandler = new EventHandler();
+//    var self = this;
+//    this.id = params.Id;
+//    this.name = params.Name;
+//    this.value = params.Value;
+//    this.originalValue = params.Type === 'boolean' ? false : 0;
 
-    })();
+//    this.ui = (function () {
 
-}
-WordProperty.prototype.view = function () {
-    return this.ui.view();
-};
-WordProperty.prototype.parseToRadioOptions = function (options) {
-    var results = {};
-    for (var i = 0; i < options.length; i++) {
-        var option = options[i];
-        var caption = option.Name;
-        var key = option.Id;
-        var checked = (this.value ? this.value === key : option.Default);
 
-        var result = {
-            key: key,
-            value: key,
-            caption: caption,
-            checked: checked
-        };
 
-        results[key] = result;
+//        var input = (function () {
+//            switch (params.Type) {
+//                case 2:
+//                    return my.ui.radio({
+//                        container: container,
+//                        name: self.name,
+//                        value: self.value,
+//                        options: self.parseToRadioOptions(params.Options)
+//                    });
+//                case 1:
+//                    return my.ui.checkbox({
+//                        container: container,
+//                        name: params.Name,
+//                        caption: params.Name,
+//                        checked: params.Default
+//                    });
+//                default:
+//                    return null;
+//            }
+//        })();
 
-    }
+//        self.value = input.value();
 
-    return results;
+//        input.bind({
+//            click: function (e) {
+//                if (e.value !== self.value) {
+//                    self.value = e.value;
+//                    self.trigger({
+//                        type: 'change',
+//                        value: self.value
+//                    });
+//                }
+//            }
+//        });
 
-};
-WordProperty.prototype.bind = function (e) {
-    this.eventHandler.bind(e);
-};
-WordProperty.prototype.trigger = function (e) {
-    this.eventHandler.trigger(e);
-};
-WordProperty.prototype.setValue = function (value) {
-    this.originalValue = value;
-    this.ui.change(value);
-};
-WordProperty.prototype.isChanged = function () {
-    return (this.originalValue != this.value);
-};
-WordProperty.prototype.changeValue = function (value) {
-    this.ui.change(value);
-};
+//        return {
+//            view: function () {
+//                return container;
+//            },
+//            change: function (value) {
+//                if (input.change) {
+//                    input.change(value);
+//                }
+//            }
+//        };
+
+//    })();
+
+//}
+//WordProperty.prototype.view = function () {
+//    return this.ui.view();
+//};
+//WordProperty.prototype.parseToRadioOptions = function (options) {
+//    var results = {};
+//    for (var i = 0; i < options.length; i++) {
+//        var option = options[i];
+//        var caption = option.Name;
+//        var key = option.Id;
+//        var checked = (this.value ? this.value === key : option.Default);
+
+//        var result = {
+//            key: key,
+//            value: key,
+//            caption: caption,
+//            checked: checked
+//        };
+
+//        results[key] = result;
+
+//    }
+
+//    return results;
+
+//};
+//WordProperty.prototype.bind = function (e) {
+//    this.eventHandler.bind(e);
+//};
+//WordProperty.prototype.trigger = function (e) {
+//    this.eventHandler.trigger(e);
+//};
+//WordProperty.prototype.setValue = function (value) {
+//    this.originalValue = value;
+//    this.ui.change(value);
+//};
+//WordProperty.prototype.isChanged = function () {
+//    return (this.originalValue != this.value);
+//};
+//WordProperty.prototype.changeValue = function (value) {
+//    this.ui.change(value);
+//};
 
 
 
