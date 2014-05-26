@@ -85,7 +85,7 @@ namespace Typer.Web
             // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include("~/Scripts/modernizr-*"));
 
-            bundles.Add(new StyleBundle("~/Content/css").Include(
+            bundles.Add(new StyleBundle("~/bundles/css/css").Include(
                   "~/Content/common/normalize.css"
                 , "~/Content/common/select2.css"
                 , "~/Content/common/tree.css"
@@ -93,7 +93,7 @@ namespace Typer.Web
                 , "~/Content/common/mielk.css"
             ));
 
-            bundles.Add(new StyleBundle("~/Content/app").Include(
+            bundles.Add(new StyleBundle("~/bundles/css/app").Include(
                   "~/Content/app/categories.css"
                 , "~/Content/app/edit.css"
                 , "~/Content/app/test.css"
@@ -103,7 +103,7 @@ namespace Typer.Web
                 , "~/Content/app/list.css"
             ));
 
-            bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(
+            bundles.Add(new StyleBundle("~/bundles/css/themes/base/css").Include(
                   "~/Content/common/normalize.css"
                 , "~/Content/themes/base/jquery.ui.core.css"
                 , "~/Content/themes/base/jquery.ui.resizable.css"
