@@ -268,14 +268,14 @@ input
 
 #account .iconValid
 {
-    background-image: url('../images/icon_valid.png');
+    background-image: url('/Content/images/icon_valid.png');
     background-position: center;
     /*background-color: green;*/
 }
 
 #account .iconInvalid
 {
-    background-image: url('../images/icon_invalid.png');
+    background-image: url('/Content/images/icon_invalid.png');
     background-position: center;
     /*background-color: red;*/
 }
@@ -416,7 +416,7 @@ a.close
     height: 32px !important;
     padding: 0 !important;
     margin: 0 !important;
-    background-image: url('../images/close.png') !important;
+    background-image: url('/Content/images/close.png') !important;
     background-position: center;
     background-color: transparent !important;
 }

@@ -82,17 +82,17 @@ div.pager-label.separator{
 
 .edit-list-item
 {
-    background-image: url('../images/edit.png');
+    background-image: url('/Content/images/edit.png');
 }
 
 .activate-list-item{
-    background-image: url('../images/activate.png');
+    background-image: url('/Content/images/activate.png');
     background-position: center;
     background-repeat: no-repeat;
 }
 
 .deactivate-list-item{
-    background-image: url('../images/deactivate.png');
+    background-image: url('/Content/images/deactivate.png');
     background-position: center;
     background-repeat: no-repeat;
 }

@@ -64,7 +64,7 @@
     top: 1px !important;
     width: 24px !important;
     height: 24px !important;
-    background-image: url('../images/close-image-24.png') !important;
+    background-image: url('/Content/images/close-image-24.png') !important;
     z-index: 1 !important;
 }
 
@@ -195,13 +195,13 @@ div.children-container
 
 
 .children-container .node-container .tree-line {
-    background-image: url('../images/node.png') !important;
+    background-image: url('/Content/images/node.png') !important;
     background-repeat: no-repeat;
     background-position: 0 0;
 }
 
 .children-container .node-container .children-container {
-    background-image: url('../images/line.png') !important;
+    background-image: url('/Content/images/line.png') !important;
     background-repeat: repeat-y;
 }
 
@@ -210,7 +210,7 @@ div.children-container
 }
 
 .children-container .node-container:last-child > .tree-line {
-    background-image: url('../images/last_node.png') !important;
+    background-image: url('/Content/images/last_node.png') !important;
     background-repeat: no-repeat;
 }
 
@@ -328,7 +328,7 @@ div.children-container
     width: 16px;
     height: 16px;
     margin-right: 6px;
-    background-image: url('../images/delete-node.png') !important;
+    background-image: url('/Content/images/delete-node.png') !important;
 }
 
 .tree-selection-line-caption {
