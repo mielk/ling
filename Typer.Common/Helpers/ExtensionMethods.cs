@@ -46,15 +46,15 @@ namespace Typer.Common.Helpers
 
         public static int CompareEnd(this string text, string compared)
         {
-            int chars = 0;
-            char[] originalChars = text.ToCharArray();
-            char[] comparedChars = compared.ToCharArray();
+            var chars = 0;
+            var originalChars = text.ToCharArray();
+            var comparedChars = compared.ToCharArray();
 
             for (var i = 1; i <= comparedChars.Length; i++)
             {
                 if (i >= originalChars.Length) return chars;
-                char _base = originalChars[originalChars.Length - i];
-                char _compared = comparedChars[comparedChars.Length - i];
+                var _base = originalChars[originalChars.Length - i];
+                var _compared = comparedChars[comparedChars.Length - i];
 
                 if (_base == _compared)
                 {

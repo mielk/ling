@@ -46,7 +46,7 @@ mielk.objects.addProperties(EditWordPanel.prototype, {
                 click: function (e) {
                     item.value = e.object;
                     self.entity.trigger({
-                          type: 'change' + item.property.name
+                          type: 'change' + mielk.text.toCamelCase(item.property.name)
                         , property: item.property
                         , value: item.value
                     });
@@ -246,6 +246,7 @@ function GrammarCell(word, form) {
     //Instance properties.
     self.word = word;
     self.form = form;
+    self.active = true;
 
     self.ui = (function () {
 
@@ -258,15 +259,26 @@ function GrammarCell(word, form) {
                 self.setValue(value);
             }
         });
+        
+        function activate(value) {
+            self.value = value;
+            if (value) {
+                control.removeAttr('disabled');
+            } else {
+                control.attr('disabled', 'disabled');
+            }
+        }
 
         return {
-            view: control
+              view: control
+            , activate: activate
         };
 
     })();
 
     (function initialize() {
         self.setListeners();
+        self.checkState();
     })();
 
 }
@@ -277,22 +289,41 @@ GrammarCell.prototype = {
     }
 
     , setValue: function (value) {
-        var x = value;
+        //var x = value;
     }
 
     , setListeners: function () {
         var self = this;
         this.form.inactiveRules.each(function (key, value) {
-            var eventName = 'change' + value.property.name;
+            var eventName = 'change' + mielk.text.toCamelCase(value.property.name);
             var eventsObject = {};
-            eventsObject[eventName] = function(e){
-                var x = 1;
-                //Sprawdzać na obiekcie self.word czy ten element nadal powinien być aktywny.
+            eventsObject[eventName] = function () {
+                self.checkState();
             };
 
             self.word.bind(eventsObject);
 
         });
+
+    }
+    
+    , checkState: function() {
+        var self = this;
+        var active = true;
+        this.form.inactiveRules.each(function (key, item) {
+
+            //Nie ma sensu sprawdzać kolejnych właściwości,
+            //jeżeli już z poprzednich wynikało, że item będzie nieaktywny.
+            if (!active) return;
+
+            var property = self.word.properties.getItem(item.property.id);
+            if (property.value.id === item.value.id) {
+                active = false;
+            }
+
+        });
+
+        self.ui.activate(active);
 
     }
 

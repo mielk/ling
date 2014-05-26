@@ -1353,6 +1353,27 @@
             return (s === prefix);
         }
 
+        function toCamelCase(str) {
+            var words = str.split(' ');
+            
+            if (words.length === 0) {
+                return '';
+            } else if (words.length === 1) {
+                return toSentenceCase(words[0]);
+            } else {
+                var result = '';
+                mielk.arrays.each(words, function (word) {
+                    result += toSentenceCase(word);
+                });
+                return result;
+            }
+
+        }
+
+        function toSentenceCase(str) {
+            return str.substr(0, 1).toUpperCase() + str.substr(1, str.length - 1);
+        }
+
         function parse(txt) {
             if (txt === '*' || txt === 'true') {
                 return true;
@@ -1407,7 +1428,9 @@
             valueToText: valueToText,
             matchEnd: matchEnd,
             parse: parse,
-            replaceGlobal: replaceGlobal
+            replaceGlobal: replaceGlobal,
+            toCamelCase: toCamelCase,
+            toSentenceCase: toSentenceCase
         };
 
     })();

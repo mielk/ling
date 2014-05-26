@@ -1,10 +1,8 @@
 ﻿using System.Linq;
 using System.Web.Mvc;
-using Microsoft.Ajax.Utilities;
 using Typer.Domain.Services;
 using Typer.Domain.Entities;
 using Typer.Web.Models;
-using WebGrease.Css;
 
 namespace Typer.Web.Controllers
 {

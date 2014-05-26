@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
-using Ninject.Infrastructure.Language;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.TransferObjects;
 

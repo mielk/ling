@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Data.Common.CommandTrees;
 using System.Linq;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.Repositories;

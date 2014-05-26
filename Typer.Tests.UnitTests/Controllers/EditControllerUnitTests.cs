@@ -45,7 +45,7 @@ namespace Typer.Tests.UnitTests.Controllers
 
             // Arrange - define an HTML helper - we need to do this
             // in order to apply the extension method
-            HtmlHelper myHelper = null;
+            var myHelper = new HtmlHelper(null, null);
 
             // Arrange - create PagingInfo data
             var pagingInfo = new PagingInfo {
