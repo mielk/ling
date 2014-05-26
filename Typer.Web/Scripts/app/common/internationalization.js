@@ -332,6 +332,11 @@ $(function () {
                   POL: 'Błąd podczas ładowania właściwości wyrazu {0}'
                 , ENG: 'Error when loading properties for word {0}'
             }
+            
+            , LoadingGrammarFormsError: {
+                  POL: 'Błąd podczas ładowania form gramatycznych dla wyrazu {0}'
+                , ENG: 'Error when loading grammar forms for word {0}'
+            }
 
         };
 

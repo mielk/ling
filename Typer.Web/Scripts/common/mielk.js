@@ -384,7 +384,9 @@
         //Funkcja klonująca podaną wartość, niezależnie od jej typu.
         function clone(value, deep) {
             
-            if (value.clone && typeof(value.clone) === 'function') {
+            if (!value) {
+                return value;
+            } else if (value.clone && typeof(value.clone) === 'function') {
                 return value.clone(deep);
             } else if ($.isArray(value)) {
                 return mielk.arrays.clone(value, deep);
@@ -742,7 +744,7 @@
                         createView();
                     })();
 
-                    return {  
+                    return {
                         view: container,
                         append: function(item) {
                             $(item).appendTo(panel);

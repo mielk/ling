@@ -57,6 +57,11 @@ mielk.objects.addProperties(Word.prototype, {
             , LanguageId: self.language.id
             , IsCompleted: self.isCompleted
         });
+        obj.properties = self.properties.clone(true);
+        obj.grammarForms = self.grammarForms.clone(true);
+
+        var item = obj.properties.getItem(2);
+        if (item) item.value.id = 100;
 
         return obj;
 
@@ -92,7 +97,8 @@ mielk.objects.addProperties(Word.prototype, {
     , loadDetails: function () {
         this.loadRequiredProperties();
         this.loadPropertiesValues();
-        this.loadGrammarForms();
+        this.loadRequiredGrammarForms();
+        this.loadGrammarFormsValues();
     }
       
     //[private]
@@ -110,13 +116,14 @@ mielk.objects.addProperties(Word.prototype, {
         });
 
     }
-      
+    
+    
     //[private]
     , loadPropertiesValues: function () {
         var self = this;
         
         var fnSuccess = function (results) {
-            mielk.arrays.each(results, function (value) {                
+            mielk.arrays.each(results, function (value) {
                 var property = self.properties.getItem(value.PropertyId);
                 if (!property) return;
 
@@ -127,23 +134,56 @@ mielk.objects.addProperties(Word.prototype, {
         };
 
         var fnError = function() {
-            mielk.notify.display(dict.LoadingWordPropertiesError.get(), false, []);
+            mielk.notify.display(dict.LoadingWordPropertiesError.get(), false, [self.name]);
         };
 
         self.getDetails('GetPropertyValues', fnSuccess, fnError);
 
     }
       
+
     //[private]
-    , loadGrammarForms: function() {
+    , loadRequiredGrammarForms: function () {
         var self = this;
         var languageId = self.language.id;
         var wordtypeId = self.parent.wordtype.id;
         var requiredForms = Ling.Grammar.getRequiredGrammarForms(languageId, wordtypeId);
 
-        mielk.arrays.each(requiredForms, function (form) {
+        mielk.arrays.each(requiredForms, function (group) {
+            
+            if (!group.isHeader) {
+                group.forms.each(function(key, form) {
+                    self.grammarForms.setItem(form.id, {
+                          form: form
+                        , value: null
+                    });
+                });
+            }
 
         });
+
+    }
+      
+
+    //[private]
+    , loadGrammarFormsValues: function() {
+        var self = this;
+
+        var fnSuccess = function (results) {
+            mielk.arrays.each(results, function (value) {
+                var form = self.grammarForms.getItem(value.FormId);
+                if (form) {
+                    form.value = value.Content;
+                }
+            });
+        };
+
+        var fnError = function () {
+            mielk.notify.display(dict.LoadingGrammarFormsError.get(), false, [self.name]);
+        };
+
+        self.getDetails('GetGrammarForms', fnSuccess, fnError);
+
 
     }
 
