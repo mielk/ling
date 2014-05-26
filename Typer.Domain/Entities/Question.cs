@@ -48,13 +48,13 @@ namespace Typer.Domain.Entities
         {
             get
             {
-                if (_categories == null) loadCategories();
+                if (_categories == null) LoadCategories();
                 return _categories;
             }
         }
 
 
-        private void loadCategories()
+        private void LoadCategories()
         {
             _categories = QuestionServicesFactory.Instance().GetService().GetCategories(Id);
         }

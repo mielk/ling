@@ -36,7 +36,7 @@ namespace Typer.Tests.UnitTests.Helpers
         [Ignore]
         public void CompareEnd_returns_0_if_strings_have_another_last_character()
         {
-            string _base = "asasdfd";
+            const string _base = "asasdfd";
             Assert.AreEqual(0, _base.CompareEnd("sdfswe"));
         }
 
@@ -44,7 +44,7 @@ namespace Typer.Tests.UnitTests.Helpers
         [Ignore]
         public void CompareEnd_returns_1_if_strings_have_the_same_last_character_only()
         {
-            string _base = "asasdfde";
+            const string _base = "asasdfde";
             Assert.AreEqual(1, _base.CompareEnd("sdfswe"));
         }
 
@@ -53,7 +53,7 @@ namespace Typer.Tests.UnitTests.Helpers
         [Ignore]
         public void CompareEnd_returns_5_if_strings_have_the_same_last_five_characters()
         {
-            string _base = "asasdfdeaaaa";
+            const string _base = "asasdfdeaaaa";
             Assert.AreEqual(5, _base.CompareEnd("sdfsweaaaa"));
         }
 

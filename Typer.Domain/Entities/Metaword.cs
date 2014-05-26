@@ -48,13 +48,13 @@ namespace Typer.Domain.Entities
         public IEnumerable<Category> Categories {
             get
             {
-                if (_categories == null) loadCategories();
+                if (_categories == null) LoadCategories();
                 return _categories;
             }
         }
 
 
-        private void loadCategories()
+        private void LoadCategories()
         {
             _categories = WordServicesFactory.Instance().GetService().GetCategories(Id);
         }

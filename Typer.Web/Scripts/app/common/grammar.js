@@ -244,7 +244,7 @@ $(function() {
 
             //Distribute grammar forms to the proper language/wordtype pair.
             mielk.arrays.each(results, function (raw) {
-                var group = new GrammarFormGroup(raw)
+                var group = new GrammarFormGroup(raw);
 
                 var languageSet = grammarForms.getItem(group.language.id);
                 if (!languageSet) return;

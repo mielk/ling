@@ -54,9 +54,9 @@ namespace Typer.Common.Helpers
             {
                 if (i >= originalChars.Length) return chars;
                 var _base = originalChars[originalChars.Length - i];
-                var _compared = comparedChars[comparedChars.Length - i];
+                var tempStr = comparedChars[comparedChars.Length - i];
 
-                if (_base == _compared)
+                if (_base == tempStr)
                 {
                     chars++;
                 }

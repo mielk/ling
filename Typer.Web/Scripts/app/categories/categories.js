@@ -320,80 +320,80 @@ $(function () {
 
 
 
-$(function () {
-    var controller = new CategoryViewController();
-    controller.start();
-});
+//$(function () {
+//    var controller = new CategoryViewController();
+//    controller.start();
+//});
 
 
-function CategoryViewController() {
-    var me = this;
+//function CategoryViewController() {
+//    var me = this;
     
-    this.treeContainer = $('#categories-tree')[0];
-    //Start only for Categories view.
-    if (!this.treeContainer) return;
+//    this.treeContainer = $('#categories-tree')[0];
+//    //Start only for Categories view.
+//    if (!this.treeContainer) return;
     
 
-    this.tree = new Tree({
-        container: me.treeContainer,
-        mode: MODE.NONE,
-        root: my.categories.getRoot(),
-        expandWhenAddingNewNode: true,
-        doubleClickDelay: 500
-    });
-    this.tree.show();
-    this.tree.bind({
-        confirm: function(e) {
-            me.select(e.item);
-        },
-        add: function (e) {
-            my.categories.addNew(e);
-        },
-        remove: function (e) {
-            my.categories.remove(e);
-        },
-        rename: function (e) {
-            my.categories.updateName(e);
-        },
-        transfer: function (e) {
-            my.categories.updateParente(e);
-        }
-    });
+//    this.tree = new Tree({
+//        container: me.treeContainer,
+//        mode: MODE.NONE,
+//        root: my.categories.getRoot(),
+//        expandWhenAddingNewNode: true,
+//        doubleClickDelay: 500
+//    });
+//    this.tree.show();
+//    this.tree.bind({
+//        confirm: function(e) {
+//            me.select(e.item);
+//        },
+//        add: function (e) {
+//            my.categories.addNew(e);
+//        },
+//        remove: function (e) {
+//            my.categories.remove(e);
+//        },
+//        rename: function (e) {
+//            my.categories.updateName(e);
+//        },
+//        transfer: function (e) {
+//            my.categories.updateParente(e);
+//        }
+//    });
 
-    this.selected = null;
+//    this.selected = null;
     
-    //UI components.
-    this.selectedPanel = $('#selected-category')[0];
-    this.filter = new CategoryFilterPanel(this);
+//    //UI components.
+//    this.selectedPanel = $('#selected-category')[0];
+//    this.filter = new CategoryFilterPanel(this);
 
-}
-CategoryViewController.prototype.start = function() {
+//}
+//CategoryViewController.prototype.start = function() {
 
-};
-CategoryViewController.prototype.select = function(category) {
-    this.selected = category;
-    $(this.selectedPanel).html(category.path(true));
-};
-
-
-function CategoryFilterPanel(controler) {
-    var me = this;
-    this.controler = controler;
-    this.container = $('#category-options')[0];
-    //this.container = jQuery('<div/>').css({ 'position': 'relative' }).appendTo($(this.parent));
-    this.filterManager = new FilterManager({
-        container: me.container,
-        visible: true,
-        collapser: true,
-        weight: true,
-        text: true,
-        type: true,
-        wordtype: true
-    }).bind({
-        filter: function (e) {
-            alert(e);
-        }
-    });
+//};
+//CategoryViewController.prototype.select = function(category) {
+//    this.selected = category;
+//    $(this.selectedPanel).html(category.path(true));
+//};
 
 
-}
+//function CategoryFilterPanel(controler) {
+//    var me = this;
+//    this.controler = controler;
+//    this.container = $('#category-options')[0];
+//    //this.container = jQuery('<div/>').css({ 'position': 'relative' }).appendTo($(this.parent));
+//    this.filterManager = new FilterManager({
+//        container: me.container,
+//        visible: true,
+//        collapser: true,
+//        weight: true,
+//        text: true,
+//        type: true,
+//        wordtype: true
+//    }).bind({
+//        filter: function (e) {
+//            alert(e);
+//        }
+//    });
+
+
+//}

@@ -30,18 +30,17 @@ namespace Typer.Domain.Entities
         
         #region Properties.
 
-        [Required]
-        [Display(Name = "User name", Prompt = "Enter user name")]
-        private string username { get; set; }
+        [Required] [Display(Name = "User name", Prompt = "Enter user name")] 
+        private string _username;
         public string Username
         {
             get
             {
-                return username == null ? null : username.ToLower();
+                return _username == null ? null : _username.ToLower();
             }
             set
             {
-                username = (value == null ? null : value.ToLower());
+                _username = (value == null ? null : value.ToLower());
             }
         }
 

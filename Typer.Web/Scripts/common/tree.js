@@ -461,9 +461,9 @@ function DropArea(tree) {
         if (me.drop && me.drag) {
 
             if (me.drag === me.drop) {
-                my.notify.display(MessageBundle.get(dict.NodeCannotBeMovedToItself), false);
+                my.notify.display(dict.NodeCannotBeMovedToItself.get(), false);
             } else if (me.drag.isDescendant(me.drop)) {
-                my.notify.display(MessageBundle.get(dict.NodeCannotBeMovedToDescendant), false);
+                my.notify.display(dict.NodeCannotBeMovedToDescendant.get(), false);
             } else {
                 me.drag.transfer(me.drop);
             }

@@ -1060,7 +1060,7 @@
         }
 
         function innerSpinner(container) {
-            new SpinnerWrapper($(container));
+            return new SpinnerWrapper($(container));
         }
 
         return {

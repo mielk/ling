@@ -1069,13 +1069,17 @@ a.checked
     padding: 6px;
 }
 
-.grammar-group{
+.grammar-group {
     vertical-align: top;
     width: auto;
     height: auto;
+    -moz-min-width: 200px;
+    -ms-min-width: 200px;
+    -o-min-width: 200px;
+    -webkit-min-width: 200px;
     min-width: 200px;
     padding: 0 6px;
-    white-space: normal;    
+    white-space: normal;
 }
 
 .grammar-form-cell{

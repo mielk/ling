@@ -337,6 +337,11 @@ $(function () {
                   POL: 'Błąd podczas ładowania form gramatycznych dla wyrazu {0}'
                 , ENG: 'Error when loading grammar forms for word {0}'
             }
+              
+            , LoadingLanguagesError: {
+                  POL: 'Błąd podczas ładowania dostępnych języków'
+                , ENG: 'Error when loading languages from the database'
+            }
 
         };
 

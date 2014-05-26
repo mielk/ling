@@ -33,7 +33,7 @@ $(function () {
                     });
                 },
                 errorCallback: function () {
-                    var x = 1;
+                    mielk.notify.display(dict.LoadingLanguagesError.get());
                 }
             });
         }
