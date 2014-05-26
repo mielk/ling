@@ -57,6 +57,7 @@ namespace Typer.Web
                 , "~/Scripts/app/common/list/filter-panel.js"
                 , "~/Scripts/app/common/list/list-entity.js"
                 , "~/Scripts/app/common/list/edit-panel.js"
+                , "~/Scripts/app/common/list/edit-word-panel.js"
                 , "~/Scripts/app/words/word-list.js"
                 , "~/Scripts/app/words/words.js"
                 , "~/Scripts/app/words/metaword.js"
