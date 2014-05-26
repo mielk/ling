@@ -175,10 +175,12 @@
     <Content Include="Content\common\mielk.css" />
     <Content Include="Content\common\dropdown.css" />
     <Content Include="Content\app\edit.css" />
+    <Content Include="Content\images\activate.png" />
     <Content Include="Content\images\close-image-36.png" />
     <Content Include="Content\images\close-image-24.png" />
     <Content Include="Content\images\close.png" />
     <Content Include="Content\images\close2.png" />
+    <Content Include="Content\images\deactivate.png" />
     <Content Include="Content\images\delete-node.png" />
     <Content Include="Content\images\delete.png" />
     <Content Include="Content\images\edit.png" />
