@@ -19,8 +19,8 @@ function Word(metaword, params) {
     self.parent = metaword;
     self.isCompleted = (params.IsCompleted || params.isCompleted ? true : false);
     self.language = Ling.Languages.getLanguage(params.languageId || params.LanguageId);
-    self.properties = mielk.hashTable();
-    self.grammarForms = mielk.hashTable();
+    self.properties = params.Properties || mielk.hashTable();
+    self.grammarForms = params.GrammarForms || mielk.hashTable();
     
     //Services.
     self.service = Ling.Words;
@@ -56,12 +56,9 @@ mielk.objects.addProperties(Word.prototype, {
             , Weight: self.weight
             , LanguageId: self.language.id
             , IsCompleted: self.isCompleted
+            , Properties: self.properties.clone(true)
+            , GrammarForms: self.grammarForms.clone(true)
         });
-        obj.properties = self.properties.clone(true);
-        obj.grammarForms = self.grammarForms.clone(true);
-
-        var item = obj.properties.getItem(2);
-        if (item) item.value.id = 100;
 
         return obj;
 
@@ -222,6 +219,18 @@ mielk.objects.addProperties(Word.prototype, {
 
         return true;
         
+    }
+
+    , getGrammarForm: function(formId) {
+        var form = this.grammarForms.getItem(formId);
+        return form ? form.value : '';
+    }
+      
+    , changeGrammarForm: function(formId, content) {
+        var form = this.grammarForms.getItem(formId);
+        if (form) {
+            form.value = content;
+        }
     }
 
     //, update: function () {

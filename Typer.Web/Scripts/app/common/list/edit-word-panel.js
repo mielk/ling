@@ -269,6 +269,17 @@ function GrammarCell(word, form) {
             }
         }
 
+        function setInitialValue() {
+            var content = self.word.getGrammarForm(self.form.id);
+            $(control).val(content);
+        }
+        
+        
+        (function initialize() {
+            setInitialValue();
+        })();
+        
+
         return {
               view: control
             , activate: activate
@@ -289,7 +300,7 @@ GrammarCell.prototype = {
     }
 
     , setValue: function (value) {
-        //var x = value;
+        this.word.changeGrammarForm(this.form.id, value);
     }
 
     , setListeners: function () {
