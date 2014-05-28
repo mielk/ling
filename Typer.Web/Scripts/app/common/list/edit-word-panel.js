@@ -13,15 +13,14 @@ function EditWordPanel(entity) {
 }
 mielk.objects.extend(EditPanel, EditWordPanel);
 mielk.objects.addProperties(EditWordPanel.prototype, {
-
     //[Override]
     initialize: function() {
         this.insertMetadata();
         this.insertProperties();
         this.insertDetails();
     }
-
-    , insertProperties: function() {
+    
+    ,insertProperties: function() {
         var self = this;
 
         //Tworzy kontener do przechowywania szczegółowych informacji.
@@ -30,31 +29,31 @@ mielk.objects.addProperties(EditWordPanel.prototype, {
         });
 
         //Iterate trough all properties and create a UI for each of them.
-        self.entity.properties.each(function(key, item) {
+        self.editObject.properties.each(function(key, item) {
             var propertyContainer = jQuery('<div/>', { 'class': 'property-container' });
             var control = item.property.type.control({
-                  name: item.property.name
-                , container: propertyContainer
-                , value: item.value.id
-                , options: item.property.options
+                name: item.property.name,
+                container: propertyContainer,
+                value: item.value.id,
+                options: item.property.options
             });
 
             if (!control) return;
 
             //Attach events handlers to this control.
             control.bind({
-                click: function (e) {
+                click: function(e) {
                     item.value = e.object;
                     self.entity.trigger({
-                          type: 'change' + mielk.text.toCamelCase(item.property.name)
-                        , property: item.property
-                        , value: item.value
+                        type: 'change' + mielk.text.toCamelCase(item.property.name),
+                        property: item.property,
+                        value: item.value
                     });
                 }
             });
 
             $(control.view).appendTo(container);
-            
+
         });
 
         self.ui.appendDetailsView(container);
@@ -62,11 +61,21 @@ mielk.objects.addProperties(EditWordPanel.prototype, {
     }
 
     //[Override]
-    , insertDetails: function() {
-        
-        var grammarPanel = new GrammarPanel(this.entity);
+    ,insertDetails: function() {
+
+        var grammarPanel = new GrammarPanel(this.editObject);
         this.ui.appendDetailsView(grammarPanel.view());
 
+    }
+    
+    //[Override]
+    , confirm: function () {
+        var self = this;
+        self.trigger({
+            type: 'confirm',
+            object: self.editObject
+        });
+        self.destroy();
     }
 
 });
@@ -261,7 +270,6 @@ function GrammarCell(word, form) {
         });
         
         function activate(value) {
-            self.value = value;
             if (value) {
                 control.removeAttr('disabled');
             } else {
@@ -334,8 +342,14 @@ GrammarCell.prototype = {
 
         });
 
-        self.ui.activate(active);
+        self.activate(active);
 
+    }
+    
+    , activate: function (value) {
+        this.active = value;
+        this.ui.activate(value);
+        this.word.activateGrammarForm(this.form.id, value);
     }
 
 };

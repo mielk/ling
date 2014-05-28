@@ -21,6 +21,7 @@ function Word(metaword, params) {
     self.language = Ling.Languages.getLanguage(params.languageId || params.LanguageId);
     self.properties = params.Properties || mielk.hashTable();
     self.grammarForms = params.GrammarForms || mielk.hashTable();
+    self.edited = false;
     
     //Services.
     self.service = Ling.Words;
@@ -70,12 +71,41 @@ mielk.objects.addProperties(Word.prototype, {
 
     //Editing entity.
     , edit: function () {
-        this.loadDetails();
+        var self = this;
         
-        var editPanel = new EditWordPanel(this);
+        self.loadDetails();
+        
+        var editPanel = new EditWordPanel(self);
         editPanel.show();
+        editPanel.bind({            
+            confirm: function (e) {
+                self.update(e.object);
+           } 
+        });
+        
     }
-      
+    
+    //[Override]
+    , update: function (object) {
+        var self = this;
+        self.edited = true;
+        self.name = object.name;
+        self.weight = object.weight;
+        self.isActive = object.isActive;
+        self.properties = object.properties;
+        self.grammarForms = object.grammarForms;
+        self.isCompleted = self.checkIfComplete();
+    }
+
+    , checkIfComplete: function() {
+        var isComplete = true;
+        this.grammarForms.each(function(key, value) {
+            if (value.active !== false && !value.value) {
+                isComplete = false;
+            }
+        });
+        return isComplete;
+    }
 
     //Pobiera informacje na temat elementów przypisanych do obiektu
     //reprezentowanego przez ten ListItem. Np. dla Metaword wyświetla
@@ -92,10 +122,18 @@ mielk.objects.addProperties(Word.prototype, {
     }
 
     , loadDetails: function () {
+
+        //Jeżeli szczegóły tego wyrazu zostały już wcześniej pobrane,
+        //nie ma sensu pobierać ich ponownie.
+        //Dodatkowo, ponowne pobieranie powoduje kasowanie wyedytowanych
+        //danych, które nie zdążyły jeszcze zostać zapisane do bazy.
+        if (this.loaded) return;
+
         this.loadRequiredProperties();
         this.loadPropertiesValues();
         this.loadRequiredGrammarForms();
         this.loadGrammarFormsValues();
+        this.loaded = true;
     }
       
     //[private]
@@ -233,6 +271,12 @@ mielk.objects.addProperties(Word.prototype, {
         }
     }
 
+    , activateGrammarForm: function(formId, value) {
+        var form = this.grammarForms.getItem(formId);
+        if (form) {
+            form.active = value;
+        }
+    }
     //, update: function () {
     //    alert('Must by defined by implementing class');
     //}

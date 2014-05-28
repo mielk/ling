@@ -38,6 +38,7 @@ EditPanel.prototype = {
 
     , destroy: function () {
         this.ui.destroy();
+        this.clear();
     }
 
     , confirm: function () {
@@ -100,6 +101,12 @@ EditPanel.prototype = {
 
         self.ui.appendDetailsView(container);
 
+    }
+
+    , clear: function() {
+        for (var key in this) {
+            delete this[key];
+        }
     }
 
 };
