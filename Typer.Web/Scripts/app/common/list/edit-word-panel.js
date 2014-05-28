@@ -13,14 +13,14 @@ function EditWordPanel(entity) {
 }
 mielk.objects.extend(EditPanel, EditWordPanel);
 mielk.objects.addProperties(EditWordPanel.prototype, {
-    //[Override]
-    initialize: function() {
+      //[Override]
+      initialize: function() {
         this.insertMetadata();
         this.insertProperties();
         this.insertDetails();
     }
     
-    ,insertProperties: function() {
+    , insertProperties: function() {
         var self = this;
 
         //Tworzy kontener do przechowywania szczegółowych informacji.
@@ -61,21 +61,11 @@ mielk.objects.addProperties(EditWordPanel.prototype, {
     }
 
     //[Override]
-    ,insertDetails: function() {
+    , insertDetails: function() {
 
         var grammarPanel = new GrammarPanel(this.editObject);
         this.ui.appendDetailsView(grammarPanel.view());
 
-    }
-    
-    //[Override]
-    , confirm: function () {
-        var self = this;
-        self.trigger({
-            type: 'confirm',
-            object: self.editObject
-        });
-        self.destroy();
     }
 
 });

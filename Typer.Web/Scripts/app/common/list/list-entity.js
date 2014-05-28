@@ -151,8 +151,15 @@ Entity.prototype = {
     , loadDetails: function () {
         var self = this;
 
+        //Jeżeli szczegóły tej encji zostały już wcześniej pobrane,
+        //nie ma sensu pobierać ich ponownie.
+        //Dodatkowo, ponowne pobieranie powoduje kasowanie wyedytowanych
+        //danych, które nie zdążyły jeszcze zostać zapisane do bazy.
+        if (self.loaded) return;
+
         var fnSuccess = function (result) {
             self.items = self.createItemsMap(result);
+            self.loaded = true;
         };
 
         var fnError = function() {
@@ -195,8 +202,29 @@ Entity.prototype = {
 
     //Editing entity.
     , edit: function () {
-        var editPanel = new EditPanel(this);
+        var self = this;
+
+        self.loadDetails();
+        
+        var editPanel = new EditPanel(self);
         editPanel.show();
+        editPanel.bind({
+            confirm: function (e) {
+                self.update(e.object);
+            }
+        });
+
+    }
+
+
+    //Updating properties of this entity. Abstract, must be defined in implementing class.
+    , update: function () {
+        alert('Must be defined in implemented class');
+    }
+      
+    //Funkcja zwracająca DataTransferObject dla tej encji.
+    , dto: function() {
+        alert('Must be defined in implemented class');
     }
 
     //Tworzy obiekt zależny względem tego entity, np. Word dla Metaword

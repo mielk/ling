@@ -42,8 +42,12 @@ EditPanel.prototype = {
     }
 
     , confirm: function () {
-        //Update object.
-        this.destroy();
+        var self = this;
+        self.trigger({
+            type: 'confirm',
+            object: self.editObject
+        });
+        self.destroy();
     }
 
     , cancel: function () {

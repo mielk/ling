@@ -136,6 +136,23 @@ mielk.objects.addProperties(Metaword.prototype, {
         return obj;
         
     }
+    
+    //[Override]
+    , update: function (object) {
+        var self = this;
+        self.edited = true;
+        self.name = object.name;
+        self.weight = object.weight;
+        self.isActive = object.isActive;
+        self.wordtype = object.wordtype;
+        self.categories = object.categories;
+        self.items = object.items;
+    }
+    
+    //[Override]
+    , dto: function () {
+        var x = 1;
+    }
 
 });
 

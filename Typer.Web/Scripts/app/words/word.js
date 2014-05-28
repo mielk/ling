@@ -135,7 +135,7 @@ mielk.objects.addProperties(Word.prototype, {
         this.loadGrammarFormsValues();
         this.loaded = true;
     }
-      
+
     //[private]
     , loadRequiredProperties: function () {
         var self = this;
