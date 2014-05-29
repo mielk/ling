@@ -51,6 +51,12 @@ namespace Typer.Domain.Entities
                 if (_categories == null) LoadCategories();
                 return _categories;
             }
+
+            set
+            {
+                _categories = value;
+            }
+
         }
 
 
@@ -68,7 +74,16 @@ namespace Typer.Domain.Entities
         private IEnumerable<Word> _words;
         public IEnumerable<Word> Words
         {
-            get { return _words ?? (_words = WordServicesFactory.Instance().GetService().GetWords(Id)); }
+            get
+            {
+                return _words ?? (_words = WordServicesFactory.Instance().GetService().GetWords(Id));
+            }
+
+            set
+            {
+                _words = value;
+            }
+
         }
         public IEnumerable<Word> GetWords(int languageId)
         {

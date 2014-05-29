@@ -41,7 +41,6 @@ namespace Typer.Web
                 , "~/Scripts/app/categories/categories.js"
                 , "~/Scripts/app/common/users.js"
                 , "~/Scripts/app/common/languages.js"
-                , "~/Scripts/app/common/grammar.js"
                 //, "~/Scripts/app/common/list/listController.js"
                 //, "~/Scripts/app/common/list/list.js"
                 //, "~/Scripts/app/queries/variants.js"
@@ -62,6 +61,7 @@ namespace Typer.Web
                 , "~/Scripts/app/words/words.js"
                 , "~/Scripts/app/words/metaword.js"
                 , "~/Scripts/app/words/word.js"
+                , "~/Scripts/app/words/grammar.js"
             ));
 
             bundles.Add(new ScriptBundle("~/bundles/queries").Include(

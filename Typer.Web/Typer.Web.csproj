@@ -272,7 +272,7 @@
     <Content Include="Content\app\site.css" />
     <Compile Include="App_Start\NinjectWebCommon.Bindings.cs" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
-    <Content Include="Scripts\app\common\grammar.js" />
+    <Content Include="Scripts\app\words\grammar.js" />
     <Content Include="Scripts\app\common\languages.js" />
     <Content Include="Scripts\app\common\list\edit-word-panel.js" />
     <Content Include="Scripts\app\common\list\edit-panel.js" />

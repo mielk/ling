@@ -139,6 +139,12 @@ mielk.objects.addProperties(Metaword.prototype, {
     
     //[Override]
     , update: function (object) {
+        this.updateModel(object);
+        var dto = this.dto();
+        var x = 1;
+    }
+    
+    , updateModel: function(object) {
         var self = this;
         self.edited = true;
         self.name = object.name;
@@ -151,7 +157,38 @@ mielk.objects.addProperties(Metaword.prototype, {
     
     //[Override]
     , dto: function () {
-        var x = 1;
+        var self = this;
+        
+        return {            
+            Id: self.id
+            , Name: self.name
+            , Weight: self.weight
+            , Type: self.wordtype.id
+            , IsActive: self.isActive
+            , CreatorId: self.creatorId
+            , CreateDate: self.createDate
+            , IsApproved: self.isApproved
+            , Positive: self.positive
+            , Negative: self.negative
+            , Categories: (function () {
+                var array = [];
+                return array;
+            })()
+            , Words: (function() {
+                var array = [];
+
+                self.items.each(function (key, language) {
+                    language.each(function(k, word) {
+                        var dto = word.dto();
+                        array.push(dto);
+                    });
+                });
+
+                return array;
+
+            })()
+        };
+
     }
 
 });

@@ -56,6 +56,12 @@ mielk.objects.addProperties(Word.prototype, {
             , Name: self.name
             , Weight: self.weight
             , LanguageId: self.language.id
+            , IsActive: self.isActive
+            , CreatorId: self.creatorId
+            , CreateDate: self.createDate
+            , IsApproved: self.isApproved
+            , Positive: self.positive
+            , Negative: self.negative
             , IsCompleted: self.isCompleted
             , Properties: self.properties.clone(true)
             , GrammarForms: self.grammarForms.clone(true)
@@ -281,417 +287,39 @@ mielk.objects.addProperties(Word.prototype, {
     //    alert('Must by defined by implementing class');
     //}
 
+    //[Override]
+    , dto: function () {
+        var self = this;
+
+        return {
+            Id: self.id
+            , MetawordId: self.parent.id
+            , LanguageId: self.language.id
+            , Name: self.name
+            , Weight: self.weight
+            , IsCompleted: self.isCompleted
+            , IsActive: self.isActive
+            , CreatorId: self.creatorId
+            , CreateDate: self.createDate
+            , IsApproved: self.isApproved
+            , Positive: self.positive
+            , Negative: self.negative
+            , Properties: (function () {
+                var array = [];
+                self.properties.each(function(key, property) {
+                    var x = property;
+                });
+                return array;
+            })()
+            , GrammarForms: (function() {
+                var array = [];
+                self.grammarForms.each(function(key, form) {
+                    var x = form;
+                });
+                return array;
+            })()
+        };
+
+    }
+
 });
-
-
-
-
-
-
-//function PropertyManager(object) {
-//    this.PropertyManager = true;
-//    this.editObject = object;
-//    this.entity = object.object;
-//    this.items = new HashTable(null);
-
-//    this.ui = (function () {
-//        var container = jQuery('<div/>', {
-//            'class': 'option-details-container'
-//        });
-
-//        return {
-//            view: function () {
-//                return container;
-//            },
-//            hide: function () {
-//                $(container).css('display', 'none');
-//            },
-//            append: function (element) {
-//                $(element).appendTo($(container));
-//            }
-//        };
-
-//    })();
-
-//}
-//PropertyManager.prototype.view = function () {
-//    return this.ui.view();
-//};
-
-
-//function WordPropertyManager(editObject) {
-//    PropertyManager.call(this, editObject);
-//    this.WordPropertyManager = true;
-//    this.loadProperties();
-//    this.loadValues();
-//}
-//mielk.objects.extend(PropertyManager, WordPropertyManager);
-//WordPropertyManager.prototype.loadProperties = function () {
-//    var metaword = this.entity.parent;
-//    var languageId = this.entity.languageId;
-//    var wordtypeId = metaword.wordtype.id;
-
-//    var $properties = this.getPropertiesFromRepository(languageId, wordtypeId);
-//    for (var i = 0; i < $properties.length; i++) {
-//        var $property = $properties[i];
-//        $property.Value = this.entity.getPropertyValue($property.Id);
-//        var property = new WordProperty($property);
-//        this.items.setItem(property.id, property);
-//        this.ui.append(property.view());
-//    }
-
-//};
-//WordPropertyManager.prototype.getPropertiesFromRepository = function (languageId, wordtypeId) {
-//    return my.db.fetch('Words', 'GetProperties', { 'languageId': languageId, 'wordtypeId': wordtypeId });
-//};
-//WordPropertyManager.prototype.loadValues = function () {
-//    var self = this;
-//    this.entity.properties.each(function (key, object) {
-//        var property = self.items.getItem(key);
-//        if (property) {
-//            property.setValue(object.value);
-//        }
-//    });
-
-//};
-//WordPropertyManager.prototype.copyDetails = function (id) {
-//    var self = this;
-//    var properties = this.entity.getPropertiesFromRepository(id);
-//    for (var i = 0; i < properties.length; i++) {
-//        var property = properties[i];
-//        var def = self.items.getItem(property.PropertyId);
-//        if (def) {
-//            def.changeValue(my.text.parse(property.Value));
-//        }
-//    }
-//};
-
-//function WordProperty(params) {
-//    this.WordProperty = true;
-//    this.eventHandler = new EventHandler();
-//    var self = this;
-//    this.id = params.Id;
-//    this.name = params.Name;
-//    this.value = params.Value;
-//    this.originalValue = params.Type === 'boolean' ? false : 0;
-
-//    this.ui = (function () {
-
-
-
-//        var input = (function () {
-//            switch (params.Type) {
-//                case 2:
-//                    return my.ui.radio({
-//                        container: container,
-//                        name: self.name,
-//                        value: self.value,
-//                        options: self.parseToRadioOptions(params.Options)
-//                    });
-//                case 1:
-//                    return my.ui.checkbox({
-//                        container: container,
-//                        name: params.Name,
-//                        caption: params.Name,
-//                        checked: params.Default
-//                    });
-//                default:
-//                    return null;
-//            }
-//        })();
-
-//        self.value = input.value();
-
-//        input.bind({
-//            click: function (e) {
-//                if (e.value !== self.value) {
-//                    self.value = e.value;
-//                    self.trigger({
-//                        type: 'change',
-//                        value: self.value
-//                    });
-//                }
-//            }
-//        });
-
-//        return {
-//            view: function () {
-//                return container;
-//            },
-//            change: function (value) {
-//                if (input.change) {
-//                    input.change(value);
-//                }
-//            }
-//        };
-
-//    })();
-
-//}
-//WordProperty.prototype.view = function () {
-//    return this.ui.view();
-//};
-//WordProperty.prototype.parseToRadioOptions = function (options) {
-//    var results = {};
-//    for (var i = 0; i < options.length; i++) {
-//        var option = options[i];
-//        var caption = option.Name;
-//        var key = option.Id;
-//        var checked = (this.value ? this.value === key : option.Default);
-
-//        var result = {
-//            key: key,
-//            value: key,
-//            caption: caption,
-//            checked: checked
-//        };
-
-//        results[key] = result;
-
-//    }
-
-//    return results;
-
-//};
-//WordProperty.prototype.bind = function (e) {
-//    this.eventHandler.bind(e);
-//};
-//WordProperty.prototype.trigger = function (e) {
-//    this.eventHandler.trigger(e);
-//};
-//WordProperty.prototype.setValue = function (value) {
-//    this.originalValue = value;
-//    this.ui.change(value);
-//};
-//WordProperty.prototype.isChanged = function () {
-//    return (this.originalValue != this.value);
-//};
-//WordProperty.prototype.changeValue = function (value) {
-//    this.ui.change(value);
-//};
-
-
-
-
-
-//OptionEntity.prototype.update = function (params, properties, details, complete) {
-//    if (!params.OptionEditEntity) {
-//        alert('Illegal argument passed to function Metaword.update');
-//        return;
-//    }
-
-//    var self = this;
-//    var completed = (this.isCompleted === complete ? undefined : complete);
-//    var name = (this.name === params.name ? undefined : params.name);
-//    var weight = (this.weight === params.weight ? undefined : params.weight);
-
-//    //Check if there are any changes.
-//    if (completed !== undefined || name || weight) {
-//        this.isCompleted = complete;
-//        this.name = (name === undefined ? this.name : name);
-//        this.weight = (weight === undefined ? this.weight : weight);
-
-
-//        if (this.new) {
-
-//            this.parent.addLog({
-//                event: 'add',
-//                item: self
-//            });
-
-//            this.trigger({
-//                type: 'add',
-//                item: self
-//            });
-
-//        } else {
-//            this.parent.addLog({
-//                event: 'edit',
-//                item: self
-//            });
-
-//            this.trigger({
-//                type: 'update',
-//                name: self.name,
-//                weight: self.weight,
-//                complete: self.isCompleted
-//            });
-
-
-//        }
-
-//    }
-
-
-//    //Update properties and details.
-//    this.updateProperties(properties);
-//    this.updateDetails(details);
-
-//};
-//OptionEntity.prototype.updateProperties = function () {
-//    alert('Must be defined in implementing class');
-//};
-//OptionEntity.prototype.updateDetails = function () {
-//    alert('Must be defined in implementing class');
-//};
-
-
-
-//Word.prototype.updateProperties = function (properties) {
-//    var self = this;
-
-//    properties.items.each(function (key, object) {
-
-//        var property = self.properties.getItem(key);
-//        if (!property || object.isChanged()) {
-//            property = {
-//                id: object.id,
-//                value: object.value
-//            };
-//            self.properties.setItem(property.id, property);
-
-//            //If id is 0, this is a newly created word and its
-//            //properties have to be uploaded other way.
-//            if (self.id) {
-//                self.parent.addLog({
-//                    event: 'properties',
-//                    wordId: self.id,
-//                    propertyId: property.id,
-//                    value: property.value
-//                });
-//            }
-//        }
-
-//    });
-
-//};
-//Word.prototype.updateDetails = function (forms) {
-//    var self = this;
-
-//    forms.forms.each(function (key, object) {
-
-//        var form;
-//        //var form = self.details.getItem(key);
-//        if (object.isChanged()) {
-//            form = {
-//                id: object.id,
-//                value: object.value
-//            };
-//            self.details.setItem(form.id, form);
-
-//            //If id is 0, this is a newly created word and its
-//            //properties have to be uploaded other way.
-//            if (self.id) {
-//                self.parent.addLog({
-//                    event: 'details',
-//                    wordId: self.id,
-//                    form: form.id,
-//                    value: form.value
-//                });
-//            }
-
-//        }
-
-//    });
-
-//};
-//Word.prototype.loadProperties = function () {
-//    this.properties = new HashTable(null);
-//    var $values = this.getPropertiesFromRepository(this.id);
-//    for (var i = 0; i < $values.length; i++) {
-//        var set = $values[i];
-//        var property = {
-//            id: set.PropertyId,
-//            value: my.text.parse(set.Value)
-//        };
-//        this.properties.setItem(property.id, property);
-//    };
-//};
-//Word.prototype.getPropertiesFromRepository = function (wordId) {
-//    return my.db.fetch('Words', 'GetPropertyValues', { 'wordId': wordId });
-//};
-//Word.prototype.getPropertyValue = function(key){
-//    var property = this.properties.getItem(key);
-//    return property ? property.value : null;
-//};
-//Word.prototype.loadDetails = function () {
-//    this.details = new HashTable(null);
-//    var $values = this.getFormsFromRepository(this.id);
-//    for (var i = 0; i < $values.length; i++) {
-//        var set = $values[i];
-//        var form = {
-//            id: set.FormId,
-//            value: set.Content
-//        };
-//        this.details.setItem(form.id, form);
-//    };
-//};
-//Word.prototype.getFormsFromRepository = function (wordId) {
-//    return my.db.fetch('Words', 'GetGrammarForms', { 'wordId': wordId });
-//};
-
-
-
-
-
-
-
-//function OptionEditEntity(properties) {
-//    this.OptionEditEntity = true;
-//    this.id = properties.id;
-//    this.name = properties.name;
-//    this.weight = properties.weight;
-//    this.isActive = properties.isActive;
-//    this.object = properties.object;
-//    this.languageId = properties.languageId;
-//    this.isActive = properties.isActive || true;
-
-//    //Logic.
-//    this.eventHandler = new EventHandler();
-
-//    //Logic.
-//    this.eventHandler = new EventHandler();
-//    this.logs = [];
-
-//    //this.loadDetails();
-
-//}
-//OptionEditEntity.prototype.bind = function (e) {
-//    this.eventHandler.bind(e);
-//};
-//OptionEditEntity.prototype.trigger = function (e) {
-//    this.eventHandler.trigger(e);
-//};
-//OptionEditEntity.prototype.setWeight = function (value) {
-//    this.weight = value;
-//    this.trigger({
-//        type: 'changeWeight',
-//        weight: value
-//    });
-//};
-//OptionEditEntity.prototype.addLog = function (log) {
-//    this.logs.push(log);
-//};
-//OptionEditEntity.prototype.editItem = function () {
-//    alert('Must be defined by implementing class');
-//};
-//OptionEditEntity.prototype.createPropertyManager = function () {
-//    alert('Must be defined by implementing class');
-//};
-//OptionEditEntity.prototype.createDetailsManager = function () {
-//    alert('Must be defined by implementing class');
-//};
-
-
-
-//function WordOptionEditEntity(properties) {
-//    OptionEditEntity.call(this, properties);
-//    this.WordOptionEditEntity = true;
-//}
-//mielk.objects.extend(OptionEditEntity, WordOptionEditEntity);
-//WordOptionEditEntity.prototype.createPropertyManager = function () {
-//    return new WordPropertyManager(this, {});
-//};
-//WordOptionEditEntity.prototype.createDetailsManager = function (params) {
-//    return new GrammarManager(this, params);
-//};
