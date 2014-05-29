@@ -141,6 +141,8 @@ mielk.objects.addProperties(Metaword.prototype, {
     , update: function (object) {
         this.updateModel(object);
         var dto = this.dto();
+        var json = JSON.stringify(dto);
+        mielk.db.post('Words', 'UpdateTest', json, {});
         var x = 1;
     }
     
@@ -176,11 +178,19 @@ mielk.objects.addProperties(Metaword.prototype, {
             })()
             , Words: (function() {
                 var array = [];
+                var dto = {};
 
                 self.items.each(function (key, language) {
-                    language.each(function(k, word) {
-                        var dto = word.dto();
+                    language.each(function (k, word) {
+
+                        dto = (word.edited ? word.dto() : {
+                            Id: word.id
+                            , Name: word.name
+                            , Edited: false
+                        });
+
                         array.push(dto);
+
                     });
                 });
 

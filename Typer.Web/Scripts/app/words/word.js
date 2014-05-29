@@ -304,18 +304,29 @@ mielk.objects.addProperties(Word.prototype, {
             , IsApproved: self.isApproved
             , Positive: self.positive
             , Negative: self.negative
+            , Edited: self.edited ? true : false
             , Properties: (function () {
                 var array = [];
-                self.properties.each(function(key, property) {
-                    var x = property;
+                self.properties.each(function(key, item) {
+                    array.push({
+                        WordId: self.id
+                        , PropertyId: item.property.id
+                        , ValueId: item.value.id
+                    });
                 });
                 return array;
             })()
             , GrammarForms: (function() {
                 var array = [];
-                self.grammarForms.each(function(key, form) {
-                    var x = form;
+                self.grammarForms.each(function (key, item) {
+                    array.push({
+                        WordId: self.id
+                        , FormId: item.form.id
+                        , Content: item.value
+                        , IsActive: item.active === true ? true : false
+                    });
                 });
+                
                 return array;
             })()
         };

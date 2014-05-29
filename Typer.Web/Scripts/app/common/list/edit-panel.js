@@ -265,7 +265,9 @@ function EditDataLine(panel, params) {
     self.entity = panel.entity;
     self.editObject = panel.editObject;
     self.property = params.property;
-    self.value = null;      //Wartość nie jest przypisywana od razu, ponieważ w takiej sytuacji walidacja nie jest uruchamiana.
+    //Wartość nie jest przypisywana od razu, ponieważ w takiej sytuacji walidacja nie jest uruchamiana.
+    //Dla własciwości, które nie potrzebują walidacji, wartość przypisywana jest od razu.
+    self.value = params.validation ? null : params.value;
 
     self.validation = params.validation;
     self.callback = params.callback;

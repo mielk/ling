@@ -19,7 +19,8 @@ namespace Typer.Web
             ));
 
             bundles.Add(new ScriptBundle("~/bundles/global").Include(
-                  "~/Scripts/external/select2.js"
+                  "~/Scripts/external/json2.js"
+                , "~/Scripts/external/select2.js"
                 , "~/Scripts/external/notify.js"
                 , "~/Scripts/external/spin.js"
                 , "~/Scripts/jquery.sizes.js"

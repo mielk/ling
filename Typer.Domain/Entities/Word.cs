@@ -18,6 +18,7 @@ namespace Typer.Domain.Entities
         public bool IsApproved { get; set; }
         public int Positive { get; set; }
         public int Negative { get; set; }
+        public bool Edited { get; set; }    //Pole wykorzystywane przy przekazywaniu danych z JS.
         public IEnumerable<WordProperty> Properties { get; set; }
         public IEnumerable<GrammarForm> GrammarForms { get; set; }
 

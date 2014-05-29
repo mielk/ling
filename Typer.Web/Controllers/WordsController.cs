@@ -1,9 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
+using Newtonsoft.Json.Linq;
 using Typer.Domain.Services;
 using Typer.Domain.Entities;
 using Typer.Web.Models;
+using Newtonsoft.Json;
+
 namespace Typer.Web.Controllers
 {
         public class WordsController : Controller
@@ -101,6 +105,15 @@ namespace Typer.Web.Controllers
             }
 
 
+            [HttpPost]
+            [AllowAnonymous]
+            public ActionResult UpdateTest(string json)
+            {
+                var obj = JObject.Parse(json);
+                return Json(true);
+            }
+
+
             [HttpGet]
             [AllowAnonymous]
             public ActionResult UpdateWeight(int id, int weight)
@@ -109,6 +122,29 @@ namespace Typer.Web.Controllers
                 return Json(result, JsonRequestBehavior.AllowGet);
                 //return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
             }
+
+
+            [HttpGet]
+            [AllowAnonymous]
+            public ActionResult Deactivate(int id)
+            {
+                var value = _service.Deactivate(id);
+                return Json(value, JsonRequestBehavior.AllowGet);
+                //return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
+            }
+
+
+            [HttpGet]
+            [AllowAnonymous]
+            public ActionResult Activate(int id)
+            {
+                var value = _service.Activate(id);
+                return Json(value, JsonRequestBehavior.AllowGet);
+                //return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
+            }
+
+
+
 
 
             [HttpGet]
@@ -136,26 +172,6 @@ namespace Typer.Web.Controllers
             {
                 var id = _service.AddMetaword(name, wordtype, weight, categories, added, properties, forms);
                 return Json(id > 0, JsonRequestBehavior.AllowGet);
-            }
-
-
-            [HttpGet]
-            [AllowAnonymous]
-            public ActionResult Deactivate(int id)
-            {
-                var value = _service.Deactivate(id);
-                return Json(value, JsonRequestBehavior.AllowGet);
-                //return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
-            }
-
-
-            [HttpGet]
-            [AllowAnonymous]
-            public ActionResult Activate(int id)
-            {
-                var value = _service.Activate(id);
-                return Json(value, JsonRequestBehavior.AllowGet);
-                //return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
             }
 
             #region Helpers
