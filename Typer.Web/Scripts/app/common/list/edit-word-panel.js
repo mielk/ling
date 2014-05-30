@@ -44,8 +44,9 @@ mielk.objects.addProperties(EditWordPanel.prototype, {
             control.bind({
                 click: function(e) {
                     item.value = e.object;
-                    self.entity.trigger({
-                        type: 'change' + mielk.text.toCamelCase(item.property.name),
+                    var eventName = 'change' + mielk.text.toCamelCase(item.property.name);
+                    self.editObject.trigger({
+                        type: eventName,
                         property: item.property,
                         value: item.value
                     });
