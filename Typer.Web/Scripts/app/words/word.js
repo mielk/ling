@@ -101,6 +101,7 @@ mielk.objects.addProperties(Word.prototype, {
         self.properties = object.properties;
         self.grammarForms = object.grammarForms;
         self.isCompleted = self.checkIfComplete();
+        self.trigger({ type: 'updated' });
     }
 
     , checkIfComplete: function() {

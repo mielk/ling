@@ -792,7 +792,6 @@ function OptionPanel(item, parent) {
 
 
 
-
         return {
               view: container
             , destroy: destroy
@@ -805,10 +804,9 @@ function OptionPanel(item, parent) {
 
     self.events = (function () {
         self.item.bind({
-            update: function(e) {
-                self.update(e.content, e.weight, e.complete);
+            updated: function () {
+                self.update(self.item.name, self.item.weight, self.item.isCompleted);
             }
-
         });
     })();
 
