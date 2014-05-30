@@ -11,14 +11,14 @@ namespace Typer.DAL.Repositories
         MetawordDto GetMetaword(string name);
 
         bool AddMetaword(MetawordDto metaword);
-        int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options, string[] properties, string[] forms);
 
         bool UpdateName(int id, string name);
         bool UpdateWeight(int id, int weight);
         bool UpdateProperties(int id, string name, int weight);
-        bool UpdateCategories(int id, int[] categories);
-        bool Update(int id, string name, int wordtype, int weight, int[] categories, int[] removed,
-            string[] edited, string[] added, string[] properties, string[] forms);
+        bool UpdateCategories(int id, IEnumerable<int> categories);
+        bool UpdateMetaword(MetawordDto metaword);
+        bool UpdateWord(WordDto word);
+
 
         bool Activate(int id);
         bool Deactivate(int id);
@@ -34,5 +34,6 @@ namespace Typer.DAL.Repositories
         IEnumerable<GrammarFormDto> GetGrammarForms(int definition, int[] wordsIds);
         IEnumerable<WordPropertyDto> GetPropertyValues(int wordId);
 
+        WordDto GetWord(int id);
     }
 }

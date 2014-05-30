@@ -71,7 +71,10 @@ namespace Typer.Domain.Services
 
         public bool UpdateMetaword(Metaword metaword)
         {
-            return _repository.UpdateProperties(metaword.Id, metaword.Name, metaword.Weight);
+            //If Id of the given Metaword is equal to 0, this is a new metaword
+            //and should be add to the database with AddMetaword method.
+            return metaword.Id == 0 ? AddMetaword(metaword) : _repository.UpdateMetaword(MetawordToDto(metaword));
+
         }
 
         public bool AddMetaword(Metaword metaword)
@@ -82,7 +85,8 @@ namespace Typer.Domain.Services
 
         public int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options, string[] properties, string[] forms)
         {
-            return _repository.AddMetaword(name, wordtype, weight, categories, options, properties, forms);
+            return 0;
+            //return _repository.AddMetaword(name, wordtype, weight, categories, options, properties, forms);
         }
 
         public IEnumerable<Word> GetWords(int metawordId)
@@ -101,12 +105,6 @@ namespace Typer.Domain.Services
             return _repository.UpdateCategories(id, categoriesId);
         }
 
-        public bool Update(int id, string name, int wordtype, int weight, int[] categories, int[] removed,
-                    string[] edited, string[] added, string[] properties, string[] forms)
-        {
-            return _repository.Update(id, name, wordtype, weight, categories, removed, edited, added, properties, forms);
-        }
-
         public IEnumerable<Category> GetCategories(int metawordId)
         {
             var dtos = _repository.GetCategories(metawordId);
@@ -116,7 +114,7 @@ namespace Typer.Domain.Services
         public IEnumerable<WordProperty> GetPropertyValues(int wordId)
         {
             var dtos = _repository.GetPropertyValues(wordId);
-            return dtos.Select(WordtypePropertyValueFromDto).ToList();
+            return dtos.Select(WordPropertyValueFromDto).ToList();
         }
 
         public IEnumerable<GrammarForm> GetGrammarForms(int wordId)
@@ -156,6 +154,12 @@ namespace Typer.Domain.Services
             return sorters.OrderByDescending(s => s.Match).Take(10).Select(s => s.Word).ToList();
         }
 
+        public Word GetWord(int id)
+        {
+            var dto = _repository.GetWord(id);
+            return WordFromDto(dto);
+        }
+
 
         private static Metaword MetawordFromDto(MetawordDto dto)
         {
@@ -175,7 +179,7 @@ namespace Typer.Domain.Services
         }
 
 
-        private static WordProperty WordtypePropertyValueFromDto(WordPropertyDto dto)
+        private static WordProperty WordPropertyValueFromDto(WordPropertyDto dto)
         {
             return new WordProperty
             {
@@ -183,6 +187,17 @@ namespace Typer.Domain.Services
                 PropertyId = dto.PropertyId,
                 ValueId = dto.ValueId,
                 WordId = dto.WordId
+            };
+        }
+
+        private static WordPropertyDto WordPropertyValueToDto(WordProperty property)
+        {
+            return new WordPropertyDto
+            {
+                Id = property.Id,
+                PropertyId = property.PropertyId,
+                ValueId = property.ValueId,
+                WordId = property.WordId
             };
         }
 
@@ -203,6 +218,23 @@ namespace Typer.Domain.Services
             };
         }
 
+        private static GrammarFormDto GrammarFormToDto(GrammarForm form)
+        {
+            return new GrammarFormDto
+            {
+                Content = form.Content,
+                CreateDate = form.CreateDate,
+                CreatorId = form.CreatorId,
+                FormId = form.FormId,
+                Id = form.Id,
+                IsActive = form.IsActive,
+                IsApproved = form.IsApproved,
+                Negative = form.Negative,
+                Positive = form.Positive,
+                WordId = form.WordId
+            };
+        }
+
         private static MetawordDto MetawordToDto(Metaword metaword)
         {
             return new MetawordDto
@@ -216,8 +248,11 @@ namespace Typer.Domain.Services
                 Negative = metaword.Negative,
                 Positive = metaword.Positive,
                 Weight = metaword.Weight,
-                Type = (int) metaword.Type
+                Type = (int) metaword.Type,
+                Categories = metaword.Categories == null ? null : metaword.Categories.Select(c => c.Id).ToArray(),
+                Words = metaword.Words == null ? null : metaword.Words.Select(WordToDto).ToArray()
             };
+
         }
 
         private static Word WordFromDto(WordDto dto)
@@ -236,6 +271,28 @@ namespace Typer.Domain.Services
                 Negative = dto.Negative,
                 Positive = dto.Positive,
                 Weight = dto.Weight
+            };
+        }
+
+        private static WordDto WordToDto(Word word)
+        {
+            return new WordDto
+            {
+                CreateDate = word.CreateDate,
+                CreatorId = word.CreatorId,
+                Id = word.Id,
+                IsActive = word.IsActive,
+                IsCompleted = word.IsCompleted,
+                IsApproved = word.IsApproved,
+                LanguageId = word.LanguageId,
+                MetawordId = word.MetawordId,
+                Name = word.Name,
+                Edited = word.Edited,
+                Negative = word.Negative,
+                Positive = word.Positive,
+                Weight = word.Weight,
+                Properties = word.Properties == null ? null : word.Properties.Select(WordPropertyValueToDto).ToArray(),
+                GrammarForms = word.GrammarForms == null ? null : word.GrammarForms.Select(GrammarFormToDto).ToArray()
             };
         }
 

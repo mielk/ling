@@ -83,10 +83,10 @@ mielk.objects.addProperties(Word.prototype, {
         
         var editPanel = new EditWordPanel(self);
         editPanel.show();
-        editPanel.bind({            
+        editPanel.bind({
             confirm: function (e) {
                 self.update(e.object);
-           } 
+           }
         });
         
     }

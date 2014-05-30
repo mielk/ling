@@ -15,7 +15,6 @@ namespace Typer.Domain.Services
         bool NameExists(int id, string name);
         bool UpdateMetaword(Metaword metaword);
         bool UpdateCategories(int id, int[] categories);
-        bool Update(int id, string name, int wordtype, int weight, int[] categories, int[] removed, string[] edited, string[] added, string[] properties, string[] forms);
         bool AddMetaword(Metaword metaword);
         int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options, string[] properties, string[] forms);
         IEnumerable<Word> GetWords(int metawordId);
@@ -27,5 +26,6 @@ namespace Typer.Domain.Services
         IEnumerable<GrammarForm> GetGrammarForms(int wordId);
         IEnumerable<GrammarForm> GetGrammarForms(int definition, int[] wordsIds);
         IEnumerable<Word> GetWords(int languageId, int wordtype, string word);
+        Word GetWord(int id);
     }
 }

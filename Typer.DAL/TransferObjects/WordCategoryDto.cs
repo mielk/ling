@@ -17,5 +17,22 @@ namespace Typer.DAL.TransferObjects
         public int Positive { get; set; }
         public int Negative { get; set; }
 
+        public WordCategoryDto()
+        {
+            
+        }
+
+        public WordCategoryDto(int metawordId, int categoryId)
+        {
+            MetawordId = metawordId;
+            CategoryId = categoryId;
+            IsActive = true;
+            CreatorId = 1;
+            CreateDate = DateTime.Now;
+            IsApproved = false;
+            Positive = 0;
+            Negative = 0;
+        }
+
     }
 }

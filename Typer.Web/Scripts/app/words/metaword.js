@@ -142,7 +142,7 @@ mielk.objects.addProperties(Metaword.prototype, {
         this.updateModel(object);
         var dto = this.dto();
         var json = JSON.stringify(dto);
-        mielk.db.post('Words', 'UpdateTest', json, {});
+        mielk.db.post('Words', 'Update', json, {});
         var x = 1;
     }
     
@@ -161,7 +161,7 @@ mielk.objects.addProperties(Metaword.prototype, {
     , dto: function () {
         var self = this;
         
-        return {            
+        return {
             Id: self.id
             , Name: self.name
             , Weight: self.weight
@@ -174,6 +174,13 @@ mielk.objects.addProperties(Metaword.prototype, {
             , Negative: self.negative
             , Categories: (function () {
                 var array = [];
+
+                mielk.arrays.each(self.categories, function(category) {
+                    array.push({
+                       Id: category.key
+                    });
+                });
+
                 return array;
             })()
             , Words: (function() {

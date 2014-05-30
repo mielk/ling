@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web.Mvc;
+using Newtonsoft.Json.Linq;
 using Typer.Domain.Services;
 
 namespace Typer.Domain.Entities
@@ -45,7 +46,41 @@ namespace Typer.Domain.Entities
         public int Negative { get; set; }
 
         private IEnumerable<Category> _categories;
-        public IEnumerable<Category> Categories {
+
+        private void LoadCategories()
+        {
+            _categories = WordServicesFactory.Instance().GetService().GetCategories(Id);
+        }
+
+        private IEnumerable<Word> _words;
+
+
+
+
+        public Metaword()
+        {
+            Weight = 1;
+        }
+
+        public Metaword(string json)
+        {
+            JToken token = JObject.Parse(json);
+
+            Id = (int)token.SelectToken("Id");
+            Name = (string)token.SelectToken("Name");
+            Weight = (int)token.SelectToken("Weight");
+            Type = (WordType)(int)token.SelectToken("Type");
+            IsActive = (bool)token.SelectToken("IsActive");
+            CreatorId = (int)token.SelectToken("CreatorId");
+            CreateDate = (DateTime)token.SelectToken("CreateDate");
+            Categories = Category.GetCollection(token.SelectToken("Categories"));
+            Words = Word.GetCollection(token.SelectToken("Words"));
+        }
+
+
+
+        public IEnumerable<Category> Categories
+        {
             get
             {
                 if (_categories == null) LoadCategories();
@@ -59,19 +94,6 @@ namespace Typer.Domain.Entities
 
         }
 
-
-        private void LoadCategories()
-        {
-            _categories = WordServicesFactory.Instance().GetService().GetCategories(Id);
-        }
-
-        public Metaword()
-        {
-            Weight = 1;
-        }
-
-
-        private IEnumerable<Word> _words;
         public IEnumerable<Word> Words
         {
             get
@@ -89,8 +111,6 @@ namespace Typer.Domain.Entities
         {
             return _words.Where(o => o.LanguageId == languageId);
         }
-
-        
 
 
     }

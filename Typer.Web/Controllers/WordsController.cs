@@ -105,15 +105,6 @@ namespace Typer.Web.Controllers
             }
 
 
-            [HttpPost]
-            [AllowAnonymous]
-            public ActionResult UpdateTest(string json)
-            {
-                var obj = JObject.Parse(json);
-                return Json(true);
-            }
-
-
             [HttpGet]
             [AllowAnonymous]
             public ActionResult UpdateWeight(int id, int weight)
@@ -156,13 +147,14 @@ namespace Typer.Web.Controllers
             }
 
 
-            [HttpGet]
+
+            [HttpPost]
             [AllowAnonymous]
-            public ActionResult Update(int id, string name, int wordtype, int weight, int[] categories, int[] removed,
-                string[] edited, string[] added, string[] properties, string[] forms)
+            public ActionResult Update(string json)
             {
-                var result = _service.Update(id, name, wordtype, weight, categories, removed, edited, added, properties, forms);
-                return Json(result, JsonRequestBehavior.AllowGet);
+                var metaword = new Metaword(json);
+                var result = _service.UpdateMetaword(metaword);
+                return Json(result);
             }
 
 

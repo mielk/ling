@@ -16,7 +16,7 @@ $(function () {
             mielk.db.fetch('Words', 'CheckName', {
                 'id': id,
                 'name': name
-            }, {                
+            }, {
                 async: false,
                 cache: false,
                 callback: function(result) {
@@ -32,7 +32,7 @@ $(function () {
         }
         
         //Funkcja update'ująca kategorie dla danego wyrazu.
-        function updateCategories(metaword, categories, callback) {            
+        function updateCategories(metaword, categories, callback) {
             var categoriesIds = [];
             var categoriesNames = '';
             for (var key in categories) {
@@ -50,7 +50,7 @@ $(function () {
             mielk.db.fetch('Words', 'UpdateCategories', {
                       'id': metaword.id
                     , 'categories': categoriesIds
-                }, {                
+                }, {
                     async: true,
                     cache: false,
                     traditional: true,
@@ -74,7 +74,7 @@ $(function () {
 
             mielk.db.fetch('Words', 'Activate', {
                     'id': id
-                }, {                
+                }, {
                     async: true,
                     cache: false,
                     callback: function(result) {
@@ -96,7 +96,7 @@ $(function () {
 
             mielk.db.fetch('Words', 'Deactivate', {
                 'id': id
-            }, {                
+            }, {
                 async: true,
                 cache: false,
                 callback: function(result) {
@@ -119,7 +119,7 @@ $(function () {
             mielk.db.fetch('Words', 'UpdateWeight', {
                 'id': id,
                 'weight': weight
-            }, {                
+            }, {
                 async: true,
                 cache: false,
                 callback: function(result) {
@@ -149,7 +149,7 @@ $(function () {
                 'added': e.added,
                 'properties': e.properties,
                 'forms': e.details
-            }, {                
+            }, {
                 async: true,
                 cache: false,
                 traditional: true,
@@ -176,7 +176,7 @@ $(function () {
                 'wordtype': e.wordtype,
                 'added': e.added,
                 'properties': e.properties
-            }, {                
+            }, {
                 async: true,
                 cache: false,
                 traditional: true,
@@ -199,7 +199,7 @@ $(function () {
             mielk.db.fetch('Words', 'GetWords', {
                 'id': id,
                 'languages': languages
-            }, {                
+            }, {
                 async: false,
                 cache: false,
                 traditional: true,

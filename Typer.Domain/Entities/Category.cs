@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json.Linq;
+using Typer.Domain.Services;
 
 namespace Typer.Domain.Entities
 {
@@ -39,6 +42,18 @@ namespace Typer.Domain.Entities
             if (_parent == null) return string.Empty;
             var parentPath = _parent.FullPath();
             return parentPath + (parentPath.Length > 0 ? " > " : string.Empty) + Name;
+        }
+
+        public static IEnumerable<Category> GetCollection(JToken token)
+        {
+            var service = CategoryServicesFactory.Instance().GetService();
+
+            return token.Children().
+                Select(item => (int) item.SelectToken("Id")).
+                Select(service.GetCategory).
+                Where(category => category != null).
+                ToList();
+
         }
 
     }
