@@ -127,3 +127,5 @@ C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.Domain\obj\Debu
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.Domain\obj\Debug\Typer.Domain.pdb
 C:\Users\txmieln\Documents\Visual Studio 2012\Projects\typer\Typer.Domain\bin\Debug\Newtonsoft.Json.dll
 C:\Users\txmieln\Documents\Visual Studio 2012\Projects\typer\Typer.Domain\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.Domain\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.Domain\bin\Debug\Newtonsoft.Json.xml

@@ -100,15 +100,6 @@ mielk.objects.addProperties(Metaword.prototype, {
             return true;
         }
     }
-    
-    , removeItem: function(item) {
-        if (this.items) {
-            var set = this.items.getItem(item.language.id);
-            if (set) {
-                set.removeItem(item.name);
-            }
-        }
-    }
 
     , clone: function () {
         var self = this;
@@ -129,9 +120,17 @@ mielk.objects.addProperties(Metaword.prototype, {
         });
 
         //Complex properties are set directly.
+        obj.cloned = true;
         obj.categories = mielk.arrays.clone(self.categories);
         obj.wordtype = self.wordtype;
         obj.items = self.items.clone(true);
+
+        //Assign this metaword to all cloned words.
+        obj.items.each(function (key, language) {
+            language.each(function (k, v) {
+                v.parent = obj;
+            });
+        });
         
         return obj;
         

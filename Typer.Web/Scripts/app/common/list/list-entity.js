@@ -330,6 +330,16 @@ Entity.prototype = {
 
     }
 
+
+    , removeItem: function (item) {
+        if (this.items) {
+            var set = this.items.getItem(item.language.id);
+            if (set) {
+                set.removeItem(item.name);
+            }
+        }
+    }
+
     //Zwraca listę właściwości, które mają być edytowane w panelu edycji
     //dla tego typu Entity.
     , getEditedPropertiesList: function() {

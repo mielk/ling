@@ -162,7 +162,8 @@ namespace Typer.DAL.Repositories
                 var currentWordsIds = words.Select(w => w.Id).ToList();
                 foreach (var word in previous.Where(w => !currentWordsIds.Contains(w.Id)).ToList())
                 {
-                    Context.Words.Remove(word);
+                    word.IsActive = false;
+                    //Context.Words.Remove(word);
                     Context.SaveChanges();
                 }
 

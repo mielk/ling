@@ -102,7 +102,8 @@
             for (var key in self.items) {
                 if (self.items.hasOwnProperty(key)) {
                     var item = self.items[key];
-                    clone.setItem(key, deep ? mielk.objects.clone(item, deep) : item);
+                    var cloned = deep ? mielk.objects.clone(item, deep) : item;
+                    clone.setItem(key, cloned);
                 }
             }
 
