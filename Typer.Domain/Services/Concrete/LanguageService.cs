@@ -48,6 +48,12 @@ namespace Typer.Domain.Services
             };
         }
 
+        public IEnumerable<int> GetCurrentUserLanguages()
+        {
+            var currentUserId = User.CurrentUserId;
+            return GetUserLanguages(currentUserId);
+        }
+
 /*
         private static LanguageDto LanguageToDto(Language language)
         {

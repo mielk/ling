@@ -9,5 +9,6 @@ namespace Typer.Domain.Services
         IEnumerable<Language> GetLanguages();
         Language GetLanguage(int id);
         IEnumerable<int> GetUserLanguages(int userId);
+        IEnumerable<int> GetCurrentUserLanguages();
     }
 }

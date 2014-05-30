@@ -71,10 +71,8 @@ namespace Typer.Domain.Services
 
         public bool UpdateMetaword(Metaword metaword)
         {
-            //If Id of the given Metaword is equal to 0, this is a new metaword
-            //and should be add to the database with AddMetaword method.
-            return metaword.Id == 0 ? AddMetaword(metaword) : _repository.UpdateMetaword(MetawordToDto(metaword));
-
+            var currentUserId = User.CurrentUserId;
+            return metaword.Id == 0 ? AddMetaword(metaword) : _repository.UpdateMetaword(MetawordToDto(metaword), currentUserId);
         }
 
         public bool AddMetaword(Metaword metaword)

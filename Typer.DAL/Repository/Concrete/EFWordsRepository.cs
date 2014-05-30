@@ -115,7 +115,7 @@ namespace Typer.DAL.Repositories
 
 
 
-        public bool UpdateMetaword(MetawordDto metaword)
+        public bool UpdateMetaword(MetawordDto metaword, int currentUserId)
         {
 
             var entity = GetMetaword(metaword.Id);
@@ -132,7 +132,7 @@ namespace Typer.DAL.Repositories
                 {
                     Context.SaveChanges();
                     UpdateCategories(metaword.Id, metaword.Categories);
-                    UpdateWords(metaword.Id, metaword.Words);
+                    UpdateWords(metaword.Id, metaword.Words, currentUserId);
                 }
                 catch (Exception)
                 {
@@ -149,11 +149,37 @@ namespace Typer.DAL.Repositories
         }
 
 
-        private void UpdateWords(int metawordId, WordDto[] words)
+        private void UpdateWords(int metawordId, WordDto[] words, int currentUserId)
         {
-            
-        }
 
+            try
+            {
+                var languageRepository = new EFLanguageRepository();
+                var languages = languageRepository.GetUserLanguages(currentUserId);
+                var previous = GetWords(metawordId, languages);
+
+                //Remove deleted words from the database.
+                var currentWordsIds = words.Select(w => w.Id).ToList();
+                foreach (var word in previous.Where(w => !currentWordsIds.Contains(w.Id)).ToList())
+                {
+                    Context.Words.Remove(word);
+                    Context.SaveChanges();
+                }
+
+                //Update rest of words.
+                foreach (var word in words.ToArray().Where(word => word.Edited))
+                {
+                    UpdateWord(word);
+                }
+
+            }
+            catch (Exception exception)
+            {
+                throw new Exception(exception.ToString());
+            }
+
+
+        }
 
         public bool UpdateCategories(int metawordId, IEnumerable<int> categories)
         {
@@ -423,7 +449,7 @@ namespace Typer.DAL.Repositories
             return Context.Words.Where(o => o.MetawordId == metawordId && o.IsActive);
         }
 
-        public IEnumerable<WordDto> GetWords(int metawordId, int[] languages)
+        public IEnumerable<WordDto> GetWords(int metawordId, IEnumerable<int> languages)
         {
             return Context.Words.Where(o => o.MetawordId == metawordId && o.IsActive && languages.Contains(o.LanguageId));
         }

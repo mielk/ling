@@ -16,7 +16,7 @@ namespace Typer.DAL.Repositories
         bool UpdateWeight(int id, int weight);
         bool UpdateProperties(int id, string name, int weight);
         bool UpdateCategories(int id, IEnumerable<int> categories);
-        bool UpdateMetaword(MetawordDto metaword);
+        bool UpdateMetaword(MetawordDto metaword, int currentUserId);
         bool UpdateWord(WordDto word);
 
 
@@ -26,7 +26,7 @@ namespace Typer.DAL.Repositories
         bool NameExists(int id, string name);
 
         IEnumerable<WordDto> GetWords(int metawordId);
-        IEnumerable<WordDto> GetWords(int metawordId, int[] languages);
+        IEnumerable<WordDto> GetWords(int metawordId, IEnumerable<int> languages);
         IEnumerable<WordDto> GetWords(int languageId, int wordtype, string word);
         IEnumerable<WordCategoryDto> GetCategories(int metawordId);
         IEnumerable<int> GetMetawordsIdsByCategories(int[] categories);

@@ -8,6 +8,8 @@ namespace Typer.Domain.Entities
 
         public const string SessionKey = "User";
 
+        public static int CurrentUserId = 1;
+
         #region Instance properties.
         //
         
