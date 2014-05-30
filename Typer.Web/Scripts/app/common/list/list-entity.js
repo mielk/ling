@@ -516,6 +516,14 @@ function ListItemView(entity) {
             });
         }
 
+        function refresh() {
+            $(id).html(self.entity.id);
+            $(name).html(self.entity.name);
+            weight.setValue(self.entity.value);
+            $(categories).html(Ling.Categories.toString(self.entity.categories, false));
+            self.loadDetails();
+        }
+
         (function initialize() {
             activate(self.entity.isActive);
             addSpecificViewItems(self.entity.additionalViewItems());
@@ -528,10 +536,20 @@ function ListItemView(entity) {
             , addDetails: addDetails
             , addSpinner: addSpinner
             , addItem: addItem
+            , refresh: refresh
         };
 
     })();
     
+    //Events handler.
+    self.events = (function() {
+        self.entity.bind({            
+            updated: function () {
+                self.ui.refresh();
+           }
+        });
+    })();
+
 }
 ListItemView.prototype = {
 
@@ -744,6 +762,10 @@ WeightPanel.prototype = {
 
     , changeValue: function (value) {
         mielk.fn.run(this.callback, value);
+        this.ui.refresh(value);
+    }
+    
+    , setValue: function(value) {
         this.ui.refresh(value);
     }
 

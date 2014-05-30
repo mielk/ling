@@ -139,11 +139,19 @@ mielk.objects.addProperties(Metaword.prototype, {
     
     //[Override]
     , update: function (object) {
-        this.updateModel(object);
-        var dto = this.dto();
+        var self = this;
+        self.updateModel(object);
+        var dto = self.dto();
         var json = JSON.stringify(dto);
-        mielk.db.post('Words', 'Update', json, {});
-        var x = 1;
+        mielk.db.post('Words', 'Update', json, {
+            callback: function () {
+                self.trigger({ type: 'updated' });
+                mielk.notify.display(dict.MetawordUpdate.get([self.name]), true);
+            },
+            errorCallback: function() {
+                mielk.notify.display(dict.MetawordUpdateError.get([self.name]), false);
+            }
+        });
     }
     
     , updateModel: function(object) {

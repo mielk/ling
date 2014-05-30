@@ -632,12 +632,10 @@
 
         }
 
-
-
         function post(controller, method, json, params) {
-            //var $result;
-            //var successCallback = (params && params.callback && typeof (params.callback) === 'function' ? params.callback : null);
-            //var errorCallback = (params && params.errorCallback && typeof (params.errorCallback) === 'function' ? params.errorCallback : null);
+            var $result;
+            var successCallback = (params && params.callback && typeof (params.callback) === 'function' ? params.callback : null);
+            var errorCallback = (params && params.errorCallback && typeof (params.errorCallback) === 'function' ? params.errorCallback : null);
             var data = {'json': json };
 
             $.ajax({
@@ -647,10 +645,20 @@
                 datatype: 'json',
                 async: true,
                 success: function (result) {
-                    var x = 1;
+                    if (successCallback) {
+                        $result = successCallback(result);
+                    } else {
+                        $result = result;
+                    }
+                    return $result;
                 },
                 error: function (msg) {
-                    var z = 0;
+                    mielk.notify.display('Error in mielk.db.fetch: ' + controller + '.' + method, false);
+                    if (errorCallback) {
+                        errorCallback(msg);
+                    } else {
+                        alert(msg.status + ' | ' + msg.statusText);
+                    }
                 }
             });
 
