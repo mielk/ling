@@ -35,10 +35,10 @@ mielk.objects.addProperties(WordListManager.prototype, {
             Id: 0
             , Name: ''
             , Weight: (filters.weight && filters.weight.from && filters.weight.from === filters.weight.to ? filters.weight.from : 1)
-            , Type: filters.wordtype ? filters.wordtype.id : 0
+            , Type: filters.wordtype ? filters.wordtype : Ling.Enums.Wordtypes.getDefault()
             , IsActive: true
             , CreatorId: Ling.Users.Current.id
-            , CreateDate: new Date().getTime
+            , CreateDate: new Date()
             , IsApproved: false
             , Positive: 0
             , Negative: 0

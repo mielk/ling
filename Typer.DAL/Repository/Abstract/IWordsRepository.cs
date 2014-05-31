@@ -10,13 +10,13 @@ namespace Typer.DAL.Repositories
         MetawordDto GetMetaword(int id);
         MetawordDto GetMetaword(string name);
 
-        bool AddMetaword(MetawordDto metaword);
+        int AddMetaword(MetawordDto metaword);
+        int UpdateMetaword(MetawordDto metaword, int currentUserId);
 
         bool UpdateName(int id, string name);
         bool UpdateWeight(int id, int weight);
         bool UpdateProperties(int id, string name, int weight);
         bool UpdateCategories(int id, IEnumerable<int> categories);
-        bool UpdateMetaword(MetawordDto metaword, int currentUserId);
         bool UpdateWord(WordDto word);
 
 

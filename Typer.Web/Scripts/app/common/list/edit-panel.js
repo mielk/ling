@@ -643,7 +643,7 @@ function LanguagePanel(panel, language) {
                 'value': dict.Add.get()
             }).bind({
                 'click': function () {
-                    //self.addNew();
+                    self.addNew();
                 }
             }).appendTo(buttons);
         }
@@ -685,19 +685,24 @@ LanguagePanel.prototype = {
         if (set) {
 
             set.each(function (key, item) {
-
-                item.bind({
-                    remove: function() {
-                        self.removeItem(item);
-                    }
-                });
-
-                var optionPanel = new OptionPanel(item);
-                self.ui.addOption(item, optionPanel.view());
-                
+                self.addOption(item);
             });
 
         }
+    }
+
+    , addOption: function (item) {
+        var self = this;
+
+        item.bind({
+            remove: function () {
+                self.removeItem(item);
+            }
+        });
+
+        var optionPanel = new OptionPanel(item);
+        self.ui.addOption(item, optionPanel.view());
+
     }
     
     , removeItem: function(item) {
@@ -706,12 +711,20 @@ LanguagePanel.prototype = {
     }
     
     , addNew: function () {
-
-        alert('Not implemented yet: edit-panel.js:LanguagePanel.addNew');
-
-        //    var item = this.item.newItem(this.language.id);
-        //    item.injectLanguageEntity(this.languageEntity);
-        //    item.edit({ languagePanel: this });
+        var self = this;
+        var item = self.panel.editObject.createSubItem({
+              'new': true
+            , languageId: self.language.id
+        });
+        item.edit();
+        item.bind({
+            updated: function () {
+                if (item.new) {
+                    item.new = false;
+                    self.addOption(item);
+                }
+            }
+        });
     }
 };
 

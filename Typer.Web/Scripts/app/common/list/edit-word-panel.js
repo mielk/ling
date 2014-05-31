@@ -34,7 +34,7 @@ mielk.objects.addProperties(EditWordPanel.prototype, {
             var control = item.property.type.control({
                 name: item.property.name,
                 container: propertyContainer,
-                value: item.value.id,
+                value: item.value ? item.value.id : item.property.defaultValue,
                 options: item.property.options
             });
 

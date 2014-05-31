@@ -69,13 +69,13 @@ namespace Typer.Domain.Services
         }
 
 
-        public bool UpdateMetaword(Metaword metaword)
+        public int UpdateMetaword(Metaword metaword)
         {
             var currentUserId = User.CurrentUserId;
             return metaword.Id == 0 ? AddMetaword(metaword) : _repository.UpdateMetaword(MetawordToDto(metaword), currentUserId);
         }
 
-        public bool AddMetaword(Metaword metaword)
+        public int AddMetaword(Metaword metaword)
         {
             var dto = MetawordToDto(metaword);
             return _repository.AddMetaword(dto);

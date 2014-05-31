@@ -143,16 +143,29 @@ mielk.objects.addProperties(Metaword.prototype, {
         var dto = self.dto();
         var json = JSON.stringify(dto);
         mielk.db.post('Words', 'Update', json, {
-            callback: function () {
-                self.trigger({ type: 'updated' });
-                mielk.notify.display(dict.MetawordUpdate.get([self.name]), true);
+            callback: function (result) {
+
+                if (result < 0) {
+                    var dictItem = (self.id !== 0 ? dict.MetawordUpdateError : dict.MetawordAddedError);
+                    mielk.notify.display(dictItem.get([self.name]), false);
+                } else if (self.id === 0) {
+                    //New item.
+                    self.trigger({ type: 'added' });
+                    mielk.notify.display(dict.MetawordAdded.get([self.name]), true);
+                    self.id === result;
+                } else {
+                    self.trigger({ type: 'updated' });
+                    mielk.notify.display(dict.MetawordUpdate.get([self.name]), true);
+                }
+
             },
-            errorCallback: function() {
-                mielk.notify.display(dict.MetawordUpdateError.get([self.name]), false);
+            errorCallback: function () {
+                var dictItem = (self.id !== 0 ? dict.MetawordUpdateError : dict.MetawordAddedError);
+                mielk.notify.display(dictItem.get([self.name]), false);
             }
         });
     }
-    
+
     , updateModel: function(object) {
         var self = this;
         self.edited = true;

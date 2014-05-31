@@ -944,7 +944,7 @@
                 var caption = params.caption || name;
                 var options = params.options;
                 var evHandler = mielk.eventHandler();
-                var selected = options.getItem(params.value);
+                var selected = $.isNumeric(params.value) ? options.getItem(params.value) : params.value;
                 var checked = false;
                 
                 var gui = (function () {

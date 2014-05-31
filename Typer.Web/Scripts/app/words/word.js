@@ -65,6 +65,7 @@ mielk.objects.addProperties(Word.prototype, {
             , IsCompleted: self.isCompleted
             , Properties: self.properties.clone(true)
             , GrammarForms: self.grammarForms.clone(true)
+            , 'new': self.new
         });
 
         return obj;
@@ -153,7 +154,7 @@ mielk.objects.addProperties(Word.prototype, {
         mielk.arrays.each(requiredProperties, function(property) {
             self.properties.setItem(property.id, {
                   property: property
-                , value: null
+                , value: property.defaultValue
             });
         });
 

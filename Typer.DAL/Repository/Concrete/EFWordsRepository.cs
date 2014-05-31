@@ -38,18 +38,29 @@ namespace Typer.DAL.Repositories
 
 
 
-        public bool AddMetaword(MetawordDto metaword)
+        public int AddMetaword(MetawordDto metaword)
         {
-            try
+
+            using (var scope = new TransactionScope())
             {
-                Context.Metawords.Add(metaword);
-                Context.SaveChanges();
-                return true;
+                try
+                {
+                    Context.Metawords.Add(metaword);
+                    Context.SaveChanges();
+                    UpdateCategories(metaword.Id, metaword.Categories);
+                    UpdateWords(metaword.Id, metaword.Words, 0);
+                }
+                catch (Exception)
+                {
+                    scope.Dispose();
+                    return -1;
+                }
+
+                scope.Complete();
+                return metaword.Id;
+
             }
-            catch (Exception)
-            {
-                return false;
-            }
+
         }
 
 
@@ -115,11 +126,11 @@ namespace Typer.DAL.Repositories
 
 
 
-        public bool UpdateMetaword(MetawordDto metaword, int currentUserId)
+        public int UpdateMetaword(MetawordDto metaword, int currentUserId)
         {
 
             var entity = GetMetaword(metaword.Id);
-            if (entity == null) return false;
+            if (entity == null) return -1;
 
             entity.Name = metaword.Name;
             entity.Weight = metaword.Weight;
@@ -137,11 +148,11 @@ namespace Typer.DAL.Repositories
                 catch (Exception)
                 {
                     scope.Dispose();
-                    return false;
+                    return -1;
                 }
                 
                 scope.Complete();
-                return true;
+                return entity.Id;
 
             }
 
@@ -154,23 +165,20 @@ namespace Typer.DAL.Repositories
 
             try
             {
-                var languageRepository = new EFLanguageRepository();
-                var languages = languageRepository.GetUserLanguages(currentUserId);
-                var previous = GetWords(metawordId, languages);
 
-                //Remove deleted words from the database.
-                var currentWordsIds = words.Select(w => w.Id).ToList();
-                foreach (var word in previous.Where(w => !currentWordsIds.Contains(w.Id)).ToList())
-                {
-                    word.IsActive = false;
-                    //Context.Words.Remove(word);
-                    Context.SaveChanges();
-                }
+                RemoveWordsForMetaword(metawordId, words, currentUserId);
 
                 //Update rest of words.
                 foreach (var word in words.ToArray().Where(word => word.Edited))
                 {
-                    UpdateWord(word);
+                    if (word.Id == 0)
+                    {
+                        AddWord(word);
+                    }
+                    else
+                    {
+                        UpdateWord(word);
+                    }
                 }
 
             }
@@ -215,6 +223,21 @@ namespace Typer.DAL.Repositories
             Context.MatchWordCategory.Add(dto);
         }
 
+        private void RemoveWordsForMetaword(int metawordId, WordDto[] words, int currentUserId)
+        {
+            var languageRepository = new EFLanguageRepository();
+            var languages = languageRepository.GetUserLanguages(currentUserId);
+            var previous = GetWords(metawordId, languages);
+
+            //Remove deleted words from the database.
+            var currentWordsIds = words.Select(w => w.Id).ToList();
+            foreach (var word in previous.Where(w => !currentWordsIds.Contains(w.Id)).ToList())
+            {
+                word.IsActive = false;
+                //Context.Words.Remove(word);
+                Context.SaveChanges();
+            }
+        }
 
 
 
@@ -248,7 +271,6 @@ namespace Typer.DAL.Repositories
 
         }
 
-
         private void UpdateWordProperties(int wordId, WordPropertyDto[] properties)
         {
             try
@@ -261,6 +283,12 @@ namespace Typer.DAL.Repositories
                 }
 
                 //Add new values.
+                foreach (var property in properties)
+                {
+                    Context.WordPropertyValues.Add(property);
+                }
+
+                Context.SaveChanges();
 
             }
             catch (Exception exception)
@@ -274,13 +302,26 @@ namespace Typer.DAL.Repositories
             try
             {
 
-                //Remove previous entries.
-                foreach (var form in Context.GrammarForms.Where(gf => gf.WordId == wordId).ToList())
+                //Add new values.
+                foreach (var form in forms)
                 {
-                    Context.GrammarForms.Remove(form);
+                    var entity = Context.GrammarForms.SingleOrDefault(gf => gf.WordId == wordId && gf.FormId == form.FormId);
+                    if (entity != null)
+                    {
+                        entity.Content = form.Content ?? string.Empty;
+                    }
+                    else
+                    {
+                        if (form.Content != null)
+                        {
+                            form.CreateDate = DateTime.Now;
+                            Context.GrammarForms.Add(form);
+                        }
+                    }
+                    
                 }
 
-                //Add new values.
+                Context.SaveChanges();
 
             }
             catch (Exception exception)
@@ -289,6 +330,21 @@ namespace Typer.DAL.Repositories
             }            
         }
 
+        public bool AddWord(WordDto dto)
+        {
+            try
+            {
+                Context.Words.Add(dto);
+                Context.SaveChanges();
+                UpdateWordProperties(dto.Id, dto.Properties);
+                UpdateGrammarForms(dto.Id, dto.GrammarForms);
+                return true;
+            }
+            catch (Exception exception)
+            {
+                throw new Exception(exception.ToString());
+            }
+        }
 
 
 

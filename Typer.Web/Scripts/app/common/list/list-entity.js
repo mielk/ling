@@ -13,11 +13,11 @@ function Entity(properties) {
 
     //Properties.
     self.id = properties.Id || 0;
-    self.name = properties.Name;
+    self.name = properties.Name || '';
     self.weight = properties.Weight || 1;
     self.isActive = (properties.IsActive !== undefined ? properties.IsActive : true);
     self.creatorId = properties.CreatorId || 1;
-    self.createDate = properties.CreateDate || new Date().getDate();
+    self.createDate = properties.CreateDate || new Date();
     self.isApproved = properties.IsApproved || false;
     self.positive = properties.Positive || 0;
     self.negative = properties.Negative || 0;

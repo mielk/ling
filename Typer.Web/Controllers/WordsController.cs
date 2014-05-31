@@ -158,12 +158,13 @@ namespace Typer.Web.Controllers
             }
 
 
-            [HttpGet]
+            [HttpPost]
             [AllowAnonymous]
-            public ActionResult Add(string name, int wordtype, int weight, int[] categories, string[] added, string[] properties, string[] forms)
+            public ActionResult Add(string json)
             {
-                var id = _service.AddMetaword(name, wordtype, weight, categories, added, properties, forms);
-                return Json(id > 0, JsonRequestBehavior.AllowGet);
+                var metaword = new Metaword(json);
+                var id = _service.AddMetaword(metaword);
+                return Json(id, JsonRequestBehavior.AllowGet);
             }
 
             #region Helpers
