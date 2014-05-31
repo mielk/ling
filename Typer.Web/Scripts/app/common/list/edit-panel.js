@@ -720,7 +720,7 @@ LanguagePanel.prototype = {
         item.bind({
             updated: function () {
                 if (item.new) {
-                    item.new = false;
+                    item.parent.addItem(item);
                     self.addOption(item);
                 }
             }

@@ -285,6 +285,7 @@ namespace Typer.DAL.Repositories
                 //Add new values.
                 foreach (var property in properties)
                 {
+                    if (property.WordId == 0) property.WordId = wordId; //Dla nowych wyrazów.
                     Context.WordPropertyValues.Add(property);
                 }
 
@@ -314,6 +315,7 @@ namespace Typer.DAL.Repositories
                     {
                         if (form.Content != null)
                         {
+                            form.WordId = wordId;
                             form.CreateDate = DateTime.Now;
                             Context.GrammarForms.Add(form);
                         }

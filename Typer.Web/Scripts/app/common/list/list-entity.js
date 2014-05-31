@@ -400,6 +400,13 @@ Entity.prototype = {
 
     }
 
+    , addItem: function (item) {
+        var languageId = item.language.id;
+        var set = this.items.getItem(languageId);
+        set.setItem(item.name, item);
+        item.new = false;
+    }
+
     //, update: function () {
     //    alert('Must by defined by implementing class');
     //}
