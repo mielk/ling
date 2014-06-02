@@ -675,6 +675,8 @@
 
     var ui = (function () {
 
+        var currentTopLayer = 9;
+
         function getPosition(e) {
             var x = 0;
             var y = 0;
@@ -741,7 +743,7 @@
         }
         
         function topLayer() {
-            return 9999;
+            return currentTopLayer++;
         }
 
         function radio(params) {
