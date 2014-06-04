@@ -4,6 +4,8 @@ USE [ling];
 -- Czyszczenie bazy --
 
 -- Usuwanie tabel
+
+-- Dane --
 IF OBJECT_ID('dbo.VariantLimits', N'U') IS NOT NULL DROP TABLE [dbo].[VariantLimits]
 IF OBJECT_ID('dbo.VariantDependencies', N'U') IS NOT NULL DROP TABLE [dbo].[VariantDependencies]
 IF OBJECT_ID('dbo.VariantConnections', N'U') IS NOT NULL DROP TABLE [dbo].[VariantConnections]
@@ -14,14 +16,17 @@ IF OBJECT_ID('dbo.VariantSets', N'U') IS NOT NULL DROP TABLE [dbo].[VariantSets]
 IF OBJECT_ID('dbo.QuestionsOptions', N'U') IS NOT NULL DROP TABLE [dbo].[QuestionsOptions]
 IF OBJECT_ID('dbo.MatchQuestionCategory', N'U') IS NOT NULL DROP TABLE [dbo].[MatchQuestionCategory]
 IF OBJECT_ID('dbo.Questions', N'U') IS NOT NULL DROP TABLE [dbo].[Questions]
-IF OBJECT_ID('dbo.VariantSetRequiredProperties', N'U') IS NOT NULL DROP TABLE [dbo].[VariantSetRequiredProperties]
-IF OBJECT_ID('dbo.VariantDependenciesDefinitions', N'U') IS NOT NULL DROP TABLE [dbo].[VariantDependenciesDefinitions]
 
 IF OBJECT_ID('dbo.GrammarForms', N'U') IS NOT NULL DROP TABLE [dbo].[GrammarForms]
 IF OBJECT_ID('dbo.WordsProperties', N'U') IS NOT NULL DROP TABLE [dbo].[WordsProperties]
 IF OBJECT_ID('dbo.Words', N'U') IS NOT NULL DROP TABLE [dbo].[Words]
 IF OBJECT_ID('dbo.MatchWordCategory', N'U') IS NOT NULL DROP TABLE [dbo].[MatchWordCategory]
 IF OBJECT_ID('dbo.Metawords', N'U') IS NOT NULL DROP TABLE [dbo].[Metawords]
+IF OBJECT_ID('dbo.Categories', N'U') IS NOT NULL DROP TABLE [dbo].[Categories]
+
+-- Systemowe --
+IF OBJECT_ID('dbo.VariantSetRequiredProperties', N'U') IS NOT NULL DROP TABLE [dbo].[VariantSetRequiredProperties]
+IF OBJECT_ID('dbo.VariantDependenciesDefinitions', N'U') IS NOT NULL DROP TABLE [dbo].[VariantDependenciesDefinitions]
 
 IF OBJECT_ID('dbo.WordRequiredProperties', N'U') IS NOT NULL DROP TABLE [dbo].[WordRequiredProperties]
 IF OBJECT_ID('dbo.GrammarFormsInactiveRules', N'U') IS NOT NULL DROP TABLE [dbo].[GrammarFormsInactiveRules]
@@ -34,7 +39,6 @@ IF OBJECT_ID('dbo.GrammarPropertyDefinitions', N'U') IS NOT NULL DROP TABLE [dbo
 IF OBJECT_ID('dbo.ValueTypes', N'U') IS NOT NULL DROP TABLE [dbo].[ValueTypes]
 IF OBJECT_ID('dbo.WordTypes', N'U') IS NOT NULL DROP TABLE [dbo].[WordTypes]
 
-IF OBJECT_ID('dbo.Categories', N'U') IS NOT NULL DROP TABLE [dbo].[Categories]
 IF OBJECT_ID('dbo.UsersLanguages', N'U') IS NOT NULL DROP TABLE [dbo].[UsersLanguages]
 IF OBJECT_ID('dbo.Users', N'U') IS NOT NULL DROP TABLE [dbo].[Users]
 IF OBJECT_ID('dbo.Languages', N'U') IS NOT NULL DROP TABLE [dbo].[Languages]
@@ -139,30 +143,6 @@ COMMIT;
 SET IDENTITY_INSERT [dbo].[UsersLanguages] OFF
 GO
 
-
--- Kategorie
-CREATE TABLE [dbo].[Categories] (
-      [Id]         INT            IDENTITY (1, 1) NOT NULL
-    , [Name]       NVARCHAR (255) NOT NULL UNIQUE
-    , [ParentId]   INT            NULL
-    , [IsActive]   BIT            DEFAULT ((1)) NOT NULL
-    , [CreatorId]  INT            DEFAULT ((1)) NOT NULL
-    , [CreateDate] DATETIME       DEFAULT (GETDATE()) NOT NULL
-    , [IsApproved] BIT            DEFAULT ((0)) NOT NULL
-    , [Positive]   INT            DEFAULT ((0)) NOT NULL
-    , [Negative]   INT            DEFAULT ((0)) NOT NULL
-    , CONSTRAINT [PK_Categories] PRIMARY KEY CLUSTERED ([Id] ASC)
-    , CONSTRAINT [FK_ExistingCategoryCanBeParent] FOREIGN KEY ([ParentId]) REFERENCES [dbo].[Categories] ([Id])
-    , CONSTRAINT [FK_CategoryUser] FOREIGN KEY ([CreatorId]) REFERENCES [dbo].[Users] ([Id])
-);
-
-SET IDENTITY_INSERT [dbo].[Categories] ON
-BEGIN TRANSACTION;
-#Categories#
-COMMIT;
-SET IDENTITY_INSERT [dbo].[Categories] OFF
-
-GO
 
 
 
@@ -423,6 +403,92 @@ SET IDENTITY_INSERT [dbo].[WordRequiredProperties] OFF
 GO
 
 
+
+-- Metadefinicje
+
+-- Tabela okreœlaj¹ca które czêœci mowy w poszczególnych jêzykach mog¹ byæ po³¹czone ze sob¹ na zasadzie zale¿noœci jednej od drugiej
+-- np. przymiotnik zale¿ny od rzeczownika w jêzyku polskim - je¿eli rzeczownik jest rodzaju mêskiego mówimy [³adny], a do rodzaju ¿eñskiego [³adna]
+CREATE TABLE [dbo].[VariantDependenciesDefinitions]
+(
+      [Id]					INT		IDENTITY (1, 1) NOT NULL
+    , [LanguageId]			INT		NOT NULL
+	, [MasterWordtypeId]	INT		NOT NULL
+	, [SlaveWordtypeId]		INT		NOT NULL
+    , CONSTRAINT [PK_VariantDependenciesDefinitions] PRIMARY KEY CLUSTERED ([Id] ASC)
+	, CONSTRAINT [CH_DifferentWordtypes] CHECK ([MasterWordtypeId] <> [SlaveWordtypeId])
+    , CONSTRAINT [U_VariantDependenciesDefinitions_Wordtypes] UNIQUE NONCLUSTERED ([MasterWordtypeId] ASC, [SlaveWordtypeId] ASC)
+    , CONSTRAINT [FK_VariantDependenciesDefinitions_Languages] FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id])
+	, CONSTRAINT [FK_VariantDependenciesDefinitions_MasterWordtype] FOREIGN KEY ([MasterWordtypeId]) REFERENCES [dbo].[WordTypes] ([Id])
+	, CONSTRAINT [FK_VariantDependenciesDefinitions_SlaveWordtype] FOREIGN KEY ([SlaveWordtypeId]) REFERENCES [dbo].[WordTypes] ([Id])
+)
+SET IDENTITY_INSERT [dbo].[VariantDependenciesDefinitions] ON
+BEGIN TRANSACTION;
+#VariantDependenciesDefinitions#
+COMMIT;
+SET IDENTITY_INSERT [dbo].[VariantDependenciesDefinitions] OFF
+
+
+
+
+
+GO
+
+
+-- Tabela okreœlaj¹ca w³aœciwoœci wymagane do opisania poszczególnych wariant setów (w zale¿noœci od ich wordtype).
+CREATE TABLE [dbo].[VariantSetRequiredProperties] (
+      [Id]              INT		IDENTITY (1, 1) NOT NULL
+    , [LanguageId]      INT		NOT NULL
+    , [WordtypeId]		INT		NOT NULL
+    , [PropertyId]		INT		NOT NULL
+    , CONSTRAINT [PK_VariantSetRequiredProperties] PRIMARY KEY CLUSTERED ([Id] ASC) 
+    , CONSTRAINT [UQ_VariantSetRequiredProperties_UniqueSet] UNIQUE NONCLUSTERED([LanguageId], [WordtypeId], [PropertyId])
+    , CONSTRAINT [FK_VariantSetRequiredProperties_Language] FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id])
+    , CONSTRAINT [FK_VariantSetRequiredProperties_Wordtype] FOREIGN KEY ([WordtypeId]) REFERENCES [dbo].[WordTypes] ([Id])
+    , CONSTRAINT [FK_VariantSetRequiredProperties_Property] FOREIGN KEY ([PropertyId]) REFERENCES [dbo].[GrammarPropertyDefinitions] ([Id])
+);
+SET IDENTITY_INSERT [dbo].[VariantSetRequiredProperties] ON
+BEGIN TRANSACTION;
+#VariantSetRequiredProperties#
+COMMIT;
+SET IDENTITY_INSERT [dbo].[VariantSetRequiredProperties] OFF
+
+
+GO
+
+
+
+
+
+
+
+
+
+
+
+-- Kategorie
+CREATE TABLE [dbo].[Categories] (
+      [Id]         INT            IDENTITY (1, 1) NOT NULL
+    , [Name]       NVARCHAR (255) NOT NULL UNIQUE
+    , [ParentId]   INT            NULL
+    , [IsActive]   BIT            DEFAULT ((1)) NOT NULL
+    , [CreatorId]  INT            DEFAULT ((1)) NOT NULL
+    , [CreateDate] DATETIME       DEFAULT (GETDATE()) NOT NULL
+    , [IsApproved] BIT            DEFAULT ((0)) NOT NULL
+    , [Positive]   INT            DEFAULT ((0)) NOT NULL
+    , [Negative]   INT            DEFAULT ((0)) NOT NULL
+    , CONSTRAINT [PK_Categories] PRIMARY KEY CLUSTERED ([Id] ASC)
+    , CONSTRAINT [FK_ExistingCategoryCanBeParent] FOREIGN KEY ([ParentId]) REFERENCES [dbo].[Categories] ([Id])
+    , CONSTRAINT [FK_CategoryUser] FOREIGN KEY ([CreatorId]) REFERENCES [dbo].[Users] ([Id])
+);
+
+SET IDENTITY_INSERT [dbo].[Categories] ON
+BEGIN TRANSACTION;
+#Categories#
+COMMIT;
+SET IDENTITY_INSERT [dbo].[Categories] OFF
+
+GO
+
 -- WORDS
 
 -- Metawyrazy
@@ -587,58 +653,6 @@ GO
 
 
 -- QUESTIONS
-
--- Metadefinicje
-
--- Tabela okreœlaj¹ca które czêœci mowy w poszczególnych jêzykach mog¹ byæ po³¹czone ze sob¹ na zasadzie zale¿noœci jednej od drugiej
--- np. przymiotnik zale¿ny od rzeczownika w jêzyku polskim - je¿eli rzeczownik jest rodzaju mêskiego mówimy [³adny], a do rodzaju ¿eñskiego [³adna]
-CREATE TABLE [dbo].[VariantDependenciesDefinitions]
-(
-      [Id]					INT		IDENTITY (1, 1) NOT NULL
-    , [LanguageId]			INT		NOT NULL
-	, [MasterWordtypeId]	INT		NOT NULL
-	, [SlaveWordtypeId]		INT		NOT NULL
-    , CONSTRAINT [PK_VariantDependenciesDefinitions] PRIMARY KEY CLUSTERED ([Id] ASC)
-	, CONSTRAINT [CH_DifferentWordtypes] CHECK ([MasterWordtypeId] <> [SlaveWordtypeId])
-    , CONSTRAINT [U_VariantDependenciesDefinitions_Wordtypes] UNIQUE NONCLUSTERED ([MasterWordtypeId] ASC, [SlaveWordtypeId] ASC)
-    , CONSTRAINT [FK_VariantDependenciesDefinitions_Languages] FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id])
-	, CONSTRAINT [FK_VariantDependenciesDefinitions_MasterWordtype] FOREIGN KEY ([MasterWordtypeId]) REFERENCES [dbo].[WordTypes] ([Id])
-	, CONSTRAINT [FK_VariantDependenciesDefinitions_SlaveWordtype] FOREIGN KEY ([SlaveWordtypeId]) REFERENCES [dbo].[WordTypes] ([Id])
-)
-SET IDENTITY_INSERT [dbo].[VariantDependenciesDefinitions] ON
-BEGIN TRANSACTION;
-#VariantDependenciesDefinitions#
-COMMIT;
-SET IDENTITY_INSERT [dbo].[VariantDependenciesDefinitions] OFF
-
-
-
-
-
-GO
-
-
--- Tabela okreœlaj¹ca w³aœciwoœci wymagane do opisania poszczególnych wariant setów (w zale¿noœci od ich wordtype).
-CREATE TABLE [dbo].[VariantSetRequiredProperties] (
-      [Id]              INT		IDENTITY (1, 1) NOT NULL
-    , [LanguageId]      INT		NOT NULL
-    , [WordtypeId]		INT		NOT NULL
-    , [PropertyId]		INT		NOT NULL
-    , CONSTRAINT [PK_VariantSetRequiredProperties] PRIMARY KEY CLUSTERED ([Id] ASC) 
-    , CONSTRAINT [UQ_VariantSetRequiredProperties_UniqueSet] UNIQUE NONCLUSTERED([LanguageId], [WordtypeId], [PropertyId])
-    , CONSTRAINT [FK_VariantSetRequiredProperties_Language] FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id])
-    , CONSTRAINT [FK_VariantSetRequiredProperties_Wordtype] FOREIGN KEY ([WordtypeId]) REFERENCES [dbo].[WordTypes] ([Id])
-    , CONSTRAINT [FK_VariantSetRequiredProperties_Property] FOREIGN KEY ([PropertyId]) REFERENCES [dbo].[GrammarPropertyDefinitions] ([Id])
-);
-SET IDENTITY_INSERT [dbo].[VariantSetRequiredProperties] ON
-BEGIN TRANSACTION;
-#VariantSetRequiredProperties#
-COMMIT;
-SET IDENTITY_INSERT [dbo].[VariantSetRequiredProperties] OFF
-
-
-GO
-
 
 
 -- Pytania
