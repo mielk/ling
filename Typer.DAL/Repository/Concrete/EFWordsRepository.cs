@@ -518,9 +518,9 @@ namespace Typer.DAL.Repositories
             return Context.WordPropertyValues.Where(wpv => wpv.WordId == wordId).ToList();
         }
 
-        public IEnumerable<WordDto> GetWords(int languageId, int wordtype, string word)
+        public IEnumerable<WordDto> GetSimilarWords(int languageId, int wordtype, string word)
         {
-            return Context.Words.Where(w => w.LanguageId == languageId && w.Name.EndsWith(word.Substring(word.Length - 2)) && !w.Name.Equals(word));
+            return Context.Words.Where(w => w.LanguageId == languageId && w.Name.EndsWith(word.Substring(word.Length - 1)) && !w.Name.Equals(word));
         }
 
         #endregion Word

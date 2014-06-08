@@ -404,7 +404,7 @@ function EditDataLine(panel, params) {
                 }
             }).on({
                 'focus': function () {
-                    this.select();
+                    //this.select();
                 }
             });
 

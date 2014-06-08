@@ -268,6 +268,7 @@ Entity.prototype = {
                     value: object.name,
                     callback: function(value) {
                         object.name = value;
+                        object.trigger({ type: 'changeName', value: value })
                     },
                     validation: function(params) {
                         return object.entity.checkName(params.value);
@@ -283,6 +284,7 @@ Entity.prototype = {
                 value: object.weight
                 , callback: function (value) {
                     object.weight = value;
+                    object.trigger({ type: 'changeWeight', value: value })
                 }
                 , css: { 'margin': '9px 0', 'height': '16px' }
             });

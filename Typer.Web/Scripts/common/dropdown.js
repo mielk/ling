@@ -25,7 +25,7 @@
 }
 DropDown.prototype = {
     
-    loadData: function (data) {
+    loadData: function (data, clearSelection) {
 
         this.data = mielk.hashTable();
 
@@ -36,11 +36,19 @@ DropDown.prototype = {
                 this.data.setItem(key, item);
             }
         }
-
+            
         this.render();
+
+        //Clearing selection.
+        if (clearSelection) this.clearSelection();
 
     },
     
+    clearSelection: function () {
+        this.selection.select2('val', '');
+        //this.selection.select2('val', null);
+    },
+
     render: function () {
         var self = this;
 

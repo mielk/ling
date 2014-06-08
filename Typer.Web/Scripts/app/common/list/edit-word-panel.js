@@ -99,9 +99,8 @@ function GrammarPanel(word) {
         }
 
         function appendSearchPanel() {
-            searchPanel = jQuery('<div/>', {
-                'class': 'grammar-search-panel'
-            }).appendTo(container);
+            searchPanel = new GrammarSearchPanel(self.word, self, container);
+            searchPanel.view().appendTo(container);
         }
 
         function appendFormsPanel() {
@@ -346,6 +345,90 @@ GrammarCell.prototype = {
 };
 
 
+
+function GrammarSearchPanel(word, parentPanel){
+
+    'use strict';
+
+    var self = this;
+
+    self.GrammarSearchPanel = true;
+    
+    self.parentPanel = parentPanel;
+    self.word = word;
+
+    self.ui = (function () {
+
+        var container = jQuery('<div/>', {
+            'class': 'grammar-search-panel'
+        });
+
+        var dropdown = new DropDown({
+              container: container
+            , caseSensitive: false
+            , data: self.getSimilarWords(self.word.name)
+            , confirmWithFirstClick: true
+            , placeholder: 'Select similar word'
+            , allowClear: true
+        });
+
+        function updateData(data) {
+            dropdown.loadData(data, true);
+        }
+
+        return {
+              view: container
+            , updateData: updateData
+        };
+
+    })();
+
+    self.events = (function () {
+
+        self.word.bind({
+            changeName: function (e) {
+                self.update(e.value);
+            }
+        })
+
+    })();
+
+}
+GrammarSearchPanel.prototype = {
+
+    view: function () {
+        return this.ui.view;
+    },
+
+    update: function (name) {
+        var data = this.getSimilarWords(name);
+        self.ui.updateData(data);
+    },
+
+    getSimilarWords: function (name) {
+
+        if (!name) return [];
+
+        var self = this;
+        var rawData = mielk.db.fetch('Words', 'GetSimilarWords', {
+            'languageId': self.word.language.id,
+            'wordtype': self.word.parent.wordtype ? self.word.parent.wordtype.id : 0,
+            'word': name || self.word.name
+        });
+        var data = [];
+        mielk.arrays.each(rawData, function (item) {
+            data.push({
+                id: item.Id
+                , name: item.Name
+                , key: item.Name
+            });
+        });
+
+        return data;
+
+    }
+
+};
 
 
 //function GrammarForm(manager, params) {

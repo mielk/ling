@@ -252,7 +252,7 @@ namespace Typer.Web.Controllers
             [AllowAnonymous]
             public ActionResult GetSimilarWords(int languageId, int wordtype, string word)
             {
-                var words = _service.GetWords(languageId, wordtype, word);
+                var words = _service.GetSimilarWords(languageId, wordtype, word);
                 return Json(words, JsonRequestBehavior.AllowGet);
             }
 

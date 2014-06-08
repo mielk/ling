@@ -145,9 +145,9 @@ namespace Typer.Domain.Services
         }
 
 
-        public IEnumerable<Word> GetWords(int languageId, int wordtype, string word)
+        public IEnumerable<Word> GetSimilarWords(int languageId, int wordtype, string word)
         {
-            var dtos = _repository.GetWords(languageId, wordtype, word);
+            var dtos = _repository.GetSimilarWords(languageId, wordtype, word);
             var sorters = dtos.Select(dto => WordSorterFromDto(dto, word)).ToList();
             return sorters.OrderByDescending(s => s.Match).Take(10).Select(s => s.Word).ToList();
         }

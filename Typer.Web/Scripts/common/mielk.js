@@ -619,7 +619,6 @@
                     } else {
                         $result = result;
                     }
-                    return $result;
                 },
                 error: function (msg) {
                     mielk.notify.display('Error in mielk.db.fetch: ' + controller + '.' + method, false);
@@ -630,6 +629,8 @@
                     }
                 }
             });
+
+            return $result;
 
         }
 
@@ -1454,7 +1455,7 @@
         }
 
         function escapeRegExp(string) {
-            return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+            return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
         }
 
         return {
