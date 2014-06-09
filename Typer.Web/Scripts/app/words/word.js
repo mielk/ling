@@ -65,8 +65,10 @@ mielk.objects.addProperties(Word.prototype, {
             , IsCompleted: self.isCompleted
             , Properties: self.properties.clone(true)
             , GrammarForms: self.grammarForms.clone(true)
-            , 'new': self.new
+            , IsNew: self.isNew
         });
+
+        obj.cloned = true;
 
         return obj;
 
@@ -269,6 +271,11 @@ mielk.objects.addProperties(Word.prototype, {
 
     , getGrammarForm: function(formId) {
         var form = this.grammarForms.getItem(formId);
+        return form ? form.form : null;
+    }
+
+    , getGrammarFormValue: function (formId) {
+        var form = this.grammarForms.getItem(formId);
         return form ? form.value : '';
     }
       
@@ -276,8 +283,28 @@ mielk.objects.addProperties(Word.prototype, {
         var form = this.grammarForms.getItem(formId);
         if (form) {
             form.value = content;
+            form.form.trigger({
+                type: 'change',
+                value: content
+            });
         }
     }
+
+    , updateFromSimilar: function (word) {
+        var self = this;
+
+        var forms = mielk.db.fetch('Words', 'GetGrammarForms', {
+            'wordId': word.id
+        }, {
+            async: false,
+            callback: function (results) {
+                mielk.arrays.each(results, function (form) {
+                    self.changeGrammarForm(form.FormId, form.Content);
+                });
+            }
+        })
+    }
+
 
     , activateGrammarForm: function(formId, value) {
         var form = this.grammarForms.getItem(formId);

@@ -22,7 +22,7 @@ function Entity(properties) {
     self.positive = properties.Positive || 0;
     self.negative = properties.Negative || 0;
     self.categories = self.loadCategories(properties.Categories || properties.categories || []) || [];
-    self.new = properties.new || false;
+    self.isNew = properties.isNew || properties.IsNew || false;
 
     //Subitems assigned to this entity (i.e. words for Metaword, options for Query).
     self.items = self.createItemsMap(properties.Words || properties.Options || []);
@@ -406,7 +406,7 @@ Entity.prototype = {
         var languageId = item.language.id;
         var set = this.items.getItem(languageId);
         set.setItem(item.name, item);
-        item.new = false;
+        item.isNew = false;
     }
 
     //, update: function () {

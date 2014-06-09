@@ -573,7 +573,7 @@ function TreeNavigator(tree) {
                         e.stopPropagation();
                         e.preventDefault();
                         node.parent.activate();
-                        node.delete();
+                        node.remove();
                         break;
                     case 45: //Insert
                         e.stopPropagation();
@@ -717,7 +717,7 @@ function TreeNode(tree, parent, object) {
     this.object.node = this;
     this.parent = parent;
     //State variables.
-    this.new = false;
+    this.isNew = false;
     this.active = false;
     this.clicked = false;
 
@@ -776,15 +776,15 @@ TreeNode.prototype.removeNode = function(node) {
         object: node.object
     });
 };
-TreeNode.prototype.delete = function () {
+TreeNode.prototype.remove = function () {
 
     this.nodes.each(function(node) {
-        node.delete();
+        node.remove();
     });
 
     if (this.parent) {
         this.parent.removeNode(this);
-        this.view.delete();
+        this.view.remove();
     }
     this.tree.trigger({
         type: 'remove',
@@ -944,12 +944,12 @@ TreeNode.prototype.cancel = function() {
         this.parent.newNode = null;
         this.parent.activate();
     }
-    this.view.delete();
+    this.view.remove();
 };
 
 TreeNode.prototype.changeName = function (name) {
     
-    if (this.new) {
+    if (this.isNew) {
         this.insert(name);
     } else {
         this.tree.trigger({
@@ -1173,7 +1173,7 @@ TreeNodeView.prototype.collapse = function () {
 TreeNodeView.prototype.append = function($container) {
     $(this.container).appendTo($container);
 };
-TreeNodeView.prototype.delete = function() {
+TreeNodeView.prototype.remove = function() {
     $(this.container).remove();
 };
 
@@ -1477,7 +1477,7 @@ NodeRenamer.prototype.createTextbox = function () {
                     e.preventDefault();
                     e.stopPropagation();
                     me.escape();
-                    if (me.node.new) me.node.cancel();
+                    if (me.node.isNew) me.node.cancel();
                     break;
             }
         }

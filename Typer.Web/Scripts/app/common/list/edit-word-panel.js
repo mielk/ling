@@ -208,7 +208,9 @@ GrammarPanel.prototype = {
             $(header).appendTo(column);
 
             item.forms.each(function (key, value) {
-                var cell = new GrammarCell(self.word, value);
+                var word = self.word;
+                var form = self.word.getGrammarForm(value.id);
+                var cell = new GrammarCell(word, form);
                 //var cell = self.createCell(v);
                 $(cell.view()).appendTo(column);
             });
@@ -268,7 +270,7 @@ function GrammarCell(word, form) {
         }
 
         function setInitialValue() {
-            var content = self.word.getGrammarForm(self.form.id);
+            var content = self.word.getGrammarFormValue(self.form.id);
             $(control).val(content);
         }
         
@@ -284,6 +286,17 @@ function GrammarCell(word, form) {
         };
 
     })();
+
+
+    self.events = (function () {
+        self.form.bind({
+            change: function (e) {
+                alert('Tutaj zapisujemy wartość gramatyczną');
+                var x = 1;
+            }
+        });
+    })();
+
 
     (function initialize() {
         self.setListeners();
@@ -370,6 +383,13 @@ function GrammarSearchPanel(word, parentPanel){
             , confirmWithFirstClick: true
             , placeholder: 'Select similar word'
             , allowClear: true
+        });
+
+
+        dropdown.bind({
+            change: function (e) {
+                self.word.updateFromSimilar(e.item);
+            }
         });
 
         function updateData(data) {

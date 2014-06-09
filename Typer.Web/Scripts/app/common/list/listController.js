@@ -198,7 +198,7 @@ LanguageEntity.prototype.getVariant = function(key) {
 LanguageEntity.prototype.remove = function (item) {
     this.items = my.array.remove(this.items, item);
     
-    if (item.new) {
+    if (item.isNew) {
         this.parent.removeLog('add', item);
     } else {
         this.parent.addLog({

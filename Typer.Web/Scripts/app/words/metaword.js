@@ -116,7 +116,7 @@ mielk.objects.addProperties(Metaword.prototype, {
             , IsApproved: self.isApproved
             , Positive: self.positive
             , Negative: self.negative
-            , 'new': self.new
+            , IsNew: self.isNew
         });
 
         //Complex properties are set directly.

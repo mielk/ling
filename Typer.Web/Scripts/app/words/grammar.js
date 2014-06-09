@@ -80,6 +80,7 @@ function GrammarFormGroup(params) {
 
 }
 GrammarFormGroup.prototype = {
+
     loadForms: function (forms) {
         var table = mielk.hashTable();
         var self = this;
@@ -114,9 +115,20 @@ function GrammarFormDefinition(params, group) {
     self.properties = self.loadProperties(params.Properties);
     self.inactiveRules = self.loadInactiveRules(params.InactiveRules);
 
+    //Event handler.
+    self.eventHandler = mielk.eventHandler();
 
 }
 GrammarFormDefinition.prototype = {
+
+    bind: function (e) {
+        this.eventHandler.bind(e);
+    },
+
+    trigger: function (e) {
+        this.eventHandler.trigger(e);
+    },
+
     loadProperties: function (properties) {
         var table = mielk.hashTable();
         var self = this;
@@ -140,6 +152,27 @@ GrammarFormDefinition.prototype = {
         });
 
         return table;
+
+    },
+
+    clone: function (object) {
+        var self = this;
+
+        //Create a copy instance of GrammarFormDefinition with 
+        //all primitive properties given as initialize parameters.
+        var obj = new GrammarFormDefinition({
+              Id: self.id
+            , Index: self.index
+            , Displayed: self.displayed
+            , Properties: []
+            , InactiveRules: []
+        }, self.group);
+
+        obj.properties = mielk.objects.clone(self.properties, false);
+        obj.inactiveRules = mielk.objects.clone(self.inactiveRules, false);
+        obj.cloned = true;
+
+        return obj;
 
     }
 

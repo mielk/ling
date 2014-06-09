@@ -281,12 +281,10 @@
     <Content Include="Scripts\app\common\enums.js" />
     <Content Include="Scripts\app\common\ling.js" />
     <Content Include="Scripts\app\categories\categories.js" />
-    <Content Include="Scripts\app\common\list\Copy of listController.js" />
     <Content Include="Scripts\app\common\list\list-filter-manager.js" />
     <Content Include="Scripts\app\common\list\list-items-manager.js" />
     <Content Include="Scripts\app\common\list\list-pager.js" />
     <Content Include="Scripts\app\common\list\list.js" />
-    <Content Include="Scripts\app\queries\Copy of options.js" />
     <Content Include="Scripts\app\queries\query.js" />
     <Content Include="Scripts\app\queries\query-list.js" />
     <Content Include="Scripts\app\words\word.js" />
@@ -297,7 +295,6 @@
     <Content Include="Scripts\common\mielk.js" />
     <Content Include="Scripts\external\select2.js" />
     <Content Include="Scripts\external\spin.js" />
-    <Content Include="Scripts\common\tree2.js" />
     <Content Include="Scripts\common\dropdown.js" />
     <Content Include="Scripts\external\notify.js" />
     <Content Include="Scripts\jquery-1.7.2.min.js" />
