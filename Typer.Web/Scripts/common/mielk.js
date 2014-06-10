@@ -173,7 +173,7 @@
 
             var div = $('<div>', {
                 id: self.id,
-                'class': params.class
+                'class': params['class']
             });
             div.appendTo(container);
             //Set initial height if applicable.

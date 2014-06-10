@@ -41,17 +41,29 @@ mielk.objects.addProperties(EditWordPanel.prototype, {
             if (!control) return;
 
             //Attach events handlers to this control.
+            var eventName = item.property.changeEventName();
             control.bind({
                 click: function(e) {
                     item.value = e.object;
-                    var eventName = 'change' + mielk.text.toCamelCase(item.property.name);
+                    
                     self.editObject.trigger({
                         type: eventName,
                         property: item.property,
-                        value: item.value
+                        value: item.value,
+                        propagate: false
                     });
                 }
             });
+
+            //Attach event of changing value.
+            var events = {};
+            events[eventName] = function (e) {
+                if (e.propagate !== false) {
+                    var value = e.value.property.isBoolean() ? e.value.value : e.value.id;
+                    control.change(value);
+                }
+            };
+            self.editObject.bind(events);
 
             $(control.view).appendTo(container);
 
@@ -289,12 +301,19 @@ function GrammarCell(word, form) {
 
 
     self.events = (function () {
-        self.form.bind({
-            change: function (e) {
-                alert('Tutaj zapisujemy wartość gramatyczną');
-                var x = 1;
-            }
-        });
+        //Dla celów wydajnościowych do ogólnej nazwy zdarzenia 
+        //dołączany jest numer Id formy gramatycznej (tak, aby
+        //przy każdej zmianie odpalany był tylko event dla tej
+        //konkretnej formy.
+        var eventName = 'changeGrammarForm_' + self.form.id;
+        var events = {};
+        events[eventName] = function (e) {
+            alert('Tutaj zapisujemy wartość gramatyczną');
+            var x = 1;
+        }
+
+        self.word.bind(events);
+
     })();
 
 

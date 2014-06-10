@@ -269,6 +269,16 @@ mielk.objects.addProperties(Word.prototype, {
         
     }
 
+    , getGrammarProperty: function (propertyId) {
+        var property = this.properties.getItem(propertyId);
+        return property ? property.property : null;
+    }
+
+    , getGrammarPropertyValue: function (propertyId) {
+        var property = this.properties.getItem(propertyId);
+        return property ? property.value : null;
+    }
+
     , getGrammarForm: function(formId) {
         var form = this.grammarForms.getItem(formId);
         return form ? form.form : null;
@@ -283,17 +293,47 @@ mielk.objects.addProperties(Word.prototype, {
         var form = this.grammarForms.getItem(formId);
         if (form) {
             form.value = content;
-            form.form.trigger({
-                type: 'change',
+
+            //Triggering event.
+            var eventName = 'changeGrammarForm_' + form.form.id;
+            this.trigger({
+                type: eventName,
                 value: content
             });
+        }
+    }
+
+    , changePropertyValue: function (propertyId, valueId) {
+        var property = this.properties.getItem(propertyId);
+        if (property) {
+            var value = property.property.options.getItem(valueId)
+            if (value) {
+                property.value = value;
+                this.trigger({
+                    type: property.property.changeEventName(),
+                    value: value
+                });
+            }
         }
     }
 
     , updateFromSimilar: function (word) {
         var self = this;
 
-        var forms = mielk.db.fetch('Words', 'GetGrammarForms', {
+        //Update grammar properties.
+        mielk.db.fetch('Words', 'GetPropertyValues', {
+            'wordId': word.id
+        }, {
+            async: false,
+            callback: function (results) {
+                mielk.arrays.each(results, function (property) {
+                    self.changePropertyValue(property.PropertyId, property.ValueId);
+                });
+            }
+        });
+
+        //Update grammar forms.
+        mielk.db.fetch('Words', 'GetGrammarForms', {
             'wordId': word.id
         }, {
             async: false,
@@ -302,7 +342,10 @@ mielk.objects.addProperties(Word.prototype, {
                     self.changeGrammarForm(form.FormId, form.Content);
                 });
             }
-        })
+        });
+
+
+
     }
 
 

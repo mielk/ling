@@ -15,6 +15,9 @@ function GrammarProperty(params) {
     self.language = Ling.Languages.getLanguage(params.LanguageId);
     self.type = Ling.Enums.DataTypes.getByProperty('id', params.Type);
     self.options = self.createOptionsCollection(params.Options);
+    self.changeEventName = function () {
+        return 'change' + mielk.text.toCamelCase(self.name);
+    };
 
     (function initialize() {
         self.findDefault();
@@ -53,6 +56,14 @@ GrammarProperty.prototype = {
 
     , getOption: function (value) {
         return this.options.getItem(value);
+    }
+
+    , clone: function () {
+        return this;
+    }
+
+    , isBoolean: function () {
+        return this.type.id === 1;
     }
 
 };
@@ -152,27 +163,6 @@ GrammarFormDefinition.prototype = {
         });
 
         return table;
-
-    },
-
-    clone: function (object) {
-        var self = this;
-
-        //Create a copy instance of GrammarFormDefinition with 
-        //all primitive properties given as initialize parameters.
-        var obj = new GrammarFormDefinition({
-              Id: self.id
-            , Index: self.index
-            , Displayed: self.displayed
-            , Properties: []
-            , InactiveRules: []
-        }, self.group);
-
-        obj.properties = mielk.objects.clone(self.properties, false);
-        obj.inactiveRules = mielk.objects.clone(self.inactiveRules, false);
-        obj.cloned = true;
-
-        return obj;
 
     }
 
