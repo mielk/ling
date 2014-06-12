@@ -713,7 +713,7 @@ LanguagePanel.prototype = {
     , addNew: function () {
         var self = this;
         var item = self.panel.editObject.createSubItem({
-              'new': true
+              IsNew: true
             , languageId: self.language.id
         });
         item.edit();

@@ -285,7 +285,10 @@ function GrammarCell(word, form) {
             var content = self.word.getGrammarFormValue(self.form.id);
             $(control).val(content);
         }
-        
+
+        function setValue(value) {
+            $(control).val(value);
+        }
         
         (function initialize() {
             setInitialValue();
@@ -295,6 +298,7 @@ function GrammarCell(word, form) {
         return {
               view: control
             , activate: activate
+            , setValue: setValue
         };
 
     })();
@@ -308,8 +312,7 @@ function GrammarCell(word, form) {
         var eventName = 'changeGrammarForm_' + self.form.id;
         var events = {};
         events[eventName] = function (e) {
-            alert('Tutaj zapisujemy wartość gramatyczną');
-            var x = 1;
+            self.ui.setValue(e.value);
         }
 
         self.word.bind(events);
@@ -440,7 +443,8 @@ GrammarSearchPanel.prototype = {
     },
 
     update: function (name) {
-        var data = this.getSimilarWords(name);
+        var self = this;
+        var data = self.getSimilarWords(name);
         self.ui.updateData(data);
     },
 

@@ -338,16 +338,31 @@ mielk.objects.addProperties(Word.prototype, {
         }, {
             async: false,
             callback: function (results) {
-                mielk.arrays.each(results, function (form) {
+                var forms = self.processGrammarForms(word.name, results);
+                mielk.arrays.each(forms, function (form) {
                     self.changeGrammarForm(form.FormId, form.Content);
                 });
             }
         });
 
-
-
     }
 
+    , processGrammarForms: function (base, results) {
+        var commonChars = mielk.text.countMatchedEnd(this.name, base);
+        var replacing = mielk.text.cut(this.name, commonChars);
+        var replaced = mielk.text.cut(base, commonChars);
+        var forms = [];
+
+        mielk.arrays.each(results, function (form) {
+            forms.push({
+                  FormId: form.FormId
+                , Content: mielk.text.replaceGlobal(form.Content, replaced, replacing)
+            });
+        });
+
+        return forms;
+
+    }
 
     , activateGrammarForm: function(formId, value) {
         var form = this.grammarForms.getItem(formId);

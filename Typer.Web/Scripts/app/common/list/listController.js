@@ -87,7 +87,7 @@ WordEditEntity.prototype.setWordtype = function (params) {
 WordEditEntity.prototype.newItem = function (languageId) {
     return new Word(this, {
         LanguageId: languageId,
-        'new': true
+        IsNew: true
     });
 };
 
@@ -138,7 +138,7 @@ QuestionEditEntity.prototype.loadVariants = function () {
 QuestionEditEntity.prototype.newItem = function (languageId) {
     return new Option(this, {
         LanguageId: languageId,
-        'new': true
+        IsNew: true
     });
 };
 QuestionEditEntity.prototype.getVariantSet = function(key) {

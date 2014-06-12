@@ -43,7 +43,7 @@ mielk.objects.addProperties(WordListManager.prototype, {
             , Positive: 0
             , Negative: 0
             , Categories: (filters.categories && filters.categories.length === 1 ? filters.categories : [])
-            , 'new': true
+            , IsNew: true
         });
     }
 
