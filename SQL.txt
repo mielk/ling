@@ -934,3 +934,51 @@ BEGIN TRANSACTION;
 #VariantLimits#
 COMMIT;
 SET IDENTITY_INSERT [dbo].[VariantLimits] OFF
+
+
+
+
+
+
+
+-- Tabela przechowuj¹ca listê zapytañ wy³¹czonych dla poszczególnych userów.
+CREATE TABLE [dbo].[LearningExcludedQuestions] (
+      [Id]					INT     IDENTITY (1, 1) NOT NULL
+    , [UserId]				INT     NOT NULL
+    , [QuestionId]			INT		NOT NULL
+    , CONSTRAINT [PK_LearningExcludedQuestions] PRIMARY KEY CLUSTERED ([Id] ASC)
+    , CONSTRAINT [U_LearningExcludedQuestions] UNIQUE NONCLUSTERED ([UserId] ASC, [QuestionId] ASC)
+    , CONSTRAINT [FK_LearningExcludedQuestions_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[Users] ([Id])
+    , CONSTRAINT [FK_LearningExcludedQuestions_Question] FOREIGN KEY ([QuestionId]) REFERENCES [dbo].[Questions] ([Id])
+);
+
+
+GO
+SET IDENTITY_INSERT [dbo].[LearningExcludedQuestions] ON
+BEGIN TRANSACTION;
+#LearningExcludedQuestions#
+COMMIT;
+SET IDENTITY_INSERT [dbo].[LearningExcludedQuestions] OFF
+
+
+
+
+
+-- Tabela przechowuj¹ca listê s³ów wy³¹czonych z nauki dla poszczególnych userów.
+CREATE TABLE [dbo].[LearningExcludedWords] (
+      [Id]					INT     IDENTITY (1, 1) NOT NULL
+    , [UserId]				INT     NOT NULL
+    , [WordId]				INT		NOT NULL
+    , CONSTRAINT [PK_LearningExcludedWords] PRIMARY KEY CLUSTERED ([Id] ASC)
+    , CONSTRAINT [U_LearningExcludedWords] UNIQUE NONCLUSTERED ([UserId] ASC, [WordId] ASC)
+    , CONSTRAINT [FK_LearningExcludedWords_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[Users] ([Id])
+    , CONSTRAINT [FK_LearningExcludedWords_Word] FOREIGN KEY ([WordId]) REFERENCES [dbo].[Words] ([Id])
+);
+
+
+GO
+SET IDENTITY_INSERT [dbo].[LearningExcludedWords] ON
+BEGIN TRANSACTION;
+#LearningExcludedWords#
+COMMIT;
+SET IDENTITY_INSERT [dbo].[LearningExcludedWords] OFF
