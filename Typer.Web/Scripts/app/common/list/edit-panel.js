@@ -106,7 +106,6 @@ EditPanel.prototype = {
         self.ui.appendDetailsView(container);
 
     }
-
     , clear: function() {
         for (var key in this) {
             delete this[key];
@@ -221,8 +220,15 @@ EditPanelView.prototype = {
         $(this.background).remove();
     }
 
-    , append: function (element) {
-        $(element).appendTo(this.container);
+    , append: function (element, before) {
+        var beforeControl = $(this[before]);
+
+        if (beforeControl) {
+            $(beforeControl).before(element);
+        } else {
+            $(element).appendTo(this.container);
+        }
+        
     }
     
     , appendMetadata: function(element) {

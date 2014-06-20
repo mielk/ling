@@ -18,6 +18,7 @@ function Query(properties) {
 
     //Instance properties.
     self.service = Ling.Queries;
+    self.sets = mielk.hashTable();
 
 }
 mielk.objects.extend(Entity, Query);
@@ -43,8 +44,167 @@ mielk.objects.addProperties(Query.prototype, {
         return array;
     }
 
-});
+    //Tworzy obiekt zależny względem tego entity, np. Word dla Metaword
+    //albo QueryOption dla Query.
+    , createSubItem: function (params) {
+        return new QueryOption(this, params);
+    }
 
+
+    //Zwraca tablicę zawierającą definicję zestawu danych
+    //specyficzne dla klasy Query.
+    , getSpecificDatalinesDefinitions: function (object) {
+        var datalines = [];
+
+        return datalines;
+
+    }
+
+
+    //Editing entity.
+    , edit: function () {
+        var self = this;
+
+        self.loadDetails();
+
+        var editPanel = new EditQueryPanel(self);
+        editPanel.show();
+        editPanel.bind({
+            confirm: function (e) {
+                self.update(e.object);
+            }
+        });
+
+    }
+
+    , clone: function () {
+        var self = this;
+
+        //Create a copy instance of Query with all primitive
+        //properties given as initialize parameters.
+        var obj = new Query({
+              Id: self.id
+            , Name: self.name
+            , Weight: self.weight
+            , IsActive: self.isActive
+            , CreatorId: self.creatorId
+            , CreateDate: self.createDate
+            , IsApproved: self.isApproved
+            , Positive: self.positive
+            , Negative: self.negative
+            , IsNew: self.isNew
+        });
+
+        //Complex properties are set directly.
+        obj.cloned = true;
+        obj.categories = mielk.arrays.clone(self.categories);
+        obj.items = self.items.clone(true);
+
+        //Assign this metaword to all cloned words.
+        obj.items.each(function (key, language) {
+            language.each(function (k, v) {
+                v.parent = obj;
+            });
+        });
+
+        return obj;
+
+    }
+
+    //[Override]
+    , update: function (object) {
+        var self = this;
+        self.updateModel(object);
+        var dto = self.dto();
+        var json = JSON.stringify(dto);
+        mielk.db.post('Questions', 'Update', json, {
+            callback: function (result) {
+
+                if (result < 0) {
+                    var dictItem = (self.id !== 0 ? dict.QueryUpdateError : dict.QueryAddedError);
+                    mielk.notify.display(dictItem.get([self.name]), false);
+                } else if (self.id === 0) {
+                    //New item.
+                    self.trigger({ type: 'added' });
+                    mielk.notify.display(dict.QueryAdded.get([self.name]), true);
+                    self.id === result;
+                } else {
+                    self.trigger({ type: 'updated' });
+                    mielk.notify.display(dict.QueryUpdate.get([self.name]), true);
+                }
+
+            },
+            errorCallback: function () {
+                var dictItem = (self.id !== 0 ? dict.QueryUpdateError : dict.QueryAddedError);
+                mielk.notify.display(dictItem.get([self.name]), false);
+            }
+        });
+    }
+
+    , updateModel: function (object) {
+        var self = this;
+        self.edited = true;
+        self.name = object.name;
+        self.weight = object.weight;
+        self.isActive = object.isActive;
+        self.wordtype = object.wordtype;
+        self.categories = object.categories;
+        self.items = object.items;
+    }
+
+    //[Override]
+    , dto: function () {
+        var self = this;
+
+        return {
+              Id: self.id
+            , Name: self.name
+            , Weight: self.weight
+            , Type: self.wordtype.id
+            , IsActive: self.isActive
+            , CreatorId: self.creatorId
+            , CreateDate: self.createDate
+            , IsApproved: self.isApproved
+            , Positive: self.positive
+            , Negative: self.negative
+            , Categories: (function () {
+                var array = [];
+
+                mielk.arrays.each(self.categories, function (category) {
+                    array.push({
+                        Id: category.key
+                    });
+                });
+
+                return array;
+            })()
+            , Options: (function () {
+                var array = [];
+                var dto = {};
+
+                self.items.each(function (key, language) {
+                    language.each(function (k, word) {
+
+                        dto = (word.edited ? word.dto() : {
+                            Id: word.id
+                            , Name: word.name
+                            , Edited: false
+                        });
+
+                        array.push(dto);
+
+                    });
+                });
+
+                return array;
+
+            })()
+        };
+
+    }
+
+
+});
 
 
 

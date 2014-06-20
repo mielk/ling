@@ -11,12 +11,17 @@ $(function () {
 
     var queries = (function () {
 
+        var controllerName = 'Queries';
+
+        //Obiekt kontrolujący przepływem danych na ekranie wyrazów.
+        var controller = 1;
+
         //Funkcja sprawdzająca czy w bazie istnieje już zapytanie o podanej nazwie.
         function nameAlreadyExists(id, name) {
             var error = dict.QueryCheckIfNameExistsError.get([name]);
             var value = true;
 
-            mielk.db.fetch('Questions', 'CheckName', {
+            mielk.db.fetch(controllerName, 'CheckName', {
                 'id': id,
                 'name': name
             }, {
@@ -50,7 +55,7 @@ $(function () {
             var success = dict.QueryCategoryAssigned.get([query.name, categoriesNames]);
             var error = dict.QueryCategoryAssignedError.get([query.name]);
 
-            mielk.db.fetch('Questions', 'UpdateCategories', {
+            mielk.db.fetch(controllerName, 'UpdateCategories', {
                 'id': query.id
                     , 'categories': categoriesIds
             }, {
@@ -75,7 +80,7 @@ $(function () {
             var success = dict.QueryActivated.get([name]);
             var error = dict.QueryActivatedError.get([name]);
 
-            mielk.db.fetch('Questions', 'Activate', {
+            mielk.db.fetch(controllerName, 'Activate', {
                 'id': id
             }, {
                 async: true,
@@ -97,7 +102,7 @@ $(function () {
             var success = dict.QueryDeactivated.get([name]);
             var error = dict.QueryDeactivatedError.get([name]);
 
-            mielk.db.fetch('Questions', 'Deactivate', {
+            mielk.db.fetch(controllerName, 'Deactivate', {
                 'id': id
             }, {
                 async: true,
@@ -119,7 +124,7 @@ $(function () {
             var success = dict.QueryUpdateWeight.get([name, weight]);
             var error = dict.QueryUpdateWeightError.get([name]);
 
-            mielk.db.fetch('Questions', 'UpdateWeight', {
+            mielk.db.fetch(controllerName, 'UpdateWeight', {
                 'id': id,
                 'weight': weight
             }, {
@@ -141,7 +146,7 @@ $(function () {
             var success = dict.QueryUpdate.get([e.word.name]);
             var error = dict.QueryUpdateError.get([e.word.name]);
 
-            mielk.db.fetch('Questions', 'Update', {
+            mielk.db.fetch(controllerName, 'Update', {
                 'id': e.question.id,
                 'name': e.name,
                 'weight': e.weight,
@@ -201,7 +206,7 @@ $(function () {
             var error = dict.GetQueryOptionsError.get([name]);
             var options = [];
 
-            mielk.db.fetch('Questions', 'GetOptions', {
+            mielk.db.fetch(controllerName, 'GetOptions', {
                 'id': id,
                 'languages': languages
             }, {                
@@ -224,7 +229,7 @@ $(function () {
         function getVariantSets(id, name, languages) {
             var error = dict.GetQueryOptionsError.get([name]);
             
-            mielk.db.fetch('Questions', 'GetVariantSets', {
+            mielk.db.fetch(controllerName, 'GetVariantSets', {
                 'id': id,
                 'languages': languages
             }, {                
@@ -246,7 +251,8 @@ $(function () {
 
         //Funkcja ładująca ekran startowy dla zapytań.
         function initialize() {
-
+            controller = new QueryListManager();
+            controller.start();
         }
 
 

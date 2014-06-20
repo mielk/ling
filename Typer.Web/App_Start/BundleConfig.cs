@@ -73,8 +73,11 @@ namespace Typer.Web
                 , "~/Scripts/app/common/list/filter-panel.js"
                 , "~/Scripts/app/common/list/list-entity.js"
                 , "~/Scripts/app/common/list/edit-panel.js"
+                , "~/Scripts/app/common/list/edit-query-panel.js"
                 , "~/Scripts/app/queries/query-list.js"
                 , "~/Scripts/app/queries/queries.js"
+                , "~/Scripts/app/queries/query.js"
+                , "~/Scripts/app/queries/query-option.js"
             ));
 
             bundles.Add(new ScriptBundle("~/bundles/test").Include(
@@ -102,6 +105,7 @@ namespace Typer.Web
                 //, "~/Content/app/login.css"
                 , "~/Content/app/site.css"
                 , "~/Content/app/list.css"
+                , "~/Content/app/variants.css"
             ));
 
             bundles.Add(new StyleBundle("~/bundles/css/themes/base/css").Include(
