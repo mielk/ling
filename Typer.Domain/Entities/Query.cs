@@ -7,7 +7,7 @@ using Typer.Domain.Services;
 
 namespace Typer.Domain.Entities
 {
-    public class Question
+    public class Query
     {
 
         public const int MinWeight = 1;
@@ -59,10 +59,9 @@ namespace Typer.Domain.Entities
             _categories = QuestionServicesFactory.Instance().GetService().GetCategories(Id);
         }
 
-        public Question()
+        public Query()
         {
             Weight = 1;
-            VariantSets = new List<VariantSet>();
         }
 
 
@@ -75,8 +74,6 @@ namespace Typer.Domain.Entities
         {
             return Options.Where(o => o.LanguageId == languageId);
         }
-
-        public List<VariantSet> VariantSets;
 
     }
 }

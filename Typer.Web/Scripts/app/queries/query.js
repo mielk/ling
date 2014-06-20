@@ -77,6 +77,13 @@ mielk.objects.addProperties(Query.prototype, {
 
     }
 
+    , loadDetails: function () {
+
+        var dto = Ling.Queries.getQuery(this.id);
+
+        var x = 1;
+    }
+
     , clone: function () {
         var self = this;
 

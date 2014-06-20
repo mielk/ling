@@ -20,7 +20,7 @@ function QueryListManager(properties) {
 
     //Class signature.
     self.QueryListManager = true;
-    self.name = 'Queries';
+    self.name = 'Questions';
 
 }
 mielk.objects.extend(ListManager, QueryListManager);

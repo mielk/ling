@@ -18,17 +18,24 @@ namespace Typer.Domain.Entities
         public bool IsApproved { get; set; }
         public int Negative { set; get; }
         public int Positive { get; set; }
-        //public List<Variant> Excluded { get; set; }
         public List<string> Excluded { get; set; }
+        public IEnumerable<int> Words { get; set; }
 
         public Variant()
         {
             Excluded = new List<string>();
+            Words = new List<int>();
         }
 
         public void AddExcluded(Variant variant)
         {
             Excluded.Add(variant.VariantSetId + "|" + variant.Id);   
+        }
+
+        public void AddWord(int word)
+        {
+            var words = (List<int>) Words;
+            words.Add(word);
         }
 
 

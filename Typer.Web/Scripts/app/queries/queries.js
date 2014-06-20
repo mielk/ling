@@ -11,7 +11,7 @@ $(function () {
 
     var queries = (function () {
 
-        var controllerName = 'Queries';
+        var controllerName = 'Questions';
 
         //Obiekt kontrolujący przepływem danych na ekranie wyrazów.
         var controller = 1;
@@ -247,7 +247,29 @@ $(function () {
 
         }
         
+        //Funkcja zwracająca szczegóły danego zapytania.
+        function getQuery(id) {
+            var query = null;
+            var error = dict.GetQueryError.get([name]);
 
+            mielk.db.fetch(controllerName, 'GetQuestionDetails', {
+                'id': id,
+                'currentUserId': Ling.Users.Current.id
+            }, {
+                async: false,
+                cache: false,
+                traditional: false,
+                callback: function (result){
+                    query = result;
+                },
+                errorCallback: function(){
+                    mielk.notify.display(error, false);
+                }
+            });
+
+            return query;
+
+        }
 
         //Funkcja ładująca ekran startowy dla zapytań.
         function initialize() {
@@ -267,6 +289,7 @@ $(function () {
             , getOptions: getOptions
             , getVariantSets: getVariantSets
             , initialize: initialize
+            , getQuery: getQuery
         };
 
     })();

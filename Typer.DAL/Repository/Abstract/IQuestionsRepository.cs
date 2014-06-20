@@ -15,34 +15,36 @@ namespace Typer.DAL.Repositories
         bool UpdateName(int id, string name);
         bool UpdateWeight(int id, int weight);
         bool UpdateProperties(int id, string name, int weight);
-        bool UpdateCategories(int id, int[] categories);
-        bool Update(int id, string name, int weight, int[] categories, string[] dependencies, string[] connections, string[] editedSets, string[] properties,
-                    string[] editedVariants, string[] addedVariants, string[] limits);
-
+        bool UpdateCategories(int id, IEnumerable<int> categories);
         bool Activate(int id);
         bool Deactivate(int id);
         bool NameExists(string name);
         bool NameExists(int id, string name);
 
         IEnumerable<QuestionOptionDto> GetOptions(int questionId);
-        IEnumerable<QuestionOptionDto> GetOptions(int questionId, int[] languages);
+        IEnumerable<QuestionOptionDto> GetOptions(int questionId, IEnumerable<int> languages);
         IEnumerable<QuestionCategoryDto> GetCategories(int metawordId);
-        IEnumerable<int> GetQuestionsIdsByCategories(int[] categories);
+        IEnumerable<int> GetQuestionsIdsByCategories(IEnumerable<int> categories);
 
         //Variants
         IEnumerable<VariantSetDto> GetVariantSets(int questionId);
         IEnumerable<VariantSetDto> GetVariantSets(int questionId, int languageId);
-        IEnumerable<VariantSetDto> GetVariantSets(int questionId, int[] languagesIds);
-        IEnumerable<VariantDto> GetVariants(int variantSetId);
-        IEnumerable<VariantConnectionDto> GetVariantConnections(int[] sets);
-        IEnumerable<VariantLimitDto> GetVariantLimits(int questionId);
-        IEnumerable<VariantDependencyDto> GetVariantDependencies(int[] sets);
-        IEnumerable<DependencyDefinitionDto> GetDependenciesDefinitions(int[] languages);
+        IEnumerable<VariantSetDto> GetVariantSets(int questionId, IEnumerable<int> languagesIds);
+        IEnumerable<VariantDto> GetVariantsForQuestion(int questionId, IEnumerable<int> languages);
 
-        IEnumerable<VariantSetPropertyValueDto> GetVariantSetPropertiesValues(int id);
-        IEnumerable<VariantSetPropertyDefinitionDto> GetVariantSetPropertiesDefinitions(int wordtypeId, int languageId);
-        IEnumerable<VariantDto> GetVariantsForVariantSet(int variantSetId);
-        IEnumerable<VariantDto> GetVariantsForQuestion(int questionId, int[] languages);
-        int GetGrammarDefinitionId(int variantSetId);
+        IEnumerable<VariantConnectionDto> GetVariantSetsConnections(int questionId, IEnumerable<int> languages);
+        IEnumerable<VariantConnectionDto> GetVariantSetsConnections(IEnumerable<int> sets);
+
+        IEnumerable<VariantDependencyDto> GetVariantSetsDependencies(int questionId, IEnumerable<int> languages);
+        IEnumerable<VariantDependencyDto> GetVariantSetsDependencies(IEnumerable<int> sets);
+
+        IEnumerable<VariantLimitDto> GetVariantSetsLimits(int questionId, IEnumerable<int> languages);
+        IEnumerable<VariantLimitDto> GetVariantSetsLimits(IEnumerable<int> sets);
+
+        IEnumerable<VariantDto> GetVariants(int questionId, IEnumerable<int> languages);
+        IEnumerable<VariantDto> GetVariants(IEnumerable<int> sets);
+
+        IEnumerable<MatchVariantWordDto> GetVariantWordMatching(IEnumerable<int> variants);
+
     }
 }

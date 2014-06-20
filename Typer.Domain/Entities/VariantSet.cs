@@ -11,16 +11,13 @@ namespace Typer.Domain.Entities
         public int LanguageId { get; set; }
         public string VariantTag { get; set; }
         public int WordType { get; set; }
-        public string Params { get; set; }
+        public int GrammarFormId { get; set; }
         public bool IsActive { get; set; }
         public int CreatorId { get; set; }
         public DateTime CreateDate { get; set; }
         public List<Variant> Variants { get; set; }
-        //public List<VariantSet> Related { get; set; }
         public List<int> Related { get; set; } 
-        //public List<VariantSet> Dependants { get; set; }
         public List<int> Dependants { get; set; }
-        //public VariantSet Parent { get; set; }
         public int ParentId { get; set; }
 
         public VariantSet()
@@ -40,9 +37,19 @@ namespace Typer.Domain.Entities
             Related.Add(set.Id);
         }
 
+        public void AddRelated(int set)
+        {
+            Related.Add(set);
+        }
+
         public void AddDependant(VariantSet set)
         {
             Dependants.Add(set.Id);
+        }
+
+        public void AddDependant(int set)
+        {
+            Dependants.Add(set);
         }
 
 

@@ -28,7 +28,6 @@ IF OBJECT_ID('dbo.Metawords', N'U') IS NOT NULL DROP TABLE [dbo].[Metawords]
 IF OBJECT_ID('dbo.Categories', N'U') IS NOT NULL DROP TABLE [dbo].[Categories]
 
 -- Systemowe --
-IF OBJECT_ID('dbo.VariantSetRequiredProperties', N'U') IS NOT NULL DROP TABLE [dbo].[VariantSetRequiredProperties]
 IF OBJECT_ID('dbo.VariantDependenciesDefinitions', N'U') IS NOT NULL DROP TABLE [dbo].[VariantDependenciesDefinitions]
 
 IF OBJECT_ID('dbo.WordRequiredProperties', N'U') IS NOT NULL DROP TABLE [dbo].[WordRequiredProperties]
@@ -435,37 +434,7 @@ SET IDENTITY_INSERT [dbo].[VariantDependenciesDefinitions] OFF
 
 
 
-
 GO
-
-
--- Tabela okreœlaj¹ca w³aœciwoœci wymagane do opisania poszczególnych wariant setów (w zale¿noœci od ich wordtype).
-CREATE TABLE [dbo].[VariantSetRequiredProperties] (
-      [Id]              INT		IDENTITY (1, 1) NOT NULL
-    , [LanguageId]      INT		NOT NULL
-    , [WordtypeId]		INT		NOT NULL
-    , [PropertyId]		INT		NOT NULL
-    , CONSTRAINT [PK_VariantSetRequiredProperties] PRIMARY KEY CLUSTERED ([Id] ASC) 
-    , CONSTRAINT [UQ_VariantSetRequiredProperties_UniqueSet] UNIQUE NONCLUSTERED([LanguageId], [WordtypeId], [PropertyId])
-    , CONSTRAINT [FK_VariantSetRequiredProperties_Language] FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id])
-    , CONSTRAINT [FK_VariantSetRequiredProperties_Wordtype] FOREIGN KEY ([WordtypeId]) REFERENCES [dbo].[WordTypes] ([Id])
-    , CONSTRAINT [FK_VariantSetRequiredProperties_Property] FOREIGN KEY ([PropertyId]) REFERENCES [dbo].[GrammarPropertyDefinitions] ([Id])
-);
-SET IDENTITY_INSERT [dbo].[VariantSetRequiredProperties] ON
-BEGIN TRANSACTION;
-#VariantSetRequiredProperties#
-COMMIT;
-SET IDENTITY_INSERT [dbo].[VariantSetRequiredProperties] OFF
-
-
-GO
-
-
-
-
-
-
-
 
 
 

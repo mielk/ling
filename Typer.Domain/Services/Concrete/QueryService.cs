@@ -9,36 +9,40 @@ using Typer.DAL.TransferObjects;
 // ReSharper disable once CheckNamespace
 namespace Typer.Domain.Services
 {
-    public class QuestionService : IQuestionService
+    public class QueryService : IQueryService
     {
 
 
         private readonly IQuestionsRepository _repository;
         private readonly ICategoryService _categoryService = CategoryServicesFactory.Instance().GetService();
 
-        public QuestionService(IQuestionsRepository repository)
+        public QueryService(IQuestionsRepository repository)
         {
             _repository = repository ?? RepositoryFactory.GetQuestionsRepository();
         }
 
 
-        public IEnumerable<Question> GetQuestions()
+        public IEnumerable<Query> GetQueries()
         {
-            var dataObjects = _repository.GetQuestions();
-            return dataObjects.Select(QuestionFromDto).ToList();
+            var dataObjects = _repository.GetQueries();
+            return dataObjects.Select(QueryFromDto).ToList();
         }
 
-        public Question GetQuestion(int id)
+        public Query GetQuery(int id)
         {
-            var dto = _repository.GetQuestion(id);
-            return QuestionFromDto(dto);
+            var dto = _repository.GetQuery(id);
+            return QueryFromDto(dto);
         }
 
+        public Query GetQueryWithDetails(int id)
+        {
+            return null;
+        }
 
 
         public bool ChangeWeight(int id, int weight)
         {
-            return _repository.UpdateWeight(id, weight.ToRange(Question.MinWeight, Question.MaxWeight));
+            return _repository.UpdateWeight(id, weight.ToRange(Query.MinWeight, Query.MaxWeight));
         }
 
 
@@ -70,7 +74,7 @@ namespace Typer.Domain.Services
         }
 
 
-        public bool UpdateQuestion(Question question)
+        public bool UpdateQuery(Query question)
         {
             return _repository.UpdateProperties(question.Id, question.Name, question.Weight);
         }
@@ -82,31 +86,18 @@ namespace Typer.Domain.Services
         }
 
 
-        public bool Update(int id, string name, int weight, int[] categories, string[] dependencies, string[] connections, string[] editedSets, 
-            string[] properties, string[] editedVariants, string[] addedVariants, string[] limits)
-        {
-            return false;
-        }
+        //public bool Update(int id, string name, int weight, int[] categories, string[] dependencies, string[] connections, string[] editedSets, 
+        //    string[] properties, string[] editedVariants, string[] addedVariants, string[] limits)
+        //{
+        //    return _repository.Update(id, name, weight, categories, dependencies, connections, editedSets, properties, editedVariants, addedVariants, limits);
+        //}
 
 
-        public bool AddQuestion(Question question)
+        public bool AddQuery(Query question)
         {
-            var dto = QuestionToDto(question);
+            var dto = QueryToDto(question);
             return _repository.AddQuestion(dto);
         }
-
-        public IEnumerable<QuestionOption> GetOptions(int questionId)
-        {
-            var dataObjects = _repository.GetOptions(questionId);
-            return dataObjects.Select(OptionFromDto).ToList();
-        }
-
-        public IEnumerable<QuestionOption> GetOptions(int questionId, int[] languages)
-        {
-            var dataObjects = _repository.GetOptions(questionId, languages);
-            return dataObjects.Select(OptionFromDto).ToList();
-        }
-
 
         public IEnumerable<Category> GetCategories(int questionId)
         {
@@ -114,124 +105,41 @@ namespace Typer.Domain.Services
             return dtos.Select(dto => _categoryService.GetCategory(dto.CategoryId)).ToList();
         }
 
-        public IEnumerable<Question> Filter(int lowWeight, int upWeight, int[] categories, string text)
+        public IEnumerable<Query> Filter(int lowWeight, int upWeight, int[] categories, string text)
         {
             var dtos = _repository.GetQuestions();
 
             if (lowWeight > 0) dtos = dtos.Where(q => q.Weight >= lowWeight);
             if (upWeight > 0) dtos = dtos.Where(q => q.Weight <= upWeight);
             if (text.Length > 0) dtos = dtos.Where(q => q.Name.ToLower().Contains(text.ToLower()));
-            if (categories == null || categories.Length <= 0) return dtos.Select(QuestionFromDto).ToList();
+            if (categories == null || categories.Length <= 0) return dtos.Select(QueryFromDto).ToList();
             var byCategories = _repository.GetQuestionsIdsByCategories(categories);
             dtos = dtos.Where(q => byCategories.Contains(q.Id));
 
-            return dtos.Select(QuestionFromDto).ToList();
+            return dtos.Select(QueryFromDto).ToList();
 
         }
 
-        public Question GetQuestionDetails(int id, int currentUserId)
-        {
 
-            //Get main Question object.
-            var dto = _repository.GetQuestion(id);
-            Question question = QuestionFromDto(dto);
+        //public IEnumerable<QuestionOption> GetOptions(int questionId)
+        //{
+        //    var dataObjects = _repository.GetOptions(questionId);
+        //    return dataObjects.Select(OptionFromDto).ToList();
+        //}
 
-            //Get sets and variants for the given question.
-            var sets = GetQuestionVariantSets(id, currentUserId);
-            var variants = GetVariants(sets.Keys);
+        //public IEnumerable<QuestionOption> GetOptions(int questionId, int[] languages)
+        //{
+        //    var dataObjects = _repository.GetOptions(questionId, languages);
+        //    return dataObjects.Select(OptionFromDto).ToList();
+        //}
 
-            //Assign variants to the proper variant set.
-            foreach (var variant in variants)
-            {
-                VariantSet set;
-                sets.TryGetValue(variant.VariantSetId, out set);
-                if (set != null)
-                {
-                    set.AddVariant(variant);
-                }
-            }
 
-            question.VariantSets = sets.Values.ToList();
 
-            return question;
-
-        }
-
-        private Dictionary<int, VariantSet> GetQuestionVariantSets(int questionId, int currentUserId)
-        {
-            var languageRepository = new EFLanguageRepository();
-            var languages = languageRepository.GetUserLanguages(currentUserId);
-
-            //Fetch variant sets.
-            var sets = _repository.GetVariantSets(questionId, languages);
-
-            //Create map of sets.
-            var map = new Dictionary<int, VariantSet>();
-            foreach (var set in sets)
-            {
-                map.Add(set.Id, VariantSetFromDto(set));
-            }
-
-            //Load connections between variant sets.
-            var connections = _repository.GetVariantSetsConnections(sets.Select(s => s.Id));
-            foreach (var connection in connections)
-            {
-                VariantSet baseSet;
-                VariantSet connectedSet;
-                map.TryGetValue(connection.VariantSetId, out baseSet);
-                map.TryGetValue(connection.ConnectedSetId, out connectedSet);
-
-                if (baseSet != null && connectedSet != null)
-                {
-                    baseSet.AddRelated(connectedSet.Id);
-                    connectedSet.AddRelated(baseSet.Id);
-                }
-            }
-
-            //Load limits between variant sets.
-            var limits = _repository.GetVariantSetsLimits(sets.Select(s => s.Id));
-            foreach (var limit in limits)
-            {
-                //TODO
-            }
-
-            //Load dependencies between variant sets.
-            var dependencies = _repository.GetVariantSetsDependencies(sets.Select(s => s.Id));
-            foreach (var dependency in dependencies)
-            {
-                //TODO
-            }
-
-            return map;
-
-        }
-
-        private IEnumerable<Variant> GetVariants(IEnumerable<int> sets)
-        {
-
-            //Load variants.
-            var variants = _repository.GetVariants(sets);
-            var map = new Dictionary<int, Variant>();
-            foreach (var variant in variants)
-            {
-                map.Add(variant.Id, VariantFromDto(variant));
-            }
-
-            var variantWords = _repository.GetVariantWordMatching(variants.Select(v => v.Id));
-            foreach (var word in variantWords)
-            {
-                Variant variant;
-                map.TryGetValue(word.VariantId, out variant);
-                if (variant != null)
-                {
-                    variant.AddWord(word.WordId);
-                }
-            }
-
-            return map.Values;
-
-        }
-
+        //public IEnumerable<Variant> GetVariants(int variantSetId)
+        //{
+        //    var dtos = _repository.GetVariants(variantSetId);
+        //    return dtos.Select(VariantFromDto).ToList();
+        //}
 
 
         //public IEnumerable<VariantSet> GetVariantSets(int questionId, int[] languages)
@@ -356,9 +264,9 @@ namespace Typer.Domain.Services
             };
         }
 
-        private static Question QuestionFromDto(QuestionDto dto)
+        private static Query QueryFromDto(QueryDto dto)
         {
-            return new Question
+            return new Query
             {
                 CreateDate = dto.CreateDate,
                 CreatorId = dto.CreatorId,
@@ -373,9 +281,9 @@ namespace Typer.Domain.Services
             };
         }
 
-        private static QuestionDto QuestionToDto(Question question)
+        private static QueryDto QueryToDto(Query question)
         {
-            return new QuestionDto
+            return new QueryDto
             {
                 CreateDate = question.CreateDate,
                 CreatorId = question.CreatorId,
@@ -423,7 +331,8 @@ namespace Typer.Domain.Services
                 Key = dto.Key,
                 Negative = dto.Negative,
                 Positive = dto.Positive,
-                VariantSetId = dto.VariantSetId
+                VariantSetId = dto.VariantSetId,
+                WordId = dto.WordId ?? 0
             };
         }
 
@@ -437,12 +346,35 @@ namespace Typer.Domain.Services
                 IsActive = dto.IsActive,
                 LanguageId = dto.LanguageId,
                 WordType = dto.WordType,
-                GrammarFormId = dto.GrammarFormId,
+                Params = dto.Params,
                 QuestionId = dto.QuestionId,
                 VariantTag = dto.VariantTag
             };
         }
 
+        private static VariantSetPropertyDefinition VariantSetPropertyDefinitionFromDto(
+            VariantSetPropertyDefinitionDto dto)
+        {
+            return new VariantSetPropertyDefinition
+            {
+                Id = dto.Id,
+                LanguageId = dto.LanguageId,
+                PropertyId = dto.PropertyId,
+                WordtypeId = dto.WordtypeId
+            };
+        }
+
+        private static VariantSetPropertyValue VariantSetPropertyValueFromDto(
+            VariantSetPropertyValueDto dto)
+        {
+            return new VariantSetPropertyValue
+            {
+                Id = dto.Id,
+                VariantSetId = dto.VariantSetId,
+                PropertyId = dto.PropertyId,
+                Value = dto.Value
+            };
+        }
 
         //private static GrammarFormDefinitionProperty grammarFormDefinitionPropertyFromDto(
         //    GrammarFormDefinitionPropertyDto dto)

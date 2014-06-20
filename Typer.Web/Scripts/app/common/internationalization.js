@@ -292,6 +292,11 @@ $(function () {
                   POL: 'Błąd podczas próby pobrania wariant-setów dla zapytania {0}'
                 , ENG: 'Error when trying to fetch variant sets for query {0}'
             }
+            , GetQueryError: {
+                  POL: 'Błąd podczas pobierania szczegółów zapytania {0}'
+                , ENG: 'Error when trying to fetch details of query {0}'
+            }
+            
 
             //Labelki
             , Id: {

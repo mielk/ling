@@ -155,6 +155,13 @@ namespace Typer.Web.Controllers
         #endregion
 
 
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult GetQuestionDetails(int id, int currentUserId)
+        {
+            var question = _service.GetQuestionDetails(id, currentUserId);
+            return Json(question, JsonRequestBehavior.AllowGet);
+        }
 
 
         [HttpGet]
@@ -178,63 +185,63 @@ namespace Typer.Web.Controllers
         }
 
 
-        [HttpGet]
-        [AllowAnonymous]
-        public ActionResult GetVariantSets(int id, int[] languages)
-        {
-            var sets = _service.GetVariantSets(id, languages);
-            return Json(sets, JsonRequestBehavior.AllowGet);
-        }
+        //[HttpGet]
+        //[AllowAnonymous]
+        //public ActionResult GetVariantSets(int id, int[] languages)
+        //{
+        //    var sets = _service.GetVariantSets(id, languages);
+        //    return Json(sets, JsonRequestBehavior.AllowGet);
+        //}
 
-        [HttpGet]
-        [AllowAnonymous]
-        public ActionResult GetDependenciesDefinitions(int[] languages)
-        {
-            var definitions = _service.GetDependenciesDefinitions(languages);
-            return Json(definitions, JsonRequestBehavior.AllowGet);
-        }
+        //[HttpGet]
+        //[AllowAnonymous]
+        //public ActionResult GetDependenciesDefinitions(int[] languages)
+        //{
+        //    var definitions = _service.GetDependenciesDefinitions(languages);
+        //    return Json(definitions, JsonRequestBehavior.AllowGet);
+        //}
 
-        [HttpGet]
-        [AllowAnonymous]
-        public ActionResult GetVariantSetPropertiesDefinitions(int wordtypeId, int languageId)
-        {
-            var properties = _service.GetVariantSetPropertiesDefinitions(wordtypeId, languageId);
-            return Json(properties, JsonRequestBehavior.AllowGet);
-        }
+        //[HttpGet]
+        //[AllowAnonymous]
+        //public ActionResult GetVariantSetPropertiesDefinitions(int wordtypeId, int languageId)
+        //{
+        //    var properties = _service.GetVariantSetPropertiesDefinitions(wordtypeId, languageId);
+        //    return Json(properties, JsonRequestBehavior.AllowGet);
+        //}
 
-        [HttpGet]
-        [AllowAnonymous]
-        public ActionResult GetVariantSetPropertiesValues(int id)
-        {
-            var values = _service.GetVariantSetPropertiesValues(id);
-            return Json(values, JsonRequestBehavior.AllowGet);
-        }
-
-
-        [HttpGet]
-        [AllowAnonymous]
-        public ActionResult GetVariantsForQuestion(int questionId, int[] languages)
-        {
-            var variants = _service.GetVariantsForQuestion(questionId, languages);
-            return Json(variants, JsonRequestBehavior.AllowGet);
-        }
+        //[HttpGet]
+        //[AllowAnonymous]
+        //public ActionResult GetVariantSetPropertiesValues(int id)
+        //{
+        //    var values = _service.GetVariantSetPropertiesValues(id);
+        //    return Json(values, JsonRequestBehavior.AllowGet);
+        //}
 
 
-        [HttpGet]
-        [AllowAnonymous]
-        public ActionResult GetVariantsForVariantSet(int variantSetId)
-        {
-            var variants = _service.GetVariantsForVariantSet(variantSetId);
-            return Json(variants, JsonRequestBehavior.AllowGet);
-        }
+        //[HttpGet]
+        //[AllowAnonymous]
+        //public ActionResult GetVariantsForQuestion(int questionId, int[] languages)
+        //{
+        //    var variants = _service.GetVariantsForQuestion(questionId, languages);
+        //    return Json(variants, JsonRequestBehavior.AllowGet);
+        //}
 
-        [HttpGet]
-        [AllowAnonymous]
-        public ActionResult GetGrammarDefinitionId(int variantSetId)
-        {
-            var id = _service.GetGrammarDefinitionId(variantSetId);
-            return Json(id, JsonRequestBehavior.AllowGet);
-        }
+
+        //[HttpGet]
+        //[AllowAnonymous]
+        //public ActionResult GetVariantsForVariantSet(int variantSetId)
+        //{
+        //    var variants = _service.GetVariantsForVariantSet(variantSetId);
+        //    return Json(variants, JsonRequestBehavior.AllowGet);
+        //}
+
+        //[HttpGet]
+        //[AllowAnonymous]
+        //public ActionResult GetGrammarDefinitionId(int variantSetId)
+        //{
+        //    var id = _service.GetGrammarDefinitionId(variantSetId);
+        //    return Json(id, JsonRequestBehavior.AllowGet);
+        //}
 
 
     }

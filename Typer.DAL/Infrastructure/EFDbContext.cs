@@ -30,11 +30,10 @@ namespace Typer.DAL.Infrastructure
         public DbSet<VariantLimitDto> VariantLimits { get; set; }
         public DbSet<VariantDependencyDto> VariantDependencies { get; set; }
         public DbSet<DependencyDefinitionDto> DependenciesDefinitions { get; set; }
-        public DbSet<VariantSetPropertyDefinitionDto> VariantSetPropertyDefinitions { get; set; }
-        public DbSet<VariantSetPropertyValueDto> VariantSetPropertyValues { get; set; }
         public DbSet<GrammarFormDefinitionPropertyDto> GrammarFormDefinitionProperties { get; set; }
         public DbSet<GrammarFormGroupDto> GrammarFormGroups { get; set; }
         public DbSet<GrammarFormInactiveRuleDto> GrammarFormInactiveRules { get; set; }
+        public DbSet<MatchVariantWordDto> MatchVariantWords { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -60,11 +59,10 @@ namespace Typer.DAL.Infrastructure
             modelBuilder.Entity<DependencyDefinitionDto>().ToTable("VariantDependenciesDefinitions");
             modelBuilder.Entity<GrammarPropertyDefinitionDto>().ToTable("GrammarPropertyDefinitions");
             modelBuilder.Entity<GrammarPropertyOptionDto>().ToTable("GrammarPropertyOptions");
-            modelBuilder.Entity<VariantSetPropertyDefinitionDto>().ToTable("VariantSetRequiredProperties");
-            modelBuilder.Entity<VariantSetPropertyValueDto>().ToTable("VariantSetProperties");
             modelBuilder.Entity<GrammarFormDefinitionPropertyDto>().ToTable("GrammarFormsDefinitionsProperties");
             modelBuilder.Entity<GrammarFormGroupDto>().ToTable("GrammarFormsGroups");
             modelBuilder.Entity<GrammarFormInactiveRuleDto>().ToTable("GrammarFormsInactiveRules");
+            modelBuilder.Entity<MatchVariantWordDto>().ToTable("MatchVariantWord");
         }
 
 

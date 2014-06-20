@@ -31,7 +31,7 @@ namespace Typer.DAL.Repositories
         }
 
 
-        public IEnumerable<int> GetQuestionsIdsByCategories(int[] categories)
+        public IEnumerable<int> GetQuestionsIdsByCategories(IEnumerable<int> categories)
         {
             IEnumerable<QuestionCategoryDto> dtos = Context.MatchQuestionCategory.Where(q => categories.Contains(q.CategoryId));
             return dtos.Select(dto => dto.QuestionId).ToList();
@@ -52,7 +52,7 @@ namespace Typer.DAL.Repositories
             return Context.VariantSets.Where(vs => vs.QuestionId == questionId && vs.LanguageId == languageId);
         }
 
-        public IEnumerable<VariantSetDto> GetVariantSets(int questionId, int[] languagesIds)
+        public IEnumerable<VariantSetDto> GetVariantSets(int questionId, IEnumerable<int> languagesIds)
         {
             return Context.VariantSets.Where(vs => vs.QuestionId == questionId && languagesIds.Contains(vs.LanguageId));
         }
@@ -61,26 +61,6 @@ namespace Typer.DAL.Repositories
         public IEnumerable<VariantDto> GetVariants(int variantSetId)
         {
             return Context.Variants.Where(v => v.VariantSetId == variantSetId);
-        }
-
-        public IEnumerable<VariantConnectionDto> GetVariantConnections(int[] sets)
-        {
-            return Context.VariantConnections.Where(vc => sets.Contains(vc.VariantSetId) && sets.Contains(vc.ConnectedSetId));
-        }
-
-        public IEnumerable<VariantLimitDto> GetVariantLimits(int questionId)
-        {
-            return Context.VariantLimits.Where(vc => vc.QuestionId == questionId);
-        }
-
-        public VariantLimitDto GetVariantLimit(int variantId, int excludedId)
-        {
-            return Context.VariantLimits.SingleOrDefault(vc => vc.VariantId == variantId && vc.ConnectedVariantId == excludedId);
-        }
-
-        public IEnumerable<VariantDependencyDto> GetVariantDependencies(int[] sets)
-        {
-            return Context.VariantDependencies.Where(vd => sets.Contains(vd.MainSetId) && sets.Contains(vd.DependantSetId));
         }
 
 
@@ -136,7 +116,7 @@ namespace Typer.DAL.Repositories
         }
 
 
-        public bool UpdateCategories(int questionId, int[] categories)
+        public bool UpdateCategories(int questionId, IEnumerable<int> categories)
         {
 
             try
@@ -208,543 +188,6 @@ namespace Typer.DAL.Repositories
         #endregion
 
 
-        public bool Update(int id, string name, int weight, int[] categories, string[] dependencies, string[] connections, string[] editedSets, 
-                            string[] properties, string[] editedVariants, string[] addedVariants, string[] limits)
-        {
-
-            using (var scope = new TransactionScope())
-            {
-                var result = true;
-                var question = GetQuestion(id);
-                if (question != null)
-                {
-                    try
-                    {
-                        if (name.Length > 0) question.Name = name;
-                        if (weight > 0) question.Weight = weight;
-                        if (categories != null)
-                        {
-                            result = UpdateCategories(id, categories);
-                        }
-
-                        //Variant sets changes (Name and wordtype).
-                        if (editedSets != null)
-                        {
-                            foreach (var edited in editedSets)
-                            {
-                                if (!UpdateSet(edited))
-                                {
-                                    result = false;
-                                }
-                            }
-                        }
-
-                        //Variant sets dependencies
-                        if (dependencies != null)
-                        {
-                            foreach (var dependency in dependencies)
-                            {
-                                if (!UpdateDependencies(dependency))
-                                {
-                                    result = false;
-                                }
-                            }
-                        }
-
-                        //Variant sets connections
-                        if (connections != null)
-                        {
-
-                            foreach (var connection in connections)
-                            {
-                                if (!UpdateConnections(connection))
-                                {
-                                    result = false;
-                                }                                
-                            }
-                        }
-
-                        //Edited variants
-                        if (editedVariants != null)
-                        {
-                            foreach (var edited in editedVariants)
-                            {
-                                if (!UpdateVariant(edited))
-                                {
-                                    result = false;
-                                }
-                            }
-                        }
-
-
-                        //Added variants
-                        if (addedVariants != null)
-                        {
-                            foreach (var added in addedVariants)
-                            {
-                                if (!AddVariant(added))
-                                {
-                                    result = false;
-                                }
-                            }
-                        }
-
-                        //Properties.
-                        if (properties != null)
-                        {
-                            foreach (var property in properties)
-                            {
-                                if (!UpdateProperty(property))
-                                {
-                                    result = false;
-                                }
-                            }
-                        }          
-              
-                        //Limits.
-                        if (limits != null)
-                        {
-                            foreach (var limit in limits)
-                            {
-                                if (!UpdateLimit(limit))
-                                {
-                                    result = false;
-                                }
-                            }
-                        }
-
-
-                        ////Removed
-                        //if (removed != null)
-                        //{
-                        //    for (var i = 0; i < removed.Length; i++)
-                        //    {
-                        //        var _id = removed[i];
-                        //        var option = GetOption(_id);
-                        //        if (option == null)
-                        //        {
-                        //            result = false;
-                        //        }
-                        //        else
-                        //        {
-                        //            option.IsActive = false;    
-                        //        }
-                                
-                        //    }
-                        //}
-
-
-                        ////Edited
-                        //if (edited != null)
-                        //{
-                        //    for (var i = 0; i < edited.Length; i++)
-                        //    {
-                        //        var s = edited[i];
-                        //        var _result = UpdateOption(s);
-                        //        if (!_result) result = false;
-                        //    }
-                        //}
-
-                        ////Added
-                        //if (added != null)
-                        //{
-                        //    for (var i = 0; i < added.Length; i++)
-                        //    {
-                        //        var s = added[i];
-                        //        var _result = AddOption(s, id);
-                        //        if (!_result) result = false;
-                        //    }
-                        //}
-
-
-
-                        if (result)
-                        {
-                            Context.SaveChanges();
-                            scope.Complete();
-                            return true;
-                        }
-
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
-
-                scope.Dispose();
-                return false;
-
-            }
-
-        }
-
-        private bool UpdateVariant(string edited)
-        {
-            var parameters = edited.Split('|');
-        
-            //Set id
-            int setId;
-            Int32.TryParse(parameters[0], out setId);
-
-            //Variant id
-            int variantId;
-            Int32.TryParse(parameters[1], out variantId);
-
-            //Content
-            var content = parameters[2];
-
-            //Word id
-            int wordId;
-            Int32.TryParse(parameters[3], out wordId);
-
-            //Anchored
-            int anchored;
-            Int32.TryParse(parameters[4], out anchored);
-
-
-            var variant = GetVariant(variantId);
-            if (variant == null) return false;
-
-            variant.Content = content;
-            variant.WordId = wordId;
-            variant.IsActive = (anchored == 1);
-
-            return true;
-
-        }
-
-        private static bool AddVariant(string added)
-        {
-            var parameters = added.Split('|');
-
-            //Set id
-            int setId;
-            Int32.TryParse(parameters[0], out setId);
-
-            //Variant id
-            var key = parameters[1];
-
-            //Content
-            var content = parameters[2];
-
-            //Word id
-            int wordId;
-            Int32.TryParse(parameters[3], out wordId);
-
-            //Anchored
-            int anchored;
-            Int32.TryParse(parameters[4], out anchored);
-
-
-            var variant = new VariantDto
-            {
-                Key = key,
-                Content = content,
-                WordId = wordId,
-                IsAnchored = (anchored == 1),
-                CreateDate = DateTime.Now,
-                CreatorId = 1,
-                IsActive = true,
-                VariantSetId = setId
-            };
-
-            Context.Variants.Add(variant);
-
-            return true;
-            
-        }
-
-
-        private bool UpdateSet(string s)
-        {
-
-            var parameters = s.Split('|');
-
-            //Set id
-            int id;
-            Int32.TryParse(parameters[0], out id);
-
-            //Name
-            var name = parameters[1];
-
-            //Wordtype
-            int wordtype;
-            Int32.TryParse(parameters[2], out wordtype);
-
-            var set = GetVariantSet(id);
-            if (set != null)
-            {
-                set.VariantTag = name;
-                set.WordType = wordtype;
-            }
-
-            return true;
-
-        }
-
-        private bool UpdateProperty(string s)
-        {
-
-            var parameters = s.Split('|');
-
-            //Type
-            int type;
-            Int32.TryParse(parameters[0], out type);
-
-            //Set id
-            int id;
-            Int32.TryParse(parameters[1], out id);
-
-            //Property id
-            int propertyId;
-            Int32.TryParse(parameters[2], out propertyId);
-
-            //Value
-            int value;
-            Int32.TryParse(parameters[3], out value);
-
-            var property = GetVariantSetPropertyValue(id, propertyId);
-            if (property == null)
-            {
-
-                //Should exist if was set to be deleted.
-                if (type == -1) return false;
-
-                property = new VariantSetPropertyValueDto
-                {
-                    PropertyId = propertyId,
-                    Value = value,
-                    VariantSetId = id
-                };
-
-                Context.VariantSetPropertyValues.Add(property);
-
-            }
-            else
-            {
-
-                if (type == -1)
-                {
-                    Context.VariantSetPropertyValues.Remove(property);
-                }
-                else
-                {
-                    property.Value = value;
-                }
-                
-            }
-            
-            return true;
-
-        }
-
-        private bool UpdateLimit(string s)
-        {
-            var parameters = s.Split('|');
-
-            //action
-            int action;
-            Int32.TryParse(parameters[0], out action);
-
-            //question
-            int question;
-            Int32.TryParse(parameters[1], out question);
-
-            //parent
-            int variantId;
-            Int32.TryParse(parameters[2], out variantId);
-
-            //dependant
-            int excludedId;
-            Int32.TryParse(parameters[3], out excludedId);
-
-
-            var limit = GetVariantLimit(variantId, excludedId);
-            if (limit != null)
-            {
-                if (action == -1)
-                {
-                    Context.VariantLimits.Remove(limit);
-                }
-                else
-                {
-                    limit.IsActive = true;
-                }
-            }
-            else
-            {
-                limit = new VariantLimitDto
-                {
-                    VariantId = variantId,
-                    ConnectedVariantId = excludedId,
-                    CreatorId = 1,
-                    CreateDate = DateTime.Now,
-                    QuestionId = question,
-                    IsActive = true
-                };
-                Context.VariantLimits.Add(limit);
-            }
-
-            Context.SaveChanges();
-            return true;
-
-        }
-
-        private bool UpdateDependencies(string s)
-        {
-
-            var parameters = s.Split('|');
-
-            //action
-            int action;
-            Int32.TryParse(parameters[0], out action);
-
-            //parent
-            int parentId;
-            Int32.TryParse(parameters[1], out parentId);
-            
-            //dependant
-            int dependantId;
-            Int32.TryParse(parameters[2], out dependantId);
-
-
-            var dependency = GetVariantSetDependency(parentId, dependantId);
-            if (dependency == null && action == 1)
-            {
-                dependency = new VariantDependencyDto
-                {
-                    MainSetId = parentId,
-                    DependantSetId = dependantId,
-                    IsActive = true,
-                    CreatorId = 1
-                };
-
-                Context.VariantDependencies.Add(dependency);
-
-            }
-            else if (dependency != null && action == 0)
-            {
-                Context.VariantDependencies.Remove(dependency);
-            }
-            else
-            {
-                return false;
-            }
-
-            Context.SaveChanges();
-            return true;
-
-        }
-
-        private bool UpdateConnections(string s)
-        {
-
-            var parameters = s.Split('|');
-
-            //action
-            int action;
-            Int32.TryParse(parameters[0], out action);
-
-            //parent
-            int parentId;
-            Int32.TryParse(parameters[1], out parentId);
-
-            //dependant
-            int connectedId;
-            Int32.TryParse(parameters[2], out connectedId);
-
-
-            var connection = GetVariantSetConnection(parentId, connectedId);
-            if (connection == null && action == 1)
-            {
-                connection = new VariantConnectionDto
-                {
-                    VariantSetId = parentId,
-                    ConnectedSetId = connectedId,
-                    IsActive = true,
-                    CreatorId = 1,
-                    CreateDate = DateTime.Now
-                };
-
-                Context.VariantConnections.Add(connection);
-
-            }
-            else if (connection != null && action == 0)
-            {
-                Context.VariantConnections.Remove(connection);
-            }
-            else
-            {
-                return false;
-            }
-
-            Context.SaveChanges();
-            return true;
-
-        }
-
-        private bool UpdateOption(string s)
-        {
-            var parameters = s.Split('|');
-
-            //Id.
-            int id;
-            Int32.TryParse(parameters[0], out id);
-
-            //Name.
-            var name = parameters[1];
-
-            //Weight.
-            int weight;
-            Int32.TryParse(parameters[2], out weight);
-
-            var option = GetOption(id);
-            if (option == null) return false;
-            option.Content = name;
-            option.Weight = weight;
-
-            Context.SaveChanges();
-            return true;
-
-        }
-
-        private bool AddOption(string s, int id)
-        {
-            var parameters = s.Split('|');
-
-            //Language Id.
-            int languageId;
-            Int32.TryParse(parameters[0], out languageId);
-
-            //Name.
-            var name = parameters[1];
-
-            //Weight.
-            int weight;
-            Int32.TryParse(parameters[2], out weight);
-
-            var option = new QuestionOptionDto
-            {
-                Content = name,
-                Weight = weight,
-                CreateDate = DateTime.Now,
-                CreatorId = 1,
-                IsActive = true,
-                Negative = 0,
-                Positive = 0,
-                IsApproved = false,
-                QuestionId = id,
-                LanguageId = languageId
-            };
-
-            Context.QuestionOptions.Add(option);
-            Context.SaveChanges();
-
-            return true;
-
-        }
-
-
 
         public bool Activate(int id)
         {
@@ -806,7 +249,7 @@ namespace Typer.DAL.Repositories
         }
 
 
-        public IEnumerable<QuestionOptionDto> GetOptions(int questionId, int[] languages)
+        public IEnumerable<QuestionOptionDto> GetOptions(int questionId, IEnumerable<int> languages)
         {
             return Context.QuestionOptions.Where(o => o.QuestionId == questionId && o.IsActive && languages.Contains(o.LanguageId));
         }
@@ -821,14 +264,9 @@ namespace Typer.DAL.Repositories
             return Context.MatchQuestionCategory.Where(m => m.QuestionId == questionId);
         }
 
-        public IEnumerable<DependencyDefinitionDto> GetDependenciesDefinitions(int[] languages)
+        public IEnumerable<DependencyDefinitionDto> GetDependenciesDefinitions(IEnumerable<int> languages)
         {
             return Context.DependenciesDefinitions.Where(dd => languages.Contains(dd.LanguageId));
-        }
-
-        public IEnumerable<VariantSetPropertyValueDto> GetVariantSetPropertiesValues(int id)
-        {
-            return Context.VariantSetPropertyValues.Where(vspv => vspv.VariantSetId == id);
         }
 
         public VariantDto GetVariant(int variantId)
@@ -836,35 +274,7 @@ namespace Typer.DAL.Repositories
             return Context.Variants.SingleOrDefault(v => v.Id == variantId);
         }
 
-        public VariantSetPropertyValueDto GetVariantSetPropertyValue(int setId, int propertyId)
-        {
-            return Context.VariantSetPropertyValues.SingleOrDefault(vspv => vspv.VariantSetId == setId && vspv.PropertyId == propertyId);
-        }
-
-        public VariantDependencyDto GetVariantSetDependency(int parentId, int dependantId)
-        {
-            return Context.VariantDependencies.SingleOrDefault(vd => vd.MainSetId == parentId && vd.DependantSetId == dependantId);
-        }
-
-        public VariantConnectionDto GetVariantSetConnection(int parentId, int connectedId)
-        {
-            return Context.VariantConnections.SingleOrDefault(vd => (vd.VariantSetId == parentId && vd.ConnectedSetId == connectedId) || 
-                                                                    (vd.VariantSetId == connectedId && vd.ConnectedSetId == parentId));
-        }
-
-        public IEnumerable<VariantSetPropertyDefinitionDto> GetVariantSetPropertiesDefinitions(int wordtypeId, int languageId)
-        {
-            return
-                Context.VariantSetPropertyDefinitions.Where(
-                    vspd => vspd.LanguageId == languageId && vspd.WordtypeId == wordtypeId);
-        }
-
-        public IEnumerable<VariantDto> GetVariantsForVariantSet(int variantSetId)
-        {
-            return Context.Variants.Where(v => v.VariantSetId == variantSetId);
-        }
-
-        public IEnumerable<VariantDto> GetVariantsForQuestion(int questionId, int[] languages)
+        public IEnumerable<VariantDto> GetVariantsForQuestion(int questionId, IEnumerable<int> languages)
         {
 
             var sets = Context.VariantSets.Where(vs => vs.QuestionId == questionId && languages.Contains(vs.LanguageId)).Select(vs => vs.Id);
@@ -872,31 +282,55 @@ namespace Typer.DAL.Repositories
 
         }
 
-        public int GetGrammarDefinitionId(int variantSetId)
+        public IEnumerable<VariantConnectionDto> GetVariantSetsConnections(int questionId, IEnumerable<int> languages)
         {
+            var sets = Context.VariantSets.Where(vs => vs.QuestionId == questionId && languages.Contains(vs.LanguageId)).Select(vs => vs.Id);
+            return Context.VariantConnections.Where(vc => sets.Contains(vc.VariantSetId) && sets.Contains(vc.ConnectedSetId));
+        }
 
-            //var wordtypeId = Context.VariantSets.Where(vs => vs.Id == variantSetId).Select(vs => vs.WordType).First();
-            //var properties = Context.VariantSetPropertyValues.Where(vspv => vspv.VariantSetId == variantSetId);
-            ////var definitions = Context.GrammarDefinitions.Where(gd => gd.WordtypeId == wordtypeId).Select(gd => gd.Id);
-            //IEnumerable<GrammarFormDefinitonDto> definitions = null;
-            
+        public IEnumerable<VariantConnectionDto> GetVariantSetsConnections(IEnumerable<int> sets)
+        {
+            return Context.VariantConnections.Where(vc => sets.Contains(vc.VariantSetId) && sets.Contains(vc.ConnectedSetId));
+        }
 
-            //foreach (var propertyValue in properties)
-            //{
-            //    var value = propertyValue;
-            //    var numbers = definitions.ToArray();
-            //    definitions = Context.GrammarFormDefinitionProperties.
-            //        Where(d => numbers.Contains(d.IdDefinition) && 
-            //            d.IdProperty == value.PropertyId &&
-            //            d.Value == value.Value).Select(d => d.IdDefinition);
 
-            //}
+        public IEnumerable<VariantDependencyDto> GetVariantSetsDependencies(int questionId, IEnumerable<int> languages)
+        {
+            var sets = Context.VariantSets.Where(vs => vs.QuestionId == questionId && languages.Contains(vs.LanguageId)).Select(vs => vs.Id);
+            return Context.VariantDependencies.Where(vd => sets.Contains(vd.MainSetId) || sets.Contains(vd.DependantSetId));
+        }
 
-            //var id = definitions.FirstOrDefault();
-            //return id;
+        public IEnumerable<VariantDependencyDto> GetVariantSetsDependencies(IEnumerable<int> sets)
+        {
+            return Context.VariantDependencies.Where(vd => sets.Contains(vd.MainSetId) || sets.Contains(vd.DependantSetId));
+        }
 
-            return 0;
+        public IEnumerable<VariantLimitDto> GetVariantSetsLimits(int questionId, IEnumerable<int> languages)
+        {
+            var sets = Context.VariantSets.Where(vs => vs.QuestionId == questionId && languages.Contains(vs.LanguageId)).Select(vs => vs.Id);
+            var limits = Context.VariantLimits.Where(vl => vl.QuestionId == questionId);
+            return limits.Where(vl => sets.Contains(vl.ConnectedVariantId) || sets.Contains(vl.VariantId));
+        }
 
+        public IEnumerable<VariantLimitDto> GetVariantSetsLimits(IEnumerable<int> sets)
+        {
+            return Context.VariantLimits.Where(vl => sets.Contains(vl.ConnectedVariantId) || sets.Contains(vl.VariantId));
+        }
+
+        public IEnumerable<VariantDto> GetVariants(int questionId, IEnumerable<int> languages)
+        {
+            var sets = Context.VariantSets.Where(vs => vs.QuestionId == questionId && languages.Contains(vs.LanguageId)).Select(vs => vs.Id);
+            return Context.Variants.Where(v => sets.Contains(v.VariantSetId));
+        }
+
+        public IEnumerable<VariantDto> GetVariants(IEnumerable<int> sets)
+        {
+            return Context.Variants.Where(v => sets.Contains(v.VariantSetId));
+        }
+
+        public IEnumerable<MatchVariantWordDto> GetVariantWordMatching(IEnumerable<int> variants)
+        {
+            return Context.MatchVariantWords.Where(mvw => variants.Contains(mvw.VariantId));
         }
 
     }

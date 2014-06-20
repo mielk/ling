@@ -60,6 +60,7 @@
     <Compile Include="Entities\GrammarPropertyDefinition.cs" />
     <Compile Include="Entities\GrammarPropertyOption.cs" />
     <Compile Include="Entities\Variant.cs" />
+    <Compile Include="Entities\VariantExclusion.cs" />
     <Compile Include="Entities\VariantSet.cs" />
     <Compile Include="Entities\WordPropertyRequirement.cs" />
     <Compile Include="Entities\Word.cs" />

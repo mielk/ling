@@ -54,8 +54,6 @@
     <Compile Include="TransferObjects\GrammarFormDefinitionPropertyDto.cs" />
     <Compile Include="TransferObjects\GrammarFormGroupDto.cs" />
     <Compile Include="TransferObjects\GrammarFormInactiveRuleDto.cs" />
-    <Compile Include="TransferObjects\VariantSetPropertyDefinitionDto.cs" />
-    <Compile Include="TransferObjects\VariantSetPropertyValueDto.cs" />
     <Compile Include="TransferObjects\GrammarPropertyDefinitionDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TransferObjects\DependencyDefinitionDto.cs" />
@@ -74,6 +72,7 @@
     <Compile Include="TransferObjects\CategoryDto.cs" />
     <Compile Include="TransferObjects\GrammarFormDto.cs" />
     <Compile Include="TransferObjects\GrammarPropertyOptionDto.cs" />
+    <Compile Include="TransferObjects\MatchVariantWordDto.cs" />
     <Compile Include="TransferObjects\QuestionCategoryDto.cs" />
     <Compile Include="TransferObjects\MetawordDto.cs" />
     <Compile Include="TransferObjects\VariantDependencyDto.cs" />

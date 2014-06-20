@@ -1,0 +1,16 @@
+﻿@model Typer.Web.Models.QuestionsListViewModel
+
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @Scripts.Render("~/bundles/queries")
+}
+
+@section scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            Ling.Queries.initialize();
+        });
+    </script>
+}
