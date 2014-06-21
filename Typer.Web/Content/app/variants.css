@@ -21,10 +21,6 @@ input[type=submit].variant-button-edit {
 }
 
 
-
-/*
-
-
 span.plain {
     padding: 6px 3px;
     line-height: 12px;
@@ -39,10 +35,45 @@ span.complex {
     font-size: 12px;
     background-color: rgb(255, 240, 182);
     color: rgb(110, 98, 0);
+    cursor: pointer;
 }
 
 
 
+.variant-set-block {
+    position: relative;
+    float: left;
+    display: block;
+    width: auto;
+    height: 28px;
+    border: 1px solid #999;
+    padding: 2px;
+    margin: 3px 6px;
+    background-color: rgb(255, 251, 210);
+    cursor: pointer;
+}
+
+.variant-set-block .flag {
+    position: relative;
+    float: left;
+    display: block;
+    height: 22px;
+    width: 32px;
+    border: 1px solid #999;
+}
+
+.variant-set-block .name {
+    position: relative;
+    float: left;
+    display: block;
+    height: 22px;
+    width: auto;
+    padding: 0 9px;
+    border: 1px solid transparent;
+    line-height: 20px;
+}
+
+/*
 
 
 
@@ -181,15 +212,7 @@ span.complex {
     padding: 0 3px;
 }
 
-.variant-set-block {
-    width: auto;
-    height: 28px;
-    border: 1px solid #999;
-    padding: 2px;
-    margin: 6px;
-    background-color: rgb(255, 251, 210);
-    cursor: pointer;
-}
+
 
 .variant-set-block-cancel {
     position: absolute !important;
@@ -207,19 +230,7 @@ span.complex {
     opacity: 0.5;
 }
 
-.variant-set-block .flag {
-    height: 22px;
-    width: 32px;
-    border: 1px solid #999;
-}
 
-.variant-set-block .name {
-    height: 22px;
-    width: auto;
-    padding: 0 9px;
-    border: 1px solid transparent;
-    line-height: 20px;
-}
 
 .group-options-container {
     margin-top: 12px;

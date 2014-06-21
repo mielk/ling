@@ -755,42 +755,60 @@ function OptionPanel(item, parent) {
     // ReSharper disable UnusedLocals
     self.ui = (function () {
 
-        var container = jQuery('<div/>', { 'class': 'option' });
+        var container;
+        var deleteButton;
+        var edit;
+        var content;
+        var weight;
+        var completness;
 
-        var deleteButton = jQuery('<div/>', {
-            'class': 'button delete',
-            'title': dict.DeleteThisItem.get()
-        }).bind({
-            click: function () {
-                self.item.remove();
-                hide();
+        function createUi() {
+            container = jQuery('<div/>', { 'class': 'option' });
+
+            deleteButton = jQuery('<div/>', {
+                'class': 'button delete',
+                'title': dict.DeleteThisItem.get()
+            }).bind({
+                click: function () {
+                    self.item.remove();
+                    hide();
+                }
+            }).appendTo(container);
+
+            edit = jQuery('<div/>', {
+                'class': 'button edit',
+                'title': dict.EditThisItem.get()
+            }).bind({
+                click: function () {
+                    self.item.edit();
+                }
+            }).appendTo(container);
+
+            content = jQuery('<div/>', {
+                'class': 'content'
+            }).appendTo(container);
+
+            weight = jQuery('<div/>', {
+                'class': 'weight',
+                'html': self.item.weight
+            }).appendTo(container);
+
+            completness = jQuery('<div/>', {
+                'class': 'completness ' + (self.item.isCompleted ? 'complete' : 'incomplete')
+            }).appendTo(container);
+
+
+        }
+
+        function insertContent() {
+            //Insert content of this option.
+            if (self.item.htmlContent && typeof (self.item.htmlContent) === 'function') {
+                var htmlContent = self.item.htmlContent();
+                $(htmlContent).appendTo(content);
+            } else {
+                $(content).html(self.contentToHtml());
             }
-        }).appendTo(container);
-
-        var edit = jQuery('<div/>', {
-            'class': 'button edit',
-            'title': dict.EditThisItem.get()
-        }).bind({
-            click: function () {
-                self.item.edit();
-            }
-        }).appendTo(container);
-
-        var content = jQuery('<div/>', {
-            'class': 'content',
-            'html': self.contentToHtml()
-        }).appendTo(container);
-
-        var weight = jQuery('<div/>', {
-            'class': 'weight',
-            'html': self.item.weight
-        }).appendTo(container);
-
-        var completness = jQuery('<div/>', {
-            'class': 'completness ' + (self.item.isCompleted ? 'complete' : 'incomplete')
-        }).appendTo(container);
-
-
+        }
 
         function hide() {
             $(container).css({
@@ -810,6 +828,11 @@ function OptionPanel(item, parent) {
         }
 
 
+
+        (function initialize() {
+            createUi();
+            insertContent();
+        })();
 
         return {
               view: container

@@ -80,8 +80,57 @@ mielk.objects.addProperties(Query.prototype, {
     , loadDetails: function () {
 
         var dto = Ling.Queries.getQuery(this.id);
+        this.createVariantSets(dto.VariantSets);
 
-        var x = 1;
+    }
+
+    , createVariantSets: function (sets) {
+        var self = this;
+
+        //Ładowanie zestawów wariantów (bez ładowania
+        //zależności i powiązań).
+        mielk.arrays.each(sets, function (s) {
+            var set = new VariantSet(self, s);
+            self.sets.setItem(set.id, set);
+        });
+
+        //Dopiero po załadowaniu wszystkich zestawów
+        //ładowane są powiązania i zależności między 
+        //nimi - dzięki temu jest gwarancja, że
+        //wszystkie zestawy są już załadowane do pamięci.
+        mielk.arrays.each(sets, function (s) {
+            var set = self.getVariantSet(s.Id);
+
+            //Przypisanie nadrzędnego zestawu.
+            if (s.ParentId) {
+                var masterSet = self.getVariantSet(s.ParentId);
+                if (masterSet) {
+                    set.setMaster(masterSet);
+                }
+            }
+
+            //Ładowanie zestawów zależnych.
+            mielk.arrays.each(s.Dependants, function (dependant) {
+                var dependantSet = self.getVariantSet(dependant);
+                if (dependantSet) {
+                    set.addDependant(dependantSet);
+                }
+            });
+
+            //Ładowanie zestawów powiązanych.
+            mielk.arrays.each(s.Related, function (related) {
+                var relatedSet = self.getVariantSet(related);
+                if (relatedSet) {
+                    set.addRelated(relatedSet);
+                }
+            });
+
+        });
+
+    }
+
+    , getVariantSet: function (id) {
+        return this.sets.getItem(id);
     }
 
     , clone: function () {
@@ -106,12 +155,19 @@ mielk.objects.addProperties(Query.prototype, {
         obj.cloned = true;
         obj.categories = mielk.arrays.clone(self.categories);
         obj.items = self.items.clone(true);
+        obj.sets = self.sets.clone(true);
 
-        //Assign this metaword to all cloned words.
+        //Assign this query to all cloned words.
         obj.items.each(function (key, language) {
             language.each(function (k, v) {
                 v.parent = obj;
             });
+        });
+
+        //Assigned this query and cloned instances of sets 
+        //to all cloned sets.
+        obj.sets.each(function (k, set) {
+            set.refreshQuery(obj);
         });
 
         return obj;
@@ -157,6 +213,7 @@ mielk.objects.addProperties(Query.prototype, {
         self.wordtype = object.wordtype;
         self.categories = object.categories;
         self.items = object.items;
+        self.sets = object.sets;
     }
 
     //[Override]

@@ -18,6 +18,8 @@ function QueryOption(query, params) {
 
     //Instance properties.
     self.parent = query;
+    self.name = params.Content || '';
+    self.content = params.Content || '';
     self.isCompleted = (params.IsCompleted || params.isCompleted ? true : false);
     self.language = Ling.Languages.getLanguage(params.languageId || params.LanguageId);
 
@@ -41,7 +43,7 @@ mielk.objects.addProperties(QueryOption.prototype, {
     //inherited activate
     //inherited getDatalinesDefinitions
 
-    remove: function () {
+      remove: function () {
         this.parent.removeItem(this);
         this.trigger({ type: 'remove' });
     }
@@ -54,6 +56,7 @@ mielk.objects.addProperties(QueryOption.prototype, {
         var obj = new QueryOption(self.parent, {
               Id: self.id
             , Name: self.name
+            , Content: self.content
             , Weight: self.weight
             , LanguageId: self.language.id
             , IsActive: self.isActive
@@ -72,8 +75,6 @@ mielk.objects.addProperties(QueryOption.prototype, {
         return obj;
 
     }
-
-    , detailsMethodName: ''
 
     , controllerName: 'Queries'
 
@@ -103,7 +104,6 @@ mielk.objects.addProperties(QueryOption.prototype, {
         self.weight = object.weight;
         self.isActive = object.isActive;
         self.properties = object.properties;
-        self.grammarForms = object.grammarForms;
         self.isCompleted = self.checkIfComplete();
         self.trigger({ type: 'updated' });
     }
@@ -119,6 +119,72 @@ mielk.objects.addProperties(QueryOption.prototype, {
         });
         return isComplete;
     }
+
+    , htmlContent: function () {
+        var self = this;
+        var content = self.content;
+        var parts = content.split('#');
+
+        //UI.
+        var container = jQuery('<div/>');
+        mielk.arrays.each(parts, function (part) {
+            if (!part) return;
+
+            var span;
+            if ($.isNumeric(part)) {
+                var variant = (function () {
+                    var id = Number(part);
+                    var set = self.parent.getVariantSet(id);
+                    var view = jQuery('<span/>', {
+                        'class': 'complex',
+                        html: set.tag
+                    });
+                    $(view).appendTo(container);
+                })();
+            } else {
+                var span = jQuery('<span/>', {
+                    'class': 'plain',
+                    html: part
+                });
+                $(span).appendTo(container);
+            }
+
+        });
+
+        return container;
+
+    }
+
+
+    //, toHtml: function ($content) {
+    //    var content = $content || this.item.name;
+    //    var weight = this.item.weight;
+
+    //    html += '<div class="content" data-value="' + content + '">';
+    //    html += this.contentToHtml(content);
+    //    html += '</div>';
+    //    html += '<div class="weight" data-value="' + weight + '">' + weight + '</div>';
+
+    //    return html;
+
+    //}
+
+    //, contentToHtml: function () {
+    //    var content = this.item.name;
+    //    var replaced = content.replace(/\[/g, '|$').replace(/\]/g, '|');
+    //    var parts = replaced.split("|");
+
+    //    var result = '';
+    //    mielk.arrays.each(parts, function (part) {
+    //        if (part.length > 0) {
+    //            result += '<span class="' + (mielk.text.startsWith(part, '$') ? 'complex' : 'plain') + '">' + part.replace("$", "") + '</span>';
+    //        }
+    //    });
+
+    //    return result;
+
+    //}
+
 
     //Pobiera informacje na temat elementów przypisanych do obiektu
     //reprezentowanego przez ten ListItem. Np. dla Metaword wyświetla

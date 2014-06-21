@@ -133,63 +133,63 @@ $(function () {
             });
         }
                 
-        //Funkcja zmieniająca właściwości podanego metawyrazu.
-        function update(e) {
-            var success = dict.MetawordUpdate.get([e.word.name]);
-            var error = dict.MetawordUpdateError.get([e.word.name]);
+        ////Funkcja zmieniająca właściwości podanego metawyrazu.
+        //function update(e) {
+        //    var success = dict.MetawordUpdate.get([e.word.name]);
+        //    var error = dict.MetawordUpdateError.get([e.word.name]);
 
-            mielk.db.fetch('Words', 'Update', {
-                'id': e.word.id,
-                'name': e.name,
-                'weight': e.weight,
-                'categories': e.categories,
-                'wordtype': e.wordtype,
-                'removed': e.removed,
-                'edited': e.edited,
-                'added': e.added,
-                'properties': e.properties,
-                'forms': e.details
-            }, {
-                async: true,
-                cache: false,
-                traditional: true,
-                callback: function(result) {
-                    mielk.notify.display(success, true);
-                    mielk.fn.run(e.callback, result);
-                },
-                errorCallback: function() {
-                    mielk.notify.display(error, false);
-                    mielk.fn.run(e.callback, false);
-                }
-            });
-        }
+        //    mielk.db.fetch('Words', 'Update', {
+        //        'id': e.word.id,
+        //        'name': e.name,
+        //        'weight': e.weight,
+        //        'categories': e.categories,
+        //        'wordtype': e.wordtype,
+        //        'removed': e.removed,
+        //        'edited': e.edited,
+        //        'added': e.added,
+        //        'properties': e.properties,
+        //        'forms': e.details
+        //    }, {
+        //        async: true,
+        //        cache: false,
+        //        traditional: true,
+        //        callback: function(result) {
+        //            mielk.notify.display(success, true);
+        //            mielk.fn.run(e.callback, result);
+        //        },
+        //        errorCallback: function() {
+        //            mielk.notify.display(error, false);
+        //            mielk.fn.run(e.callback, false);
+        //        }
+        //    });
+        //}
 
-        //Funkcja dodająca podany metawyraz do bazy danych.
-        function add(e) {
-            var success = dict.MetawordAdded.get([e.word.name]);
-            var error = dict.MetawordAddedError.get([e.word.name]);
+        ////Funkcja dodająca podany metawyraz do bazy danych.
+        //function add(e) {
+        //    var success = dict.MetawordAdded.get([e.word.name]);
+        //    var error = dict.MetawordAddedError.get([e.word.name]);
 
-            mielk.db.fetch('Words', 'Add', {
-                'name': e.name,
-                'weight': e.weight,
-                'categories': e.categories,
-                'wordtype': e.wordtype,
-                'added': e.added,
-                'properties': e.properties
-            }, {
-                async: true,
-                cache: false,
-                traditional: true,
-                callback: function(result) {
-                    mielk.notify.display(success, true);
-                    mielk.fn.run(e.callback, result);
-                },
-                errorCallback: function() {
-                    mielk.notify.display(error, false);
-                    mielk.fn.run(e.callback, false);
-                }
-            });
-        }
+        //    mielk.db.fetch('Words', 'Add', {
+        //        'name': e.name,
+        //        'weight': e.weight,
+        //        'categories': e.categories,
+        //        'wordtype': e.wordtype,
+        //        'added': e.added,
+        //        'properties': e.properties
+        //    }, {
+        //        async: true,
+        //        cache: false,
+        //        traditional: true,
+        //        callback: function(result) {
+        //            mielk.notify.display(success, true);
+        //            mielk.fn.run(e.callback, result);
+        //        },
+        //        errorCallback: function() {
+        //            mielk.notify.display(error, false);
+        //            mielk.fn.run(e.callback, false);
+        //        }
+        //    });
+        //}
 
         //Funkcja zwracająca wyrazy dla podanego metawyrazu.
         function getWords(id, name, languages) {
@@ -229,8 +229,8 @@ $(function () {
             , activate: activate
             , deactivate: deactivate
             , updateWeight: updateWeight
-            , update: update
-            , add: add
+            //, update: update
+            //, add: add
             , getWords: getWords
             , initialize: initialize
         };

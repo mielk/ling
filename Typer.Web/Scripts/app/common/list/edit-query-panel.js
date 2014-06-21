@@ -22,10 +22,8 @@ mielk.objects.addProperties(EditQueryPanel.prototype, {
 
     //Wstawia ramkę przeznaczoną do definiowania zestawów wariantów.
     , insertVariantSetsManager: function() {
-
         var panel = new VariantSetsPanel(this.editObject);
         this.ui.append(panel.view(), 'details');
-
     }
 
 });
@@ -60,6 +58,23 @@ function VariantSetsPanel(query) {
             }
         });
 
+        function displayVariantSets() {
+            self.query.sets.each(function (key, set) {
+                var block = set.getBlock();
+                block.bind({
+                    click: function (e) {
+                        alert(block.set.tag + ' clicked');
+                    }
+                })
+                $(block.view).appendTo(container);
+            });
+        }
+
+
+        (function initialize() {
+            displayVariantSets();
+        })();
+
         return {
             view: container
         };
@@ -67,8 +82,6 @@ function VariantSetsPanel(query) {
     })();
 
 }
-
-
 VariantSetsPanel.prototype = {
 
     view: function () {
