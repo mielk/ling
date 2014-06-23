@@ -1057,6 +1057,54 @@
             
         }
 
+        function modalPopup(content) {
+
+            var popup = (function() {
+                var background = jQuery('<div/>', {
+                    'id': 'test'
+                });
+                background.css({
+                    'position': 'fixed',
+                    'display': 'block',
+                    'top': 0,
+                    'left': 0,
+                    'width': '100%',
+                    'height': '100%',
+                    'background-color': 'rgba(100, 100, 100, 0.85)',
+                    'overflow-y': 'auto',
+                    'z-index': topLayer()
+                });
+                $(background).appendTo(document.body);
+                background.bind({
+                    click: function() {
+                        $(background).remove();
+                    }
+                });
+
+                var frame = jQuery('<div/>');
+                frame.css({
+                    'position': 'relative'
+                    ,'display': 'table'
+                    ,'-moz-box-sizing': 'border-box'
+                    ,'-webkit-box-sizing': 'border-box'
+                    ,'box-sizing': 'border-box'
+                    ,'border': '3px solid #999'
+                    ,'background-color': '#eee'
+                    ,'padding': '12px'
+                    ,'width':'auto'
+                    ,'height':'auto'
+                    ,'margin':'50px auto'
+                });
+                frame.appendTo(background);
+
+                $(content).appendTo(frame);
+                
+
+            })();
+
+            return popup;
+
+        }
 
         return {
               getPosition: getPosition
@@ -1065,6 +1113,7 @@
             , topLayer: topLayer
             , radio: radio
             , checkbox: checkbox
+            , modalPopup: modalPopup
         };
 
     })();

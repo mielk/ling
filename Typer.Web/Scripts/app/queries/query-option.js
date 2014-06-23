@@ -130,7 +130,6 @@ mielk.objects.addProperties(QueryOption.prototype, {
         mielk.arrays.each(parts, function (part) {
             if (!part) return;
 
-            var span;
             if ($.isNumeric(part)) {
                 var variant = (function () {
                     var id = Number(part);
@@ -141,6 +140,9 @@ mielk.objects.addProperties(QueryOption.prototype, {
                     });
                     $(view).appendTo(container);
                 })();
+                
+                //Dodać binding.
+
             } else {
                 var span = jQuery('<span/>', {
                     'class': 'plain',
@@ -155,35 +157,6 @@ mielk.objects.addProperties(QueryOption.prototype, {
 
     }
 
-
-    //, toHtml: function ($content) {
-    //    var content = $content || this.item.name;
-    //    var weight = this.item.weight;
-
-    //    html += '<div class="content" data-value="' + content + '">';
-    //    html += this.contentToHtml(content);
-    //    html += '</div>';
-    //    html += '<div class="weight" data-value="' + weight + '">' + weight + '</div>';
-
-    //    return html;
-
-    //}
-
-    //, contentToHtml: function () {
-    //    var content = this.item.name;
-    //    var replaced = content.replace(/\[/g, '|$').replace(/\]/g, '|');
-    //    var parts = replaced.split("|");
-
-    //    var result = '';
-    //    mielk.arrays.each(parts, function (part) {
-    //        if (part.length > 0) {
-    //            result += '<span class="' + (mielk.text.startsWith(part, '$') ? 'complex' : 'plain') + '">' + part.replace("$", "") + '</span>';
-    //        }
-    //    });
-
-    //    return result;
-
-    //}
 
 
     //Pobiera informacje na temat elementów przypisanych do obiektu
@@ -358,7 +331,7 @@ mielk.objects.addProperties(QueryOption.prototype, {
         return;
         var property = this.properties.getItem(propertyId);
         if (property) {
-            var value = property.property.options.getItem(valueId)
+            var value = property.property.options.getItem(valueId);
             if (value) {
                 property.value = value;
                 this.trigger({

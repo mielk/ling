@@ -1,22 +1,30 @@
 ﻿$(function () {
 
-    var container = $('#test-container')[0];
-    var result = $('#result')[0];
-
-    var checkbox = my.ui.checkbox({
-        container: container,
-        name: 'test',
-        caption: 'Test checkbox',
-        checked: true
+    var x = jQuery('<div/>', {        
+        html: 'content'
     });
 
-    checkbox.bind({
-        click: function (e) {
-            $(result).css({
-                'background-color': e.value ? 'red' : 'green'
-            });
-        }
-    });
+    //$(x).appendTo(document.body);
+
+    mielk.ui.modalPopup(x);
+
+    //var container = $('#test-container')[0];
+    //var result = $('#result')[0];
+
+    //var checkbox = my.ui.checkbox({
+    //    container: container,
+    //    name: 'test',
+    //    caption: 'Test checkbox',
+    //    checked: true
+    //});
+
+    //checkbox.bind({
+    //    click: function (e) {
+    //        $(result).css({
+    //            'background-color': e.value ? 'red' : 'green'
+    //        });
+    //    }
+    //});
 
     //var radio = my.ui.radio({
     //    container: container,
