@@ -966,11 +966,14 @@ CREATE TABLE [dbo].[VariantLimits] (
 
 
 
+
+
+
 -- Tabela przechowuj¹ca listê zapytañ wy³¹czonych dla poszczególnych userów.
 CREATE TABLE [dbo].[LearningExcludedQueries] (
       [Id]					INT     IDENTITY (1, 1) NOT NULL
     , [UserId]				INT     NOT NULL
-    , [QueryId]			INT		NOT NULL
+    , [QueryId]				INT		NOT NULL
     , CONSTRAINT [PK_LearningExcludedQueries] PRIMARY KEY CLUSTERED ([Id] ASC)
     , CONSTRAINT [U_LearningExcludedQueries] UNIQUE NONCLUSTERED ([UserId] ASC, [QueryId] ASC)
     , CONSTRAINT [FK_LearningExcludedQueries_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[Users] ([Id])
@@ -978,12 +981,12 @@ CREATE TABLE [dbo].[LearningExcludedQueries] (
 );
 
 
---GO
---SET IDENTITY_INSERT [dbo].[LearningExcludedQuestions] ON
+GO
+--SET IDENTITY_INSERT [dbo].[LearningExcludedQueries] ON
 --BEGIN TRANSACTION;
 --#LearningExcludedQuestions#
 --COMMIT;
---SET IDENTITY_INSERT [dbo].[LearningExcludedQuestions] OFF
+--SET IDENTITY_INSERT [dbo].[LearningExcludedQueries] OFF
 
 
 

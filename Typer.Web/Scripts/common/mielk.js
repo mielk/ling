@@ -1098,7 +1098,14 @@
                 frame.appendTo(background);
 
                 $(content).appendTo(frame);
-                
+
+
+                return {                    
+                    destroy: function() {
+                        $(background).remove();
+                    }
+                };
+
 
             })();
 

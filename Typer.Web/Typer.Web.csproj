@@ -275,6 +275,7 @@
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\app\common\list\edit-query-panel.js" />
     <Content Include="Scripts\app\queries\query-option.js" />
+    <Content Include="Scripts\app\queries\variants-manager.js" />
     <Content Include="Scripts\app\words\grammar.js" />
     <Content Include="Scripts\app\common\languages.js" />
     <Content Include="Scripts\app\common\list\edit-word-panel.js" />

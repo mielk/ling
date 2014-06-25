@@ -28,7 +28,7 @@ mielk.objects.addProperties(Query.prototype, {
 
     , controllerName: 'Questions'
 
-    , setCategories: function (categories) {
+    , setCategories: function () {
 
     }
 
@@ -53,7 +53,7 @@ mielk.objects.addProperties(Query.prototype, {
 
     //Zwraca tablicę zawierającą definicję zestawu danych
     //specyficzne dla klasy Query.
-    , getSpecificDatalinesDefinitions: function (object) {
+    , getSpecificDatalinesDefinitions: function () {
         var datalines = [];
 
         return datalines;
@@ -82,6 +82,13 @@ mielk.objects.addProperties(Query.prototype, {
         var dto = Ling.Queries.getQuery(this.id);
         this.createVariantSets(dto.VariantSets);
 
+    }
+
+    , getOptionByName: function(languageId, name) {
+        var options = this.items.getItem(languageId);
+        var option = null;
+        if (options) option = options.getItem(name);
+        return option;
     }
 
     , createVariantSets: function (sets) {
@@ -190,7 +197,7 @@ mielk.objects.addProperties(Query.prototype, {
                     //New item.
                     self.trigger({ type: 'added' });
                     mielk.notify.display(dict.QueryAdded.get([self.name]), true);
-                    self.id === result;
+                    self.id = result;
                 } else {
                     self.trigger({ type: 'updated' });
                     mielk.notify.display(dict.QueryUpdate.get([self.name]), true);

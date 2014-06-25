@@ -79,6 +79,7 @@ namespace Typer.Web
                 , "~/Scripts/app/queries/query.js"
                 , "~/Scripts/app/queries/query-option.js"
                 , "~/Scripts/app/queries/variants.js"
+                , "~/Scripts/app/queries/variants-manager.js"
             ));
 
             bundles.Add(new ScriptBundle("~/bundles/test").Include(

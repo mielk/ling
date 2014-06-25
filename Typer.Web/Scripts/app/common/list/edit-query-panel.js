@@ -53,8 +53,9 @@ function VariantSetsPanel(query) {
 
         editButton.bind({
             click: function () {
-                alert(100);
-                //self.object.editVariants();
+                var manager = new VariantsManager(self.query);
+                manager.start();
+                manager.bind({ cancel: function() { manager = null; } });
             }
         });
 
@@ -62,10 +63,10 @@ function VariantSetsPanel(query) {
             self.query.sets.each(function (key, set) {
                 var block = set.getBlock();
                 block.bind({
-                    click: function (e) {
+                    click: function() {
                         alert(block.set.tag + ' clicked');
                     }
-                })
+                });
                 $(block.view).appendTo(container);
             });
         }
