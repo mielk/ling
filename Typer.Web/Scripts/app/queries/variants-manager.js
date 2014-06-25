@@ -68,11 +68,13 @@ function VariantsManager(query) {
                 'class': 'edit-button',
                 'type': 'submit',
                 'value': 'Cancel'
-            }).bind({
-                'click': function () {
+            });
+            cancel.bind({
+                'click': function() {
                     self.cancel();
                 }
-            }).appendTo(buttonsContainer);
+            });
+            cancel.appendTo(buttonsContainer);
 
             self.query.bind({
                 variantsValidation: function (e) {
@@ -141,6 +143,92 @@ VariantsManager.prototype = {
 
 
 
+function VariantSubpanel(parent, name) {
+
+    'use strict';
+
+    var self = this;
+    self.VariantSubpanel = true;
+    self.name = name;
+    self.parent = parent;
+    self.question = parent.query;
+    self.events = mielk.eventHandler();
+
+    self.ui = (function () {
+        var expanded = false;
+
+        var container = jQuery('<div/>', {
+            'class': 'variant-subpanel'
+        });
+        self.parent.ui.append(container);
+
+        var header = jQuery('<div/>', {
+            'class': 'variant-subpanel-header'
+        }).appendTo(container);
+
+        // ReSharper disable once UnusedLocals
+        var expander = jQuery('<div/>', {
+            'class': 'variant-subpanel-expander'
+        }).bind({
+            click: function () {
+                if (expanded === true) {
+                    collapse();
+                } else {
+                    expand();
+                }
+            }
+        }).appendTo(header);
+
+
+        // ReSharper disable once UnusedLocals
+        var nameLabel = jQuery('<div/>', {
+            'class': 'unselectable variant-subpanel-name',
+            html: self.name
+        }).appendTo(header);
+
+        var content = jQuery('<div/>', {
+            'class': 'variant-subpanel-content'
+        }).css({
+            'display': (expanded ? 'block' : 'none')
+        }).appendTo(container);
+
+
+        function collapse() {
+            expanded = false;
+            refresh();
+        }
+
+        function expand() {
+            expanded = true;
+            refresh();
+        }
+
+        function refresh() {
+            $(content).css({
+                'display': (expanded ? 'block' : 'none')
+            });
+        }
+
+        return {
+            content: content
+        };
+
+    })();
+
+}
+VariantSubpanel.prototype = {    
+    contentPanel: function () {
+        return this.ui.content;
+    },
+    bind: function (e) {
+        this.events.bind(e);
+    },
+    trigger: function (e) {
+        this.events.trigger(e);
+    }
+};
+
+
 
 
 
@@ -196,17 +284,6 @@ VariantsManager.prototype = {
 
 //}
 
-//VariantPanel.prototype.cancel = function () {
-
-//    ////usuwa wszystkie logi.
-//    this.editQuestion.variantsSets.each(function (key, value) {
-//        value.reset();
-//    });
-
-//    //zamyka panel.
-//    this.ui.destroy();
-
-//};
 //VariantPanel.prototype.confirm = function () {
 
 //    //tworzy logi o zmianach (które będą przekazane do kontrolera w celu wykonania na bazie danych)
@@ -441,87 +518,6 @@ VariantsManager.prototype = {
 
 //};
 
-
-//function VariantSubpanel(parent, name) {
-//    this.VariantSubpanel = true;
-//    var self = this;
-//    self.name = name;
-//    self.parent = parent;
-//    self.question = parent.question;
-//    self.editQuestion = parent.editQuestion;
-//    self.events = new EventHandler();
-
-//    self.ui = (function () {
-//        var expanded = false;
-
-//        var container = jQuery('<div/>', {
-//            'class': 'variant-subpanel'
-//        });
-//        self.parent.ui.append(container);
-
-//        var header = jQuery('<div/>', {
-//            'class': 'variant-subpanel-header'
-//        }).appendTo(container);
-
-//        // ReSharper disable once UnusedLocals
-//        var expander = jQuery('<div/>', {
-//            'class': 'variant-subpanel-expander'
-//        }).bind({
-//            click: function () {
-//                if (expanded === true) {
-//                    collapse();
-//                } else {
-//                    expand();
-//                }
-//            }
-//        }).appendTo(header);
-
-
-//        // ReSharper disable once UnusedLocals
-//        var nameLabel = jQuery('<div/>', {
-//            'class': 'unselectable variant-subpanel-name',
-//            html: self.name
-//        }).appendTo(header);
-
-//        var content = jQuery('<div/>', {
-//            'class': 'variant-subpanel-content'
-//        }).css({
-//            'display': (expanded ? 'block' : 'none')
-//        }).appendTo(container);
-
-
-//        function collapse() {
-//            expanded = false;
-//            refresh();
-//        }
-
-//        function expand() {
-//            expanded = true;
-//            refresh();
-//        }
-
-//        function refresh() {
-//            $(content).css({
-//                'display': (expanded ? 'block' : 'none')
-//            });
-//        }
-
-//        return {
-//            content: content
-//        };
-
-//    })();
-
-//}
-//VariantSubpanel.prototype.contentPanel = function () {
-//    return this.ui.content;
-//};
-//VariantSubpanel.prototype.bind = function (e) {
-//    this.events.bind(e);
-//};
-//VariantSubpanel.prototype.trigger = function (e) {
-//    this.events.trigger(e);
-//};
 
 
 //function VariantOptionsManager(parent) {
