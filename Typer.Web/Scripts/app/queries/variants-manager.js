@@ -142,6 +142,202 @@ VariantsManager.prototype = {
 
 
 
+//VariantPanel.prototype.loadGroups = function () {
+//    var self = this;
+//    var assigned = new HashTable(null);
+
+//    function addSet(group, set) {
+//        group.addSet(set);
+//        assigned.setItem(set.id, set);
+//    }
+
+//    this.editQuestion.variantsSets.each(function (key, value) {
+//        var id = value.id;
+//        if (!assigned.hasItem(id)) {
+//            var group = new VariantGroup({ id: ++self.counter });
+//            group.bind({
+//                remove: function () {
+//                    if (group.isEmpty()) self.removeGroup(group);
+//                }
+//            });
+//            addSet(group, value);
+//            value.connections.each(function ($key, $value) {
+//                addSet(group, $value);
+//            });
+//            self.groups.setItem(group.id, group);
+//        }
+//    });
+
+
+//    self.groups.each(function (key, value) {
+//        value.loadMissingVariants();
+//    });
+
+//};
+
+
+function VariantSetsGroup(params) {
+
+    'use strict';
+
+    var self = this;
+    self.VariantSetsGroup = true;
+    
+    //Instance properties.
+    self.id = params.id;
+    self.events = mielk.eventHandler();
+    self.sets = mielk.hashTable();
+
+}
+VariantSetsGroup.prototype = {
+    
+    trigger: function(e) {
+        this.events.trigger(e);
+    },
+    
+    bind: function(e) {
+        this.events.bind(e);
+    },
+    
+    addSet: function(set) {
+        this.sets.setItem(set.id, set);
+    },
+    
+    removeSet: function(set) {
+        this.sets.removeItem(set.id);
+        this.removeEmptyVariants();
+    },
+    
+    removeEmptyVariants: function(removedSet) {
+        //Przy tworzeniu grup, każdy set oprócz swojego zestawu
+        //wariantów otrzymuje również warianty z powiązanych setów.
+        //W momencie usuwania seta i przeniesienia go do innej grupy,
+        //puste warianty (dodane do tego setu tylko z uwagi na to, 
+        //że był powiązany z jakimiś innymi) są usuwane, bo powiązanie
+        //pomiędzy setami już nie występuje.
+        
+        this.sets.each(function (key, value) {
+            //value.variants.each(function ($key, variant) {
+            //    if (variant.isNew && !variant.updated.content && !variant.updated.wordId) {
+            //        var linked = removedSet.updated.variants.getItem(variant.key);
+            //        if (linked && !linked.isNew) {
+            //            value.removeVariant(variant.key);
+            //        }
+            //    }
+            //});
+        });
+
+        removedSet.variants.each(function (key, variant) {
+            ////if (variant.isNew && !variant.content && !variant.wordId) {
+            //if (!variant.updated.content && !variant.updated.wordId) {
+            //    removedSet.removeVariant(key);
+            //}
+        });
+
+
+    },
+    
+    isEmpty: function() {
+        return this.sets.size() === 0;
+    },
+    
+    //itemsToString: function() {
+    //    var s = '';
+    //    this.sets.each(function (key, value) {
+    //        s += value.id + ',';
+    //    });
+    //    return my.text.cut(s, 1);
+    //},
+    
+
+    
+
+    //VariantGroup.prototype.itemsToString = function () {
+
+    //};
+    //VariantGroup.prototype.getConnectionPairs = function () {
+    //    var results = new HashTable(null);
+    //    var array = this.sets.values();
+
+    //    for (var i = 0; i < array.length; i++) {
+    //        var parent = array[i];
+    //        for (var j = i + 1; j < array.length; j++) {
+    //            var connected = array[j];
+    //            var connectionKey = parent.id + '|' + connected.id;
+    //            results.setItem(connectionKey, [parent, connected]);
+    //        }
+    //    }
+
+    //    return results;
+
+    //};
+    //VariantGroup.prototype.getKeys = function () {
+    //    if (!this.keys) {
+    //        this.loadKeys();
+    //    }
+    //    return this.keys;
+    //};
+    //VariantGroup.prototype.loadKeys = function () {
+    //    var self = this;
+    //    self.keys = new HashTable(null);
+
+    //    self.sets.each(function (key, value) {
+    //        value.updated.variants.each(function ($key) {
+    //            if (!self.keys.hasItem($key)) {
+    //                self.keys.setItem($key, $key);
+    //            }
+    //        });
+    //    });
+    //};
+    //VariantGroup.prototype.loadMissingVariants = function () {
+    //    var self = this;
+
+    //    if (!self.keys) {
+    //        self.loadKeys();
+    //    }
+
+    //    self.keys.each(function (key) {
+    //        self.sets.each(function (setKey, set) {
+    //            if (!set.updated.variants.hasItem(key)) {
+    //                var variant = new Variant(set.editEntity, set, {
+    //                    Id: set.id + ':' + key,
+    //                    Key: key,
+    //                    IsNew: true
+    //                });
+    //                set.updated.variants.setItem(variant.key, variant);
+    //            }
+    //        });
+    //    });
+
+    //};
+
+
+
+};
+
+
+//function VariantGroup(properties) {
+//    this.VariantGroup = true;
+//    var self = this;
+//    self.id = properties.id;
+//    self.events = new EventHandler();
+//    self.sets = new HashTable(null);
+
+//    self.events.bind({
+//        add: function (e) {
+//            self.addSet(e.set);
+//        },
+//        remove: function (e) {
+//            self.removeSet(e.set);
+//        }
+//    });
+
+//}
+
+
+
+
+
 
 function VariantSubpanel(parent, name) {
 
@@ -227,6 +423,500 @@ VariantSubpanel.prototype = {
         this.events.trigger(e);
     }
 };
+
+
+
+
+
+
+
+function VariantConnectionsManager(parent) {
+
+    'use strict';
+
+    var self = this;
+    self.VariantConnectionsManager = true;
+    self.parent = parent;
+    self.query = parent.query;
+
+    //Temporary.
+    self.activeBlock = null;
+    self.activeGroup = null;
+
+}
+
+
+
+
+//function VariantConnectionsManager(parent) {
+//    VariantSubpanel.call(this, parent, 'Connections');
+//    this.VariantConnectionsManager = true;
+//    var self = this;
+//    self.panel = self.ui.content;
+//    self.groups = new HashTable(null);      //connection groups
+//    self.activeBlock = null;
+//    self.activeGroup = null;
+
+
+//    $(self.panel).bind({
+//        mousemove: function (e) {
+
+//            if (!self.activeBlock) return;
+
+//            var x = e.pageX;
+//            var y = e.pageY;
+
+//            self.activeBlock.move(x, y);
+
+//            if (self.activeGroup) {
+//                if (self.activeGroup.isHovered(x, y) === false) {
+//                    self.activeGroup.deactivate();
+//                    self.activeBlock.overEmpty();
+//                }
+//            } else {
+//                var active = false;
+//                self.groups.each(function (key, value) {
+//                    if (!active) {
+//                        active = value.isHovered(x, y);
+//                        if (active) {
+//                            value.activate();
+//                            self.activeBlock.overGroup();
+//                        }
+//                    }
+//                });
+//            }
+
+//        }
+//    });
+
+//    $(document).bind({
+//        mouseup: function () {
+//            if (self.activeBlock) {
+//                self.activeBlock.release();
+//            }
+
+//            if (self.activeGroup) {
+//                self.activeGroup.deactivate();
+//            }
+
+//        }
+//    });
+
+
+//    var setBlock = function (set) {
+//        var $group = null;
+//        var $self = null;
+//        var $set = set;
+//        var $active = false;
+//        var mover = null;
+
+//        var ui = (function () {
+
+//            var container;
+//            var flag;
+//            var name;
+
+//            function render() {
+
+//                if (container) {
+//                    $(container).remove();
+//                }
+
+//                container = jQuery('<div/>', {
+//                    'class': 'variant-set-block'
+//                });
+
+//                container.bind({
+//                    mousedown: function (e) {
+//                        $active = true;
+//                        self.activeBlock = $self;
+//                        refresh(e);
+//                    }
+//                });
+
+//                flag = jQuery('<div/>', {
+//                    'class': 'unselectable flag ' + set.language.language.flag + '-small'
+//                }).appendTo(container);
+
+//                name = jQuery('<div/>', {
+//                    'class': 'unselectable name',
+//                    html: set.updated.tag
+//                }).appendTo(container);
+
+//                set.bind({
+//                    rename: function (e) {
+//                        $(name).html(e.name);
+//                    }
+//                });
+
+//            }
+
+//            function refresh(e) {
+
+//                $(container).css({
+//                    'visibility': ($active ? 'hidden' : 'visible')
+//                });
+
+//                if ($active) {
+//                    var blockOffset = $(container).offset();
+//                    var panelOffset = $(self.panel).offset();
+//                    var offset = {
+//                        left: blockOffset.left - panelOffset.left,
+//                        top: blockOffset.top - panelOffset.top
+//                    };
+//                    mover = shadow({
+//                        x: e.pageX,
+//                        y: e.pageY,
+//                        left: offset.left,
+//                        top: offset.top
+//                    });
+//                } else {
+//                    mover.destroy();
+//                    mover = null;
+//                }
+
+//            }
+
+//            return {
+//                container: function () {
+//                    return container;
+//                },
+//                deactivate: function () {
+//                    $active = false;
+//                    if (self.activeBlock === $self) self.activeBlock = null;
+//                    refresh();
+//                },
+//                render: render,
+//                destroy: function () {
+//                    $(container).remove();
+//                }
+//            };
+
+//        })();
+
+//        var shadow = function (position) {
+//            var $x = position.x;
+//            var $y = position.y;
+//            var $top = position.top;
+//            var $left = position.left;
+
+//            var container = jQuery('<div/>', {
+//                'class': 'variant-set-block variant-block-mover'
+//            }).css({
+//                'top': $top + 'px',
+//                'left': $left + 'px'
+//            }).appendTo(self.panel);
+
+//            var content = jQuery('<div/>').
+//                css({
+//                    'position': 'relative',
+//                    'width': '100%',
+//                    'height': '100%'
+//                }).appendTo(container);
+
+//            // ReSharper disable once UnusedLocals
+//            var flag = jQuery('<div/>', {
+//                'class': 'flag ' + set.language.language.flag + '-small'
+//            }).appendTo(content);
+
+//            // ReSharper disable once UnusedLocals
+//            var name = jQuery('<div/>', {
+//                'class': 'name',
+//                html: set.updated.tag
+//            }).appendTo(content);
+
+//            var cancel = jQuery('<div/>', {
+//                'class': 'variant-set-block-cancel'
+//            }).appendTo(content);
+
+//            return {
+//                container: container,
+//                destroy: function () {
+//                    $(container).remove();
+//                },
+//                move: function (x, y) {
+//                    var left = $left + (x - $x);
+//                    var top = $top + (y - $y);
+//                    $(container).css({
+//                        'top': top + 'px',
+//                        'left': left + 'px'
+//                    });
+//                },
+//                overEmpty: function () {
+//                    $(cancel).css({
+//                        'visibility': 'visible'
+//                    });
+//                },
+//                overGroup: function () {
+//                    $(cancel).css({
+//                        'visibility': 'hidden'
+//                    });
+//                }
+//            };
+//        };
+
+//        function release() {
+
+//            //self.parent.connectionsChanged = true;
+
+//            if (!self.activeGroup) {
+//                if ($group.only($self)) {
+//                    ui.deactivate();
+//                } else {
+//                    separate();
+//                }
+//            } else if (self.activeGroup === $group) {
+//                ui.deactivate();
+//            } else {
+//                moveToOtherGroup(self.activeGroup);
+//            }
+//        }
+
+//        function separate() {
+//            var previousGroup = $group;
+//            previousGroup.removeBlock($self);
+//            ui.deactivate();
+
+//            previousGroup.group.trigger({
+//                type: 'remove',
+//                set: $set
+//            });
+
+//            self.parent.newGroup(set);
+
+//            ui.destroy();
+
+//        }
+
+//        function moveToOtherGroup(group) {
+//            var previousGroup = $group;
+//            previousGroup.removeBlock($self);
+//            $group = group;
+//            $group.addBlock($self);
+//            ui.deactivate();
+
+//            previousGroup.group.trigger({
+//                type: 'remove',
+//                set: $set
+//            });
+
+//            $group.group.trigger({
+//                type: 'add',
+//                set: $set
+//            });
+
+//        }
+
+//        return {
+//            selfinject: function (me) {
+//                $self = me;
+//            },
+//            set: $set,
+//            setGroup: function (group) {
+//                $group = group;
+//            },
+//            rerender: function () {
+//                ui.render();
+//            },
+//            id: $set.id,
+//            view: function () {
+//                return ui.container();
+//            },
+//            move: function (x, y) {
+//                mover.move(x, y);
+//            },
+//            release: release,
+//            overEmpty: function () {
+//                if (mover) mover.overEmpty();
+//            },
+//            overGroup: function () {
+//                if (mover) mover.overGroup();
+//            }
+//        };
+
+//    };
+
+//    var connectionGroup = function (group) {
+//        var $self = null;
+//        var $index = group.id;
+//        var $blocks = new HashTable(null);
+//        var $active = false;
+//        var $group = group;
+
+//        var container = jQuery('<div/>', {
+//            'class': 'variant-connection-group'
+//        }).appendTo(self.panel);
+
+
+//        function createBlocks() {
+//            $group.sets.each(function (key, value) {
+//                var block = setBlock(value);
+//                block.selfinject(block);
+//                addBlock(block);
+//            });
+//        }
+
+//        function refresh() {
+//            if ($active) {
+//                $(container).addClass('active');
+//            } else {
+//                $(container).removeClass('active');
+//            }
+
+//        }
+
+//        function isHovered(x, y) {
+//            var offset = $(container).offset();
+//            var left = offset.left;
+//            var top = offset.top;
+//            var right = left + $(container).width();
+//            var bottom = top + $(container).height();
+
+//            return (x >= left && x <= right && y >= top && y <= bottom);
+
+//        }
+
+//        function removeBlock(block) {
+//            $blocks.removeItem(block.id);
+//            $group.sets.removeItem(block.id);
+
+//            if ($blocks.size() === 0) {
+//                destroy();
+//            }
+
+//            //trigger events for each set in this group.
+//            $blocks.each(function (key, value) {
+//                if (value !== block) {
+//                    triggerRemoveConnectionEvent(value.set, block.set);
+//                    triggerRemoveConnectionEvent(block.set, value.set);
+//                }
+//            });
+
+//            function triggerRemoveConnectionEvent(base, removed) {
+//                if (base.VariantSet) {
+//                    base.removeConnection(removed);
+//                    base.trigger({
+//                        type: 'removeConnection',
+//                        set: removed
+//                    });
+//                }
+//            }
+
+//        }
+
+//        function addBlock(block) {
+//            $blocks.setItem(block.id, block);
+//            block.setGroup($self);
+
+//            $blocks.each(function (key, value) {
+//                if (value != block) {
+//                    value.set.addConnection(block.set);
+//                    block.set.addConnection(value.set);
+//                }
+//            });
+
+//            block.rerender();
+//            block.view().appendTo(container);
+//        }
+
+//        function destroy() {
+//            self.groups.removeItem($index);
+//            $(container).remove();
+//        }
+
+//        return {
+//            selfinject: function (me) {
+//                $self = me;
+//            },
+//            id: $index,
+//            group: $group,
+//            createBlocks: createBlocks,
+//            addBlock: addBlock,
+//            removeBlock: removeBlock,
+//            activate: function () {
+//                self.activeGroup = $self;
+//                $active = true;
+//                refresh();
+//            },
+//            deactivate: function () {
+//                if (self.activeGroup === $self) {
+//                    self.activeGroup = null;
+//                    $active = false;
+//                    refresh();
+//                }
+//            },
+//            isHovered: function (x, y) {
+//                return isHovered(x, y);
+//            },
+//            only: function (block) {
+//                return ($blocks.size() === 1 && $blocks.hasItem(block.id));
+//            }
+//        };
+
+//    };
+
+//    // ReSharper disable once UnusedLocals
+//    var events = (function () {
+//        self.parent.bind({
+//            newGroup: function (e) {
+//                createNewGroup(e.group);
+//            }
+//        });
+//    })();
+
+//    var createNewGroup = function (group) {
+//        var $group = connectionGroup(group);
+//        $group.selfinject($group);
+//        $group.createBlocks();
+//        self.groups.setItem($group.id, $group);
+//    };
+
+//    function initialize() {
+//        self.parent.groups.each(function (key, value) {
+//            createNewGroup(value);
+//        });
+//    }
+
+//    initialize();
+
+//}
+//mielk.objects.extend(VariantSubpanel, VariantConnectionsManager);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -320,38 +1010,7 @@ VariantSubpanel.prototype = {
 //VariantPanel.prototype.start = function () {
 //    this.display();
 //};
-//VariantPanel.prototype.loadGroups = function () {
-//    var self = this;
-//    var assigned = new HashTable(null);
 
-//    function addSet(group, set) {
-//        group.addSet(set);
-//        assigned.setItem(set.id, set);
-//    }
-
-//    this.editQuestion.variantsSets.each(function (key, value) {
-//        var id = value.id;
-//        if (!assigned.hasItem(id)) {
-//            var group = new VariantGroup({ id: ++self.counter });
-//            group.bind({
-//                remove: function () {
-//                    if (group.isEmpty()) self.removeGroup(group);
-//                }
-//            });
-//            addSet(group, value);
-//            value.connections.each(function ($key, $value) {
-//                addSet(group, $value);
-//            });
-//            self.groups.setItem(group.id, group);
-//        }
-//    });
-
-
-//    self.groups.each(function (key, value) {
-//        value.loadMissingVariants();
-//    });
-
-//};
 //VariantPanel.prototype.newGroup = function (set) {
 //    var self = this;
 //    var group = new VariantGroup({ id: ++self.counter });
@@ -395,128 +1054,8 @@ VariantSubpanel.prototype = {
 
 
 
-//function VariantGroup(properties) {
-//    this.VariantGroup = true;
-//    var self = this;
-//    self.id = properties.id;
-//    self.events = new EventHandler();
-//    self.sets = new HashTable(null);
 
-//    self.events.bind({
-//        add: function (e) {
-//            self.addSet(e.set);
-//        },
-//        remove: function (e) {
-//            self.removeSet(e.set);
-//        }
-//    });
 
-//}
-//VariantGroup.prototype.trigger = function (e) {
-//    this.events.trigger(e);
-//};
-//VariantGroup.prototype.bind = function (e) {
-//    this.events.bind(e);
-//};
-//VariantGroup.prototype.addSet = function (set) {
-//    this.sets.setItem(set.id, set);
-//};
-//VariantGroup.prototype.removeSet = function (set) {
-//    this.sets.removeItem(set.id);
-//    this.removeEmptyVariants(set);
-//};
-//VariantGroup.prototype.removeEmptyVariants = function (removedSet) {
-//    //Przy tworzeniu grup, każdy set oprócz swojego zestawu
-//    //wariantów otrzymuje również warianty z powiązanych setów.
-//    //W momencie usuwania seta i przeniesienia go do innej grupy,
-//    //puste warianty (dodane do tego setu tylko z uwagi na to, 
-//    //że był powiązany z jakimiś innymi) są usuwane, bo powiązanie
-//    //pomiędzy setami już nie występuje.
-
-//    this.sets.each(function (key, value) {
-//        value.variants.each(function ($key, variant) {
-//            if (variant.isNew && !variant.updated.content && !variant.updated.wordId) {
-//                var linked = removedSet.updated.variants.getItem(variant.key);
-//                if (linked && !linked.isNew) {
-//                    value.removeVariant(variant.key);
-//                }
-//            }
-//        });
-//    });
-
-//    removedSet.variants.each(function (key, variant) {
-//        //if (variant.isNew && !variant.content && !variant.wordId) {
-//        if (!variant.updated.content && !variant.updated.wordId) {
-//            removedSet.removeVariant(key);
-//        }
-//    });
-
-//};
-//VariantGroup.prototype.isEmpty = function () {
-//    return this.sets.size() === 0;
-//};
-//VariantGroup.prototype.itemsToString = function () {
-//    var s = '';
-//    this.sets.each(function (key, value) {
-//        s += value.id + ',';
-//    });
-//    return my.text.cut(s, 1);
-//};
-//VariantGroup.prototype.getConnectionPairs = function () {
-//    var results = new HashTable(null);
-//    var array = this.sets.values();
-
-//    for (var i = 0; i < array.length; i++) {
-//        var parent = array[i];
-//        for (var j = i + 1; j < array.length; j++) {
-//            var connected = array[j];
-//            var connectionKey = parent.id + '|' + connected.id;
-//            results.setItem(connectionKey, [parent, connected]);
-//        }
-//    }
-
-//    return results;
-
-//};
-//VariantGroup.prototype.getKeys = function () {
-//    if (!this.keys) {
-//        this.loadKeys();
-//    }
-//    return this.keys;
-//};
-//VariantGroup.prototype.loadKeys = function () {
-//    var self = this;
-//    self.keys = new HashTable(null);
-
-//    self.sets.each(function (key, value) {
-//        value.updated.variants.each(function ($key) {
-//            if (!self.keys.hasItem($key)) {
-//                self.keys.setItem($key, $key);
-//            }
-//        });
-//    });
-//};
-//VariantGroup.prototype.loadMissingVariants = function () {
-//    var self = this;
-
-//    if (!self.keys) {
-//        self.loadKeys();
-//    }
-
-//    self.keys.each(function (key) {
-//        self.sets.each(function (setKey, set) {
-//            if (!set.updated.variants.hasItem(key)) {
-//                var variant = new Variant(set.editEntity, set, {
-//                    Id: set.id + ':' + key,
-//                    Key: key,
-//                    IsNew: true
-//                });
-//                set.updated.variants.setItem(variant.key, variant);
-//            }
-//        });
-//    });
-
-//};
 
 
 
@@ -1189,441 +1728,6 @@ VariantSubpanel.prototype = {
 //    });
 //    this.columns.removeKey(key);
 //};
-
-
-//function VariantConnectionsManager(parent) {
-//    VariantSubpanel.call(this, parent, 'Connections');
-//    this.VariantConnectionsManager = true;
-//    var self = this;
-//    self.panel = self.ui.content;
-//    self.groups = new HashTable(null);      //connection groups
-//    self.activeBlock = null;
-//    self.activeGroup = null;
-
-
-//    $(self.panel).bind({
-//        mousemove: function (e) {
-
-//            if (!self.activeBlock) return;
-
-//            var x = e.pageX;
-//            var y = e.pageY;
-
-//            self.activeBlock.move(x, y);
-
-//            if (self.activeGroup) {
-//                if (self.activeGroup.isHovered(x, y) === false) {
-//                    self.activeGroup.deactivate();
-//                    self.activeBlock.overEmpty();
-//                }
-//            } else {
-//                var active = false;
-//                self.groups.each(function (key, value) {
-//                    if (!active) {
-//                        active = value.isHovered(x, y);
-//                        if (active) {
-//                            value.activate();
-//                            self.activeBlock.overGroup();
-//                        }
-//                    }
-//                });
-//            }
-
-//        }
-//    });
-
-//    $(document).bind({
-//        mouseup: function () {
-//            if (self.activeBlock) {
-//                self.activeBlock.release();
-//            }
-
-//            if (self.activeGroup) {
-//                self.activeGroup.deactivate();
-//            }
-
-//        }
-//    });
-
-
-//    var setBlock = function (set) {
-//        var $group = null;
-//        var $self = null;
-//        var $set = set;
-//        var $active = false;
-//        var mover = null;
-
-//        var ui = (function () {
-
-//            var container;
-//            var flag;
-//            var name;
-
-//            function render() {
-
-//                if (container) {
-//                    $(container).remove();
-//                }
-
-//                container = jQuery('<div/>', {
-//                    'class': 'variant-set-block'
-//                });
-
-//                container.bind({
-//                    mousedown: function (e) {
-//                        $active = true;
-//                        self.activeBlock = $self;
-//                        refresh(e);
-//                    }
-//                });
-
-//                flag = jQuery('<div/>', {
-//                    'class': 'unselectable flag ' + set.language.language.flag + '-small'
-//                }).appendTo(container);
-
-//                name = jQuery('<div/>', {
-//                    'class': 'unselectable name',
-//                    html: set.updated.tag
-//                }).appendTo(container);
-
-//                set.bind({
-//                    rename: function (e) {
-//                        $(name).html(e.name);
-//                    }
-//                });
-
-//            }
-
-//            function refresh(e) {
-
-//                $(container).css({
-//                    'visibility': ($active ? 'hidden' : 'visible')
-//                });
-
-//                if ($active) {
-//                    var blockOffset = $(container).offset();
-//                    var panelOffset = $(self.panel).offset();
-//                    var offset = {
-//                        left: blockOffset.left - panelOffset.left,
-//                        top: blockOffset.top - panelOffset.top
-//                    };
-//                    mover = shadow({
-//                        x: e.pageX,
-//                        y: e.pageY,
-//                        left: offset.left,
-//                        top: offset.top
-//                    });
-//                } else {
-//                    mover.destroy();
-//                    mover = null;
-//                }
-
-//            }
-
-//            return {
-//                container: function () {
-//                    return container;
-//                },
-//                deactivate: function () {
-//                    $active = false;
-//                    if (self.activeBlock === $self) self.activeBlock = null;
-//                    refresh();
-//                },
-//                render: render,
-//                destroy: function () {
-//                    $(container).remove();
-//                }
-//            };
-
-//        })();
-
-//        var shadow = function (position) {
-//            var $x = position.x;
-//            var $y = position.y;
-//            var $top = position.top;
-//            var $left = position.left;
-
-//            var container = jQuery('<div/>', {
-//                'class': 'variant-set-block variant-block-mover'
-//            }).css({
-//                'top': $top + 'px',
-//                'left': $left + 'px'
-//            }).appendTo(self.panel);
-
-//            var content = jQuery('<div/>').
-//                css({
-//                    'position': 'relative',
-//                    'width': '100%',
-//                    'height': '100%'
-//                }).appendTo(container);
-
-//            // ReSharper disable once UnusedLocals
-//            var flag = jQuery('<div/>', {
-//                'class': 'flag ' + set.language.language.flag + '-small'
-//            }).appendTo(content);
-
-//            // ReSharper disable once UnusedLocals
-//            var name = jQuery('<div/>', {
-//                'class': 'name',
-//                html: set.updated.tag
-//            }).appendTo(content);
-
-//            var cancel = jQuery('<div/>', {
-//                'class': 'variant-set-block-cancel'
-//            }).appendTo(content);
-
-//            return {
-//                container: container,
-//                destroy: function () {
-//                    $(container).remove();
-//                },
-//                move: function (x, y) {
-//                    var left = $left + (x - $x);
-//                    var top = $top + (y - $y);
-//                    $(container).css({
-//                        'top': top + 'px',
-//                        'left': left + 'px'
-//                    });
-//                },
-//                overEmpty: function () {
-//                    $(cancel).css({
-//                        'visibility': 'visible'
-//                    });
-//                },
-//                overGroup: function () {
-//                    $(cancel).css({
-//                        'visibility': 'hidden'
-//                    });
-//                }
-//            };
-//        };
-
-//        function release() {
-
-//            //self.parent.connectionsChanged = true;
-
-//            if (!self.activeGroup) {
-//                if ($group.only($self)) {
-//                    ui.deactivate();
-//                } else {
-//                    separate();
-//                }
-//            } else if (self.activeGroup === $group) {
-//                ui.deactivate();
-//            } else {
-//                moveToOtherGroup(self.activeGroup);
-//            }
-//        }
-
-//        function separate() {
-//            var previousGroup = $group;
-//            previousGroup.removeBlock($self);
-//            ui.deactivate();
-
-//            previousGroup.group.trigger({
-//                type: 'remove',
-//                set: $set
-//            });
-
-//            self.parent.newGroup(set);
-
-//            ui.destroy();
-
-//        }
-
-//        function moveToOtherGroup(group) {
-//            var previousGroup = $group;
-//            previousGroup.removeBlock($self);
-//            $group = group;
-//            $group.addBlock($self);
-//            ui.deactivate();
-
-//            previousGroup.group.trigger({
-//                type: 'remove',
-//                set: $set
-//            });
-
-//            $group.group.trigger({
-//                type: 'add',
-//                set: $set
-//            });
-
-//        }
-
-//        return {
-//            selfinject: function (me) {
-//                $self = me;
-//            },
-//            set: $set,
-//            setGroup: function (group) {
-//                $group = group;
-//            },
-//            rerender: function () {
-//                ui.render();
-//            },
-//            id: $set.id,
-//            view: function () {
-//                return ui.container();
-//            },
-//            move: function (x, y) {
-//                mover.move(x, y);
-//            },
-//            release: release,
-//            overEmpty: function () {
-//                if (mover) mover.overEmpty();
-//            },
-//            overGroup: function () {
-//                if (mover) mover.overGroup();
-//            }
-//        };
-
-//    };
-
-//    var connectionGroup = function (group) {
-//        var $self = null;
-//        var $index = group.id;
-//        var $blocks = new HashTable(null);
-//        var $active = false;
-//        var $group = group;
-
-//        var container = jQuery('<div/>', {
-//            'class': 'variant-connection-group'
-//        }).appendTo(self.panel);
-
-
-//        function createBlocks() {
-//            $group.sets.each(function (key, value) {
-//                var block = setBlock(value);
-//                block.selfinject(block);
-//                addBlock(block);
-//            });
-//        }
-
-//        function refresh() {
-//            if ($active) {
-//                $(container).addClass('active');
-//            } else {
-//                $(container).removeClass('active');
-//            }
-
-//        }
-
-//        function isHovered(x, y) {
-//            var offset = $(container).offset();
-//            var left = offset.left;
-//            var top = offset.top;
-//            var right = left + $(container).width();
-//            var bottom = top + $(container).height();
-
-//            return (x >= left && x <= right && y >= top && y <= bottom);
-
-//        }
-
-//        function removeBlock(block) {
-//            $blocks.removeItem(block.id);
-//            $group.sets.removeItem(block.id);
-
-//            if ($blocks.size() === 0) {
-//                destroy();
-//            }
-
-//            //trigger events for each set in this group.
-//            $blocks.each(function (key, value) {
-//                if (value !== block) {
-//                    triggerRemoveConnectionEvent(value.set, block.set);
-//                    triggerRemoveConnectionEvent(block.set, value.set);
-//                }
-//            });
-
-//            function triggerRemoveConnectionEvent(base, removed) {
-//                if (base.VariantSet) {
-//                    base.removeConnection(removed);
-//                    base.trigger({
-//                        type: 'removeConnection',
-//                        set: removed
-//                    });
-//                }
-//            }
-
-//        }
-
-//        function addBlock(block) {
-//            $blocks.setItem(block.id, block);
-//            block.setGroup($self);
-
-//            $blocks.each(function (key, value) {
-//                if (value != block) {
-//                    value.set.addConnection(block.set);
-//                    block.set.addConnection(value.set);
-//                }
-//            });
-
-//            block.rerender();
-//            block.view().appendTo(container);
-//        }
-
-//        function destroy() {
-//            self.groups.removeItem($index);
-//            $(container).remove();
-//        }
-
-//        return {
-//            selfinject: function (me) {
-//                $self = me;
-//            },
-//            id: $index,
-//            group: $group,
-//            createBlocks: createBlocks,
-//            addBlock: addBlock,
-//            removeBlock: removeBlock,
-//            activate: function () {
-//                self.activeGroup = $self;
-//                $active = true;
-//                refresh();
-//            },
-//            deactivate: function () {
-//                if (self.activeGroup === $self) {
-//                    self.activeGroup = null;
-//                    $active = false;
-//                    refresh();
-//                }
-//            },
-//            isHovered: function (x, y) {
-//                return isHovered(x, y);
-//            },
-//            only: function (block) {
-//                return ($blocks.size() === 1 && $blocks.hasItem(block.id));
-//            }
-//        };
-
-//    };
-
-//    // ReSharper disable once UnusedLocals
-//    var events = (function () {
-//        self.parent.bind({
-//            newGroup: function (e) {
-//                createNewGroup(e.group);
-//            }
-//        });
-//    })();
-
-//    var createNewGroup = function (group) {
-//        var $group = connectionGroup(group);
-//        $group.selfinject($group);
-//        $group.createBlocks();
-//        self.groups.setItem($group.id, $group);
-//    };
-
-//    function initialize() {
-//        self.parent.groups.each(function (key, value) {
-//            createNewGroup(value);
-//        });
-//    }
-
-//    initialize();
-
-//}
-//mielk.objects.extend(VariantSubpanel, VariantConnectionsManager);
 
 
 
