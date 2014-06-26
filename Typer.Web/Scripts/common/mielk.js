@@ -864,7 +864,7 @@
                             $(input).prop('checked', val);
                         }
 
-                        function isClicked() {
+                        function clicked() {
                             return $(input).prop('checked');
                         }
 
@@ -879,7 +879,7 @@
                               view: container
                             , select: select
                             , check: check
-                            , isClicked: isClicked
+                            , isClicked: clicked
                         };
 
                     })();
@@ -1061,7 +1061,6 @@
             var position = $(element).offset();
             if (click.x < position.left) return false;
             if (click.y < position.top) return false;
-            var width = $(element).outerWidth();
             if (click.x > position.left + $(element).outerWidth()) return false;
             if (click.y > position.top + $(element).outerHeight()) return false;
             return true;
@@ -1133,6 +1132,7 @@
             , radio: radio
             , checkbox: checkbox
             , modalPopup: modalPopup
+            , isClicked: isClicked
         };
 
     })();
