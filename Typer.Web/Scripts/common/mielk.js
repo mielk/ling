@@ -1057,6 +1057,16 @@
             
         }
 
+        function isClicked(element, click) {
+            var position = $(element).offset();
+            if (click.x < position.left) return false;
+            if (click.y < position.top) return false;
+            var width = $(element).outerWidth();
+            if (click.x > position.left + $(element).outerWidth()) return false;
+            if (click.y > position.top + $(element).outerHeight()) return false;
+            return true;
+        }
+
         function modalPopup(content) {
 
             var popup = (function() {
@@ -1076,8 +1086,10 @@
                 });
                 $(background).appendTo(document.body);
                 background.bind({
-                    click: function() {
-                        $(background).remove();
+                    click: function (e) {
+                        if (!isClicked(frame, { x: e.pageX, y: e.pageY })) {
+                            $(background).remove();
+                        }
                     }
                 });
 

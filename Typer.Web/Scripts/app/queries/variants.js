@@ -24,11 +24,17 @@
 
     //Variants.
     self.variants = mielk.hashTable();
+    self.variantsById = mielk.hashTable();
 
     //Interaction with other variant sets.
     self.related = mielk.hashTable();
     self.dependants = mielk.hashTable();
     self.master = null;
+
+
+    (function initialize() {
+        self.loadVariants(params.Variants);
+    })();
 
 }
 VariantSet.prototype = {
@@ -68,10 +74,15 @@ VariantSet.prototype = {
         //Complex properties are set directly.
         obj.cloned = true;
         obj.variants = self.variants.clone(true);
-        mielk.notify.display('VariantSet.clone - sprawdzić czy variants trzeba zamienić w kolnowane obiekty', false);
         obj.related = self.related.clone(false);
         obj.dependants = self.dependants.clone(false);
         obj.master = self.master;
+
+
+        //Refresh Variants
+        obj.variants.each(function (key, variant) {
+            variant.injectSet(obj);
+        });
 
         return obj;
 
@@ -96,9 +107,6 @@ VariantSet.prototype = {
         self.related.each(function (related) {
             self.related.setItem(related, query.getVariantSet(related));
         });
-
-
-        //refresh Variants
 
     },
 
@@ -140,11 +148,217 @@ VariantSet.prototype = {
 
         return block;
 
+    },
+    
+    loadVariants: function(variants) {
+        var self = this;
+        self.variants = mielk.hashTable();
+        self.variantsById = mielk.hashTable();
+
+        mielk.arrays.each(variants, function(v) {
+            var variant = new Variant(self, v);
+            self.variants.setItem(variant.key, variant);
+            self.variantsById.setItem(variant.id, variant);            
+        });
+
     }
 
 };
 
 
+
+
+
+
+
+function Variant(set, params) {
+
+    'use strict';
+
+    var self = this;
+    self.Variant = true;
+    self.events = mielk.eventHandler();
+    
+    //Instance properties.
+    self.set = set;
+    self.language = set.language;
+    self.id = params.Id;
+    self.key = params.Key;
+    self.content = params.Content || '';
+    self.anchored = params.IsAnchored || false;
+    self.isNew = params.IsNew ? true : false;
+    self.excluded = mielk.hashTable();
+    self.words = mielk.hashTable();
+
+}
+Variant.prototype = {    
+    
+    bind: function(e) {
+        this.events.bind(e);
+    },
+    
+    trigger: function(e) {
+        this.events.trigger(e);
+    },
+    
+    clone: function () {
+        var self = this;
+        var variant = new Variant(self.set, {
+            Id: self.id
+            , Key: self.key
+            , Content: self.content
+            , IsAnchored: self.anchored
+            , IsNew: self.isNew
+        });
+        variant.cloned = true;
+        return variant;
+    },
+    
+    injectSet: function(set) {
+        this.set = set;
+
+        this.excluded.each(function (k, v) {
+            //Convert excluded.
+            //var excluded = set.get
+        });
+
+    }
+    
+};
+//Variant.prototype.loadLimits = function () {
+//    this.excluded = new HashTable(null);
+
+//    for (var i = 0; i < this.raw.excluded.length; i++) {
+//        var exclusion = this.raw.excluded[i];
+//        var splitted = exclusion.split('|');
+//        var excludedSet = Number(splitted[0]);
+//        var excludedId = Number(splitted[1]);
+//        var set = this.editEntity.variantsSets.getItem(excludedSet);
+//        if (set) {
+//            var variant = set.getVariantById(excludedId);
+//            this.excluded.setItem(excludedId, variant);
+//        }
+//    }
+
+//    this.updated.excluded = this.excluded.clone();
+
+//};
+//Variant.prototype.value = function () {
+//    return this.updated.content;
+//};
+//Variant.prototype.isExcluded = function (set, key) {
+//    var variant = set.getVariantByKey(key);
+//    if (variant) {
+//        var id = variant.id;
+//        return this.updated.excluded.hasItem(id);
+//    } else {
+//        return false;
+//    }
+//};
+//Variant.prototype.exclude = function (set, key, value) {
+//    var variant = set.getVariantByKey(key);
+//    if (variant) {
+//        var id = variant.id;
+//        if (value) {
+//            this.updated.excluded.setItem(id, variant);
+//            variant.updated.excluded.setItem(this.id, this);
+//        } else {
+//            this.updated.excluded.removeItem(id);
+//            variant.updated.excluded.removeItem(this.id);
+//        }
+//    }
+//};
+//Variant.prototype.changeContent = function (value) {
+//    this.updated.content = value;
+//};
+//Variant.prototype.changeWordId = function (wordId) {
+//    this.updated.wordId = wordId;
+//};
+//Variant.prototype.confirmChanges = function () {
+//    //var ch = this.change;
+//    //this.key = (ch.key ? ch.key : this.key);
+//    //this.content = (ch.content ? ch.content : this.content);
+//    //this.wordId = (ch.wordId ? ch.wordId : this.wordId);
+//    //this.exclusion = (ch.exclusion ? ch.exclusion : this.excluded);
+//};
+//Variant.prototype.updateLimits = function () {
+//    var self = this;
+//    var removeTag = 'removeLimit';
+//    var addTag = 'addLimit';
+
+//    var differences = this.excluded.differences(this.updated.excluded);
+
+//    //Removed.
+//    for (var i = 0; i < differences.removed.length; i++) {
+//        var removed = differences.removed[i];
+
+//        this.editEntity.addLog({
+//            event: removeTag,
+//            question: self.editEntity.id,
+//            variantId: self.id,
+//            excludedId: removed.id
+//        });
+//    }
+
+//    //Added.
+//    for (var j = 0; j < differences.added.length; j++) {
+//        var added = differences.added[j];
+
+//        this.editEntity.addLog({
+//            event: addTag,
+//            question: self.editEntity.id,
+//            variantId: self.id,
+//            excludedId: added.id
+//        });
+//    }
+
+//    this.excluded = this.updated.excluded;
+
+//};
+//Variant.prototype.reset = function () {
+//    var self = this;
+//    self.updated = {
+//        key: self.key,
+//        content: self.content,
+//        wordId: self.wordId,
+//        anchored: self.anchored,
+//        excluded: self.excluded.clone()
+//    };
+//};
+//Variant.prototype.checkForUpdates = function () {
+//    var self = this;
+//    var tagForAdding = 'addVariant';
+//    var tagForEdit = 'editVariant';
+
+//    if (self.isNew) {
+//        self.editEntity.addLog({
+//            event: tagForAdding,
+//            key: self.updated.key,
+//            content: self.updated.content,
+//            wordId: self.updated.wordId,
+//            anchored: self.updated.anchored
+//        });
+//    } else if (!self.equal(self.updated)) {
+//        self.editEntity.addLog({
+//            event: tagForEdit,
+//            id: self.id,
+//            key: self.updated.key,
+//            content: self.updated.content,
+//            wordId: self.updated.wordId,
+//            anchored: self.updated.anchored
+//        });
+//    }
+
+//};
+//Variant.prototype.equal = function (object) {
+//    if (this.key !== object.key) return false;
+//    if (this.content !== object.content) return false;
+//    if (this.wordId !== object.wordId) return false;
+//    if (this.anchored !== object.anchored) return false;
+
+//    return true;
+
+//};
 
 
 
@@ -356,21 +570,7 @@ function VariantSet2(editEntity, properties) {
 //    this.loadDependants(this.raw.dependants);
 //    this.loadProperties();
 //};
-//VariantSet.prototype.loadVariants = function (variants) {
-//    var self = this;
-//    this.variants = new HashTable(null);
-//    this.variantsById = new HashTable(null);
-//    for (var i = 0; i < variants.length; i++) {
-//        var object = variants[i];
-//        var variant = new Variant(self.editEntity, self, object);
-//        self.variants.setItem(variant.key, variant);
-//        self.variantsById.setItem(variant.id, variant);
-//    }
 
-//    this.updated.variants = this.variants.clone();
-//    this.updated.variantsById = this.variantsById.clone();
-
-//};
 //VariantSet.prototype.loadConnections = function (connections) {
 //    this.connections = new HashTable(null);
 //    for (var i = 0; i < connections.length; i++) {
@@ -694,208 +894,3 @@ function VariantSet2(editEntity, properties) {
 //    this.updated.variants.removeItem(key);
     
 //};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function Variant(editEntity, set, properties) {
-    var self = this;
-    this.Variant = true;
-    self.eventHandler = new EventHandler();
-
-    (function setParameters() {
-        self.editEntity = editEntity;
-        self.set = set;
-        self.language = set.language;
-        self.id = properties.Id;
-        self.key = properties.Key;
-        self.content = properties.Content;
-        self.wordId = properties.WordId;
-        self.anchored = properties.IsAnchored;
-        self.isNew = properties.IsNew ? true : false;
-        self.raw = {
-            excluded: properties.Excluded
-        };
-    })();
-    self.excluded = new HashTable(null);
-
-    self.updated = {        
-        key: self.key,
-        content: self.content,
-        wordId: self.wordId,
-        anchored: self.anchored,
-        excluded: self.excluded.clone()
-    };
-    
-}
-Variant.prototype.loadLimits = function () {
-    this.excluded = new HashTable(null);
-    
-    for (var i = 0; i < this.raw.excluded.length; i++) {
-        var exclusion = this.raw.excluded[i];
-        var splitted = exclusion.split('|');
-        var excludedSet = Number(splitted[0]);
-        var excludedId = Number(splitted[1]);
-        var set = this.editEntity.variantsSets.getItem(excludedSet);
-        if (set) {
-            var variant = set.getVariantById(excludedId);
-            this.excluded.setItem(excludedId, variant);
-        }
-    }
-
-    this.updated.excluded = this.excluded.clone();
-
-};
-Variant.prototype.value = function() {
-    return this.updated.content;
-};
-Variant.prototype.bind = function(e) {
-    this.eventHandler.bind(e);
-};
-Variant.prototype.trigger = function (e) {
-    this.eventHandler.trigger(e);
-};
-Variant.prototype.isExcluded = function(set, key) {
-    var variant = set.getVariantByKey(key);
-    if (variant) {
-        var id = variant.id;
-        return this.updated.excluded.hasItem(id);
-    } else {
-        return false;
-    }
-};
-Variant.prototype.exclude = function (set, key, value) {
-    var variant = set.getVariantByKey(key);
-    if (variant) {
-        var id = variant.id;
-        if (value) {
-            this.updated.excluded.setItem(id, variant);
-            variant.updated.excluded.setItem(this.id, this);
-        } else {
-            this.updated.excluded.removeItem(id);
-            variant.updated.excluded.removeItem(this.id);
-        }
-    }
-};
-Variant.prototype.changeContent = function(value) {
-    this.updated.content = value;
-};
-Variant.prototype.changeWordId = function(wordId) {
-    this.updated.wordId = wordId;
-};
-Variant.prototype.confirmChanges = function () {
-    //var ch = this.change;
-    //this.key = (ch.key ? ch.key : this.key);
-    //this.content = (ch.content ? ch.content : this.content);
-    //this.wordId = (ch.wordId ? ch.wordId : this.wordId);
-    //this.exclusion = (ch.exclusion ? ch.exclusion : this.excluded);
-};
-Variant.prototype.updateLimits = function() {
-    var self = this;
-    var removeTag = 'removeLimit';
-    var addTag = 'addLimit';
-
-    var differences = this.excluded.differences(this.updated.excluded);
-
-    //Removed.
-    for (var i = 0; i < differences.removed.length; i++) {
-        var removed = differences.removed[i];
-        
-        this.editEntity.addLog({
-            event: removeTag,
-            question: self.editEntity.id,
-            variantId: self.id,
-            excludedId: removed.id
-        });
-    }
-
-    //Added.
-    for (var j = 0; j < differences.added.length; j++) {
-        var added = differences.added[j];
-        
-        this.editEntity.addLog({
-            event: addTag,
-            question: self.editEntity.id,
-            variantId: self.id,
-            excludedId: added.id
-        });
-    }
-
-    this.excluded = this.updated.excluded;
-
-};
-Variant.prototype.reset = function() {
-    var self = this;
-    self.updated = {
-        key: self.key,
-        content: self.content,
-        wordId: self.wordId,
-        anchored: self.anchored,
-        excluded: self.excluded.clone()
-    };
-};
-Variant.prototype.checkForUpdates = function() {
-    var self = this;
-    var tagForAdding = 'addVariant';
-    var tagForEdit = 'editVariant';
-    
-    if (self.isNew) {
-        self.editEntity.addLog({
-            event: tagForAdding,
-            key: self.updated.key,
-            content: self.updated.content,
-            wordId: self.updated.wordId,
-            anchored: self.updated.anchored
-    });
-    } else if (!self.equal(self.updated)) {
-        self.editEntity.addLog({            
-            event: tagForEdit,
-            id: self.id,
-            key: self.updated.key,
-            content: self.updated.content,
-            wordId: self.updated.wordId,
-            anchored: self.updated.anchored
-        });
-    }
-
-};
-Variant.prototype.equal = function(object) {
-    if (this.key !== object.key) return false;
-    if (this.content !== object.content) return false;
-    if (this.wordId !== object.wordId) return false;
-    if (this.anchored !== object.anchored) return false;
-
-    return true;
-
-};

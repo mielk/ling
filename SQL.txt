@@ -810,7 +810,8 @@ BEGIN TRANSACTION;
 	SELECT 1, 1, 'dom', 'do domu' UNION ALL 
 	SELECT 2, 1, 'szko³a', NULL UNION ALL 
 	SELECT 3, 2, 'dom', 'home' UNION ALL
-	SELECT 4, 2, 'szko³a', NULL
+	SELECT 4, 2, 'szko³a', NULL UNION ALL
+	SELECT 5, 1, 'praca', 'do pracy'
 COMMIT;
 SET IDENTITY_INSERT [dbo].[Variants] OFF
 
@@ -898,12 +899,13 @@ CREATE TABLE [dbo].[VariantConnections] (
 );
 
 
---GO
---SET IDENTITY_INSERT [dbo].[VariantConnections] ON
---BEGIN TRANSACTION;
---#VariantConnections#
---COMMIT;
---SET IDENTITY_INSERT [dbo].[VariantConnections] OFF
+GO
+SET IDENTITY_INSERT [dbo].[VariantConnections] ON
+BEGIN TRANSACTION;
+	INSERT INTO [dbo].[VariantConnections] ([Id], [VariantSetId], [ConnectedSetId])
+	SELECT 1, 1, 2
+COMMIT;
+SET IDENTITY_INSERT [dbo].[VariantConnections] OFF
 
 GO
 

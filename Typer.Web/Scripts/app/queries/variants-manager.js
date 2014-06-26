@@ -6,32 +6,12 @@ function VariantsManager(query) {
 
     var self = this;
     self.VariantsManager = true;
-    self.query = query;
+    self.query = mielk.objects.clone(query, true);
 
     self.events = mielk.eventHandler();
     self.groups = mielk.hashTable();
     self.counter = 0;
-
-    self.validator = (function () {
-        var invalid = mielk.hashTable();
-
-        return {
-            validation: function (e) {
-                if (e.status) {
-                    invalid.removeItem(e.id);
-                } else {
-                    invalid.setItem(e.id, e.id);
-                }
-
-                self.query.trigger({
-                    type: 'variantsValidation',
-                    status: invalid.size() === 0
-                });
-
-            }
-        };
-
-    })();
+    self.validator = mielk.validation.validator(self.query);
 
     self.ui = (function () {
         var window;
@@ -77,7 +57,7 @@ function VariantsManager(query) {
             cancel.appendTo(buttonsContainer);
 
             self.query.bind({
-                variantsValidation: function (e) {
+                validation: function (e) {
                     if (e.status) {
                         $(ok).removeAttr('disabled');
                     } else {
@@ -95,7 +75,7 @@ function VariantsManager(query) {
             },
             
             append: function (element) {
-                $(element).appendTo($(container));
+                $(element).appendTo(content);
             },
             
             destroy: function() {
@@ -107,11 +87,16 @@ function VariantsManager(query) {
     })();
     
     //Parts.
+    self.addSubpanel('connections', new VariantConnectionsManager(self));
     //self.options = new VariantOptionsManager(self);
     //self.connections = new VariantConnectionsManager(self);
     //self.limits = new VariantLimitsManager(self);
     //self.dependencies = new VariantDependenciesManager(self);
 
+
+    (function initialize() {
+        self.divideIntoGroups();
+    })();
 
 }
 
@@ -136,44 +121,69 @@ VariantsManager.prototype = {
     cancel: function () {
         this.ui.destroy();
         this.trigger({ type: 'cancel' });
+    },
+    
+    //Dzieli VariantSety przypisane do rozpatrywanego Query na grupę
+    //według powiązań pomiędzy tymi VariantSetami.
+    divideIntoGroups: function() {
+        var self = this;
+        var assigned = mielk.hashTable();
+
+        self.query.sets.each(function(key, set) {
+            var id = set.id;
+            
+            //Jeżeli taki element jest już rozpatrzony, 
+            //zostaje pominięty.
+            if (!assigned.hasItem(id)) {
+                
+                //Tworzy nową grupę i dodaje ją do
+                //odpowiednich kolekcji.
+                var group = new VariantSetsGroup({
+                    id: ++self.counter
+                });
+                self.groups.setItem(id, group);
+                group.addSet(set);
+                assigned.setItem(set.id, set);
+                
+
+                //Do tej grupy, oprócz aktualnego VariantSetu,
+                //dodawane są również VariantSety powiązane.
+                set.related.each(function(k, connected) {
+                    assigned.setItem(connected.id, connected);
+                    group.addSet(connected);
+                });
+                
+
+                //Usuwa widok grupy, jeżeli została ona pusta
+                //(usunięto z niej wszystkie elementy).
+                group.bind({
+                    remove: function() {
+                        if (group.isEmpty()) self.removeGroup(group);
+                    }
+                });
+
+            }
+
+        });
+
+        self.groups.each(function(key, value) {
+            value.loadMissingVariants();
+        });
+
+    },
+    
+    addSubpanel: function(name, panel) {
+        this[name] = panel;
+        this.ui.append(panel.view());
     }
 
 };
 
 
 
-//VariantPanel.prototype.loadGroups = function () {
-//    var self = this;
-//    var assigned = new HashTable(null);
-
-//    function addSet(group, set) {
-//        group.addSet(set);
-//        assigned.setItem(set.id, set);
-//    }
-
-//    this.editQuestion.variantsSets.each(function (key, value) {
-//        var id = value.id;
-//        if (!assigned.hasItem(id)) {
-//            var group = new VariantGroup({ id: ++self.counter });
-//            group.bind({
-//                remove: function () {
-//                    if (group.isEmpty()) self.removeGroup(group);
-//                }
-//            });
-//            addSet(group, value);
-//            value.connections.each(function ($key, $value) {
-//                addSet(group, $value);
-//            });
-//            self.groups.setItem(group.id, group);
-//        }
-//    });
 
 
-//    self.groups.each(function (key, value) {
-//        value.loadMissingVariants();
-//    });
 
-//};
 
 
 function VariantSetsGroup(params) {
@@ -187,10 +197,19 @@ function VariantSetsGroup(params) {
     self.id = params.id;
     self.events = mielk.eventHandler();
     self.sets = mielk.hashTable();
+    self.keys = mielk.hashTable();
+
+    //    self.events.bind({
+    //        add: function (e) {
+    //            self.addSet(e.set);
+    //        },
+    //        remove: function (e) {
+    //            self.removeSet(e.set);
+    //        }
+    //    });
 
 }
 VariantSetsGroup.prototype = {
-    
     trigger: function(e) {
         this.events.trigger(e);
     },
@@ -241,98 +260,73 @@ VariantSetsGroup.prototype = {
         return this.sets.size() === 0;
     },
     
-    //itemsToString: function() {
-    //    var s = '';
-    //    this.sets.each(function (key, value) {
-    //        s += value.id + ',';
-    //    });
-    //    return my.text.cut(s, 1);
-    //},
+    getConnectionPairs: function () {
+        var results = mielk.hashTable();
+        var array = this.sets.values();
+
+        for (var i = 0; i < array.length; i++) {
+            var parent = array[i];
+            for (var j = i + 1; j < array.length; j++) {
+                var connected = array[j];
+                var connectionKey = parent.id + '|' + connected.id;
+                results.setItem(connectionKey, [parent, connected]);
+            }
+        }
+
+        return results;
+
+    },
     
-
+    getKeys: function () {
+        if (!this.keys) {
+            this.loadKeys();
+        }
+        return this.keys;
+    },
     
+    //Tworzy kolekcję wszystkich kluczy wariantów
+    //występujących w VariantSetach tej grupy.
+    loadKeys: function () {
+        var self = this;
+        self.keys = mielk.hashTable();
 
-    //VariantGroup.prototype.itemsToString = function () {
+        self.sets.each(function (key, value) {
+            value.variants.each(function ($key) {
+                if (!self.keys.hasItem($key)) {
+                    self.keys.setItem($key, $key);
+                }
+            });
+        });
+    },
+    
+    //Rozpowszechnia warianty pomiędzy VariantSetami,
+    //np. jeżeli wariant z jakimś kluczem występuje
+    //tylko w jednym VariantSecie, w pozostałych setach
+    //zostaje stworzony pusty wariant o takim samym
+    //kluczu.
+    loadMissingVariants: function () {
+        var self = this;
 
-    //};
-    //VariantGroup.prototype.getConnectionPairs = function () {
-    //    var results = new HashTable(null);
-    //    var array = this.sets.values();
+        if (!self.keys) {
+            self.loadKeys();
+        }
 
-    //    for (var i = 0; i < array.length; i++) {
-    //        var parent = array[i];
-    //        for (var j = i + 1; j < array.length; j++) {
-    //            var connected = array[j];
-    //            var connectionKey = parent.id + '|' + connected.id;
-    //            results.setItem(connectionKey, [parent, connected]);
-    //        }
-    //    }
+        self.keys.each(function (key) {
+            self.sets.each(function (setKey, set) {
+                if (!set.variants.hasItem(key)) {
+                    var variant = new Variant(set, {
+                        Id: set.id + ':' + key,
+                        Key: key,
+                        IsNew: true
+                    });
+                    set.variants.setItem(variant.key, variant);
+                }
+            });
+        });
 
-    //    return results;
-
-    //};
-    //VariantGroup.prototype.getKeys = function () {
-    //    if (!this.keys) {
-    //        this.loadKeys();
-    //    }
-    //    return this.keys;
-    //};
-    //VariantGroup.prototype.loadKeys = function () {
-    //    var self = this;
-    //    self.keys = new HashTable(null);
-
-    //    self.sets.each(function (key, value) {
-    //        value.updated.variants.each(function ($key) {
-    //            if (!self.keys.hasItem($key)) {
-    //                self.keys.setItem($key, $key);
-    //            }
-    //        });
-    //    });
-    //};
-    //VariantGroup.prototype.loadMissingVariants = function () {
-    //    var self = this;
-
-    //    if (!self.keys) {
-    //        self.loadKeys();
-    //    }
-
-    //    self.keys.each(function (key) {
-    //        self.sets.each(function (setKey, set) {
-    //            if (!set.updated.variants.hasItem(key)) {
-    //                var variant = new Variant(set.editEntity, set, {
-    //                    Id: set.id + ':' + key,
-    //                    Key: key,
-    //                    IsNew: true
-    //                });
-    //                set.updated.variants.setItem(variant.key, variant);
-    //            }
-    //        });
-    //    });
-
-    //};
-
-
+    }
 
 };
-
-
-//function VariantGroup(properties) {
-//    this.VariantGroup = true;
-//    var self = this;
-//    self.id = properties.id;
-//    self.events = new EventHandler();
-//    self.sets = new HashTable(null);
-
-//    self.events.bind({
-//        add: function (e) {
-//            self.addSet(e.set);
-//        },
-//        remove: function (e) {
-//            self.removeSet(e.set);
-//        }
-//    });
-
-//}
 
 
 
@@ -356,7 +350,7 @@ function VariantSubpanel(parent, name) {
         var container = jQuery('<div/>', {
             'class': 'variant-subpanel'
         });
-        self.parent.ui.append(container);
+        //self.parent.ui.append(container);
 
         var header = jQuery('<div/>', {
             'class': 'variant-subpanel-header'
@@ -406,15 +400,15 @@ function VariantSubpanel(parent, name) {
         }
 
         return {
-            content: content
+            view: container
         };
 
     })();
 
 }
 VariantSubpanel.prototype = {    
-    contentPanel: function () {
-        return this.ui.content;
+    view: function () {
+        return this.ui.view;
     },
     bind: function (e) {
         this.events.bind(e);
@@ -436,7 +430,7 @@ function VariantConnectionsManager(parent) {
 
     var self = this;
     self.VariantConnectionsManager = true;
-    self.parent = parent;
+    VariantSubpanel.call(this, parent, 'Connections');
     self.query = parent.query;
 
     //Temporary.
@@ -444,12 +438,12 @@ function VariantConnectionsManager(parent) {
     self.activeGroup = null;
 
 }
-
+mielk.objects.extend(VariantSubpanel, VariantConnectionsManager);
 
 
 
 //function VariantConnectionsManager(parent) {
-//    VariantSubpanel.call(this, parent, 'Connections');
+//    
 //    this.VariantConnectionsManager = true;
 //    var self = this;
 //    self.panel = self.ui.content;
@@ -880,7 +874,7 @@ function VariantConnectionsManager(parent) {
 //    initialize();
 
 //}
-//mielk.objects.extend(VariantSubpanel, VariantConnectionsManager);
+//
 
 
 
