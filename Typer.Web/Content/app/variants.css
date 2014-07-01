@@ -131,12 +131,8 @@ span.complex {
 }
 
 
-/*
 
-
-
-
-
+/*Variant connections*/
 .variant-connection-group {
     height: auto;
     width: 100%;
@@ -145,6 +141,14 @@ span.complex {
     border: 1px solid #999;
     background-color: rgb(246, 246, 246);
 }
+
+/*
+
+
+
+
+
+
 
 .variant-options-groups {
     height: auto;

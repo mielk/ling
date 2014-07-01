@@ -39,6 +39,14 @@
 }
 VariantSet.prototype = {
 
+    bind: function(e) {
+        this.eventHandler.bind(e);
+    },
+    
+    trigger: function(e) {
+        this.eventHandler.trigger(e);
+    },
+
     addRelated: function (set) {
         this.related.setItem(set.id, set);
     },
@@ -137,10 +145,27 @@ VariantSet.prototype = {
                 //$(flag).bind(e);
                 //$(tag).bind(e);
             }
+            
+            function trigger(e) {
+                $(container).trigger(e);
+            }
+
+            function events() {
+                set.bind({                    
+                   rename: function(e) {
+                       $(tag).html(e.name);
+                   }
+                });
+            }
+
+            (function initialize() {
+                events();
+            })();
 
             return {
                   view: container
                 , bind: bind
+                , trigger: trigger
                 , set: set
             };
 
@@ -161,6 +186,14 @@ VariantSet.prototype = {
             self.variantsById.setItem(variant.id, variant);            
         });
 
+    },
+    
+    rename: function(name) {
+        this.tag = name;
+        this.trigger({
+            type: 'name',
+            name: name
+        });
     }
 
 };
