@@ -92,6 +92,10 @@
             return this.length;
         };
 
+        this.isEmpty = function() {
+            return this.length > 0;
+        };
+
         this.clear = function () {
             this.items = {};
             this.length = 0;

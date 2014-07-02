@@ -127,23 +127,23 @@ VariantSet.prototype = {
             var set = self;
 
             var container = jQuery('<div/>', {
-                'class': 'variant-set-block'
+                'class': 'unselectable variant-set-block'
             });
 
             var flag = jQuery('<div/>', {
-                'class': 'flag ' + set.language.flag + '-small'
-            }).appendTo(container);
+                'class': 'unselectable flag ' + set.language.flag + '-small'
+            });
+            flag.appendTo(container);
 
             var tag = jQuery('<div/>', {
-                'class': 'name',
+                'class': 'unselectable name',
                 html: set.tag
-            }).appendTo(container);
+            });
+            tag.appendTo(container);
 
 
             function bind(e) {
                 $(container).bind(e);
-                //$(flag).bind(e);
-                //$(tag).bind(e);
             }
             
             function trigger(e) {
@@ -151,12 +151,26 @@ VariantSet.prototype = {
             }
 
             function events() {
-                set.bind({                    
+                //Built-in.
+                set.bind({
                    rename: function(e) {
                        $(tag).html(e.name);
                    }
                 });
+                
             }
+
+
+            function bindEvents(bindings) {
+                if (bindings && bindings.HashTable) {
+                    var $events = {};
+                    bindings.each(function (key, binding) {
+                        $events[key] = binding;
+                    });
+                    bind($events);
+                }
+            }
+
 
             (function initialize() {
                 events();
@@ -167,6 +181,7 @@ VariantSet.prototype = {
                 , bind: bind
                 , trigger: trigger
                 , set: set
+                , bindEvents: bindEvents
             };
 
         })();

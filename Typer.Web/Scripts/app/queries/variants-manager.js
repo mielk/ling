@@ -140,11 +140,9 @@ VariantsManager.prototype = {
                 
                 //Tworzy nową grupę i dodaje ją do
                 //odpowiednich kolekcji.
-                var group = new VariantSetsGroup({
-                    id: ++self.counter
-                });
+                var group = new VariantSetsGroup({ manager: self, id: mielk.numbers.generateUUID() });
                 self.groups.setItem(id, group);
-                group.addSet(set);
+                group.loadSet(set);
                 assigned.setItem(set.id, set);
                 
 
@@ -152,7 +150,7 @@ VariantsManager.prototype = {
                 //dodawane są również VariantSety powiązane.
                 set.related.each(function(k, connected) {
                     assigned.setItem(connected.id, connected);
-                    group.addSet(connected);
+                    group.loadSet(connected);
                 });
                 
 
@@ -177,6 +175,27 @@ VariantsManager.prototype = {
     addSubpanel: function(name, panel) {
         this[name] = panel;
         this.ui.append(panel.view());
+    },
+    
+    createNewGroup: function(set) {
+        var self = this;
+        var group = new VariantSetsGroup({ manager: self, id: mielk.numbers.generateUUID() });
+        group.loadSet(set);
+
+        self.groups.setItem(group.id, group);
+        self.trigger({
+            type: 'createNewGroup',
+            group: group
+        });
+        
+    },
+    
+    removeGroup: function(group) {
+        this.groups.removeItem(group.id);
+        this.trigger({
+             type: 'removeGroup'
+            ,group: group
+        });
     }
 
 };
@@ -184,6 +203,28 @@ VariantsManager.prototype = {
 
 
 
+//VariantPanel.prototype.newGroup = function (set) {
+//    var self = this;
+//    var group = new VariantGroup({ id: ++self.counter });
+//    group.addSet(set);
+
+//    group.bind({
+//        remove: function () {
+//            if (group.isEmpty()) self.removeGroup(group);
+//        }
+//    });
+
+//    group.trigger({
+//        type: 'add',
+//        set: set
+//    });
+
+//    this.events.trigger({
+//        type: 'newGroup',
+//        group: group
+//    });
+
+//};
 
 
 
@@ -196,6 +237,7 @@ function VariantSetsGroup(params) {
     self.VariantSetsGroup = true;
     
     //Instance properties.
+    self.manager = params.manager;
     self.id = params.id;
     self.events = mielk.eventHandler();
     self.sets = mielk.hashTable();
@@ -211,13 +253,16 @@ VariantSetsGroup.prototype = {
         this.events.bind(e);
     },
     
-    addSet: function(set) {
+    loadSet: function(set) {
         this.sets.setItem(set.id, set);
     },
     
     removeSet: function(set) {
         this.sets.removeItem(set.id);
         this.removeEmptyVariants();
+
+        if (this.isEmpty()) this.destroy();
+
     },
     
     removeEmptyVariants: function(removedSet) {
@@ -249,6 +294,11 @@ VariantSetsGroup.prototype = {
 
     },
     
+    destroy: function () {
+        this.trigger({ type: 'remove' });
+        this.manager.removeGroup(this);
+    },
+
     isEmpty: function() {
         return this.sets.size() === 0;
     },
@@ -319,18 +369,12 @@ VariantSetsGroup.prototype = {
 
     },
     
-    view: function () {
-        if (!this.ui) this.createUi();
-        return this.ui.view;
-    },
-    
-    createUi: function() {
+    getPanel: function() {
         var self = this;
 
-        //UI.
-        self.ui = (function () {
-            var blocks;
+        var panel = (function() {
             var container;
+            var blocks = mielk.hashTable();
 
             function createContainer() {
                 container = jQuery('<div/>', {
@@ -338,31 +382,85 @@ VariantSetsGroup.prototype = {
                 });
             }
 
-            function loadVariantSets() {
-                blocks = mielk.hashTable();
+            function loadBlocks() {
+                blocks.clear();
+                
+                //Load blocks.
                 self.sets.each(function (key, set) {
                     var block = set.getBlock();
                     $(block.view).appendTo(container);
                     blocks.setItem(key, block);
+                });
+                
+            }
+
+            function defaultEvents() {
+                self.bind({
+                    destroy: function () {
+                        $(container).remove();
+                    }
+                });
+            }
+            
+            function bindEvents(ev) {
+                //Custom.
+                if (ev && ev.HashTable) {
+                    var events = {};
+                    ev.each(function (key, event) {
+                        events[key] = event;
+                    });
+                    self.bind(events);
+                }
+            }
+            
+
+            function bindBlocksEvents(ev) {
+                blocks.each(function(k, v) {
+                    v.bindEvents(ev);
                 });
             }
 
 
             (function initialize() {
                 createContainer();
-                loadVariantSets();
+                loadBlocks();
+                defaultEvents();
             })();
 
 
             return {
-                view: container
+                view: container,
+                bindEvents: bindEvents,
+                bindBlocksEvents: bindBlocksEvents
             };
+
 
         })();
 
-    }
+        return panel;
+
+    },
+    
+
 
 };
+
+
+
+//        function addBlock(block) {
+//            $blocks.setItem(block.id, block);
+//            block.setGroup($self);
+
+//            $blocks.each(function (key, value) {
+//                if (value != block) {
+//                    value.set.addConnection(block.set);
+//                    block.set.addConnection(value.set);
+//                }
+//            });
+
+//            block.rerender();
+//            block.view().appendTo(container);
+//        }
 
 
 
@@ -378,15 +476,6 @@ VariantSetsGroup.prototype = {
 //        var $group = group;
 
 
-
-
-//        function createBlocks() {
-//            $group.sets.each(function (key, value) {
-//                var block = setBlock(value);
-//                block.selfinject(block);
-//                addBlock(block);
-//            });
-//        }
 
 //        function refresh() {
 //            if ($active) {
@@ -434,26 +523,6 @@ VariantSetsGroup.prototype = {
 //                }
 //            }
 
-//        }
-
-//        function addBlock(block) {
-//            $blocks.setItem(block.id, block);
-//            block.setGroup($self);
-
-//            $blocks.each(function (key, value) {
-//                if (value != block) {
-//                    value.set.addConnection(block.set);
-//                    block.set.addConnection(value.set);
-//                }
-//            });
-
-//            block.rerender();
-//            block.view().appendTo(container);
-//        }
-
-//        function destroy() {
-//            self.groups.removeItem($index);
-//            $(container).remove();
 //        }
 
 //        return {
@@ -649,9 +718,23 @@ mielk.objects.addProperties(VariantConnectionsManager.prototype, {
 
     render: function () {
         var self = this;
-        self.parent.groups.each(function (key, group) {
-            var view = group.view();
-            self.content.add(view);
+        self.parent.groups.each(function (key, value) {
+
+            var group = value.getPanel();
+            group.bindEvents(mielk.hashTable({
+                click: function(e) {
+                    alert('Click on container ' + e.pageX);
+                }
+            }));
+            group.bindBlocksEvents(mielk.hashTable({
+                click: function (e) {
+                    e.stopPropagation();
+                    alert('Click on block ' + e.pageX);
+                }                
+            }));
+            self.groups.setItem(value.id, group);
+            self.content.add(group.view);
+
         });
         self.content.append();
     }
@@ -1103,37 +1186,6 @@ mielk.objects.addProperties(VariantConnectionsManager.prototype, {
 //VariantPanel.prototype.start = function () {
 //    this.display();
 //};
-
-//VariantPanel.prototype.newGroup = function (set) {
-//    var self = this;
-//    var group = new VariantGroup({ id: ++self.counter });
-//    group.addSet(set);
-
-//    group.bind({
-//        remove: function () {
-//            if (group.isEmpty()) self.removeGroup(group);
-//        }
-//    });
-
-//    group.trigger({
-//        type: 'add',
-//        set: set
-//    });
-
-//    this.events.trigger({
-//        type: 'newGroup',
-//        group: group
-//    });
-
-//};
-//VariantPanel.prototype.removeGroup = function (group) {
-
-//    this.groups.removeItem(group.id);
-
-//    this.trigger({
-//        type: 'removeGroup',
-//        group: group
-//    });
 
 //};
 
