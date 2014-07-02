@@ -201,38 +201,6 @@ function VariantSetsGroup(params) {
     self.sets = mielk.hashTable();
     self.keys = mielk.hashTable();
 
-    //UI.
-    self.ui = (function() {
-        var blocks = mielk.hashTable();
-        var container;
-
-        function createContainer() {
-            container = jQuery('<div/>', {
-                'class': 'variant-connection-group'
-            });
-        }
-
-        function loadVariantSets() {
-            blocks = mielk.hashTable();
-            self.sets.each(function(key, set) {
-                var block = set.getBlock();
-                $(block.view).appendTo(container);
-            });
-        }
-
-
-        (function initialize() {
-            createContainer();
-            loadVariantSets();
-        })();
-        
-
-        return {
-            view: container
-        };
-
-    })();
-    
 }
 VariantSetsGroup.prototype = {
     trigger: function(e) {
@@ -351,8 +319,47 @@ VariantSetsGroup.prototype = {
 
     },
     
-    view: function() {
+    view: function () {
+        if (!this.ui) this.createUi();
         return this.ui.view;
+    },
+    
+    createUi: function() {
+        var self = this;
+
+        //UI.
+        self.ui = (function () {
+            var blocks;
+            var container;
+
+            function createContainer() {
+                container = jQuery('<div/>', {
+                    'class': 'variant-connection-group'
+                });
+            }
+
+            function loadVariantSets() {
+                blocks = mielk.hashTable();
+                self.sets.each(function (key, set) {
+                    var block = set.getBlock();
+                    $(block.view).appendTo(container);
+                    blocks.setItem(key, block);
+                });
+            }
+
+
+            (function initialize() {
+                createContainer();
+                loadVariantSets();
+            })();
+
+
+            return {
+                view: container
+            };
+
+        })();
+
     }
 
 };
@@ -528,7 +535,8 @@ function VariantSubpanel(parent, name) {
         var expander = jQuery('<div/>', {
             'class': 'variant-subpanel-expander'
         }).bind({
-            click: function () {
+            click: function (e) {
+                e.stopPropagation();
                 if (expanded === true) {
                     collapse();
                 } else {

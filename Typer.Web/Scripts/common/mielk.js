@@ -1092,7 +1092,9 @@
                     }
                 });
 
-                var frame = jQuery('<div/>');
+                var frame = jQuery('<div/>', {
+                    id: 'modal-popup-frame'
+                });
                 frame.css({
                     'position': 'relative'
                     ,'display': 'table'
@@ -1102,7 +1104,7 @@
                     ,'border': '3px solid #999'
                     ,'background-color': '#eee'
                     ,'padding': '12px'
-                    ,'width':'auto'
+                    ,'width':'80%'
                     ,'height':'auto'
                     ,'margin':'50px auto'
                 });
