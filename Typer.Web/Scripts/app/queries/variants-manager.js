@@ -367,84 +367,150 @@ VariantSetsGroup.prototype = {
             });
         });
 
-    },
+    }
     
-    getPanel: function() {
-        var self = this;
-
-        var panel = (function() {
-            var container;
-            var blocks = mielk.hashTable();
-
-            function createContainer() {
-                container = jQuery('<div/>', {
-                    'class': 'variant-connection-group'
-                });
-            }
-
-            function loadBlocks() {
-                blocks.clear();
-                
-                //Load blocks.
-                self.sets.each(function (key, set) {
-                    var block = set.getBlock();
-                    $(block.view).appendTo(container);
-                    blocks.setItem(key, block);
-                });
-                
-            }
-
-            function defaultEvents() {
-                self.bind({
-                    destroy: function () {
-                        $(container).remove();
-                    }
-                });
-            }
-            
-            function bindEvents(ev) {
-                //Custom.
-                if (ev && ev.HashTable) {
-                    var events = {};
-                    ev.each(function (key, event) {
-                        events[key] = event;
-                    });
-                    self.bind(events);
-                }
-            }
-            
-
-            function bindBlocksEvents(ev) {
-                blocks.each(function(k, v) {
-                    v.bindEvents(ev);
-                });
-            }
-
-
-            (function initialize() {
-                createContainer();
-                loadBlocks();
-                defaultEvents();
-            })();
-
-
-            return {
-                view: container,
-                bindEvents: bindEvents,
-                bindBlocksEvents: bindBlocksEvents
-            };
-
-
-        })();
-
-        return panel;
-
-    },
-    
-
-
 };
 
+
+
+function VariantSetGroupPanel(params) {
+
+    'use strict';
+
+    var self = this;
+    self.VariantSetGroupPanel = true;
+
+    self.panel = params.panel;
+    self.group = params.group;
+
+    self.blocks = mielk.hashTable();
+    self.active = false;
+
+    self.ui = (function() {
+        var container;
+
+        function createContainer() {
+            container = jQuery('<div/>', {
+                'class': 'variant-connection-group'
+            });
+        }
+
+        function addBlock(block) {
+            $(block.view).appendTo(container);
+        }
+
+        function defaultEvents() {
+            self.group.bind({
+                destroy: function () {
+                    $(container).remove();
+                }
+            });
+        }
+
+        function bindEvents(ev) {
+            //Custom.
+            if (ev && ev.HashTable) {
+                var events = {};
+                ev.each(function (key, event) {
+                    events[key] = event;
+                });
+                $(container).bind(events);
+            }
+        }
+
+
+        function refresh() {
+            if (self.active) {
+                $(container).addClass('active');
+            } else {
+                $(container).removeClass('active');
+            }
+        }
+        
+        function isHovered(x, y) {
+            var offset = $(container).offset();
+            var left = offset.left;
+            var top = offset.top;
+            var right = left + $(container).outerWidth();
+            var bottom = top + $(container).outerHeight();
+
+            return (x >= left && x <= right && y >= top && y <= bottom);
+        }
+
+
+
+
+        (function initialize() {
+            createContainer();
+            defaultEvents();
+        })();
+
+
+        return {
+            view: container,
+            bindEvents: bindEvents,
+            addBlock: addBlock,
+            refresh: refresh,
+            isHovered: isHovered
+        };
+
+    })();
+
+    self.events = (function() {
+
+        self.group.bind({
+            removeBlock: function(e) {
+                self.removeBlock(e.block);
+            }            
+        });
+        
+
+    })();
+
+    (function initialize() {
+        self.loadBlocks();
+    })();
+
+}
+VariantSetGroupPanel.prototype = {    
+    
+    bindBlocksEvents: function(events) {
+        this.blocks.each(function (k, v) {
+            v.bindEvents(events);
+        });        
+    },
+    
+    bindEvents: function(events) {
+        this.ui.bindEvents(events);
+    },
+    
+    loadBlocks: function () {
+        var self = this;
+        self.blocks.clear();
+
+        //Load blocks.
+        self.group.sets.each(function (key, set) {
+            var block = set.getBlock();
+            self.blocks.setItem(key, block);
+            self.ui.addBlock(block);
+        });        
+    },
+    
+    view: function () {
+        return this.ui.view;
+    },
+    
+    removeBlock: function (key) {
+        var block = self.blocks.getItem(key);
+        block.destroy();
+        self.blocks.removeItem(key);
+    },
+    
+    isHovered: function(x, y) {
+        return this.ui.isHovered(x, y);
+    }
+
+};
 
 
 //        function addBlock(block) {
@@ -477,25 +543,6 @@ VariantSetsGroup.prototype = {
 
 
 
-//        function refresh() {
-//            if ($active) {
-//                $(container).addClass('active');
-//            } else {
-//                $(container).removeClass('active');
-//            }
-
-//        }
-
-//        function isHovered(x, y) {
-//            var offset = $(container).offset();
-//            var left = offset.left;
-//            var top = offset.top;
-//            var right = left + $(container).width();
-//            var bottom = top + $(container).height();
-
-//            return (x >= left && x <= right && y >= top && y <= bottom);
-
-//        }
 
 //        function removeBlock(block) {
 //            $blocks.removeItem(block.id);
@@ -690,7 +737,9 @@ function VariantConnectionsManager(parent) {
 
     //UI
     self.content = (function() {
-        var container = jQuery('<div/>');
+        var container = jQuery('<div/>').css({
+            'width': '100%'
+        });
 
         function add(groupView) {
             $(groupView).appendTo(container);
@@ -699,11 +748,16 @@ function VariantConnectionsManager(parent) {
         function append() {
             self.ui.insert(container);
         }
+        
+        function css(styles) {
+            $(container).css(styles);
+        }
 
         return {            
               view: container
             , add: add
             , append: append
+            , css: css
         };
 
     })();
@@ -720,20 +774,20 @@ mielk.objects.addProperties(VariantConnectionsManager.prototype, {
         var self = this;
         self.parent.groups.each(function (key, value) {
 
-            var group = value.getPanel();
-            group.bindEvents(mielk.hashTable({
+            var groupPanel = new VariantSetGroupPanel({ panel: self, group: value });
+            groupPanel.bindEvents(mielk.hashTable({
                 click: function(e) {
                     alert('Click on container ' + e.pageX);
                 }
             }));
-            group.bindBlocksEvents(mielk.hashTable({
+            groupPanel.bindBlocksEvents(mielk.hashTable({
                 click: function (e) {
                     e.stopPropagation();
                     alert('Click on block ' + e.pageX);
                 }                
             }));
-            self.groups.setItem(value.id, group);
-            self.content.add(group.view);
+            self.groups.setItem(value.id, groupPanel);
+            self.content.add(groupPanel.view());
 
         });
         self.content.append();

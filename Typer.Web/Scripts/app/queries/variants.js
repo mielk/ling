@@ -126,63 +126,10 @@ VariantSet.prototype = {
 
             var set = self;
 
-            var container = jQuery('<div/>', {
-                'class': 'unselectable variant-set-block'
-            });
-
-            var flag = jQuery('<div/>', {
-                'class': 'unselectable flag ' + set.language.flag + '-small'
-            });
-            flag.appendTo(container);
-
-            var tag = jQuery('<div/>', {
-                'class': 'unselectable name',
-                html: set.tag
-            });
-            tag.appendTo(container);
 
 
-            function bind(e) {
-                $(container).bind(e);
-            }
-            
-            function trigger(e) {
-                $(container).trigger(e);
-            }
-
-            function events() {
-                //Built-in.
-                set.bind({
-                   rename: function(e) {
-                       $(tag).html(e.name);
-                   }
-                });
-                
-            }
 
 
-            function bindEvents(bindings) {
-                if (bindings && bindings.HashTable) {
-                    var $events = {};
-                    bindings.each(function (key, binding) {
-                        $events[key] = binding;
-                    });
-                    bind($events);
-                }
-            }
-
-
-            (function initialize() {
-                events();
-            })();
-
-            return {
-                  view: container
-                , bind: bind
-                , trigger: trigger
-                , set: set
-                , bindEvents: bindEvents
-            };
 
         })();
 
@@ -215,6 +162,335 @@ VariantSet.prototype = {
 
 
 
+
+function VariantSetBlock(set, params) {
+
+    'use strict';
+
+    var self = this;
+    self.VariantSetBlock = true;
+
+    self.set = set;
+    self.eventHandler = mielk.eventHandler();
+    self.isActive = false;
+    self.isMovable = params.isMovable || false;
+
+    self.ui = (function() {
+        var container;
+        var flag;
+        var tag;
+        var mover;
+
+        function render() {
+            container = jQuery('<div/>', {
+                'class': 'unselectable variant-set-block'
+            });
+
+            flag = jQuery('<div/>', {
+                'class': 'unselectable flag ' + self.set.language.flag + '-small'
+            });
+            flag.appendTo(container);
+
+            tag = jQuery('<div/>', {
+                'class': 'unselectable name',
+                html: self.set.tag
+            });
+            tag.appendTo(container);
+
+        }
+
+        function events() {
+            //Set events.
+            self.set.bind({
+                rename: function (e) {
+                    $(tag).html(e.name);
+                }
+            });
+            
+
+            //This events.
+            self.bind({                
+                activate: function (e) {
+                    activate(e.value);
+                }
+            });
+            
+
+            //Controls events.
+            $(container).bind({                
+                mousedown: function(e) {
+                    self.activate(true);
+                }
+            });
+
+        }
+
+        function activate(value) {
+            if (self.isMovable) {
+                activateMover(value);
+            } else {
+                activatePanel(value);
+            }
+        }
+        
+        function activateMover(value) {
+            $(container).css({
+                'visibility': (value ? 'hidden' : 'visible')
+            });
+
+            if (value) {
+                createMover();
+            } else {
+                destroyMover();
+            }
+        }
+        
+        function activatePanel(value) {
+            if (value) {
+                $(container).addClass('active');
+            } else {
+                $(container).removeClass('active');
+            }
+        }
+
+        function createMover() {
+            //var blockOffset = $(container).offset();
+            //var panelOffset = $(self.panel).offset();
+            //var offset = {
+            //    left: blockOffset.left - panelOffset.left,
+            //    top: blockOffset.top - panelOffset.top
+            //};
+            //mover = shadow({
+            //    x: e.pageX,
+            //    y: e.pageY,
+            //    left: offset.left,
+            //    top: offset.top
+            //});
+
+        }
+        
+        function destroyMover() {
+            if (mover) mielk.fn.run(mover.destroy);
+            mover = null;
+        }
+
+        function bind(e) {
+            $(container).bind(e);
+        }
+
+        function trigger(e) {
+            $(container).trigger(e);
+        }
+
+        function bindEvents(bindings) {
+            if (bindings && bindings.HashTable) {
+                var $events = {};
+                bindings.each(function (key, binding) {
+                    $events[key] = binding;
+                });
+                bind($events);
+            }
+        }
+        
+
+        function destroy() {
+            $(container).remove();
+        }
+        
+
+
+        (function initialize() {
+            render();
+            events();
+        })();
+
+        return {
+              view: container
+            , bind: bind
+            , trigger: trigger
+            , set: set
+            , bindEvents: bindEvents
+            , destroy: destroy
+        };
+
+    })();
+    
+}
+VariantSetBlock.prototype = {    
+    
+    bind: function(e) {
+        this.eventHandler.bind(e);
+    },
+    
+    trigger: function(e) {
+        this.eventHandler.trigger(e);
+    },
+    
+    activate: function (value) {
+        this.isActive = value;
+        this.trigger({
+            type: 'activate',
+            value: value
+        });
+    }
+
+};
+
+
+
+//    var setBlock = function (set) {
+//        var $group = null;
+//        var $self = null;
+//        var $set = set;
+//        var $active = false;
+//        var mover = null;
+
+//        var ui = (function () {
+
+
+//        })();
+
+//        var shadow = function (position) {
+//            var $x = position.x;
+//            var $y = position.y;
+//            var $top = position.top;
+//            var $left = position.left;
+
+//            var container = jQuery('<div/>', {
+//                'class': 'variant-set-block variant-block-mover'
+//            }).css({
+//                'top': $top + 'px',
+//                'left': $left + 'px'
+//            }).appendTo(self.panel);
+
+//            var content = jQuery('<div/>').
+//                css({
+//                    'position': 'relative',
+//                    'width': '100%',
+//                    'height': '100%'
+//                }).appendTo(container);
+
+//            // ReSharper disable once UnusedLocals
+//            var flag = jQuery('<div/>', {
+//                'class': 'flag ' + set.language.language.flag + '-small'
+//            }).appendTo(content);
+
+//            // ReSharper disable once UnusedLocals
+//            var name = jQuery('<div/>', {
+//                'class': 'name',
+//                html: set.updated.tag
+//            }).appendTo(content);
+
+//            var cancel = jQuery('<div/>', {
+//                'class': 'variant-set-block-cancel'
+//            }).appendTo(content);
+
+//            return {
+//                container: container,
+//                destroy: function () {
+//                    $(container).remove();
+//                },
+//                move: function (x, y) {
+//                    var left = $left + (x - $x);
+//                    var top = $top + (y - $y);
+//                    $(container).css({
+//                        'top': top + 'px',
+//                        'left': left + 'px'
+//                    });
+//                },
+//                overEmpty: function () {
+//                    $(cancel).css({
+//                        'visibility': 'visible'
+//                    });
+//                },
+//                overGroup: function () {
+//                    $(cancel).css({
+//                        'visibility': 'hidden'
+//                    });
+//                }
+//            };
+//        };
+
+//        function release() {
+
+//            //self.parent.connectionsChanged = true;
+
+//            if (!self.activeGroup) {
+//                if ($group.only($self)) {
+//                    ui.deactivate();
+//                } else {
+//                    separate();
+//                }
+//            } else if (self.activeGroup === $group) {
+//                ui.deactivate();
+//            } else {
+//                moveToOtherGroup(self.activeGroup);
+//            }
+//        }
+
+//        function separate() {
+//            var previousGroup = $group;
+//            previousGroup.removeBlock($self);
+//            ui.deactivate();
+
+//            previousGroup.group.trigger({
+//                type: 'remove',
+//                set: $set
+//            });
+
+//            self.parent.newGroup(set);
+
+//            ui.destroy();
+
+//        }
+
+//        function moveToOtherGroup(group) {
+//            var previousGroup = $group;
+//            previousGroup.removeBlock($self);
+//            $group = group;
+//            $group.addBlock($self);
+//            ui.deactivate();
+
+//            previousGroup.group.trigger({
+//                type: 'remove',
+//                set: $set
+//            });
+
+//            $group.group.trigger({
+//                type: 'add',
+//                set: $set
+//            });
+
+//        }
+
+//        return {
+//            selfinject: function (me) {
+//                $self = me;
+//            },
+//            set: $set,
+//            setGroup: function (group) {
+//                $group = group;
+//            },
+//            rerender: function () {
+//                ui.render();
+//            },
+//            id: $set.id,
+//            view: function () {
+//                return ui.container();
+//            },
+//            move: function (x, y) {
+//                mover.move(x, y);
+//            },
+//            release: release,
+//            overEmpty: function () {
+//                if (mover) mover.overEmpty();
+//            },
+//            overGroup: function () {
+//                if (mover) mover.overGroup();
+//            }
+//        };
+
+//    };
 
 
 
