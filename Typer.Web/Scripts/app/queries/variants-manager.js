@@ -486,8 +486,20 @@ VariantSetGroupPanel.prototype = {
         //Load blocks.
         self.group.sets.each(function (key, set) {
             var block = new VariantSetBlock(set, { movable: movable, panel: self.ui.view });
+            block.bind({
+                release: function() {
+                    self.group.trigger({ type: 'blockReleased', block: block });
+                },
+                activate: function (e) {
+                    if (e.value) {
+                        self.group.trigger({ type: 'blockActivated', block: block });
+                    } else {
+                        self.group.trigger({ type: 'blockDeactivated', block: block });
+                    }
+                }
+            });
             self.blocks.setItem(key, block);
-        });        
+        });
     },
     
     view: function () {
@@ -702,10 +714,10 @@ VariantSubpanel.prototype = {
         return this.ui.view;
     },
     bind: function (e) {
-        this.events.bind(e);
+        this.eventHandler.bind(e);
     },
     trigger: function (e) {
-        this.events.trigger(e);
+        this.eventHandler.trigger(e);
     }
 };
 
@@ -756,6 +768,16 @@ function VariantConnectionsManager(parent) {
 
     })();
 
+    self.events = (function() {
+        $(document).bind({            
+            mouseup: function () {
+                if (self.activeBlock) {
+                    self.releaseBlock();
+                }
+            }
+        });
+    })();
+
     (function initialize() {
         self.render();
     })();
@@ -780,11 +802,41 @@ mielk.objects.addProperties(VariantConnectionsManager.prototype, {
             //        alert('Click on block ' + e.pageX);
             //    }
             //}));
+            value.bind({
+                blockActivated: function (e) {
+                    mielk.notify.display('activated');
+                    //Deactivate the previously active block.
+                    if (self.activeBlock) self.activeBlock.activate(false);
+                    self.activeBlock = e.block;
+                },
+                blockDeactivated: function (e) {
+                    mielk.notify.display('deactivated');
+                    self.activeBlock = null;
+                    self.activeGroup = null;
+                }
+            });
             self.groups.setItem(value.id, groupPanel);
             self.content.add(groupPanel.view());
 
         });
         self.content.append();
+    },
+    
+    releaseBlock: function() {
+        var block = this.activeBlock;
+
+        if (!block) return;
+
+        if (block.isRemovable) {
+            //Usuń blok z tej grupy i stwórz dla niego nową grupę.
+        } else if (self.activeGroup === block.group) {  //Nothing has changed.
+            block.activate(false);
+        } else {
+            //Move block to the new group.
+        }
+
+        mielk.notify.display('released');
+        var x = 1;
     }
     
 });

@@ -353,7 +353,6 @@ function VariantSetBlock(set, params) {
             function move(x, y) {
                 var left = divLeft + (x - clickX);
                 var top = divTop + (y - clickY);
-                //mielk.notify.display('Left: ' + left + ' | Top: ' + top);
                 $(shadowContainer).css({
                     'top': top + 'px',
                     'left': left + 'px'
@@ -364,12 +363,14 @@ function VariantSetBlock(set, params) {
                 $(shadowCancel).css({
                     'visibility': 'visible'
                 });
+                self.isRemovable = true;
             }
             
             function overGroup() {
                 $(shadowCancel).css({
                     'visibility': 'hidden'
-                });                
+                });
+                self.isRemovable = false;
             }
 
             return {                
