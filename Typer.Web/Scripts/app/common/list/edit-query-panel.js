@@ -61,7 +61,7 @@ function VariantSetsPanel(query) {
 
         function displayVariantSets() {
             self.query.sets.each(function (key, set) {
-                var block = new VariantSetBlock(set, { movable: false, parent: container });
+                var block = new VariantSetBlock(set, { movable: false, panel: container });
                 block.bindEvents({
                     click: function() {
                         alert(block.set.tag + ' clicked');

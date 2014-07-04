@@ -171,7 +171,7 @@ function VariantSetBlock(set, params) {
     self.VariantSetBlock = true;
 
     self.set = set;
-    self.parent = params.parent;
+    self.panel = params.panel;
     self.eventHandler = mielk.eventHandler();
     self.isActive = false;
     self.isMovable = params.movable || false;
@@ -186,7 +186,7 @@ function VariantSetBlock(set, params) {
         function render() {
             container = jQuery('<div/>', {
                 'class': 'unselectable variant-set-block'
-            }).appendTo(params.parent);
+            }).appendTo(self.panel);
 
             flag = jQuery('<div/>', {
                 'class': 'unselectable flag ' + self.set.language.flag + '-small'
@@ -220,9 +220,18 @@ function VariantSetBlock(set, params) {
             $(container).bind({                
                 mousedown: function (e) {
                     var value = !self.isActive;
-                    self.activate(value, e);
+                    self.activate(value, e.pageX, e.pageY);
                 }
             });
+
+            if (self.isMovable) {
+                $(document).bind({
+                    mousemove: function (e) {
+                        handleMove(e.pageX, e.pageY);
+                    }
+                });
+            }
+
 
         }
 
@@ -234,13 +243,13 @@ function VariantSetBlock(set, params) {
             }
         }
         
-        function activateMover(value) {
+        function activateMover(value, x, y) {
             $(container).css({
                 'visibility': (value ? 'hidden' : 'visible')
             });
 
             if (value) {
-                createMover();
+                mover = createMover(x, y);
             } else {
                 destroyMover();
             }
@@ -255,19 +264,16 @@ function VariantSetBlock(set, params) {
             }
         }
 
-        function createMover() {
-            //var blockOffset = $(container).offset();
-            //var panelOffset = $(self.panel).offset();
-            //var offset = {
-            //    left: blockOffset.left - panelOffset.left,
-            //    top: blockOffset.top - panelOffset.top
-            //};
-            //mover = shadow({
-            //    x: e.pageX,
-            //    y: e.pageY,
-            //    left: offset.left,
-            //    top: offset.top
-            //});
+        function createMover(x, y) {
+            var blockOffset = $(container).offset();
+            var panelOffset = $(self.panel).offset();
+
+            return shadow({
+                x: x,
+                y: y,
+                left: blockOffset.left - panelOffset.left,
+                top: blockOffset.top - panelOffset.top
+            });
 
         }
         
@@ -298,64 +304,82 @@ function VariantSetBlock(set, params) {
             $(container).remove();
         }
         
+        function handleMove(x, y) {
+            if (self.isActive && mover) {
+                mover.move(x, y);
+            }
+        }
+
         function shadow(position) {
-            var $x = position.x;
-            var $y = position.y;
-            var $top = position.top;
-            var $left = position.left;
+            var clickX = position.x;
+            var clickY = position.y;
+            var divTop = position.top;
+            var divLeft = position.left;
 
             var shadowContainer = jQuery('<div/>', {
-                'class': 'variant-set-block variant-block-mover'
+                'class': 'unselectable variant-set-block variant-block-mover'
             }).css({
-                'top': $top + 'px',
-                'left': $left + 'px'
+                'top': divTop + 'px',
+                'left': divLeft + 'px'
             }).appendTo(self.panel);
 
-            //            var content = jQuery('<div/>').
-            //                css({
-            //                    'position': 'relative',
-            //                    'width': '100%',
-            //                    'height': '100%'
-            //                }).appendTo(container);
+            var shadowContent = jQuery('<div/>', {                
+                'class': 'relative full-size'
+            });
+            shadowContent.appendTo(shadowContainer);
 
-            //            // ReSharper disable once UnusedLocals
-            //            var flag = jQuery('<div/>', {
-            //                'class': 'flag ' + set.language.language.flag + '-small'
-            //            }).appendTo(content);
+            var shadowFlag = jQuery('<div/>', {
+                'class': 'flag ' + set.language.flag + '-small'
+            });
+            shadowFlag.appendTo(shadowContent);
 
-            //            // ReSharper disable once UnusedLocals
-            //            var name = jQuery('<div/>', {
-            //                'class': 'name',
-            //                html: set.updated.tag
-            //            }).appendTo(content);
+            var shadowName = jQuery('<div/>', {
+                'class': 'name',
+                html: self.set.tag
+            });
+            shadowName.appendTo(shadowContent);
 
-            //            var cancel = jQuery('<div/>', {
-            //                'class': 'variant-set-block-cancel'
-            //            }).appendTo(content);
+            var shadowCancel = jQuery('<div/>', {
+                'class': 'variant-set-block-cancel'
+            });
+            shadowCancel.appendTo(shadowContent);
 
-            //            return {
-            //                container: container,
-            //                destroy: function () {
-            //                    $(container).remove();
-            //                },
-            //                move: function (x, y) {
-            //                    var left = $left + (x - $x);
-            //                    var top = $top + (y - $y);
-            //                    $(container).css({
-            //                        'top': top + 'px',
-            //                        'left': left + 'px'
-            //                    });
-            //                },
-            //                overEmpty: function () {
-            //                    $(cancel).css({
-            //                        'visibility': 'visible'
-            //                    });
-            //                },
-            //                overGroup: function () {
-            //                    $(cancel).css({
-            //                        'visibility': 'hidden'
-            //                    });
-            //                }            
+
+
+            function destroyShadow() {
+                $(shadowContainer).remove();
+            }
+            
+            function move(x, y) {
+                var left = divLeft + (x - clickX);
+                var top = divTop + (y - clickY);
+                //mielk.notify.display('Left: ' + left + ' | Top: ' + top);
+                $(shadowContainer).css({
+                    'top': top + 'px',
+                    'left': left + 'px'
+                });
+            }
+            
+            function overEmpty() {
+                $(shadowCancel).css({
+                    'visibility': 'visible'
+                });
+            }
+            
+            function overGroup() {
+                $(shadowCancel).css({
+                    'visibility': 'hidden'
+                });                
+            }
+
+            return {                
+                 view: shadowContainer
+                ,destroy: destroyShadow
+                ,move: move
+                ,overEmpty: overEmpty
+                ,overGroup: overGroup
+            };
+
         }
 
         (function initialize() {
@@ -385,13 +409,13 @@ VariantSetBlock.prototype = {
         this.eventHandler.trigger(e);
     },
     
-    activate: function (value, e) {
+    activate: function (value, x, y) {
         this.isActive = (value === undefined ? !this.isActive : value);
         this.trigger({
             type: 'activate',
             value: this.isActive,
-            x: e.pageX,
-            y: e.pageY
+            x: x,
+            y: y
         });
     },
     

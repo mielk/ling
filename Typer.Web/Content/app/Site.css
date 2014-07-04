@@ -102,3 +102,12 @@ textarea {
     display: table-cell; 
     vertical-align: middle; 
 }
+
+.relative {
+    position: relative;
+}
+
+.full-size {
+    height: 100%;
+    width: 100%;
+}

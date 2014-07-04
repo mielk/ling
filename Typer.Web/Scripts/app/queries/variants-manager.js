@@ -485,7 +485,7 @@ VariantSetGroupPanel.prototype = {
 
         //Load blocks.
         self.group.sets.each(function (key, set) {
-            var block = new VariantSetBlock(set, { movable: movable, parent: self.ui.view });
+            var block = new VariantSetBlock(set, { movable: movable, panel: self.ui.view });
             self.blocks.setItem(key, block);
         });        
     },
@@ -769,17 +769,17 @@ mielk.objects.addProperties(VariantConnectionsManager.prototype, {
         self.parent.groups.each(function (key, value) {
 
             var groupPanel = new VariantSetGroupPanel({ panel: self, group: value, movable: true });
-            groupPanel.bindEvents(mielk.hashTable({
-                click: function(e) {
-                    alert('Click on container ' + e.pageX);
-                }
-            }));
-            groupPanel.bindBlocksEvents(mielk.hashTable({
-                click: function (e) {
-                    e.stopPropagation();
-                    alert('Click on block ' + e.pageX);
-                }                
-            }));
+            //groupPanel.bindEvents(mielk.hashTable({
+            //    click: function(e) {
+            //        alert('Click on container ' + e.pageX);
+            //    }
+            //}));
+            //groupPanel.bindBlocksEvents(mielk.hashTable({
+            //    click: function (e) {
+            //        e.stopPropagation();
+            //        alert('Click on block ' + e.pageX);
+            //    }
+            //}));
             self.groups.setItem(value.id, groupPanel);
             self.content.add(groupPanel.view());
 
