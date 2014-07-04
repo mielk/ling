@@ -61,13 +61,12 @@ function VariantSetsPanel(query) {
 
         function displayVariantSets() {
             self.query.sets.each(function (key, set) {
-                var block = set.getBlock();
-                block.bind({
+                var block = new VariantSetBlock(set, { movable: false, parent: container });
+                block.bindEvents({
                     click: function() {
                         alert(block.set.tag + ' clicked');
                     }
                 });
-                $(block.view).appendTo(container);
             });
         }
 

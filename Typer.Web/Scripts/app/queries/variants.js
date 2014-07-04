@@ -171,9 +171,11 @@ function VariantSetBlock(set, params) {
     self.VariantSetBlock = true;
 
     self.set = set;
+    self.parent = params.parent;
     self.eventHandler = mielk.eventHandler();
     self.isActive = false;
-    self.isMovable = params.isMovable || false;
+    self.isMovable = params.movable || false;
+    self.isRemovable = false;
 
     self.ui = (function() {
         var container;
@@ -184,7 +186,7 @@ function VariantSetBlock(set, params) {
         function render() {
             container = jQuery('<div/>', {
                 'class': 'unselectable variant-set-block'
-            });
+            }).appendTo(params.parent);
 
             flag = jQuery('<div/>', {
                 'class': 'unselectable flag ' + self.set.language.flag + '-small'
@@ -207,27 +209,26 @@ function VariantSetBlock(set, params) {
                 }
             });
             
-
             //This events.
             self.bind({                
                 activate: function (e) {
-                    activate(e.value);
+                    activate(e.value, e.x, e.y);
                 }
             });
             
-
             //Controls events.
             $(container).bind({                
-                mousedown: function(e) {
-                    self.activate(true);
+                mousedown: function (e) {
+                    var value = !self.isActive;
+                    self.activate(value, e);
                 }
             });
 
         }
 
-        function activate(value) {
+        function activate(value, x, y) {
             if (self.isMovable) {
-                activateMover(value);
+                activateMover(value, x, y);
             } else {
                 activatePanel(value);
             }
@@ -246,10 +247,11 @@ function VariantSetBlock(set, params) {
         }
         
         function activatePanel(value) {
+            var activeClassName = 'active-variant-set-block';
             if (value) {
-                $(container).addClass('active');
+                $(container).addClass(activeClassName);
             } else {
-                $(container).removeClass('active');
+                $(container).removeClass(activeClassName);
             }
         }
 
@@ -292,12 +294,69 @@ function VariantSetBlock(set, params) {
             }
         }
         
-
         function destroy() {
             $(container).remove();
         }
         
+        function shadow(position) {
+            var $x = position.x;
+            var $y = position.y;
+            var $top = position.top;
+            var $left = position.left;
 
+            var shadowContainer = jQuery('<div/>', {
+                'class': 'variant-set-block variant-block-mover'
+            }).css({
+                'top': $top + 'px',
+                'left': $left + 'px'
+            }).appendTo(self.panel);
+
+            //            var content = jQuery('<div/>').
+            //                css({
+            //                    'position': 'relative',
+            //                    'width': '100%',
+            //                    'height': '100%'
+            //                }).appendTo(container);
+
+            //            // ReSharper disable once UnusedLocals
+            //            var flag = jQuery('<div/>', {
+            //                'class': 'flag ' + set.language.language.flag + '-small'
+            //            }).appendTo(content);
+
+            //            // ReSharper disable once UnusedLocals
+            //            var name = jQuery('<div/>', {
+            //                'class': 'name',
+            //                html: set.updated.tag
+            //            }).appendTo(content);
+
+            //            var cancel = jQuery('<div/>', {
+            //                'class': 'variant-set-block-cancel'
+            //            }).appendTo(content);
+
+            //            return {
+            //                container: container,
+            //                destroy: function () {
+            //                    $(container).remove();
+            //                },
+            //                move: function (x, y) {
+            //                    var left = $left + (x - $x);
+            //                    var top = $top + (y - $y);
+            //                    $(container).css({
+            //                        'top': top + 'px',
+            //                        'left': left + 'px'
+            //                    });
+            //                },
+            //                overEmpty: function () {
+            //                    $(cancel).css({
+            //                        'visibility': 'visible'
+            //                    });
+            //                },
+            //                overGroup: function () {
+            //                    $(cancel).css({
+            //                        'visibility': 'hidden'
+            //                    });
+            //                }            
+        }
 
         (function initialize() {
             render();
@@ -314,7 +373,7 @@ function VariantSetBlock(set, params) {
         };
 
     })();
-    
+
 }
 VariantSetBlock.prototype = {    
     
@@ -326,12 +385,22 @@ VariantSetBlock.prototype = {
         this.eventHandler.trigger(e);
     },
     
-    activate: function (value) {
-        this.isActive = value;
+    activate: function (value, e) {
+        this.isActive = (value === undefined ? !this.isActive : value);
         this.trigger({
             type: 'activate',
-            value: value
+            value: this.isActive,
+            x: e.pageX,
+            y: e.pageY
         });
+    },
+    
+    bindEvents: function(events) {
+        this.ui.bindEvents(events);
+    },
+    
+    view: function() {
+        return this.ui.view;
     }
 
 };
@@ -350,65 +419,6 @@ VariantSetBlock.prototype = {
 
 //        })();
 
-//        var shadow = function (position) {
-//            var $x = position.x;
-//            var $y = position.y;
-//            var $top = position.top;
-//            var $left = position.left;
-
-//            var container = jQuery('<div/>', {
-//                'class': 'variant-set-block variant-block-mover'
-//            }).css({
-//                'top': $top + 'px',
-//                'left': $left + 'px'
-//            }).appendTo(self.panel);
-
-//            var content = jQuery('<div/>').
-//                css({
-//                    'position': 'relative',
-//                    'width': '100%',
-//                    'height': '100%'
-//                }).appendTo(container);
-
-//            // ReSharper disable once UnusedLocals
-//            var flag = jQuery('<div/>', {
-//                'class': 'flag ' + set.language.language.flag + '-small'
-//            }).appendTo(content);
-
-//            // ReSharper disable once UnusedLocals
-//            var name = jQuery('<div/>', {
-//                'class': 'name',
-//                html: set.updated.tag
-//            }).appendTo(content);
-
-//            var cancel = jQuery('<div/>', {
-//                'class': 'variant-set-block-cancel'
-//            }).appendTo(content);
-
-//            return {
-//                container: container,
-//                destroy: function () {
-//                    $(container).remove();
-//                },
-//                move: function (x, y) {
-//                    var left = $left + (x - $x);
-//                    var top = $top + (y - $y);
-//                    $(container).css({
-//                        'top': top + 'px',
-//                        'left': left + 'px'
-//                    });
-//                },
-//                overEmpty: function () {
-//                    $(cancel).css({
-//                        'visibility': 'visible'
-//                    });
-//                },
-//                overGroup: function () {
-//                    $(cancel).css({
-//                        'visibility': 'hidden'
-//                    });
-//                }
-//            };
 //        };
 
 //        function release() {

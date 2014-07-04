@@ -73,6 +73,11 @@ span.complex {
     line-height: 20px;
 }
 
+.active-variant-set-block {
+    background-color: rgb(255, 219, 118);
+    font-weight: bold;
+}
+
 
 
 
