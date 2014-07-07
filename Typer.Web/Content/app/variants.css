@@ -133,6 +133,10 @@ span.complex {
     padding-bottom: 12px;
 }
 
+.variant-subpanel-content .active{
+    background-color: rgb(150, 255, 150);
+}
+
 
 
 /*Variant connections*/
@@ -194,9 +198,6 @@ span.complex {
     cursor: pointer;
 }
 
-.variant-subpanel-content .active{
-    background-color: rgb(150, 255, 150);
-}
 
 .variant-subpanel-content .variant-connection-group:first-child {  
     margin-top: 0;

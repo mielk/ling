@@ -514,8 +514,18 @@ VariantSetGroupPanel.prototype = {
     
     isHovered: function(x, y) {
         return this.ui.isHovered(x, y);
+    },
+    
+    activate: function() {
+        this.active = true;
+        this.ui.refresh();
+    },
+    
+    deactivate: function() {
+        this.active = false;
+        this.ui.refresh();
     }
-
+    
 };
 
 
@@ -774,6 +784,12 @@ function VariantConnectionsManager(parent) {
                 if (self.activeBlock) {
                     self.releaseBlock();
                 }
+            },
+            mousemove: function (e) {
+                if (self.activeBlock) {
+                    self.activeBlock.handleMove(e.pageX, e.pageY);
+                    self.findActiveGroup(e.pageX, e.pageY);
+                }
             }
         });
     })();
@@ -837,8 +853,35 @@ mielk.objects.addProperties(VariantConnectionsManager.prototype, {
 
         mielk.notify.display('released');
         var x = 1;
-    }
+    },
     
+    findActiveGroup: function(x, y) {
+        //Find hovered panel.
+        var found = null;
+        this.groups.each(function (key, group) {
+            if (!found) {
+                if (group.isHovered(x, y)) {
+                    found = group;
+                }
+            }
+        });
+
+        if (found !== this.activeGroup) {
+
+            if (this.activeGroup) this.activeGroup.deactivate();
+            this.activeGroup = found;
+            
+            if (found) {
+                found.activate();
+                this.activeBlock.setAsRemovable(false);
+            } else {
+                this.activeBlock.setAsRemovable(true);
+            }
+            
+        }
+
+    }
+
 });
 
 

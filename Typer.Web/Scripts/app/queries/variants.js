@@ -118,25 +118,6 @@ VariantSet.prototype = {
 
     },
 
-    //Zwraca blok zawierający flagę przypisaną do języka
-    //tego zestawu oraz jego tag.
-    getBlock: function () {
-        var self = this;
-        var block = (function () {
-
-            var set = self;
-
-
-
-
-
-
-        })();
-
-        return block;
-
-    },
-    
     loadVariants: function(variants) {
         var self = this;
         self.variants = mielk.hashTable();
@@ -224,14 +205,13 @@ function VariantSetBlock(set, params) {
                 }
             });
 
-            if (self.isMovable) {
-                $(document).bind({
-                    mousemove: function (e) {
-                        handleMove(e.pageX, e.pageY);
-                    }
-                });
-            }
-
+            //if (self.isMovable) {
+            //    $(document).bind({
+            //        mousemove: function (e) {
+            //            handleMove(e.pageX, e.pageY);
+            //        }
+            //    });
+            //}
 
         }
 
@@ -316,35 +296,51 @@ function VariantSetBlock(set, params) {
             var divTop = position.top;
             var divLeft = position.left;
 
-            var shadowContainer = jQuery('<div/>', {
-                'class': 'unselectable variant-set-block variant-block-mover'
-            }).css({
-                'top': divTop + 'px',
-                'left': divLeft + 'px'
-            }).appendTo(self.panel);
-
-            var shadowContent = jQuery('<div/>', {                
-                'class': 'relative full-size'
-            });
-            shadowContent.appendTo(shadowContainer);
-
-            var shadowFlag = jQuery('<div/>', {
-                'class': 'flag ' + set.language.flag + '-small'
-            });
-            shadowFlag.appendTo(shadowContent);
-
-            var shadowName = jQuery('<div/>', {
-                'class': 'name',
-                html: self.set.tag
-            });
-            shadowName.appendTo(shadowContent);
-
-            var shadowCancel = jQuery('<div/>', {
-                'class': 'variant-set-block-cancel'
-            });
-            shadowCancel.appendTo(shadowContent);
+            var shadowContainer;
+            var shadowContent;
+            var shadowFlag;
+            var shadowName;
+            var shadowCancel;
 
 
+            function renderShadow() {
+                shadowContainer = jQuery('<div/>', {
+                    'class': 'unselectable variant-set-block variant-block-mover'
+                }).css({
+                    'top': divTop + 'px',
+                    'left': divLeft + 'px'
+                }).appendTo(self.panel);
+
+                shadowContent = jQuery('<div/>', {
+                    'class': 'relative full-size'
+                });
+                shadowContent.appendTo(shadowContainer);
+
+                shadowFlag = jQuery('<div/>', {
+                    'class': 'flag ' + set.language.flag + '-small'
+                });
+                shadowFlag.appendTo(shadowContent);
+
+                shadowName = jQuery('<div/>', {
+                    'class': 'name',
+                    html: self.set.tag
+                });
+                shadowName.appendTo(shadowContent);
+
+                shadowCancel = jQuery('<div/>', {
+                    'class': 'variant-set-block-cancel'
+                });
+                shadowCancel.appendTo(shadowContent);
+
+            }
+
+            function shadowEvents() {
+                self.bind({
+                    removableStatusChanged: function() {
+                        refreshStatus();
+                    }
+                });
+            }
 
             function destroyShadow() {
                 $(shadowContainer).remove();
@@ -359,26 +355,23 @@ function VariantSetBlock(set, params) {
                 });
             }
             
-            function overEmpty() {
+            function refreshStatus() {
                 $(shadowCancel).css({
-                    'visibility': 'visible'
+                    'visibility': (self.isRemovable ? 'visible' : 'hidden')
                 });
-                self.isRemovable = true;
             }
-            
-            function overGroup() {
-                $(shadowCancel).css({
-                    'visibility': 'hidden'
-                });
-                self.isRemovable = false;
-            }
+
+
+            (function initialize() {
+                renderShadow();
+                shadowEvents();
+            })();
 
             return {                
                  view: shadowContainer
                 ,destroy: destroyShadow
                 ,move: move
-                ,overEmpty: overEmpty
-                ,overGroup: overGroup
+                ,refreshStatus: refreshStatus
             };
 
         }
@@ -395,6 +388,7 @@ function VariantSetBlock(set, params) {
             , set: set
             , bindEvents: bindEvents
             , destroy: destroy
+            , handleMove: handleMove
         };
 
     })();
@@ -426,6 +420,19 @@ VariantSetBlock.prototype = {
     
     view: function() {
         return this.ui.view;
+    },
+    
+    setAsRemovable: function(value) {
+        this.isRemovable = value;
+        this.trigger({ type: 'removableStatusChanged' });
+    },
+    
+    handleMove: function (x, y) {
+        var self = this;
+        if (self.isMovable) {
+            self.ui.handleMove(x, y);
+        }
+        
     }
 
 };
@@ -584,6 +591,7 @@ Variant.prototype = {
     }
     
 };
+
 //Variant.prototype.loadLimits = function () {
 //    this.excluded = new HashTable(null);
 
