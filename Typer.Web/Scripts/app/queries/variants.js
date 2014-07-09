@@ -137,6 +137,25 @@ VariantSet.prototype = {
             type: 'name',
             name: name
         });
+    },
+
+    separate: function () {
+        var self = this;
+
+        self.related.each(function (key, value) {
+            self.removeConnection(key);
+            value.removeConnection(self.id);
+        });
+        self.trigger({ type: 'separate' })
+    },
+
+    removeConnection: function (connected) {
+        var connectedId = $.isNumeric(connected) ? Number(connected) : connected.id;
+        this.related.removeItem(connectedId);
+    },
+
+    isAlone: function () {
+        return this.related.size() === 0;
     }
 
 };
@@ -281,6 +300,7 @@ function VariantSetBlock(set, params) {
         }
         
         function destroy() {
+            destroyMover();
             $(container).remove();
         }
         
@@ -432,6 +452,22 @@ VariantSetBlock.prototype = {
         if (self.isMovable) {
             self.ui.handleMove(x, y);
         }
+        
+    },
+
+    separate: function () {
+        this.set.separate();
+    },
+
+    destroy: function () {
+        this.ui.destroy();
+    },
+
+    isAlone: function () {
+        return this.set.isAlone();
+    },
+
+    move: function (group) {
         
     }
 

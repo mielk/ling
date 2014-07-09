@@ -8,7 +8,7 @@ namespace Typer.DAL.TransferObjects
 
 		[Key]
         public int Id { get; set; }
-        public int QueryId { get; set; }
+        public int QuestionId { get; set; }
         public int LanguageId { get; set; }
         public string Content { get; set; }
         public int Weight { get; set; }

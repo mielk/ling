@@ -49,6 +49,7 @@ span.complex {
     margin: 3px 6px;
     background-color: rgb(255, 251, 210);
     cursor: pointer;
+    z-index: 2;
 }
 
 .variant-set-block .flag {
@@ -163,6 +164,7 @@ span.complex {
     height: 16px;
     visibility: hidden;
     background-image: url('/Content/images/delete-node.png');
+    z-index: 3;
 }
 
 .variant-block-mover {
@@ -170,6 +172,7 @@ span.complex {
     -ms-opacity: 0.5;
     opacity: 0.5;
     margin: 0;
+    z-index: 3;
 }
 
 

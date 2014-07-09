@@ -38,15 +38,15 @@ namespace Typer.DAL.Infrastructure
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserDto>().ToTable("Users");
-            modelBuilder.Entity<QuestionDto>().ToTable("Queries");
+            modelBuilder.Entity<QuestionDto>().ToTable("Questions");
             modelBuilder.Entity<LanguageDto>().ToTable("Languages");
             modelBuilder.Entity<UserLanguageDto>().ToTable("UsersLanguages");
-            modelBuilder.Entity<QuestionOptionDto>().ToTable("QueriesOptions");
+            modelBuilder.Entity<QuestionOptionDto>().ToTable("QuestionsOptions");
             modelBuilder.Entity<MetawordDto>().ToTable("Metawords");
             modelBuilder.Entity<WordDto>().ToTable("Words");
             modelBuilder.Entity<CategoryDto>().ToTable("Categories");
             modelBuilder.Entity<WordCategoryDto>().ToTable("MatchWordCategory");
-            modelBuilder.Entity<QuestionCategoryDto>().ToTable("MatchQueryCategory");
+            modelBuilder.Entity<QuestionCategoryDto>().ToTable("MatchQuestionCategory");
             modelBuilder.Entity<WordPropertyRequirementDto>().ToTable("WordRequiredProperties");
             modelBuilder.Entity<GrammarFormDefinitonDto>().ToTable("GrammarFormsDefinitions");
             modelBuilder.Entity<WordPropertyDto>().ToTable("WordsProperties");

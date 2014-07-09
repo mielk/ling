@@ -6,7 +6,7 @@ namespace Typer.DAL.TransferObjects
     {
 
         public int Id { get; set; }
-        public int QueryId { get; set; }
+        public int QuestionId { get; set; }
         public int LanguageId { get; set; }
         public string VariantTag { get; set; }
         public int WordType { get; set; }

@@ -34,12 +34,12 @@ namespace Typer.DAL.Repositories
         public IEnumerable<int> GetQuestionsIdsByCategories(IEnumerable<int> categories)
         {
             IEnumerable<QuestionCategoryDto> dtos = Context.MatchQuestionCategory.Where(q => categories.Contains(q.CategoryId));
-            return dtos.Select(dto => dto.QueryId).ToList();
+            return dtos.Select(dto => dto.QuestionId).ToList();
         }
 
         public IEnumerable<VariantSetDto> GetVariantSets(int questionId)
         {
-            return Context.VariantSets.Where(vs => vs.QueryId == questionId);
+            return Context.VariantSets.Where(vs => vs.QuestionId == questionId);
         }
 
         public VariantSetDto GetVariantSet(int id)
@@ -49,12 +49,12 @@ namespace Typer.DAL.Repositories
 
         public IEnumerable<VariantSetDto> GetVariantSets(int questionId, int languageId)
         {
-            return Context.VariantSets.Where(vs => vs.QueryId == questionId && vs.LanguageId == languageId);
+            return Context.VariantSets.Where(vs => vs.QuestionId == questionId && vs.LanguageId == languageId);
         }
 
         public IEnumerable<VariantSetDto> GetVariantSets(int questionId, IEnumerable<int> languagesIds)
         {
-            return Context.VariantSets.Where(vs => vs.QueryId == questionId && languagesIds.Contains(vs.LanguageId));
+            return Context.VariantSets.Where(vs => vs.QuestionId == questionId && languagesIds.Contains(vs.LanguageId));
         }
 
 
@@ -129,7 +129,7 @@ namespace Typer.DAL.Repositories
                     var dto = new QuestionCategoryDto
                     {
                         CategoryId = categoryId,
-                        QueryId = questionId,
+                        QuestionId = questionId,
                         CreatorId = 1,
                         CreateDate = DateTime.Now,
                         IsActive = true
@@ -153,7 +153,7 @@ namespace Typer.DAL.Repositories
         {
             try
             {
-                IEnumerable<QuestionCategoryDto> dtos = Context.MatchQuestionCategory.Where(c => c.QueryId == questionId);
+                IEnumerable<QuestionCategoryDto> dtos = Context.MatchQuestionCategory.Where(c => c.QuestionId == questionId);
                 foreach (var dto in dtos)
                 {
                     Context.MatchQuestionCategory.Remove(dto);
@@ -245,13 +245,13 @@ namespace Typer.DAL.Repositories
 
         public IEnumerable<QuestionOptionDto> GetOptions(int questionId)
         {
-            return Context.QuestionOptions.Where(o => o.QueryId == questionId && o.IsActive);
+            return Context.QuestionOptions.Where(o => o.QuestionId == questionId && o.IsActive);
         }
 
 
         public IEnumerable<QuestionOptionDto> GetOptions(int questionId, IEnumerable<int> languages)
         {
-            return Context.QuestionOptions.Where(o => o.QueryId == questionId && o.IsActive && languages.Contains(o.LanguageId));
+            return Context.QuestionOptions.Where(o => o.QuestionId == questionId && o.IsActive && languages.Contains(o.LanguageId));
         }
 
         public QuestionOptionDto GetOption(int optionId)
@@ -261,7 +261,7 @@ namespace Typer.DAL.Repositories
 
         public IEnumerable<QuestionCategoryDto> GetCategories(int questionId)
         {
-            return Context.MatchQuestionCategory.Where(m => m.QueryId == questionId);
+            return Context.MatchQuestionCategory.Where(m => m.QuestionId == questionId);
         }
 
         public IEnumerable<DependencyDefinitionDto> GetDependenciesDefinitions(IEnumerable<int> languages)
@@ -277,14 +277,14 @@ namespace Typer.DAL.Repositories
         public IEnumerable<VariantDto> GetVariantsForQuestion(int questionId, IEnumerable<int> languages)
         {
 
-            var sets = Context.VariantSets.Where(vs => vs.QueryId == questionId && languages.Contains(vs.LanguageId)).Select(vs => vs.Id);
+            var sets = Context.VariantSets.Where(vs => vs.QuestionId == questionId && languages.Contains(vs.LanguageId)).Select(vs => vs.Id);
             return Context.Variants.Where(vs => sets.Contains(vs.VariantSetId));
 
         }
 
         public IEnumerable<VariantConnectionDto> GetVariantSetsConnections(int questionId, IEnumerable<int> languages)
         {
-            var sets = Context.VariantSets.Where(vs => vs.QueryId == questionId && languages.Contains(vs.LanguageId)).Select(vs => vs.Id);
+            var sets = Context.VariantSets.Where(vs => vs.QuestionId == questionId && languages.Contains(vs.LanguageId)).Select(vs => vs.Id);
             return Context.VariantConnections.Where(vc => sets.Contains(vc.VariantSetId) && sets.Contains(vc.ConnectedSetId));
         }
 
@@ -296,7 +296,7 @@ namespace Typer.DAL.Repositories
 
         public IEnumerable<VariantDependencyDto> GetVariantSetsDependencies(int questionId, IEnumerable<int> languages)
         {
-            var sets = Context.VariantSets.Where(vs => vs.QueryId == questionId && languages.Contains(vs.LanguageId)).Select(vs => vs.Id);
+            var sets = Context.VariantSets.Where(vs => vs.QuestionId == questionId && languages.Contains(vs.LanguageId)).Select(vs => vs.Id);
             return Context.VariantDependencies.Where(vd => sets.Contains(vd.MainSetId) || sets.Contains(vd.DependantSetId));
         }
 
@@ -307,7 +307,7 @@ namespace Typer.DAL.Repositories
 
         public IEnumerable<VariantLimitDto> GetVariantSetsLimits(int questionId, IEnumerable<int> languages)
         {
-            var sets = Context.VariantSets.Where(vs => vs.QueryId == questionId && languages.Contains(vs.LanguageId)).Select(vs => vs.Id);
+            var sets = Context.VariantSets.Where(vs => vs.QuestionId == questionId && languages.Contains(vs.LanguageId)).Select(vs => vs.Id);
             var limits = Context.VariantLimits.Where(vl => vl.QuestionId == questionId);
             return limits.Where(vl => sets.Contains(vl.ConnectedVariantId) || sets.Contains(vl.VariantId));
         }
@@ -319,7 +319,7 @@ namespace Typer.DAL.Repositories
 
         public IEnumerable<VariantDto> GetVariants(int questionId, IEnumerable<int> languages)
         {
-            var sets = Context.VariantSets.Where(vs => vs.QueryId == questionId && languages.Contains(vs.LanguageId)).Select(vs => vs.Id);
+            var sets = Context.VariantSets.Where(vs => vs.QuestionId == questionId && languages.Contains(vs.LanguageId)).Select(vs => vs.Id);
             return Context.Variants.Where(v => sets.Contains(v.VariantSetId));
         }
 

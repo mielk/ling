@@ -404,7 +404,7 @@ namespace Typer.Domain.Services
                 LanguageId = dto.LanguageId,
                 Negative = dto.Negative,
                 Positive = dto.Positive,
-                QuestionId = dto.QueryId,
+                QuestionId = dto.QuestionId,
                 Weight = dto.Weight
             };
         }
@@ -438,7 +438,7 @@ namespace Typer.Domain.Services
                 LanguageId = dto.LanguageId,
                 WordType = dto.WordType,
                 GrammarFormId = dto.GrammarFormId,
-                QuestionId = dto.QueryId,
+                QuestionId = dto.QuestionId,
                 VariantTag = dto.VariantTag
             };
         }

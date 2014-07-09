@@ -8,7 +8,7 @@ namespace Typer.DAL.TransferObjects
     {
         [Key]
         public int Id { get; set; }
-        public int QueryId { get; set; }
+        public int QuestionId { get; set; }
         public int CategoryId { get; set; }
         public bool IsActive { get; set; }
         public int CreatorId { get; set; }
