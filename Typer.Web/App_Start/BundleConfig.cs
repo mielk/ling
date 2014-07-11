@@ -18,6 +18,12 @@ namespace Typer.Web
                 "~/Scripts/jquery.validate*"
             ));
 
+            bundles.Add(new Bundle("~/bundles/knockout").Include(
+                "~/Scripts/knockout-{version}.js",
+                "~/Scripts/knockout.mapping-latest.js",
+                "~/Scripts/knockout.validation.js"));
+                //"~/Scripts/Helpers/ko.bindingHandlers.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/global").Include(
                   "~/Scripts/external/json2.js"
                 , "~/Scripts/external/select2.js"
@@ -99,6 +105,16 @@ namespace Typer.Web
                 , "~/Content/common/mielk.css"
             ));
 
+            //bundles.Add(new StyleBundle("~/content/css").Include(
+            //    "~/Content/Main.css",
+            //    "~/Content/bootstrap.icon-large.min.css",
+            //    "~/Content/bootstrap.css",
+            //    "~/Content/body.css",
+            //    "~/Content/bootstrap-responsive.css",
+            //    "~/Content/bootstrap-mvc-validation.css",
+            //    "~/Content/bootstrap-datepicker.css",
+            //    "~/Content/bootstrapSwitch.css"));
+
             bundles.Add(new StyleBundle("~/bundles/css/app").Include(
                   "~/Content/app/categories.css"
                 , "~/Content/app/edit.css"
@@ -125,6 +141,9 @@ namespace Typer.Web
                 , "~/Content/themes/base/jquery.ui.progressbar.css"
                 , "~/Content/themes/base/jquery.ui.theme.css"
             ));
+
+            //BundleTable.EnableOptimizations = false;
+
         }
     }
 }

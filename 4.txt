@@ -1,0 +1,526 @@
+
+W poprzedniej lekcji zosta³o wprowadzone pojêcie zmiennej, nauczy³eœ siê je deklarowaæ i zadeklarowa³eœ pierwsz¹ zmienn¹ typu Long. W tej lekcji poznasz inne typy zmiennych i dowiesz siê czym ró¿ni¹ siê one od siebie.
+
+
+ Poni¿ej zosta³y wymienione podstawowe typy zmiennych wystêpuj¹ce w Visual Basic. Klikaj¹c w ka¿d¹ z nazw przeniesiesz siê do jej szczegó³owego opisu. •Zmienne tekstowe (String)
+•Zmienne liczbowe (Byte, Integer, Long, Single, Double, Currency)
+•Zmienne daty i czasu (Date)
+•Zmienne logiczne (Boolean)
+•Zmienne ogólne (Variant)
+
+
+Oprócz wymienionych wy¿ej typów, zmienna mo¿e byæ tak¿e zadeklarowana jako obiekt (w tym przypadku liczba mo¿liwych typów jest nieskoñczona, poniewa¿ sam mo¿esz tworzyæ swoje w³asne typy obiektów), ale ten temat zostanie poruszony w dalszej czêœci kursu.
+
+
+Zmienne tekstowe (String)
+
+
+ Tekstowy typ zmiennych nosi w jêzyku Visual Basic nazwê String.
+
+ Deklaracja zmiennej jako tekstowej wygl¹da wiêc tak:
+
+
+ 
+
+ Dim zmienna As String 
+
+
+Wartoœci¹ domyœln¹ dla zmiennych tekstowych jest pusty ci¹g znaków - "".
+
+
+===================================================================================
+
+
+Before going any further, we should say a few words about text strings in VBA. We have already touched on this subject in the previous lesson. Now we will cover it in more details.
+
+
+The way the VBA compiler recognizes if a piece of code is a string is by checking if it is placed within double quotes.
+
+Let's assume you want to display the string variable in the cell A1 of the worksheet Sheet1. You can't do it just like that:
+Worksheets("Sheet1").Cells(1,1) = variable
+since the string variable is not put in quotes and the compiler treats it as if it was the name of a variable.
+
+
+There are three possible ends to this scenario, but none of them is what we expected:
+1) If there is no variable called variable in your code, the application will not even start. The compiler will not be able to compile your project, because of the undeclared variable (this issue has been discussed in the previous chapter).
+2) If the variable named variable exists, the value assigned to this variable instead of the string variable will be displayed in the specified cell . [You could see how it works in the example from previous lesson where we used the name of the variable to display the values of consecutive powers in an Excel sheet.]
+3) If there is no such variable in your code but you don't use Option Explicit statement (however, as you already know, it is strongly not recommended), the compiler will create new variable of Variant type named variable right at the moment when it appears in the code for the first time. This variable will be initialized with default value for variables of Variant type (that is, empty string) and this value will be displayed.
+
+
+
+
+
+More obvious is the case when the string to be displayed consists of two or more words separated by whitespace, i.e.:
+Worksheets("Sheet1").Cells(1,1) = Text to be displayed
+
+
+
+
+Taka konstrukcja nawet przed prób¹ uruchomienia programu podœwietli siê na czerwono i od razu zorientujesz siê, ¿e coœ jest nie tak. Powy¿szy zapis jest dla kompilatora równoznaczny z wypisaniem jednym ci¹giem 3 nazw zmiennych (tekst, do, wyœwietlenia), co by³oby z³amaniem co najmniej dwóch zakazów obowi¹zuj¹cych przy programowaniu, poniewa¿ nie powinno siê u¿ywaæ polskich znaków w nazwach zmiennych, a ponadto nigdy ¿adne dwie nazwy zmiennych nie mog¹ znaleŸæ siê ko³o siebie oddzielone tylko spacj¹.
+
+
+W omawianych wy¿ej sytuacjach prawid³owymi zapisami by³yby:
+
+Worksheets("Arkusz1").Cells(1,1) = "Polska"
+Worksheets("Arkusz1").Cells(1,1) = "Tekst do wyœwietlenia"
+
+
+Ogólnie zasada jest wiêc taka, aby wszystko, co jest przypisywane do zmiennej String, znajdowa³o siê w cudzys³owiu. Jest jednak od tej regu³y kilka odstêpstw, które zosta³y opisane poni¿ej.
+
+
+Pierwsz¹ z nich jest bardzo popularna sytuacja, kiedy do zmiennej tekstowej chcesz przypisaæ inn¹ zmienn¹ tekstow¹.
+
+Przyjrzyj siê poni¿szemu przyk³adowi:
+
+
+ Sub przypisanieZmiennejTekstowej()
+     Dim a As String
+     Dim b As String
+
+     a = "Polska"
+     b = a
+ End Sub 
+
+
+
+W drugiej i trzeciej linijce powy¿szego kodu deklarowana jest obecnoœæ dwóch zmiennych typu tekstowego: a i b.
+
+W pi¹tej linijce do zmiennej a przypisany zostaje tekst Polska.
+
+W linijce 6 do zmiennej b zostaje przypisana taka sama wartoœæ, jak¹ zawiera w sobie zmienna a.
+
+W tej sytuacji a ma oznaczaæ nazwê zmiennej, a nie przypisywany tekst, dlatego te¿ nie dodajemy do tej nazwy cudzys³owu.
+
+W ten sposób osi¹gniêty zosta³ zamierzony cel - najpierw do zmiennej a przypisany zosta³ tekst Polska, a nastêpnie do zmiennej b przypisano wartoœæ zmiennej a, wiêc po tej operacji zmienna b równie¿ bêdzie mia³a wartoœæ Polska.
+
+Gdyby przypisuj¹c zmienn¹ a do zmiennej b, jej nazwa zosta³a ujêta w cudzys³ów, kompilator zinterpretowa³by to tak, jakbyœ chcia³ do niej przypisaæ jednoliterowy tekst a. Po tej operacji zmienna a mia³aby wiêc wartoœæ Polska, natomiast zmienna b przechowywa³aby tekst a, czyli zupe³nie niezgodnie z pocz¹tkowymi intencjami.
+
+
+
+Drug¹ sytuacj¹, w której wartoœæ przypisywana do zmiennej tekstowej nie jest ujêta w cudzys³ów, jest przypisywanie do zmiennej tekstowej wartoœci nie bêd¹cej w rzeczywistoœci tekstem.
+
+Typ String jest najbardziej elastycznym ze wszystkich typów zmiennych, poniewa¿ mo¿na do niego przypisaæ w zasadzie ka¿d¹ dowoln¹ wartoœæ, nie powoduj¹c przy tym ¿adnego b³êdu w trakcie wykonywania programu. Niezale¿nie od tego czy jest to ci¹g znaków, liczba czy data, wszystko, co jest przypisywane do zmiennej tekstowej jest traktowane przez kompilator jak tekst. Mo¿esz wiêc przypisaæ do zmiennej typu String liczbê 1, ale wartoœæ przechowywana przez tê zmienn¹ nie bêdzie liczb¹ 1 lecz tekstem, sk³adaj¹cym siê tylko z pojedynczego znaku - cyfry 1.
+
+
+Mo¿esz mieæ w¹tpliwoœci, czy jest jakaœ ró¿nica pomiêdzy liczb¹ 1, a tekstem 1, dlatego poni¿ej zosta³ przytoczony przyk³ad, który powinien je rozwiaæ (przyk³ad bêdzie wykorzystywa³ wszystkie omówione dotychczas elementy, dlatego przy okazji bêdziesz móg³ je sobie utrwaliæ):
+
+
+
+ Sub zmienneTekstowe()
+     Dim s As String
+     Dim t As String
+     Dim a As Long
+     Dim b As Long
+
+     'przypisanie liczb 1 i 2 do zmiennych typu tekstowego
+     s = 1
+     t = 2
+
+     'przypisanie liczb 1 i 2 do zmiennych typu liczbowego
+     a = 1
+     b = 2
+
+     Worksheets("Arkusz1").Cells(1,1) = s + t
+     Worksheets("Arkusz1").Cells(2,1) = a + b
+ End Sub 
+
+
+
+W wierszach 2-5 tego przyk³adu zadeklarowane zosta³y cztery zmienne: dwie zmienne typu tekstowego (s, t) oraz dwie zmienne typu liczbowego (a, b).
+
+W wierszach 8-9 do zmiennych tekstowych zosta³y przypisane liczby 1 i 2, natomiast w wierszach 12-13 te same liczby przypisano do zmiennych liczbowych. Pozornie wiêc zmienne tekstowe s i t oraz zmienne liczbowe a i b przechowuj¹ te same wartoœci - 1 i 2. Jak siê jednak za chwilê oka¿e nie do koñca jest to prawd¹.
+
+W dwóch ostatnich wierszach przed zamkniêciem procedury (15-16) wyœwietlone zostaj¹ sumy poszczególnych zmiennych - najpierw sumê zmiennych s i t, a potem zmiennych a i b.
+
+
+Je¿eli uruchomisz powy¿szy kod, a potem zajrzysz do arkusza, zobaczysz, ¿e w komórce A1 wyœwietlona zosta³a liczba 12, natomiast w komórce A2 liczba 3.
+
+Wynika to oczywiœcie z ró¿nych typów zmiennych, w których by³y przechowywane te wartoœci.
+
+Kiedy dodajesz do siebie teksty (tak jak teksty 1 i 2 przechowywane w zmiennych s i t), kompilator po prostu wypisuje je jeden za drugim (w tym przypadku wypisa³ wiêc obok siebie liczby 1 i 2, tworz¹c liczbê 12).
+
+Kiedy natomiast zsumowa³eœ liczby 1 i 2 przechowywane w zmiennych liczbowych a i b, zosta³y one zwyczajnie do siebie dodane, daj¹c w wyniku 3.
+
+
+Jak wiêc widaæ na powy¿szym przyk³adzie, mimo ¿e zmienne typu String s¹ tak elastyczne i mog¹ przyj¹æ wszystkie inne typy zmiennych, nie powinno siê ich u¿ywaæ do celów innych ni¿ przechowywanie tekstów, poniewa¿ mo¿e to doprowadziæ do niezamierzonych rezultatów.
+Powrót do pocz¹tku lekcji
+
+
+
+
+========================
+
+Numeric data types (Byte, Integer, Long, Single, Double, Currency)
+
+
+ Liczbowe typy zmiennych omawiane s¹ ³¹cznie, poniewa¿ ich dzia³anie jest niemal identyczne, a ró¿ni¹ siê jedynie dopuszczalnym zakresem wartoœci oraz iloœci¹ zajmowanej pamiêci komputera.
+
+ W Visual Basic mo¿esz korzystaæ z nastêpuj¹cych typów zmiennych liczbowych: Byte, Integer, Long, Single, Double oraz Currency.
+
+
+Deklaracje poszczególnych typów zmiennych wygl¹daj¹ nastêpuj¹co:
+
+
+ 
+
+Dim liczba As Byte
+
+
+
+ 
+
+Dim liczba As Integer
+
+
+
+ 
+
+Dim liczba As Long
+
+
+
+ 
+
+Dim liczba As Single
+
+
+
+ 
+
+Dim liczba As Double
+
+
+
+ 
+
+Dim liczba As Currency
+
+
+
+Wartoœci¹ domyœln¹ dla wszystkich typów liczbowych jest 0. 
+
+
+Zmienne liczbowe nie s¹ ju¿ tak elastyczne jak zmienne tekstowe String. Jak siê ju¿ dowiedzia³eœ, do zmiennej tekstowej bez problemu mo¿na przypisaæ zmienn¹ liczbow¹, jednak operacja w odwrotn¹ stronê nie zawsze zadzia³a.
+
+ Niemo¿liwe jest na przyk³ad przypisanie do zmiennej liczbowej wartoœci tekst. Kompilator w ¿aden sposób nie bêdzie potrafi³ prze³o¿yæ s³owa tekst na liczbê i wyœwietli b³¹d Run-time error '13': Type mismatch.
+
+ Zreszt¹ mo¿esz przekonaæ siê o tym sam, wklejaj¹c i uruchamiaj¹c poni¿szy kod:
+
+
+1
+2
+3
+4
+
+
+ Sub blednePrzypisanie
+     Dim a as Long
+     a = "tekst"
+ End Sub 
+
+
+
+S¹ jednak sytuacje, w których przypisanie tekstu do zmiennej liczbowej nie spowoduje ¿adnego b³êdu. Dzieje siê tak w sytuacji, gdy tekst, który ma byæ przypisany, jest po prostu tekstow¹ reprezentacj¹ jakiejœ liczby.
+
+Spójrz na poni¿szy fragment kodu:
+
+
+1
+2
+3
+4
+
+
+ Sub przypisanieTekstuDoZmiennejLiczbowej
+     Dim a as Long
+     a = "1"
+ End Sub 
+
+
+
+W trzeciej linii tego kodu do zmiennej typu Long przypisana zostaje wartoœæ tekstowa "1". Jak dowiedzia³eœ siê w poprzednim podrozdziale, poœwiêconym zmiennym tekstowym, wszystko, co zawarte jest w cudzys³owie, jest tekstem. Nie inaczej jest w tym przypadku - wartoœæ "1" nie jest liczb¹, lecz tekstem, poniewa¿ znajduje siê w cudzys³owie. Jednak w tym przypadku kompilator potrafi prze³o¿yæ sobie tekst 1 na liczbê, dlatego przypisuje do zmiennej a liczbê 1, nie zg³aszaj¹c przy tym ¿adnego b³êdu.
+
+
+
+PrzejdŸmy teraz do szczegó³owego omówienia ka¿dego z liczbowych typów zmiennych. Jak ju¿ wczeœniej wspomnia³em we wstêpie podrozdzia³u poœwiêconego zmiennym liczbowym, ró¿ni¹ siê one miêdzy sob¹ jedynie dopuszczalnym zakres wartoœci, szczegó³owoœci¹ przedstawiania czêœci u³amkowych oraz wielkoœci¹ pamiêci, któr¹ zajmuj¹.
+
+
+Byte
+
+
+Zmienna typu Byte obs³uguje tylko liczby naturalne od 0 do 255.
+
+
+Powinieneœ jej u¿ywaæ tylko w sytuacji, kiedy masz pewnoœæ, ¿e nie przyjmie ona wartoœci spoza tego zakresu.
+
+
+Je¿eli w trakcie wykonywania Twojego programu dojdzie do próby przypisania do zmiennej typu Byte liczby wiêkszej ni¿ 255 lub liczby ujemnej, kompilator przerwie dzia³anie programu i wyœwietli b³¹d Run-time error '6' Overflow.
+
+
+Je¿eli przypiszesz do zmiennej typu Byte liczbê, która nie jest liczb¹ naturaln¹, zostanie ona zaokr¹glona, np. przy próbie przypisania liczby 1.2 zmienna przybierze wartoœæ 1, natomiast przypisuj¹c liczbê 1.5 nadasz zmiennej wartoœæ 2.
+
+
+Pojedyncza zmienna typu Byte zajmuje w pamiêci tylko jeden bajt i jest to najmniej pamiêcio¿erny typ zmiennej. Dlatego jeœli jesteœ pewien, ¿e zmienna liczbowa nie przekroczy zakresu 0-255, warto zadeklarowaæ j¹ jako typ Byte aby zaoszczêdziæ trochê pamiêci i przyspieszyæ tym samym dzia³anie programu. Oczywiœcie w omawianych dotychczas niewielkich programach, korzystaj¹cych tylko z jednej zmiennej, ró¿nica w prêdkoœci dzia³ania programu nie by³aby zauwa¿alna, ale w bardziej rozbudowanych aplikacjach, gdzie znajduj¹ siê setki czy nawet tysi¹ce takich zmiennych, korzyœci ze stosowania odpowiednich rodzajów zmiennych mog¹ byæ ca³kiem znaczne.
+
+
+Integer
+
+
+Zmienna typu Integer obs³uguje liczby ca³kowite z zakresu od -32 768 do 32 767.
+
+
+Je¿eli w trakcie wykonywania Twojego programu dojdzie do próby przypisania do zmiennej typu Integer liczby spoza podanego zakresu, kompilator przerwie dzia³anie programu i wyœwietli b³¹d Run-time error '6' Overflow.
+
+
+Zaokr¹glanie u³amków odbywa siê identycznie jak w przypadku opisanej powy¿ej zmiennej typu Byte.
+
+
+Pojedyncza zmienna typu Integer zajmuje dwa bajty pamiêci.
+
+
+Long
+
+
+Zmienna typu Long obs³uguje liczby ca³kowite z zakresu od -2 147 483 648 do 2 147 483 647.
+
+Je¿eli w trakcie wykonywania Twojego programu dojdzie do próby przypisania do zmiennej typu Long liczby spoza podanego zakresu, kompilator przerwie dzia³anie programu i wyœwietli b³¹d Run-time error '6' Overflow.
+
+Zaokr¹glanie u³amków odbywa siê identycznie jak w przypadku zmiennych typu Byte i Integer
+
+Pojedyncza zmienna typu Long zajmuje cztery bajty pamiêci.
+
+
+Single
+
+
+Zmienna typu Single obs³uguje liczby rzeczywiste i obejmuje wartoœci z zakresu od -3.4·1038 do -1.4·10-45 dla wartoœci ujemnych oraz od 1.4·10-45 do 3.4·1038 dla wartoœci dodatnich.
+
+
+Je¿eli w trakcie wykonywania Twojego programu dojdzie do próby przypisania do zmiennej typu Single liczby spoza podanego zakresu, kompilator przerwie dzia³anie programu i wyœwietli b³¹d Run-time error '6' Overflow.
+
+
+Pojedyncza zmienna typu Single zajmuje cztery bajty pamiêci.
+
+
+Double
+
+
+ Zmienna typu Double obs³uguje liczby rzeczywiste i obejmuje wartoœci z zakresu od -1.80·10308 do -4.94·10-324 dla wartoœci ujemnych oraz od 4.94·10-324 do 1.80·10308 dla wartoœci dodatnich..
+
+ Pojedyncza zmienna typu Double zajmuje osiem bajtów pamiêci.
+
+
+Currency
+
+
+Zmienna typu Currency obs³uguje liczby z zakresu od -922 337 203 685 477.5808 do 922 337 203 685 477.5807.
+
+
+Pojedyncza zmienna typu Currency zajmuje osiem bajtów pamiêci.
+
+
+ G³ównym zastosowaniem typu Currency jest wykonywanie obliczeñ, w których niezbêdne jest uzyskanie dok³adnych wyników, takich jak np. wyliczenia finansowe.
+
+ Korzystaj¹c ze zmiennych Single lub Double czasem dla dzia³ania 2 + 2 zamiast wyniku 4, mo¿esz otrzymaæ 3.99999995. 
+Czasem taka dok³adnoœæ bêdzie wystarczaj¹ca, ale 
+
+Powrót do pocz¹tku lekcji
+
+Zmienne daty i czasu (Date)
+
+
+ Zmienne daty i czasu, jak sama nazwa wskazuje, s³u¿¹ do przechowywania informacji o dacie i czasie.
+
+Deklaracja zmiennej jako zmiennej daty i czasu wygl¹da nastêpuj¹co:
+
+
+ 
+
+ Dim zmienna As Date 
+
+
+
+Zmienna typu Date obs³uguje daty z zakresu 1 stycznia 100 do 31 grudnia 9999. Próba przypisania daty spoza tego zakresu zakoñczy siê wyœwietleniem b³êdu Run-time error 5: Invalid procedure call or argument
+
+ Je¿eli do zmiennej typu Date chcesz rêcznie przypisaæ okreœlon¹ datê, musisz otoczyæ j¹ z obu stron znakiem #, a poszczególne sk³adniki daty oddzieliæ od siebie znakiem myœlnika (-) lub slasha (/).
+
+ Poni¿ej znajduj¹ siê przyk³ady przypisania do zmiennej daty 21 kwietnia 2010:
+
+
+ 
+
+data = #21-04-2010#
+
+
+
+ 
+
+data = #2010-04-21#
+
+
+
+ 
+
+data = #2010/4/21#
+
+
+
+ 
+
+data = #4/21/2010#
+
+
+
+ Podobnie nale¿y postêpowaæ z przypisywaniem do zmiennej typu Date czasu - przypisywana wartoœæ musi byæ z obu stron otoczona znakiem #, a poszczególne sk³adniki czasu powinny byæ od siebie oddzielone dwukropkiem (:).
+
+ Obowi¹zkowym sk³adnikiem czasu przypisywanego do zmiennej s¹ godziny i minuty. Wartoœæ sekundowa mo¿e zostaæ pominiêta, w takiej sytuacji sekundy domyœlnie otrzymaj¹ wartoœæ 0.
+
+ Poni¿ej znajduj¹ siê przyk³ady przypisania czasu do zmiennej typu datowego:
+
+
+ 
+
+czas = #12:00#
+
+
+
+ 
+
+czas = #23:15:20#
+
+
+
+ Do zmiennej typu datowego mo¿esz te¿ przypisaæ wartoœæ bêd¹c¹ po³¹czeniem daty i czasu. Tak jak w omówionych wy¿ej przypadkach przypisywana wartoœæ musi byæ otoczona znakiem #, obowi¹zuj¹ te¿ opisane wy¿ej regu³y zapisywania dat i czasu.
+
+ Poni¿ej znajduj¹ siê przyk³ady równoczesnego przypisania do zmiennej typu datowego daty i czasu:
+
+
+ 
+
+czas = #21-04-2010 12:00#
+
+
+
+ 
+
+czas = #2010/4/21 13:14:15#
+
+
+
+B¹dŸ ostro¿ny przy rêcznym wpisywaniu dat!
+
+ Edytor postêpuje bardzo nielogicznie przy interpretowaniu ich formatu.
+
+ Je¿eli rozpoczniesz wpisywanie daty od roku, kolejna podana liczba jest interpretowana jako numer miesi¹ca, a ostatnia liczba jako numer dnia - tu akurat wszystko przebiega logiczne i bez ¿adnych w¹tpliwoœci.
+
+ Gorzej wygl¹da sprawa z zapisywaniem dat w formacie, w którym rok podany jest na koñcu.
+ Po wpisaniu daty w takim w³aœnie formacie, edytor sprawdza najpierw pierwsz¹ podan¹ liczbê i je¿eli mieœci siê ona w zakresie 1-12, a wiêc mo¿e odpowiadaæ numerowi miesi¹ca, to tak jest w³aœnie interpretowana. Druga podana liczba jest w takiej sytuacji numerem dnia.
+ Je¿eli natomiast pierwsza podana liczba jest wiêksza ni¿ 12, wówczas edytor VBA interpretuje j¹ jako numer dnia, a dopiero druga liczba jest traktowana jako numer miesi¹ca.
+
+ Niestety, strasznie to nielogiczne i wymaga czujnoœci przy rêcznym wpisywaniu dat, poniewa¿ moment nieuwagi mo¿e doprowadziæ do b³êdów w dzia³aniu programu.
+
+ Dziwne sytuacje dziej¹ siê te¿, przy próbie okreœlenia roku poprzez wpisanie tylko jego dwóch ostatnich cyfr.
+ Omówienie wszystkich mo¿liwych sytuacji zajê³oby zbyt wiele miejsca, dlatego nie ma sensu siê nad tym rozwodziæ. Najbezpieczniej jest po prostu wpisywaæ zawsze pe³ny numer roku, co pozwoli unikn¹æ niepotrzebnych k³opotów.
+
+ Pamiêtaj, ¿e zawsze po rêcznym wpisaniu daty w edytorze VBA, jej format zostanie automatycznie zmieniony do postaci #mm/dd/yyyy#.
+ Jest to moment, w którym mo¿esz sprawdziæ, czy sposób, w jaki edytor zinterpretowa³ wpisan¹ przez Ciebie datê, odpowiada Twoim oczekiwaniom.
+
+ Podobnie, po rêcznym wpisaniu czasu, edytor VBA automatycznie zmieni jej format do postaci #hh:mm:ss (AM/PM)#, gdzie data zapisana jest w systemie 12-godzinnym, a dopisek po dacie informuje czy godzina dotyczy pierwszej czy drugiej czêœci doby (AM - godziny miêdzy 00:00 a 12:00; PM - godziny miêdzy 12:00 a 24:00).
+
+
+ Je¿eli wpiszesz w edytorze datê, która nie ma prawa istnieæ (np. podasz 13 jako numer miesi¹ca lub 32 jako numer dnia), zostanie ona podœwietlona na czerwono, a makro nie zadzia³a, poniewa¿ przy próbie jego uruchomienia kompilator zg³osi b³¹d Compile error: Syntax error.
+
+
+ Bardzo wa¿n¹ cech¹ zmiennych typu Date jest to, ¿e ka¿da z nich posiada swoj¹ reprezentacjê liczbow¹. W liczbie reprezentuj¹cej dan¹ datê czêœæ ca³kowita okreœla ile dni up³ynê³o od 30 grudnia 1899 do tej daty, natomiast czêœæ u³amkowa jest reprezentacj¹ czasu i okreœla jaka czêœæ doby up³ynê³a od pó³nocy.
+
+ Dlatego te¿, do zmiennych typu datowego bez problemu mo¿na przypisaæ liczby i wykonywaæ na nich operacje arytmetyczne. Nale¿y jednak wzi¹æ pod uwagê to, co zosta³o powiedziane na wstêpie omawiania typu datowego - typ ten obs³uguje tylko daty z zakresu 01.01.100 - 31.12.9999. Dlatego te¿ liczby, które mog¹ zostaæ przypisane do zmiennej tego typu, równie¿ maj¹ ograniczony zakres i musz¹ mieœciæ siê w przedziale od -657 434 do 2 958 465. Próba przypisania do zmiennej typu Date liczby spoza tego zakresu spowoduje wyœwietlenie b³êdu Run time error '6': Overflow.
+
+ W poni¿szej tabelce znajduje siê kilka przyk³adów dat i reprezentuj¹cych ich liczb:
+
+ 
+
+
+DATA
+
+LICZBA
+
+
+
+30 grudnia 1899
+
+0
+
+
+
+6 lipca 2009
+
+40 000
+
+
+
+13 sierpnia 1872
+
+-10 000
+
+
+
+6 lipca 2009, 6:00
+
+40 000.25
+
+
+
+13 sierpnia 1872, 6:00
+
+-10 000.25
+
+Powrót do pocz¹tku lekcji
+
+Zmienne logiczne (Boolean)
+
+
+Zmienna logiczna okreœlana jest w VBA s³owem kluczowym Boolean.
+
+Deklaracja tej zmiennej wygl¹da nastêpuj¹co:
+
+
+ 
+
+Dim zmienna As Boolean
+
+
+
+Zmienne typu Boolean mog¹ przyjmowaæ dwie wartoœci: True oraz False.
+
+
+Domyœln¹ wartoœci¹ dla zmiennych typu Boolean jest False.
+
+
+Oprócz wartoœci True i False, do zmiennej typu Boolean mo¿na te¿ przypisywaæ liczby. W takiej sytuacji kompilator traktujê liczbê 0 jako wartoœæ False, natomiast ka¿d¹ inn¹ liczbê (tak¿e ujemne) jako równowartoœæ True.
+
+
+Do zmiennej typu Boolean mo¿na te¿ przypisaæ teksty True oraz False. Próba przypisania jakiegokolwiek innego tekstu zakoñczy siê wyœwietleniem b³êdu Run-time error '13': Type mismatch.
+Powrót do pocz¹tku lekcji
+
+Zmienne ogólne (Variant)
+
+
+Typ Variant jest jak d¿oker w kartach - zastêpuje wszystkie inne typy zmiennych. Do zmiennej typu Variant mo¿esz przypisaæ dowoln¹ wartoœæ.
+
+
+Deklaracja zmiennej typu ogólnego wygl¹da nastêpuj¹co:
+
+
+ 
+
+Dim zmienna As Variant
+
+
+
+Mo¿esz sobie w tym miejscu pomyœleæ - skoro ten typ Variant jest taki uniwersalny, zastêpuje wszystkie inne, wszystko mo¿na do niego przypisaæ - dlaczego nie wykorzystywaæ go dla ka¿dej zmiennej, zamiast bawiæ siê w jakieœ rozdzielanie zmiennych na tekstowe, liczbowe czy logiczne.
+ Owszem, przy zastosowaniu takiej zasady pisanie programów mog³oby byæ bardzo wygodne, ale póŸniejsze korzystanie z nich ju¿ niekoniecznie.
+
+Zmienne typu Variant zajmuj¹ o wiele wiêcej pamiêci (np. dla pojedynczej liczby 16 bajtów, podczas gdy zmienna typu Integer tylko 2 bajty), co znacznie obci¹¿¹ programy i zwalnia prêdkoœæ ich dzia³ania. Jest to w zasadzie jedyna wada stosowania takiej metody deklarowania zmiennych, jednak na tyle istotna, ¿e zupe³nie przekreœla jej u¿ytecznoœæ.
+
+
+Oczywiœcie zdarzaj¹ siê sytuacje, w których trzeba poratowaæ siê zmienn¹ typu Variant (przyk³ady takich sytuacji pojawi¹ siê w dalszej czêœci kursu), jednak pamiêtaj, ¿e zmienne ogólne powinny byæ stosowane tylko w ostatecznoœci.

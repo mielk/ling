@@ -272,7 +272,6 @@
     <Content Include="Global.asax" />
     <Content Include="Content\app\site.css" />
     <Compile Include="App_Start\NinjectWebCommon.Bindings.cs" />
-    <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\app\common\list\edit-query-panel.js" />
     <Content Include="Scripts\app\queries\query-option.js" />
     <Content Include="Scripts\app\queries\variants-manager.js" />
@@ -294,6 +293,13 @@
     <Content Include="Scripts\app\words\word.js" />
     <Content Include="Scripts\app\words\metaword.js" />
     <Content Include="Scripts\app\words\word-list.js" />
+    <Content Include="Scripts\bootbox.js" />
+    <Content Include="Scripts\bootbox.min.js" />
+    <Content Include="Scripts\bootstrap-datepicker.js" />
+    <Content Include="Scripts\bootstrap-datepicker.min.js" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\bootstrapSwitch.js" />
     <Content Include="Scripts\external\json2.js" />
     <Content Include="Scripts\common\tree.js" />
     <Content Include="Scripts\common\mielk.js" />
@@ -301,7 +307,16 @@
     <Content Include="Scripts\external\spin.js" />
     <Content Include="Scripts\common\dropdown.js" />
     <Content Include="Scripts\external\notify.js" />
-    <Content Include="Scripts\jquery-1.7.2.min.js" />
+    <Content Include="Scripts\highlightPlugin.js" />
+    <Content Include="Scripts\html5shiv.js" />
+    <None Include="Scripts\jquery-1.9.1.intellisense.js" />
+    <Content Include="Scripts\jquery-1.9.1.js" />
+    <Content Include="Scripts\jquery-1.9.1.min.js" />
+    <Content Include="Scripts\jquery-migrate-1.1.1.js" />
+    <Content Include="Scripts\jquery-migrate-1.1.1.min.js" />
+    <Content Include="Scripts\jquery-ui-1.8.24.js" />
+    <Content Include="Scripts\jquery-ui-1.8.24.min.js" />
+    <Content Include="Scripts\jquery.mockjax.js" />
     <Content Include="Scripts\jquery.sizes.js" />
     <Content Include="Scripts\app\common\internationalization.js" />
     <Content Include="Scripts\authentication\register.js" />
@@ -315,23 +330,32 @@
     <Content Include="Scripts\app\queries\queries.js" />
     <Content Include="Scripts\app\test\test.js" />
     <Content Include="Scripts\common\util.js" />
-    <Content Include="Scripts\jquery-1.7.1.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
-    <Content Include="Scripts\jquery-ui-1.8.20.js" />
-    <Content Include="Scripts\jquery-ui-1.8.20.min.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive-custom-for-bootstrap.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="Scripts\knockout-2.1.0.debug.js" />
-    <Content Include="Scripts\knockout-2.1.0.js" />
     <Content Include="Scripts\authentication\login.js" />
-    <Content Include="Scripts\modernizr-2.5.3.js" />
+    <Content Include="Scripts\knockout-2.2.0.js" />
+    <Content Include="Scripts\knockout-2.2.0.normal.js" />
+    <Content Include="Scripts\knockout.mapping-latest.debug.js" />
+    <Content Include="Scripts\knockout.mapping-latest.js" />
+    <Content Include="Scripts\knockout.validation.debug.js" />
+    <Content Include="Scripts\knockout.validation.js" />
+    <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\moment.js" />
+    <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\tests\qunit-1.12.0.js" />
     <Content Include="Scripts\tests\tests.html" />
     <Content Include="Scripts\tests\mielk.dates.tests.js" />
+    <Content Include="Scripts\unit-tests\AjaxServiceMock.js" />
+    <Content Include="Scripts\unit-tests\mielk.dates.tests.js" />
+    <Content Include="Scripts\unit-tests\qunit-1.12.0.js" />
+    <Content Include="Scripts\unit-tests\tests.html" />
+    <Content Include="Scripts\unit-tests\TestUnitTest.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -377,6 +401,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\images\xcf\" />
+    <Folder Include="Scripts\lists\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
