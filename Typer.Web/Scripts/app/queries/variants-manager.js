@@ -218,32 +218,6 @@ VariantsManager.prototype = {
 
 
 
-//VariantPanel.prototype.newGroup = function (set) {
-//    var self = this;
-//    var group = new VariantGroup({ id: ++self.counter });
-//    group.addSet(set);
-
-//    group.bind({
-//        remove: function () {
-//            if (group.isEmpty()) self.removeGroup(group);
-//        }
-//    });
-
-//    group.trigger({
-//        type: 'add',
-//        set: set
-//    });
-
-//    this.events.trigger({
-//        type: 'newGroup',
-//        group: group
-//    });
-
-//};
-
-
-
-
 function VariantSetsGroup(params) {
 
     'use strict';
@@ -275,12 +249,32 @@ VariantSetsGroup.prototype = {
 
         //Add events.
         set.bind({
+
             separate: function () {
+                
+                //Jeżeli ta grupa została usunięta, poniższe eventy nie powinny już być wywoływane.
+                if (self.destroyed) return;
+                
                 self.trigger({ type: 'setSeparated', set: set, group: self });
                 self.removeSet(set);
+            },
+            
+            move: function (e) {
+                
+                //Jeżeli ta grupa została usunięta, poniższe eventy nie powinny już być wywoływane.
+                if (self.destroyed) return;
+                
+                self.removeSet(set);
+                e.group.addSet(set);
             }
+            
         });
 
+    },
+    
+    addSet: function(set) {
+        this.loadSet(set);
+        this.trigger({ type: 'addSet', set: set });
     },
 
     removeSet: function(set) {
@@ -324,6 +318,7 @@ VariantSetsGroup.prototype = {
     destroy: function () {
         this.trigger({ type: 'remove' });
         this.manager.removeGroup(this);
+        this.destroyed = true;
     },
 
     isEmpty: function() {
@@ -460,7 +455,9 @@ function VariantSetGroupPanel(params) {
             return (x >= left && x <= right && y >= top && y <= bottom);
         }
 
-
+        function destroy() {
+            $(container).remove();
+        }
 
 
         (function initialize() {
@@ -473,7 +470,8 @@ function VariantSetGroupPanel(params) {
             view: container,
             bindEvents: bindEvents,
             refresh: refresh,
-            isHovered: isHovered
+            isHovered: isHovered,
+            destroy: destroy
         };
 
     })();
@@ -481,9 +479,23 @@ function VariantSetGroupPanel(params) {
     self.events = (function() {
 
         self.group.bind({
+
+            //Zdarzenie odpalane w momencie usunięcia grupy 
+            //reprezentowanej przez ten panel.
+            remove: function() {
+                self.destroy();
+            },
+
+            //Zdarzenie odpalane w momencie usunięcia jakiegoś seta.
             setRemoved: function (e) {
                 self.removeSet(e.set.id);
+            },
+            
+            //Zdarzenie odpalane w momencie dodania jakiegoś seta.
+            addSet: function(e) {
+                self.addBlock(e.set);
             }
+
         });
         
 
@@ -496,9 +508,14 @@ function VariantSetGroupPanel(params) {
 }
 VariantSetGroupPanel.prototype = {    
     
+    destroy: function() {
+        this.ui.destroy();
+        this.destroyed = true;
+    },
+
     bindBlocksEvents: function(events, uiEvents) {
         this.blocks.each(function (k, v) {
-            v.bind(events)
+            v.bind(events);
             v.bindEvents(uiEvents);
         });
     },
@@ -513,23 +530,31 @@ VariantSetGroupPanel.prototype = {
 
         //Load blocks.
         self.group.sets.each(function (key, set) {
-            var block = new VariantSetBlock(set, { movable: movable, panel: self.ui.view });
-            block.bind({
-                //release: function() {
-                //    self.group.trigger({ type: 'blockReleased', block: block });
-                //},
-                activate: function (e) {
-                    if (e.value) {
-                        self.group.trigger({ type: 'blockActivated', block: block });
-                    } else {
-                        self.group.trigger({ type: 'blockDeactivated', block: block });
-                    }
-                }
-            });
-            self.blocks.setItem(key, block);
+            self.addBlock(set, movable);
         });
     },
     
+    addBlock: function (set, movable) {
+        var self = this;
+        var block = new VariantSetBlock(set, { movable: movable === undefined ? true: movable, panel: self.ui.view });
+        block.bind({
+            //release: function() {
+            //    self.group.trigger({ type: 'blockReleased', block: block });
+            //},
+            activate: function (e) {
+                //Jeżeli ten panel został usunięty, poniższe eventy nie powinny już być wywoływane.
+                if (self.destroyed) return;
+                
+                if (e.value) {
+                    self.group.trigger({ type: 'blockActivated', block: block });
+                } else {
+                    self.group.trigger({ type: 'blockDeactivated', block: block });
+                }
+            }
+        });
+        self.blocks.setItem(set.id, block);
+    },
+
     view: function () {
         return this.ui.view;
     },
@@ -857,7 +882,7 @@ mielk.objects.addProperties(VariantConnectionsManager.prototype, {
                 if (self.activeBlock) self.activeBlock.activate(false);
                 self.activeBlock = e.block;
             },
-            blockDeactivated: function (e) {
+            blockDeactivated: function () {
                 mielk.notify.display('deactivated');
                 self.activeBlock = null;
                 self.activeGroup = null;
@@ -886,12 +911,11 @@ mielk.objects.addProperties(VariantConnectionsManager.prototype, {
         } else if (this.activeGroup === block.group) {  //Nothing has changed.
             block.activate(false);
         } else {
-            block.move(this.activeGroup);
             //Move block to the new group.
+            block.move(this.activeGroup.group);
+            block.destroy();
         }
-
-        mielk.notify.display('released');
-        var x = 1;
+        
     },
     
     findActiveGroup: function(x, y) {

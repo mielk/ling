@@ -416,6 +416,15 @@
 
             return $clone;
         }
+        
+
+        function dispose(object) {
+            for (var key in object) {
+                if (object.hasOwnProperty(key)) {
+                    delete object[key];
+                }
+            }
+        }
 
         return {
             extend: extend
@@ -424,6 +433,7 @@
             , deleteProperties: deleteProperties
             , each: each
             , clone: clone
+            , dispose: dispose
         };
 
 

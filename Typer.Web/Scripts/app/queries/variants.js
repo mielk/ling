@@ -140,13 +140,8 @@ VariantSet.prototype = {
     },
 
     separate: function () {
-        var self = this;
-
-        self.related.each(function (key, value) {
-            self.removeConnection(key);
-            value.removeConnection(self.id);
-        });
-        self.trigger({ type: 'separate' })
+        this.clearConnections();
+        this.trigger({ type: 'separate' });
     },
 
     removeConnection: function (connected) {
@@ -156,6 +151,30 @@ VariantSet.prototype = {
 
     isAlone: function () {
         return this.related.size() === 0;
+    },
+    
+    clearConnections: function () {
+        var self = this;
+        self.related.each(function (key, value) {
+            self.removeConnection(key);
+            value.removeConnection(self.id);
+        });
+    },
+
+    move: function (group) {
+        var self = this;
+        
+        //Usuwa poprzednie powiązania.
+        self.clearConnections();
+        
+        //Wiąże ten set z każdym setem z podanej grupy.
+        group.sets.each(function(key, set) {
+            self.addRelated(set);
+            set.addRelated(self);
+        });
+
+        self.trigger({ type: 'move', group: group });
+
     }
 
 };
@@ -468,7 +487,7 @@ VariantSetBlock.prototype = {
     },
 
     move: function (group) {
-        
+        this.set.move(group);
     }
 
 };
