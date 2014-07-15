@@ -48,11 +48,15 @@ VariantSet.prototype = {
     },
 
     addRelated: function (set) {
-        this.related.setItem(set.id, set);
+        if (set && set.id !== this.id) {
+            this.related.setItem(set.id, set);
+        }
     },
 
     addDependant: function (set) {
-        this.dependants.setItem(set.id, set);
+        if (set && set.id !== this.id) {
+            this.dependants.setItem(set.id, set);
+        }
     },
 
     setMaster: function (set) {
@@ -480,6 +484,7 @@ VariantSetBlock.prototype = {
 
     destroy: function () {
         this.ui.destroy();
+        this.activate(false);
     },
 
     isAlone: function () {

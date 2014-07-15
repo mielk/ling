@@ -120,6 +120,11 @@ VariantsManager.prototype = {
         this.ui.display();
     },
     
+    confirm: function() {
+        var self = this;
+        var x = 1;
+    },
+
     cancel: function () {
         this.ui.destroy();
         this.trigger({ type: 'cancel' });
@@ -877,15 +882,12 @@ mielk.objects.addProperties(VariantConnectionsManager.prototype, {
 
         group.bind({
             blockActivated: function (e) {
-                mielk.notify.display('activated');
                 //Deactivate the previously active block.
                 if (self.activeBlock) self.activeBlock.activate(false);
                 self.activeBlock = e.block;
             },
             blockDeactivated: function () {
-                mielk.notify.display('deactivated');
-                self.activeBlock = null;
-                self.activeGroup = null;
+                self.reset();
             }
         });
 
@@ -904,7 +906,7 @@ mielk.objects.addProperties(VariantConnectionsManager.prototype, {
             //nie ma potrzeby go separować.
             if (!block.isAlone()) {
                 block.separate();
-                block.destroy();
+                //block.destroy();
             } else {
                 block.activate(false);
             }
@@ -913,7 +915,7 @@ mielk.objects.addProperties(VariantConnectionsManager.prototype, {
         } else {
             //Move block to the new group.
             block.move(this.activeGroup.group);
-            block.destroy();
+            //block.destroy();
         }
         
     },
@@ -946,7 +948,13 @@ mielk.objects.addProperties(VariantConnectionsManager.prototype, {
     },
 
     reset: function () {
+        //Deactivating blocks.
         this.activeBlock = null;
+        
+        //Deactivating groups.
+        if (this.activeGroup) {
+            this.activeGroup.deactivate();
+        }
         this.activeGroup = null;
     }
 
