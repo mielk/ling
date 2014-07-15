@@ -17,16 +17,16 @@ namespace Typer.Domain.Entities
 
         //[Required]
         //[Display(Name = "User name", Prompt = "Enter user name")]
-        private string _username;
+        private string username;
         public string Username
         {
             get
             {
-                return _username == null ? null : _username.ToLower();
+                return username == null ? null : username.ToLower();
             }
             set
             {
-                _username = (value == null ? null : value.ToLower());
+                username = (value == null ? null : value.ToLower());
             }
         }
 

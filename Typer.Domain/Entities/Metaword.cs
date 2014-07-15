@@ -45,14 +45,14 @@ namespace Typer.Domain.Entities
         [Display(Name = "Negative votes")]
         public int Negative { get; set; }
 
-        private IEnumerable<Category> _categories;
+        private IEnumerable<Category> categories;
 
         private void LoadCategories()
         {
-            _categories = WordServicesFactory.Instance().GetService().GetCategories(Id);
+            categories = WordServicesFactory.Instance().GetService().GetCategories(Id);
         }
 
-        private IEnumerable<Word> _words;
+        private IEnumerable<Word> words;
 
 
 
@@ -83,13 +83,13 @@ namespace Typer.Domain.Entities
         {
             get
             {
-                if (_categories == null) LoadCategories();
-                return _categories;
+                if (categories == null) LoadCategories();
+                return categories;
             }
 
             set
             {
-                _categories = value;
+                categories = value;
             }
 
         }
@@ -98,18 +98,18 @@ namespace Typer.Domain.Entities
         {
             get
             {
-                return _words ?? (_words = WordServicesFactory.Instance().GetService().GetWords(Id));
+                return words ?? (words = WordServicesFactory.Instance().GetService().GetWords(Id));
             }
 
             set
             {
-                _words = value;
+                words = value;
             }
 
         }
         public IEnumerable<Word> GetWords(int languageId)
         {
-            return _words.Where(o => o.LanguageId == languageId);
+            return words.Where(o => o.LanguageId == languageId);
         }
 
 

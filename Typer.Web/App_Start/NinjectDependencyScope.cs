@@ -14,29 +14,29 @@ namespace Typer.Web
     public class NinjectDependencyScope : IDependencyScope
     {
 
-        private IResolutionRoot _resolver;
+        private IResolutionRoot resolver;
 
         public NinjectDependencyScope(IResolutionRoot resolver)
         {
-            _resolver = resolver;
+            this.resolver = resolver;
         }
 
         public object GetService(Type serviceType)
         {
-            if (_resolver == null)
+            if (resolver == null)
             {
                 throw new ObjectDisposedException("this", "This scope has been disposed");
             }
 
-            return _resolver.TryGet(serviceType);
+            return resolver.TryGet(serviceType);
         }
 
         public IEnumerable<object> GetServices(Type serviceType)
         {
-            if (_resolver == null)
+            if (resolver == null)
                 throw new ObjectDisposedException("this", "This scope has been disposed");
 
-            return _resolver.GetAll(serviceType);
+            return resolver.GetAll(serviceType);
         }
 
         public void Dispose()
@@ -47,13 +47,13 @@ namespace Typer.Web
 
         protected virtual void Dispose(bool disposing)
         {
-            var disposable = _resolver as IDisposable;
+            var disposable = resolver as IDisposable;
             if (disposable != null)
             {
                 disposable.Dispose();
             }
 
-            _resolver = null;
+            resolver = null;
         }
 
     }

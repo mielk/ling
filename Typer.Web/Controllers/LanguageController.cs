@@ -6,12 +6,12 @@ namespace Typer.Web.Controllers
     public class LanguageController : Controller
     {
         
-        private readonly ILanguageService _service;
+        private readonly ILanguageService service;
 
 
         public LanguageController(ILanguageService service)
         {
-            _service = service;
+            this.service = service;
         }
 
 
@@ -19,7 +19,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult GetUserLanguages(int userId)
         {
-            var languages = _service.GetUserLanguages(userId);
+            var languages = service.GetUserLanguages(userId);
             return Json(languages, JsonRequestBehavior.AllowGet);
         }
 
@@ -28,7 +28,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult GetLanguages()
         {
-            var languages = _service.GetLanguages();
+            var languages = service.GetLanguages();
             return Json(languages, JsonRequestBehavior.AllowGet);
         }
 

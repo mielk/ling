@@ -9,7 +9,7 @@ namespace Typer.Domain.Entities
     public class UserRegistrationData
     {
 
-        private readonly IUserService _service;
+        private readonly IUserService service;
 
         public static readonly int UserNameMinimumLength = 5;
         public static readonly int UserNameMaximumLength = 20;
@@ -18,12 +18,12 @@ namespace Typer.Domain.Entities
 
         public UserRegistrationData()
         {
-            _service = UserServicesFactory.Instance().GetUserService();
+            service = UserServicesFactory.Instance().GetUserService();
         }
 
         public UserRegistrationData(IUserService service)
         {
-            _service = service;
+            this.service = service;
         }
 
 
@@ -31,16 +31,16 @@ namespace Typer.Domain.Entities
         #region Properties.
 
         [Required] [Display(Name = "User name", Prompt = "Enter user name")] 
-        private string _username;
+        private string username;
         public string Username
         {
             get
             {
-                return _username == null ? null : _username.ToLower();
+                return username == null ? null : username.ToLower();
             }
             set
             {
-                _username = (value == null ? null : value.ToLower());
+                username = (value == null ? null : value.ToLower());
             }
         }
 
@@ -118,7 +118,7 @@ namespace Typer.Domain.Entities
 
         private bool IsUserNameUnique()
         {
-            return !_service.UserExists(Username);
+            return !service.UserExists(Username);
         }
 
         private bool IsPasswordValid()
@@ -148,7 +148,7 @@ namespace Typer.Domain.Entities
             if (!Email.IsLegalMail())
                 return false;
 
-            return !_service.MailExists(Email);
+            return !service.MailExists(Email);
         }
 
 

@@ -5,11 +5,11 @@ namespace Typer.Web.Models {
 
     public class MetawordLanguageViewModel { 
 
-        private readonly Metaword _metaword; 
+        private readonly Metaword metaword; 
         public int LanguageId; 
-        private IEnumerable<Word> _words; 
+        private IEnumerable<Word> words; 
         public IEnumerable<Word> Words { 
-            get { return _words ?? (_words = _metaword.GetWords(LanguageId)); }
+            get { return words ?? (words = metaword.GetWords(LanguageId)); }
         } 
 
         public MetawordLanguageViewModel() { 
@@ -18,7 +18,7 @@ namespace Typer.Web.Models {
 
         public MetawordLanguageViewModel(Metaword metaword, int languageId)
         {
-            _metaword = metaword;
+            this.metaword = metaword;
             LanguageId = languageId; 
         } 
     

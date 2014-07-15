@@ -122,7 +122,10 @@ VariantsManager.prototype = {
     
     confirm: function() {
         var self = this;
-        var x = 1;
+        self.trigger({
+            type: 'confirm',
+            query: self.query
+        });
     },
 
     cancel: function () {

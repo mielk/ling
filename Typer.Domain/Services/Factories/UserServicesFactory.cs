@@ -6,13 +6,13 @@ namespace Typer.Domain.Services
 
         private static UserServicesFactory _instance;
 
-        private readonly IUserService _userService;
+        private readonly IUserService userService;
 
 
 
         private UserServicesFactory()
         {
-            _userService = new UserService(null);
+            userService = new UserService(null);
         }
 
 
@@ -24,7 +24,7 @@ namespace Typer.Domain.Services
 
         public IUserService GetUserService()
         {
-            return _userService;
+            return userService;
         }
 
 

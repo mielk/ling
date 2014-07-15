@@ -6,13 +6,13 @@ namespace Typer.Domain.Services
 
         private static QuestionServicesFactory _instance;
 
-        private readonly IQuestionService _service;
+        private readonly IQuestionService service;
 
 
 
         private QuestionServicesFactory()
         {
-            _service = new QuestionService(null);
+            service = new QuestionService(null);
         }
 
 
@@ -24,7 +24,7 @@ namespace Typer.Domain.Services
 
         public IQuestionService GetService()
         {
-            return _service;
+            return service;
         }
 
 

@@ -8,7 +8,7 @@ namespace Typer.Web.Controllers
 {
     public class QuestionsController : Controller
     {
-        private readonly IQuestionService _service;
+        private readonly IQuestionService service;
         public int PageSize = 10;
         // ReSharper disable once UnusedMember.Local
         private RedirectResult NavigationPoint
@@ -21,7 +21,7 @@ namespace Typer.Web.Controllers
 
         public QuestionsController(IQuestionService service)
         {
-            _service = service;
+            this.service = service;
         }
 
 
@@ -39,14 +39,14 @@ namespace Typer.Web.Controllers
         public ViewResult List(int page = 1)
         {
             var model = new QuestionsListViewModel {
-                Questions = _service.GetQuestions().
+                Questions = service.GetQuestions().
                 OrderBy(q => q.Id).
                 Skip((page - 1) * PageSize).
                 Take(PageSize),
                 PagingInfo = new PagingInfo {
                     CurrentPage = page,
                     ItemsPerPage = PageSize,
-                    TotalItems = _service.GetQuestions().Count()
+                    TotalItems = service.GetQuestions().Count()
                 }
             };
             return View(model);
@@ -62,7 +62,7 @@ namespace Typer.Web.Controllers
         public ActionResult Filter(int lowWeight, int upWeight, int[] categories, string text, int pageSize, int page)
         {
 
-            var allQuestions = _service.Filter(lowWeight, upWeight, categories, text).ToArray();
+            var allQuestions = service.Filter(lowWeight, upWeight, categories, text).ToArray();
             var questions = allQuestions.
                 OrderBy(q => q.Id).
                 Skip((page - 1) * pageSize).
@@ -78,7 +78,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult UpdateWeight(int id, int weight)
         {
-            var result = _service.ChangeWeight(id, weight);
+            var result = service.ChangeWeight(id, weight);
             return Json(result);
             //return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
         }
@@ -88,7 +88,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult UpdateCategories(int[] categories, int id)
         {
-            var result = _service.UpdateCategories(id, categories);
+            var result = service.UpdateCategories(id, categories);
             return Json(result);
         }
 
@@ -100,7 +100,7 @@ namespace Typer.Web.Controllers
             string[] dependencies, string[] connections, string[] editedSets, string[] properties,
             string[] editedVariants, string[] addedVariants, string[] limits)
         {
-            var result = _service.Update(id, name, weight, categories, dependencies, connections, editedSets, properties, editedVariants, addedVariants, limits);
+            var result = service.Update(id, name, weight, categories, dependencies, connections, editedSets, properties, editedVariants, addedVariants, limits);
             return Json(result);
         }
 
@@ -110,7 +110,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult Deactivate(int id)
         {
-            var value = _service.Deactivate(id);
+            var value = service.Deactivate(id);
             return Json(value, JsonRequestBehavior.AllowGet);
             //return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
         }
@@ -120,7 +120,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult Activate(int id)
         {
-            var value = _service.Activate(id);
+            var value = service.Activate(id);
             return Json(value, JsonRequestBehavior.AllowGet);
             //return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
         }
@@ -148,7 +148,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult CheckName(int id, string name)
         {
-            var isExisting = _service.NameExists(id, name);
+            var isExisting = service.NameExists(id, name);
             return Json(new { IsExisting = isExisting }, JsonRequestBehavior.AllowGet);
         }
 
@@ -159,7 +159,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult GetQuestionDetails(int id, int currentUserId)
         {
-            var question = _service.GetQuestionDetails(id, currentUserId);
+            var question = service.GetQuestionDetails(id, currentUserId);
             return Json(question, JsonRequestBehavior.AllowGet);
         }
 
@@ -169,7 +169,7 @@ namespace Typer.Web.Controllers
         public ActionResult GetQuestion(int id)
         {
             var user = (User) HttpContext.Session[Domain.Entities.User.SessionKey];
-            var question = _service.GetQuestion(id);
+            var question = service.GetQuestion(id);
             var questionViewModel = new QuestionViewModel(question, user.UserID > 0 ? user.UserID : 1);
             return Json(questionViewModel, JsonRequestBehavior.AllowGet);
 
@@ -180,7 +180,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult GetOptions(int id, int[] languages)
         {
-            var options = _service.GetOptions(id, languages);
+            var options = service.GetOptions(id, languages);
             return Json(options, JsonRequestBehavior.AllowGet);
         }
 

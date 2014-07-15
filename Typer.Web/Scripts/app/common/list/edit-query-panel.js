@@ -41,6 +41,8 @@ function VariantSetsPanel(query) {
 
     self.ui = (function () {
 
+        var blocks = mielk.hashTable();
+
         var container = jQuery('<div/>', {
             'class': 'variant-sets-panel'
         });
@@ -55,13 +57,28 @@ function VariantSetsPanel(query) {
             click: function () {
                 var manager = new VariantsManager(self.query);
                 manager.start();
-                manager.bind({ cancel: function() { manager = null; } });
+                manager.bind({
+                    cancel: function() {
+                        manager = null;
+                    },
+                    confirm: function (e) {
+                        self.updateSets(e.query);
+                        displayVariantSets();
+                        manager = null;
+                    }
+                });
             }
         });
 
         function displayVariantSets() {
+            //Usuwa wcześniejsze bloki z panelu.
+            blocks.clear();
+            $(container).empty();
+            
+            //Wstawia wszystkie bloki od nowa.
             self.query.sets.each(function (key, set) {
                 var block = new VariantSetBlock(set, { movable: false, panel: container });
+                blocks.setItem(set.id, block);
                 block.bindEvents({
                     click: function() {
                         alert(block.set.tag + ' clicked');
@@ -86,6 +103,10 @@ VariantSetsPanel.prototype = {
 
     view: function () {
         return this.ui.view;
+    },
+    
+    updateSets: function (query) {
+        this.query.sets = query.sets;
     }
 
 };

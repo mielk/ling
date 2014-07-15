@@ -306,7 +306,7 @@ mielk.objects.addProperties(Word.prototype, {
     , changePropertyValue: function (propertyId, valueId) {
         var property = this.properties.getItem(propertyId);
         if (property) {
-            var value = property.property.options.getItem(valueId)
+            var value = property.property.options.getItem(valueId);
             if (value) {
                 property.value = value;
                 this.trigger({

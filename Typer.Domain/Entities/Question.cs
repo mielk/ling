@@ -43,20 +43,20 @@ namespace Typer.Domain.Entities
         [Display(Name = "Is complex")]
         public bool IsComplex { get; set; }
 
-        private IEnumerable<Category> _categories;
+        private IEnumerable<Category> categories;
         public IEnumerable<Category> Categories
         {
             get
             {
-                if (_categories == null) LoadCategories();
-                return _categories;
+                if (categories == null) LoadCategories();
+                return categories;
             }
         }
 
 
         private void LoadCategories()
         {
-            _categories = QuestionServicesFactory.Instance().GetService().GetCategories(Id);
+            categories = QuestionServicesFactory.Instance().GetService().GetCategories(Id);
         }
 
         public Question()
@@ -66,10 +66,10 @@ namespace Typer.Domain.Entities
         }
 
 
-        private IEnumerable<QuestionOption> _options;
+        private IEnumerable<QuestionOption> options;
         public IEnumerable<QuestionOption> Options
         {
-            get { return _options ?? (_options = QuestionServicesFactory.Instance().GetService().GetOptions(Id)); }
+            get { return options ?? (options = QuestionServicesFactory.Instance().GetService().GetOptions(Id)); }
         }
         public IEnumerable<QuestionOption> GetOptions(int languageId)
         {

@@ -311,9 +311,9 @@ function GrammarCell(word, form) {
         //konkretnej formy.
         var eventName = 'changeGrammarForm_' + self.form.id;
         var events = {};
-        events[eventName] = function (e) {
+        events[eventName] = function(e) {
             self.ui.setValue(e.value);
-        }
+        };
 
         self.word.bind(events);
 
@@ -428,10 +428,10 @@ function GrammarSearchPanel(word, parentPanel){
     self.events = (function () {
 
         self.word.bind({
-            changeName: function (e) {
+            changeName: function(e) {
                 self.update(e.value);
             }
-        })
+        });
 
     })();
 
@@ -456,7 +456,7 @@ GrammarSearchPanel.prototype = {
         var rawData = mielk.db.fetch('Words', 'GetSimilarWords', {
             'languageId': self.word.language.id,
             'wordtype': self.word.parent.wordtype ? self.word.parent.wordtype.id : 0,
-            'word': name || self.word.name
+            'word': self.word.name
         });
         var data = [];
         mielk.arrays.each(rawData, function (item) {

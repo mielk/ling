@@ -7,19 +7,19 @@ namespace Typer.Domain.Entities
     public class OptionsDivider
     {
 
-        private readonly string _text;
+        private readonly string text;
 
 
         public OptionsDivider(string text)
         {
-            _text = text;
+            this.text = text;
         }
 
 
         public List<string> GetVariants()
         {
 
-            var root = new Part(_text);
+            var root = new Part(text);
             return root.GetVariants();
 
             //List<string> list = new List<string>();
@@ -130,8 +130,8 @@ namespace Typer.Domain.Entities
         public Part Parent { get; set; }
         public string Content { get; set; }
         public List<Part> Children { get; set; }
-        private readonly StringBuilder _replaced = new StringBuilder();
-        private List<string> _variants = new List<string>();
+        private readonly StringBuilder replaced = new StringBuilder();
+        private List<string> variants = new List<string>();
 
         public Part(string content, Part parent, int index)
         {
@@ -177,7 +177,7 @@ namespace Typer.Domain.Entities
                     level++;
                     if (level == 1)
                     {
-                        _replaced.Append('{').Append(++counter).Append('}');
+                        replaced.Append('{').Append(++counter).Append('}');
                     }
                     else
                     {
@@ -203,7 +203,7 @@ namespace Typer.Domain.Entities
                 {
                     if (level == 0)
                     {
-                        _replaced.Append(c);
+                        replaced.Append(c);
                     }
                     else if (level > 0)
                     {
@@ -218,16 +218,16 @@ namespace Typer.Domain.Entities
 
         private void CreateVariants()
         {
-            _variants = _replaced.ToString().Split('/').ToList();
-            if (!IsRoot() && _variants.Count == 1)
+            variants = replaced.ToString().Split('/').ToList();
+            if (!IsRoot() && variants.Count == 1)
             {
-                _variants.Add("");
+                variants.Add("");
             }
         }
 
         private List<string> Merge()
         {
-            return Children.Aggregate(_variants, (current, part) => CrossVariants(current, part.GetVariants(), part.Name));
+            return Children.Aggregate(variants, (current, part) => CrossVariants(current, part.GetVariants(), part.Name));
         }
 
 

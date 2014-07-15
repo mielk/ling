@@ -12,7 +12,7 @@ namespace Typer.Domain.Entities
         public int ParentId { get; set; }
         public IEnumerable<Category> Children { get; set; }
         public bool IsActive { get; set; }
-        private Category _parent;
+        private Category parent;
 
         public Category(int id, string name, int? parentId)
         {
@@ -34,13 +34,13 @@ namespace Typer.Domain.Entities
 
         public void SetParent(Category parent)
         {
-            _parent = parent;
+            this.parent = parent;
         }
 
         public string FullPath()
         {
-            if (_parent == null) return string.Empty;
-            var parentPath = _parent.FullPath();
+            if (parent == null) return string.Empty;
+            var parentPath = parent.FullPath();
             return parentPath + (parentPath.Length > 0 ? " > " : string.Empty) + Name;
         }
 

@@ -11,29 +11,29 @@ namespace Typer.Domain.Services
     public class LanguageService : ILanguageService
     {
 
-        private readonly ILanguageRepository _repository;
+        private readonly ILanguageRepository repository;
 
         public LanguageService(ILanguageRepository repository)
         {
-            _repository = repository ?? RepositoryFactory.GetLanguageRepository();
+            this.repository = repository ?? RepositoryFactory.GetLanguageRepository();
         }
 
 
         public IEnumerable<Language> GetLanguages()
         {
-            var dataObjects = _repository.GetLanguages();
+            var dataObjects = repository.GetLanguages();
             return dataObjects.Select(LanguageFromDto).ToList();
         }
 
         public Language GetLanguage(int id)
         {
-            var dto = _repository.GetLanguage(id);
+            var dto = repository.GetLanguage(id);
             return LanguageFromDto(dto);
         }
 
         public IEnumerable<int> GetUserLanguages(int userId)
         {
-            return _repository.GetUserLanguages(userId);
+            return repository.GetUserLanguages(userId);
         }
 
 

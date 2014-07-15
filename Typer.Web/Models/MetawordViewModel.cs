@@ -8,10 +8,10 @@ namespace Typer.Web.Models
     public class MetawordViewModel
     {
 
-        private readonly ILanguageService _languageService = LanguageServicesFactory.Instance().GetService();
-        private readonly IWordService _wordService = WordServicesFactory.Instance().GetService();
+        private readonly ILanguageService languageService = LanguageServicesFactory.Instance().GetService();
+        private readonly IWordService wordService = WordServicesFactory.Instance().GetService();
         public Metaword Metaword { get; set; }
-        private readonly int _userId;
+        private readonly int userId;
         public IEnumerable<MetawordLanguageViewModel> UserLanguages { get; set; }
         public IEnumerable<Category> Categories { get; set; }
 
@@ -20,7 +20,7 @@ namespace Typer.Web.Models
         public MetawordViewModel(Metaword metaword, int userId)
         {
             Metaword = metaword;
-            _userId = userId;
+            this.userId = userId;
             UserLanguages = GetLanguages();
             Categories = GetCategories(metaword.Id);
         }
@@ -29,14 +29,14 @@ namespace Typer.Web.Models
 
         private IEnumerable<Category> GetCategories(int metawordId)
         {
-            var categories = _wordService.GetCategories(metawordId);
+            var categories = wordService.GetCategories(metawordId);
             return categories;
         }
 
         private IEnumerable<MetawordLanguageViewModel> GetLanguages()
         {
-            if (_userId <= 0) return null;
-            var languages = _languageService.GetUserLanguages(_userId);
+            if (userId <= 0) return null;
+            var languages = languageService.GetUserLanguages(userId);
 
             return languages.Select(language => new MetawordLanguageViewModel(Metaword, language)).ToList();
         }
@@ -45,7 +45,7 @@ namespace Typer.Web.Models
 
         public bool IsValid()
         {
-            return Metaword != null && _userId > 0;
+            return Metaword != null && userId > 0;
         }
     }
 }

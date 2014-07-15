@@ -6,13 +6,13 @@ namespace Typer.Web.Controllers
     public class GrammarController : Controller
     {
 
-        private readonly IGrammarService _service;
+        private readonly IGrammarService service;
         
 
 
         public GrammarController(IGrammarService service)
         {
-            _service = service;
+            this.service = service;
         }
 
 
@@ -21,7 +21,7 @@ namespace Typer.Web.Controllers
         public ActionResult GetGrammarProperties(int[] languages)
         {
 
-            var properties = _service.GetProperties(languages);
+            var properties = service.GetProperties(languages);
             return Json(properties, JsonRequestBehavior.AllowGet);
 
         }
@@ -32,7 +32,7 @@ namespace Typer.Web.Controllers
         public ActionResult GetWordsRequiredProperties(int[] languages)
         {
 
-            var properties = _service.GetWordRequiredProperties(languages);
+            var properties = service.GetWordRequiredProperties(languages);
             return Json(properties, JsonRequestBehavior.AllowGet);
             
         }
@@ -43,7 +43,7 @@ namespace Typer.Web.Controllers
         public ActionResult GetGrammarFormGroups(int[] languages)
         {
 
-            var properties = _service.GetGrammarFormsDefinitions(languages);
+            var properties = service.GetGrammarFormsDefinitions(languages);
             return Json(properties, JsonRequestBehavior.AllowGet);
 
         }

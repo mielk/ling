@@ -13,9 +13,9 @@ namespace Typer.Web.Controllers
         public class WordsController : Controller
         {
 
-            private readonly IWordService _service;
+            private readonly IWordService service;
             public int PageSize = 10;
-            private IEnumerable<Metaword> _list;
+            private IEnumerable<Metaword> list;
 
             // ReSharper disable once UnusedMember.Local
             private RedirectResult NavigationPoint
@@ -29,7 +29,7 @@ namespace Typer.Web.Controllers
 
             public WordsController(IWordService service)
             {
-                _service = service;
+                this.service = service;
             }
 
 
@@ -47,9 +47,9 @@ namespace Typer.Web.Controllers
             public ViewResult List(int page = 1)
             {
 
-                if (_list == null)
+                if (list == null)
                 {
-                    _list = _service.GetMetawords();
+                    list = service.GetMetawords();
                 }
 
                 var model = CreateViewModel(page, new SearchModel{
@@ -68,7 +68,7 @@ namespace Typer.Web.Controllers
             {
                 var model = new MetawordsListViewModel
                 {
-                    Metawords = _list.
+                    Metawords = list.
                     OrderBy(q => q.Id).
                     Skip((page - 1) * PageSize).
                     Take(PageSize),
@@ -76,7 +76,7 @@ namespace Typer.Web.Controllers
                     {
                         CurrentPage = page,
                         ItemsPerPage = PageSize,
-                        TotalItems = _service.GetMetawords().Count()
+                        TotalItems = service.GetMetawords().Count()
                     },
                     SearchInfo = searchModel
                 };
@@ -94,7 +94,7 @@ namespace Typer.Web.Controllers
             public ActionResult Filter(int wordtype, int lowWeight, int upWeight, int[] categories, string text, int pageSize, int page)
             {
 
-                var allWords = _service.Filter(wordtype, lowWeight, upWeight, categories, text).ToArray();
+                var allWords = service.Filter(wordtype, lowWeight, upWeight, categories, text).ToArray();
                 var words = allWords.
                     OrderBy(w => w.Id).
                     Skip((page - 1) * pageSize).
@@ -109,7 +109,7 @@ namespace Typer.Web.Controllers
             [AllowAnonymous]
             public ActionResult UpdateWeight(int id, int weight)
             {
-                var result = _service.ChangeWeight(id, weight);
+                var result = service.ChangeWeight(id, weight);
                 return Json(result, JsonRequestBehavior.AllowGet);
                 //return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
             }
@@ -119,7 +119,7 @@ namespace Typer.Web.Controllers
             [AllowAnonymous]
             public ActionResult Deactivate(int id)
             {
-                var value = _service.Deactivate(id);
+                var value = service.Deactivate(id);
                 return Json(value, JsonRequestBehavior.AllowGet);
                 //return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
             }
@@ -129,7 +129,7 @@ namespace Typer.Web.Controllers
             [AllowAnonymous]
             public ActionResult Activate(int id)
             {
-                var value = _service.Activate(id);
+                var value = service.Activate(id);
                 return Json(value, JsonRequestBehavior.AllowGet);
                 //return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
             }
@@ -142,7 +142,7 @@ namespace Typer.Web.Controllers
             [AllowAnonymous]
             public ActionResult UpdateCategories(int[] categories, int id)
             {
-                var result = _service.UpdateCategories(id, categories);
+                var result = service.UpdateCategories(id, categories);
                 return Json(result, JsonRequestBehavior.AllowGet);
             }
 
@@ -153,7 +153,7 @@ namespace Typer.Web.Controllers
             public ActionResult Update(string json)
             {
                 var metaword = new Metaword(json);
-                var result = _service.UpdateMetaword(metaword);
+                var result = service.UpdateMetaword(metaword);
                 return Json(result);
             }
 
@@ -163,7 +163,7 @@ namespace Typer.Web.Controllers
             public ActionResult Add(string json)
             {
                 var metaword = new Metaword(json);
-                var id = _service.AddMetaword(metaword);
+                var id = service.AddMetaword(metaword);
                 return Json(id, JsonRequestBehavior.AllowGet);
             }
 
@@ -189,7 +189,7 @@ namespace Typer.Web.Controllers
             [AllowAnonymous]
             public ActionResult CheckName(int id, string name)
             {
-                var isExisting = _service.NameExists(id, name);
+                var isExisting = service.NameExists(id, name);
                 return Json(new { IsExisting = isExisting }, JsonRequestBehavior.AllowGet);
             }
 
@@ -203,7 +203,7 @@ namespace Typer.Web.Controllers
             public ActionResult GetMetaword(int id)
             {
                 var user = (User)HttpContext.Session[Domain.Entities.User.SessionKey];
-                var metaword = _service.GetMetaword(id);
+                var metaword = service.GetMetaword(id);
                 var metawordViewModel = new MetawordViewModel(metaword, user.UserID > 0 ? user.UserID : 1);
                 return Json(metawordViewModel, JsonRequestBehavior.AllowGet);
 
@@ -215,7 +215,7 @@ namespace Typer.Web.Controllers
             [AllowAnonymous]
             public ActionResult GetWords(int id, int[] languages)
             {
-                var words = _service.GetWords(id, languages);
+                var words = service.GetWords(id, languages);
                 return Json(words, JsonRequestBehavior.AllowGet);
             }
 
@@ -225,7 +225,7 @@ namespace Typer.Web.Controllers
             [AllowAnonymous]
             public ActionResult GetPropertyValues(int wordId)
             {
-                var properties = _service.GetPropertyValues(wordId);
+                var properties = service.GetPropertyValues(wordId);
                 return Json(properties, JsonRequestBehavior.AllowGet);
             }
 
@@ -234,7 +234,7 @@ namespace Typer.Web.Controllers
             [AllowAnonymous]
             public ActionResult GetGrammarForms(int wordId)
             {
-                var forms = _service.GetGrammarForms(wordId);
+                var forms = service.GetGrammarForms(wordId);
                 return Json(forms, JsonRequestBehavior.AllowGet);
             }
 
@@ -243,7 +243,7 @@ namespace Typer.Web.Controllers
             [AllowAnonymous]
             public ActionResult GetGrammarFormsForWords(int grammarForm, int[] words)
             {
-                var forms = _service.GetGrammarForms(grammarForm, words);
+                var forms = service.GetGrammarForms(grammarForm, words);
                 return Json(forms, JsonRequestBehavior.AllowGet);
             }
 
@@ -252,7 +252,7 @@ namespace Typer.Web.Controllers
             [AllowAnonymous]
             public ActionResult GetSimilarWords(int languageId, int wordtype, string word)
             {
-                var words = _service.GetSimilarWords(languageId, wordtype, word);
+                var words = service.GetSimilarWords(languageId, wordtype, word);
                 return Json(words, JsonRequestBehavior.AllowGet);
             }
 

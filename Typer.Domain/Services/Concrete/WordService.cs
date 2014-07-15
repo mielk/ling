@@ -12,24 +12,24 @@ namespace Typer.Domain.Services
     public class WordService : IWordService
     {
 
-        private readonly IWordsRepository _repository;
-        private readonly ICategoryService _categoryService = CategoryServicesFactory.Instance().GetService();
+        private readonly IWordsRepository repository;
+        private readonly ICategoryService categoryService = CategoryServicesFactory.Instance().GetService();
 
         public WordService(IWordsRepository repository)
         {
-            _repository = repository ?? RepositoryFactory.GetWordsRepository();
+            this.repository = repository ?? RepositoryFactory.GetWordsRepository();
         }
 
 
         public IEnumerable<Metaword> GetMetawords()
         {
-            var dataObjects = _repository.GetMetawords();
+            var dataObjects = repository.GetMetawords();
             return dataObjects.Select(MetawordFromDto).ToList();
         }
 
         public Metaword GetMetaword(int id)
         {
-            var dto = _repository.GetMetaword(id);
+            var dto = repository.GetMetaword(id);
             return MetawordFromDto(dto);
         }
 
@@ -37,29 +37,29 @@ namespace Typer.Domain.Services
 
         public bool ChangeWeight(int id, int weight)
         {
-            return _repository.UpdateWeight(id, weight.ToRange(Metaword.MinWeight, Metaword.MaxWeight));
+            return repository.UpdateWeight(id, weight.ToRange(Metaword.MinWeight, Metaword.MaxWeight));
         }
 
 
         public bool Activate(int id)
         {
-            return _repository.Activate(id);
+            return repository.Activate(id);
         }
 
 
         public bool Deactivate(int id)
         {
-            return _repository.Deactivate(id);
+            return repository.Deactivate(id);
         }
 
         public bool NameExists(string name)
         {
-            return _repository.NameExists(name);
+            return repository.NameExists(name);
         }
 
         public bool NameExists(int id, string name)
         {
-            var metaword = _repository.GetMetaword(name);
+            var metaword = repository.GetMetaword(name);
 
             if (metaword != null)
             {
@@ -72,13 +72,13 @@ namespace Typer.Domain.Services
         public int UpdateMetaword(Metaword metaword)
         {
             var currentUserId = User.CurrentUserId;
-            return metaword.Id == 0 ? AddMetaword(metaword) : _repository.UpdateMetaword(MetawordToDto(metaword), currentUserId);
+            return metaword.Id == 0 ? AddMetaword(metaword) : repository.UpdateMetaword(MetawordToDto(metaword), currentUserId);
         }
 
         public int AddMetaword(Metaword metaword)
         {
             var dto = MetawordToDto(metaword);
-            return _repository.AddMetaword(dto);
+            return repository.AddMetaword(dto);
         }
 
         public int AddMetaword(string name, int wordtype, int weight, int[] categories, string[] options, string[] properties, string[] forms)
@@ -89,47 +89,47 @@ namespace Typer.Domain.Services
 
         public IEnumerable<Word> GetWords(int metawordId)
         {
-            var dataObjects = _repository.GetWords(metawordId);
+            var dataObjects = repository.GetWords(metawordId);
             return dataObjects.Select(WordFromDto).ToList();
         }
 
         public IEnumerable<Word> GetWords(int metawordId, int[] languages){
-            var dataObjects = _repository.GetWords(metawordId, languages);
+            var dataObjects = repository.GetWords(metawordId, languages);
             return dataObjects.Select(WordFromDto).ToList();
         }
 
         public bool UpdateCategories(int id, int[] categoriesId)
         {
-            return _repository.UpdateCategories(id, categoriesId);
+            return repository.UpdateCategories(id, categoriesId);
         }
 
         public IEnumerable<Category> GetCategories(int metawordId)
         {
-            var dtos = _repository.GetCategories(metawordId);
-            return dtos.Select(dto => _categoryService.GetCategory(dto.CategoryId)).ToList();
+            var dtos = repository.GetCategories(metawordId);
+            return dtos.Select(dto => categoryService.GetCategory(dto.CategoryId)).ToList();
         }
 
         public IEnumerable<WordProperty> GetPropertyValues(int wordId)
         {
-            var dtos = _repository.GetPropertyValues(wordId);
+            var dtos = repository.GetPropertyValues(wordId);
             return dtos.Select(WordPropertyValueFromDto).ToList();
         }
 
         public IEnumerable<GrammarForm> GetGrammarForms(int wordId)
         {
-            var dtos = _repository.GetGrammarForms(wordId);
+            var dtos = repository.GetGrammarForms(wordId);
             return dtos.Select(GrammarFormFromDto).ToList();
         }
 
         public IEnumerable<GrammarForm> GetGrammarForms(int definition, int[] wordsIds)
         {
-            var dtos = _repository.GetGrammarForms(definition, wordsIds);
+            var dtos = repository.GetGrammarForms(definition, wordsIds);
             return dtos.Select(GrammarFormFromDto).ToList();            
         }
 
         public IEnumerable<Metaword> Filter(int wordType, int lowWeight, int upWeight, int[] categories, string text)
         {
-            var dtos = _repository.GetMetawords();
+            var dtos = repository.GetMetawords();
 
             if (wordType > 0) dtos = dtos.Where(w => w.Type == wordType);
             if (lowWeight > 0) dtos = dtos.Where(w => w.Weight >= lowWeight);
@@ -137,7 +137,7 @@ namespace Typer.Domain.Services
             if (text.Length > 0) dtos = dtos.Where(w => w.Name.ToLower().Contains(text.ToLower()));
 
             if (categories == null || categories.Length <= 0) return dtos.Select(MetawordFromDto).ToList();
-            var byCategories = _repository.GetMetawordsIdsByCategories(categories);
+            var byCategories = repository.GetMetawordsIdsByCategories(categories);
             dtos = dtos.Where(q => byCategories.Contains(q.Id));
 
             return dtos.Select(MetawordFromDto).ToList();
@@ -147,14 +147,14 @@ namespace Typer.Domain.Services
 
         public IEnumerable<Word> GetSimilarWords(int languageId, int wordtype, string word)
         {
-            var dtos = _repository.GetSimilarWords(languageId, wordtype, word);
+            var dtos = repository.GetSimilarWords(languageId, wordtype, word);
             var sorters = dtos.Select(dto => WordSorterFromDto(dto, word)).ToList();
             return sorters.OrderByDescending(s => s.Match).Take(10).Select(s => s.Word).ToList();
         }
 
         public Word GetWord(int id)
         {
-            var dto = _repository.GetWord(id);
+            var dto = repository.GetWord(id);
             return WordFromDto(dto);
         }
 

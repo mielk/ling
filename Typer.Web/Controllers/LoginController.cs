@@ -10,9 +10,9 @@ namespace Typer.Web.Controllers
 
     public class LoginController : Controller
     {
-        private readonly ILanguageService _languageService = LanguageServicesFactory.Instance().GetService();
-        private readonly IUserService _userService;
-        private readonly IMailSender _mailSender;
+        private readonly ILanguageService languageService = LanguageServicesFactory.Instance().GetService();
+        private readonly IUserService userService;
+        private readonly IMailSender mailSender;
         private RedirectResult NavigationPoint
         {
             get { return Session["LoginControllerNavigationPoint"] as RedirectResult; }
@@ -22,8 +22,8 @@ namespace Typer.Web.Controllers
 
         public LoginController(IUserService userService, IMailSender mailSender)
         {
-            _userService = userService;
-            _mailSender = mailSender;
+            this.userService = userService;
+            this.mailSender = mailSender;
         }
 
 
@@ -54,7 +54,7 @@ namespace Typer.Web.Controllers
         public ActionResult Login(UserLoginData data)
         {
             if (!ModelState.IsValid) return View(data);
-            var user = _userService.GetUser(data);
+            var user = userService.GetUser(data);
 
             if (user == null)
             {
@@ -106,7 +106,7 @@ namespace Typer.Web.Controllers
             if (!data.IsValid()) return View(data);
             var user = data.ToUser();
 
-            if (!_userService.AddUser(user)) return View("AccountCreationError", user);
+            if (!userService.AddUser(user)) return View("AccountCreationError", user);
             SendConfirmationMail(user);
             return View("AccountCreated", user);
         }
@@ -137,7 +137,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult CheckUsername(string username)
         {
-            var isExisting = _userService.UserExists(username);
+            var isExisting = userService.UserExists(username);
             return Json(new { IsExisting = isExisting }, JsonRequestBehavior.AllowGet);
         }
 
@@ -145,7 +145,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult CheckMail(string mail)
         {
-            var user = _userService.GetUserByMail(mail);
+            var user = userService.GetUserByMail(mail);
             var isExisting = (user != null);
             var isVerified = (user != null && user.MailVerified);
             return Json(new
@@ -158,7 +158,7 @@ namespace Typer.Web.Controllers
 
         private bool SendConfirmationMail(User user)
         {
-            return _mailSender.Send(user.Email, "Account created", CreateVerificationMailContent(user));
+            return mailSender.Send(user.Email, "Account created", CreateVerificationMailContent(user));
         }
 
 
@@ -175,10 +175,10 @@ namespace Typer.Web.Controllers
             var pswd = GeneratePassword(12);
             var encryptedPassword = Sha1.Encode(pswd);
 
-            if (!_userService.ResetPassword(user, encryptedPassword))
+            if (!userService.ResetPassword(user, encryptedPassword))
                 return false;
 
-            return _mailSender.Send(user.Email, "New password", CreatePasswordMailContent(user, pswd));
+            return mailSender.Send(user.Email, "New password", CreatePasswordMailContent(user, pswd));
         }
 
 
@@ -217,7 +217,7 @@ namespace Typer.Web.Controllers
         public ActionResult InactiveMail(UserRegistrationData data)
         {
 
-            var user = _userService.GetUserByMail(data.Email);
+            var user = userService.GetUserByMail(data.Email);
             var emailSent = SendConfirmationMail(user);
 
             return View(emailSent ? "MailSent" : "ValidationMailSendingError", user);
@@ -229,7 +229,7 @@ namespace Typer.Web.Controllers
         public ViewResult Verify(string username, string token)
         {
 
-            var user = _userService.GetUserByName(username);
+            var user = userService.GetUserByName(username);
 
             if (user == null)
                 //User prawdopodobnie został skasowany, bo za długo zwlekał z aktywacją konta.
@@ -238,7 +238,7 @@ namespace Typer.Web.Controllers
             if (token == user.VerificationCode)
             {
 
-                if (_userService.VerifyMail(user.UserID))
+                if (userService.VerifyMail(user.UserID))
                 {
                     //Konto zostało aktywowane.
                     //Pokaż ekran z informacją o aktywacji konta.
@@ -249,7 +249,7 @@ namespace Typer.Web.Controllers
 
             //Problem podczas weryfikacji konta.
             //Wysłanie jeszcze jednego maila.
-            _userService.ResetVerificationCode(user.UserID);
+            userService.ResetVerificationCode(user.UserID);
             return View("AccountActivationError", user);
 
         }
@@ -274,7 +274,7 @@ namespace Typer.Web.Controllers
         public ActionResult ResetPassword(UserRegistrationData data)
         {
 
-            var user = _userService.GetUserByMail(data.Email);
+            var user = userService.GetUserByMail(data.Email);
             if (user == null || user.Email != data.Email)
             {
                 ViewBag.Message = "User name or password are incorrect";

@@ -7,11 +7,11 @@ namespace Typer.Tests.UnitTests.Domain
     public class UserRepositoryUnitTests
     {
 
-        private EFUsersRepository _repository;
+        private EFUsersRepository repository;
 
         public UserRepositoryUnitTests()
         {
-            _repository = new EFUsersRepository();
+            repository = new EFUsersRepository();
         }
 
     }

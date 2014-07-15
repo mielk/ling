@@ -9,16 +9,16 @@ namespace Typer.Web
    // so we derive from NinjectScope.
    public class NinjectDependencyResolver : NinjectDependencyScope, IDependencyResolver
    {
-      private readonly IKernel _kernel;
+      private readonly IKernel kernel;
 
       public NinjectDependencyResolver(IKernel kernel) : base(kernel)
       {
-         _kernel = kernel;
+         this.kernel = kernel;
       }
 
       public IDependencyScope BeginScope()
       {
-         return new NinjectDependencyScope(_kernel.BeginBlock());
+         return new NinjectDependencyScope(kernel.BeginBlock());
       }
    }
 }

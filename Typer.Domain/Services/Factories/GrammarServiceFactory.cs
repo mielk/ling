@@ -6,13 +6,13 @@ namespace Typer.Domain.Services
 
         private static GrammarServicesFactory _instance;
 
-        private readonly IGrammarService _service;
+        private readonly IGrammarService service;
 
 
 
         private GrammarServicesFactory()
         {
-            _service = new GrammarService(null);
+            service = new GrammarService(null);
         }
 
 
@@ -24,7 +24,7 @@ namespace Typer.Domain.Services
 
         public IGrammarService GetService()
         {
-            return _service;
+            return service;
         }
 
 

@@ -7,12 +7,12 @@ namespace Typer.Web.Controllers
     public class CategoriesController : Controller
     {
 
-        private readonly ICategoryService _service;
+        private readonly ICategoryService service;
 
 
         public CategoriesController(ICategoryService service)
         {
-            _service = service;
+            this.service = service;
         }
 
         //
@@ -30,7 +30,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult GetCategories()
         {
-            var root = _service.GetRoot();
+            var root = service.GetRoot();
             return Json(root, JsonRequestBehavior.AllowGet);
 
         }
@@ -41,7 +41,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult UpdateName(int id, string name)
         {
-            var result = _service.UpdateName(id, name);
+            var result = service.UpdateName(id, name);
             return Json(result);
         }
 
@@ -50,7 +50,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult UpdateParentId(int id, int parentId)
         {
-            var result = _service.UpdateParent(id, parentId);
+            var result = service.UpdateParent(id, parentId);
             return Json(result);
         }
 
@@ -58,7 +58,7 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult RemoveCategory(int id)
         {
-            var result = _service.Deactivate(id);
+            var result = service.Deactivate(id);
             return Json(result);
         }
 
@@ -67,7 +67,7 @@ namespace Typer.Web.Controllers
         public ActionResult AddCategory(string name, int parentId)
         {
             var user = (User) HttpContext.Session[Domain.Entities.User.SessionKey];
-            var result = _service.AddCategory(name, parentId, user.UserID);
+            var result = service.AddCategory(name, parentId, user.UserID);
             return Json(result);
         }
 

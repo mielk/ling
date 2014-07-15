@@ -11,11 +11,11 @@ namespace Typer.Domain.Services
     public class GrammarService : IGrammarService
     {
 
-        private readonly IGrammarRepository _repository;
+        private readonly IGrammarRepository repository;
 
         public GrammarService(IGrammarRepository repository)
         {
-            _repository = repository ?? RepositoryFactory.GetGrammarRepository();
+            this.repository = repository ?? RepositoryFactory.GetGrammarRepository();
         }
 
 
@@ -24,8 +24,8 @@ namespace Typer.Domain.Services
         {
 
             //Fetch data from the database as DTO objecs.
-            var definitions = _repository.GetProperties(languages);
-            var options = _repository.GetOptions(definitions.Select(d => d.Id).ToList());
+            var definitions = repository.GetProperties(languages);
+            var options = repository.GetOptions(definitions.Select(d => d.Id).ToList());
 
             //Create a dictionary of GrammarPropertyDefinitions.
             var dict = definitions.ToList().Select(PropertyDefinitionFromDto).ToDictionary(definition => definition.Id);
@@ -47,17 +47,17 @@ namespace Typer.Domain.Services
 
         public IEnumerable<WordPropertyRequirement> GetWordRequiredProperties(int[] languages)
         {
-            var properties = _repository.GetWordRequiredProperties(languages);
+            var properties = repository.GetWordRequiredProperties(languages);
             return properties.Select(PropertyRequirementFromDto).ToList();
         }
 
         public IEnumerable<GrammarFormGroup> GetGrammarFormsDefinitions(int[] languages)
         {
-            var groupsDto = _repository.GetGrammarFormGroups(languages);
-            var formsDto = _repository.GetGrammarFormDefinitions(groupsDto.Select(g => g.Id));
+            var groupsDto = repository.GetGrammarFormGroups(languages);
+            var formsDto = repository.GetGrammarFormDefinitions(groupsDto.Select(g => g.Id));
             var formsIds = formsDto.Select(f => f.Id).ToList();
-            var propertiesDto = _repository.GetGrammarFormDefinitionsProperties(formsIds);
-            var inactiveRulesDto = _repository.GetGrammarFormInactiveRules(formsIds);
+            var propertiesDto = repository.GetGrammarFormDefinitionsProperties(formsIds);
+            var inactiveRulesDto = repository.GetGrammarFormInactiveRules(formsIds);
             //Maps.
             var groupsMap = new Dictionary<int, GrammarFormGroup>();
             var definitionsMap = new Dictionary<int, GrammarFormDefinition>();

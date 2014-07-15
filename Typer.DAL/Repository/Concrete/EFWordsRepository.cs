@@ -160,7 +160,7 @@ namespace Typer.DAL.Repositories
         }
 
 
-        private void UpdateWords(int metawordId, WordDto[] words, int currentUserId)
+        private void UpdateWords(int metawordId, IEnumerable<WordDto> words, int currentUserId)
         {
 
             try
@@ -223,7 +223,7 @@ namespace Typer.DAL.Repositories
             Context.MatchWordCategory.Add(dto);
         }
 
-        private void RemoveWordsForMetaword(int metawordId, WordDto[] words, int currentUserId)
+        private void RemoveWordsForMetaword(int metawordId, IEnumerable<WordDto> words, int currentUserId)
         {
             var languageRepository = new EFLanguageRepository();
             var languages = languageRepository.GetUserLanguages(currentUserId);
@@ -271,7 +271,7 @@ namespace Typer.DAL.Repositories
 
         }
 
-        private void UpdateWordProperties(int wordId, WordPropertyDto[] properties)
+        private void UpdateWordProperties(int wordId, IEnumerable<WordPropertyDto> properties)
         {
             try
             {
@@ -298,7 +298,7 @@ namespace Typer.DAL.Repositories
             }
         }
 
-        private void UpdateGrammarForms(int wordId, GrammarFormDto[] forms)
+        private void UpdateGrammarForms(int wordId, IEnumerable<GrammarFormDto> forms)
         {
             try
             {

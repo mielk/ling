@@ -6,13 +6,13 @@ namespace Typer.Domain.Services
 
         private static CategoryServicesFactory _instance;
 
-        private readonly ICategoryService _service;
+        private readonly ICategoryService service;
 
 
 
         private CategoryServicesFactory()
         {
-            _service = new CategoryService(null);
+            service = new CategoryService(null);
         }
 
 
@@ -24,7 +24,7 @@ namespace Typer.Domain.Services
 
         public ICategoryService GetService()
         {
-            return _service;
+            return service;
         }
 
 

@@ -7,13 +7,13 @@ namespace Typer.Web.Controllers
     public class TestController : Controller
     {
 
-        private readonly IQuestionService _questionService;
-        private readonly ILanguageService _languageService;
+        private readonly IQuestionService questionService;
+        private readonly ILanguageService languageService;
 
         public TestController(IQuestionService questionService, ILanguageService languageService)
         {
-            _questionService = questionService;
-            _languageService = languageService;
+            this.questionService = questionService;
+            this.languageService = languageService;
         }
 
 
@@ -26,9 +26,9 @@ namespace Typer.Web.Controllers
         [AllowAnonymous]
         public ActionResult Index()
         {
-            var question = _questionService.GetQuestion(1);
-            var parent = _languageService.GetLanguage(1);
-            var learn = _languageService.GetLanguage(2);
+            var question = questionService.GetQuestion(1);
+            var parent = languageService.GetLanguage(1);
+            var learn = languageService.GetLanguage(2);
             var viewModel = new TestQuestionViewModel { Question = question, ParentLanguage = parent, LearnLanguage = learn };
 
 

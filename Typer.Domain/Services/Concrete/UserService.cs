@@ -12,67 +12,67 @@ namespace Typer.Domain.Services
     public class UserService : IUserService
     {
 
-        private readonly IUsersRepository _repository;
+        private readonly IUsersRepository repository;
 
         public UserService(IUsersRepository repository)
         {
-            _repository = repository ?? RepositoryFactory.GetUsersRepository();
+            this.repository = repository ?? RepositoryFactory.GetUsersRepository();
         }
 
 
         public User GetUser(UserLoginData loginData)
         {
-            var dto = _repository.GetUser(loginData.Username, Sha1.Encode(loginData.Password));
+            var dto = repository.GetUser(loginData.Username, Sha1.Encode(loginData.Password));
             return UserFromDto(dto);
         }
 
         public User GetUserByMail(string mail)
         {
-            var dto = _repository.GetUserByMail(mail);
+            var dto = repository.GetUserByMail(mail);
             return UserFromDto(dto);
         }
 
         public User GetUserByName(string username)
         {
-            var dto = _repository.GetUser(username);
+            var dto = repository.GetUser(username);
             return UserFromDto(dto);
         }
 
         public bool IsAuthenticated(UserLoginData loginData)
         {
-            return _repository.UserExists(loginData.Username, Sha1.Encode(loginData.Password));
+            return repository.UserExists(loginData.Username, Sha1.Encode(loginData.Password));
         }
 
         public bool AddUser(User user)
         {
             var dto = UserToDto(user);
-            return _repository.AddUser(dto);
+            return repository.AddUser(dto);
         }
 
         public bool UserExists(string username)
         {
-            return _repository.UserExists(username);
+            return repository.UserExists(username);
         }
 
         public bool MailExists(string mail)
         {
-            return _repository.MailExists(mail);
+            return repository.MailExists(mail);
         }
 
         public bool VerifyMail(int userId)
         {
-            return _repository.VerifyMail(userId);
+            return repository.VerifyMail(userId);
         }
 
         public bool ResetVerificationCode(int userId)
         {
             var code = Guid.NewGuid().ToString().Replace("-", "");
-            return _repository.ResetVerificationCode(userId, code);
+            return repository.ResetVerificationCode(userId, code);
         }
 
         public bool ResetPassword(User user, string password)
         {
-            return _repository.ResetPassword(user.UserID, password);
+            return repository.ResetPassword(user.UserID, password);
         }
 
 

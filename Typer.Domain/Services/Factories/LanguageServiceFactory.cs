@@ -6,13 +6,13 @@ namespace Typer.Domain.Services
 
         private static LanguageServicesFactory _instance;
 
-        private readonly ILanguageService _service;
+        private readonly ILanguageService service;
 
 
 
         private LanguageServicesFactory()
         {
-            _service = new LanguageService(null);
+            service = new LanguageService(null);
         }
 
 
@@ -24,7 +24,7 @@ namespace Typer.Domain.Services
 
         public ILanguageService GetService()
         {
-            return _service;
+            return service;
         }
 
 

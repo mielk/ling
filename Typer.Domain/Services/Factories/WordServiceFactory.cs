@@ -6,13 +6,13 @@ namespace Typer.Domain.Services
 
         private static WordServicesFactory _instance;
 
-        private readonly IWordService _service;
+        private readonly IWordService service;
 
 
 
         private WordServicesFactory()
         {
-            _service = new WordService(null);
+            service = new WordService(null);
         }
 
 
@@ -24,7 +24,7 @@ namespace Typer.Domain.Services
 
         public IWordService GetService()
         {
-            return _service;
+            return service;
         }
 
 

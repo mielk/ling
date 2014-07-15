@@ -13,24 +13,24 @@ namespace Typer.Domain.Services
     {
 
 
-        private readonly IQuestionsRepository _repository;
-        private readonly ICategoryService _categoryService = CategoryServicesFactory.Instance().GetService();
+        private readonly IQuestionsRepository repository;
+        private readonly ICategoryService categoryService = CategoryServicesFactory.Instance().GetService();
 
         public QuestionService(IQuestionsRepository repository)
         {
-            _repository = repository ?? RepositoryFactory.GetQuestionsRepository();
+            this.repository = repository ?? RepositoryFactory.GetQuestionsRepository();
         }
 
 
         public IEnumerable<Question> GetQuestions()
         {
-            var dataObjects = _repository.GetQuestions();
+            var dataObjects = repository.GetQuestions();
             return dataObjects.Select(QuestionFromDto).ToList();
         }
 
         public Question GetQuestion(int id)
         {
-            var dto = _repository.GetQuestion(id);
+            var dto = repository.GetQuestion(id);
             return QuestionFromDto(dto);
         }
 
@@ -38,29 +38,29 @@ namespace Typer.Domain.Services
 
         public bool ChangeWeight(int id, int weight)
         {
-            return _repository.UpdateWeight(id, weight.ToRange(Question.MinWeight, Question.MaxWeight));
+            return repository.UpdateWeight(id, weight.ToRange(Question.MinWeight, Question.MaxWeight));
         }
 
 
         public bool Activate(int id)
         {
-            return _repository.Activate(id);
+            return repository.Activate(id);
         }
 
 
         public bool Deactivate(int id)
         {
-            return _repository.Deactivate(id);
+            return repository.Deactivate(id);
         }
 
         public bool NameExists(string name)
         {
-            return _repository.NameExists(name);
+            return repository.NameExists(name);
         }
 
         public bool NameExists(int id, string name)
         {
-            var question = _repository.GetQuestion(name);
+            var question = repository.GetQuestion(name);
 
             if (question != null)
             {
@@ -72,13 +72,13 @@ namespace Typer.Domain.Services
 
         public bool UpdateQuestion(Question question)
         {
-            return _repository.UpdateProperties(question.Id, question.Name, question.Weight);
+            return repository.UpdateProperties(question.Id, question.Name, question.Weight);
         }
 
 
         public bool UpdateCategories(int id, int[] categoriesId)
         {
-            return _repository.UpdateCategories(id, categoriesId);
+            return repository.UpdateCategories(id, categoriesId);
         }
 
 
@@ -92,37 +92,37 @@ namespace Typer.Domain.Services
         public bool AddQuestion(Question question)
         {
             var dto = QuestionToDto(question);
-            return _repository.AddQuestion(dto);
+            return repository.AddQuestion(dto);
         }
 
         public IEnumerable<QuestionOption> GetOptions(int questionId)
         {
-            var dataObjects = _repository.GetOptions(questionId);
+            var dataObjects = repository.GetOptions(questionId);
             return dataObjects.Select(OptionFromDto).ToList();
         }
 
         public IEnumerable<QuestionOption> GetOptions(int questionId, int[] languages)
         {
-            var dataObjects = _repository.GetOptions(questionId, languages);
+            var dataObjects = repository.GetOptions(questionId, languages);
             return dataObjects.Select(OptionFromDto).ToList();
         }
 
 
         public IEnumerable<Category> GetCategories(int questionId)
         {
-            var dtos = _repository.GetCategories(questionId);
-            return dtos.Select(dto => _categoryService.GetCategory(dto.CategoryId)).ToList();
+            var dtos = repository.GetCategories(questionId);
+            return dtos.Select(dto => categoryService.GetCategory(dto.CategoryId)).ToList();
         }
 
         public IEnumerable<Question> Filter(int lowWeight, int upWeight, int[] categories, string text)
         {
-            var dtos = _repository.GetQuestions();
+            var dtos = repository.GetQuestions();
 
             if (lowWeight > 0) dtos = dtos.Where(q => q.Weight >= lowWeight);
             if (upWeight > 0) dtos = dtos.Where(q => q.Weight <= upWeight);
             if (text.Length > 0) dtos = dtos.Where(q => q.Name.ToLower().Contains(text.ToLower()));
             if (categories == null || categories.Length <= 0) return dtos.Select(QuestionFromDto).ToList();
-            var byCategories = _repository.GetQuestionsIdsByCategories(categories);
+            var byCategories = repository.GetQuestionsIdsByCategories(categories);
             dtos = dtos.Where(q => byCategories.Contains(q.Id));
 
             return dtos.Select(QuestionFromDto).ToList();
@@ -133,7 +133,7 @@ namespace Typer.Domain.Services
         {
 
             //Get main Question object.
-            var dto = _repository.GetQuestion(id);
+            var dto = repository.GetQuestion(id);
             Question question = QuestionFromDto(dto);
 
             //Get sets and variants for the given question.
@@ -163,7 +163,7 @@ namespace Typer.Domain.Services
             var languages = languageRepository.GetUserLanguages(currentUserId);
 
             //Fetch variant sets.
-            var sets = _repository.GetVariantSets(questionId, languages);
+            var sets = repository.GetVariantSets(questionId, languages);
 
             //Create map of sets.
             var map = new Dictionary<int, VariantSet>();
@@ -173,7 +173,7 @@ namespace Typer.Domain.Services
             }
 
             //Load connections between variant sets.
-            var connections = _repository.GetVariantSetsConnections(sets.Select(s => s.Id));
+            var connections = repository.GetVariantSetsConnections(sets.Select(s => s.Id));
             foreach (var connection in connections)
             {
                 VariantSet baseSet;
@@ -189,14 +189,14 @@ namespace Typer.Domain.Services
             }
 
             //Load limits between variant sets.
-            var limits = _repository.GetVariantSetsLimits(sets.Select(s => s.Id));
+            var limits = repository.GetVariantSetsLimits(sets.Select(s => s.Id));
             foreach (var limit in limits)
             {
                 //TODO
             }
 
             //Load dependencies between variant sets.
-            var dependencies = _repository.GetVariantSetsDependencies(sets.Select(s => s.Id));
+            var dependencies = repository.GetVariantSetsDependencies(sets.Select(s => s.Id));
             foreach (var dependency in dependencies)
             {
                 //TODO
@@ -210,14 +210,14 @@ namespace Typer.Domain.Services
         {
 
             //Load variants.
-            var variants = _repository.GetVariants(sets);
+            var variants = repository.GetVariants(sets);
             var map = new Dictionary<int, Variant>();
             foreach (var variant in variants)
             {
                 map.Add(variant.Id, VariantFromDto(variant));
             }
 
-            var variantWords = _repository.GetVariantWordMatching(variants.Select(v => v.Id));
+            var variantWords = repository.GetVariantWordMatching(variants.Select(v => v.Id));
             foreach (var word in variantWords)
             {
                 Variant variant;
