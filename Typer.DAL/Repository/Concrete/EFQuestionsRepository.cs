@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Transactions;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.TransferObjects;
 
@@ -290,7 +289,8 @@ namespace Typer.DAL.Repositories
 
         public IEnumerable<VariantConnectionDto> GetVariantSetsConnections(IEnumerable<int> sets)
         {
-            return Context.VariantConnections.Where(vc => sets.Contains(vc.VariantSetId) && sets.Contains(vc.ConnectedSetId));
+            var setsArray = sets.ToArray();
+            return Context.VariantConnections.Where(vc => setsArray.Contains(vc.VariantSetId) && setsArray.Contains(vc.ConnectedSetId));
         }
 
 
@@ -302,7 +302,8 @@ namespace Typer.DAL.Repositories
 
         public IEnumerable<VariantDependencyDto> GetVariantSetsDependencies(IEnumerable<int> sets)
         {
-            return Context.VariantDependencies.Where(vd => sets.Contains(vd.MainSetId) || sets.Contains(vd.DependantSetId));
+            var setsArray = sets.ToArray();
+            return Context.VariantDependencies.Where(vd => setsArray.Contains(vd.MainSetId) || setsArray.Contains(vd.DependantSetId));
         }
 
         public IEnumerable<VariantLimitDto> GetVariantSetsLimits(int questionId, IEnumerable<int> languages)
@@ -314,7 +315,8 @@ namespace Typer.DAL.Repositories
 
         public IEnumerable<VariantLimitDto> GetVariantSetsLimits(IEnumerable<int> sets)
         {
-            return Context.VariantLimits.Where(vl => sets.Contains(vl.ConnectedVariantId) || sets.Contains(vl.VariantId));
+            var setsArray = sets.ToArray();
+            return Context.VariantLimits.Where(vl => setsArray.Contains(vl.ConnectedVariantId) || setsArray.Contains(vl.VariantId));
         }
 
         public IEnumerable<VariantDto> GetVariants(int questionId, IEnumerable<int> languages)

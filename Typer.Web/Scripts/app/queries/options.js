@@ -106,7 +106,7 @@ QuestionOptionEditEntity.prototype.createDetailsManager = function (params) {
 
 
 function QuestionPropertyManager(editObject) {
-    PropertyManager.call(this, editObject);
+    window.PropertyManager.call(this, editObject);
     this.QuestionPropertyManager = true;
     this.ui.hide();
 }

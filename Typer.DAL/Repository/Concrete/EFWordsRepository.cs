@@ -166,10 +166,12 @@ namespace Typer.DAL.Repositories
             try
             {
 
-                RemoveWordsForMetaword(metawordId, words, currentUserId);
+                var wordsArray = words.ToArray();
+
+                RemoveWordsForMetaword(metawordId, wordsArray, currentUserId);
 
                 //Update rest of words.
-                foreach (var word in words.ToArray().Where(word => word.Edited))
+                foreach (var word in wordsArray.Where(word => word.Edited))
                 {
                     if (word.Id == 0)
                     {

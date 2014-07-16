@@ -231,20 +231,20 @@ function checkUsername(username) {
     var maxLength = 20;
 
     if (!username) {
-        return MessageBundle.get(dict.UsernameCannotBeEmpty);
+        return window.MessageBundle.get(dict.UsernameCannotBeEmpty);
     } else if (username.length < minLength) {
-        return MessageBundle.get(dict.UsernameMustBeLongerThan, [minLength]);
+        return window.MessageBundle.get(dict.UsernameMustBeLongerThan, [minLength]);
     } else if (username.length > maxLength) {
-        return MessageBundle.get(dict.UsernameCannotBeLongerThan, [maxLength]);
+        return window.MessageBundle.get(dict.UsernameCannotBeLongerThan, [maxLength]);
     } else if (!my.text.isLetter(username.charAt(0))) {
-        return MessageBundle.get(dict.UsernameMustStartWithLetter);
+        return window.MessageBundle.get(dict.UsernameMustStartWithLetter);
     } else if (!my.text.containLettersNumbersUnderscore(username)) {
-        return MessageBundle.get(dict.UsernameContainsIllegalChar);
+        return window.MessageBundle.get(dict.UsernameContainsIllegalChar);
     } else {
         userAlreadyExists(username);
 
         if (userExists) {
-            return MessageBundle.get(dict.UsernameAlreadyExists);
+            return window.MessageBundle.get(dict.UsernameAlreadyExists);
         } else {
             return true;
         }
@@ -276,11 +276,11 @@ function userAlreadyExists(username) {
 function checkPassword(password) {
     var minLength = 6;
     if (!password) {
-        return MessageBundle.get(dict.PasswordCannotBeEmpty);
+        return window.MessageBundle.get(dict.PasswordCannotBeEmpty);
     } else if (password.length < minLength) {
-        return MessageBundle.get(dict.PasswordTooShort, [minLength]);
+        return window.MessageBundle.get(dict.PasswordTooShort, [minLength]);
     } else if (!password.match(/^.*(?=.*\d)(?=.*[a-zA-Z]).*$/)) {
-        return MessageBundle.get(dict.IllegalPasswordFormat);
+        return window.MessageBundle.get(dict.IllegalPasswordFormat);
     } else {
         return true;
     }
@@ -288,7 +288,7 @@ function checkPassword(password) {
 
 function matchPasswords(confirmPassword) {
     if (!confirmPassword) {
-        return MessageBundle.get(dict.ConfirmPasswordCannotBeEmpty);
+        return window.MessageBundle.get(dict.ConfirmPasswordCannotBeEmpty);
     } else {
         var currentPassword = model ? model.getPassword() : null;
         return checkIfPasswordsMatch(currentPassword, confirmPassword);
@@ -300,7 +300,7 @@ function checkIfPasswordsMatch(password, confirmPassword) {
     if (pswdVerification !== true) {
         return pswdVerification;
     } else if (password !== confirmPassword) {
-        return MessageBundle.get(dict.PasswordsDontMatch);
+        return window.MessageBundle.get(dict.PasswordsDontMatch);
     } else {
         return true;
     }
@@ -311,13 +311,13 @@ function checkIfPasswordsMatch(password, confirmPassword) {
 var mailExists = false;
 function checkMail(mail) {
     if (!mail) {
-        return MessageBundle.get(dict.MailCannotBeEmpty);
+        return window.MessageBundle.get(dict.MailCannotBeEmpty);
     } else if (!my.text.isValidMail(mail)) {
-        return MessageBundle.get(dict.IllegalMailFormat);
+        return window.MessageBundle.get(dict.IllegalMailFormat);
     } else {
         mailAlreadyExists(mail);
         if (mailExists) {
-            return MessageBundle.get(dict.MailAlreadyExists);
+            return window.MessageBundle.get(dict.MailAlreadyExists);
         } else {
             return true;
         }

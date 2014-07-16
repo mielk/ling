@@ -7,18 +7,16 @@ namespace Typer.Domain.Entities
     public class TestEnquiry
     {
 
-        private Question question;
-        private Language parentLanguage;
-        private Language learnLanguage;
-        private QuestionOption selectedOption;
+        //private Question question;
+        //private Language learnLanguage;
+        //private QuestionOption selectedOption;
 
 
         public TestEnquiry(Question question, Language parent, Language learn)
         {
-            this.question = question;
-            parentLanguage = parent;
-            learnLanguage = learn;
-            selectedOption = selectOption(question.GetOptions(parentLanguage.Id));
+            //this.question = question;
+            //learnLanguage = learn;
+            //selectedOption = SelectOption(question.GetOptions(parent.Id));
 
         }
 
@@ -29,18 +27,21 @@ namespace Typer.Domain.Entities
         }
 
 
-        private QuestionOption selectOption(IEnumerable<QuestionOption> options)
+        private QuestionOption SelectOption(IEnumerable<QuestionOption> options)
         {
-            if (options.Count() == 1)
+
+            var optionsArray = options.ToArray();
+
+            if (optionsArray.Count() == 1)
             {
-                return options.Single();
+                return optionsArray.Single();
             }
 
-            var weights = options.Sum(q => q.Weight);
+            var weights = optionsArray.Sum(q => q.Weight);
             var randomWeight = new Random().Next(1, weights + 1);
             var current = 0;
 
-            foreach (var option in options)
+            foreach (var option in optionsArray)
             {
                 current += option.Weight;
                 if (randomWeight <= current)

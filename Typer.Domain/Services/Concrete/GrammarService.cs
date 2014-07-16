@@ -24,7 +24,7 @@ namespace Typer.Domain.Services
         {
 
             //Fetch data from the database as DTO objecs.
-            var definitions = repository.GetProperties(languages);
+            var definitions = repository.GetProperties(languages).ToArray();
             var options = repository.GetOptions(definitions.Select(d => d.Id).ToList());
 
             //Create a dictionary of GrammarPropertyDefinitions.
@@ -53,8 +53,8 @@ namespace Typer.Domain.Services
 
         public IEnumerable<GrammarFormGroup> GetGrammarFormsDefinitions(int[] languages)
         {
-            var groupsDto = repository.GetGrammarFormGroups(languages);
-            var formsDto = repository.GetGrammarFormDefinitions(groupsDto.Select(g => g.Id));
+            var groupsDto = repository.GetGrammarFormGroups(languages).ToArray();
+            var formsDto = repository.GetGrammarFormDefinitions(groupsDto.Select(g => g.Id)).ToArray();
             var formsIds = formsDto.Select(f => f.Id).ToList();
             var propertiesDto = repository.GetGrammarFormDefinitionsProperties(formsIds);
             var inactiveRulesDto = repository.GetGrammarFormInactiveRules(formsIds);

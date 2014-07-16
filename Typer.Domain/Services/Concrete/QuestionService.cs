@@ -163,7 +163,7 @@ namespace Typer.Domain.Services
             var languages = languageRepository.GetUserLanguages(currentUserId);
 
             //Fetch variant sets.
-            var sets = repository.GetVariantSets(questionId, languages);
+            var sets = repository.GetVariantSets(questionId, languages).ToArray();
 
             //Create map of sets.
             var map = new Dictionary<int, VariantSet>();
@@ -210,7 +210,7 @@ namespace Typer.Domain.Services
         {
 
             //Load variants.
-            var variants = repository.GetVariants(sets);
+            var variants = repository.GetVariants(sets).ToArray();
             var map = new Dictionary<int, Variant>();
             foreach (var variant in variants)
             {

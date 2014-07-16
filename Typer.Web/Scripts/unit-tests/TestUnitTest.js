@@ -11,7 +11,7 @@ test('Intentionally broken and fixed test', function () {
 module('Mockjax introduction tests');
 
 test(' Check if you can read what mockjax sends', function() {
-    expect(2);
+    window.expect(2);
 
     // Arrange
     $.mockjaxClear();

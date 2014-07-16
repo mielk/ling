@@ -1,12 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using System.Web.Script.Serialization;
-using Newtonsoft.Json.Linq;
 using Typer.Domain.Services;
 using Typer.Domain.Entities;
 using Typer.Web.Models;
-using Newtonsoft.Json;
 
 namespace Typer.Web.Controllers
 {

@@ -250,7 +250,7 @@ $(function () {
         //Funkcja zwracająca szczegóły danego zapytania.
         function getQuery(id) {
             var query = null;
-            var error = dict.GetQueryError.get([name]);
+            var error = dict.GetQueryError.get([id]);
 
             mielk.db.fetch(controllerName, 'GetQuestionDetails', {
                 'id': id,

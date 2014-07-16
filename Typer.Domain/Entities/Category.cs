@@ -32,9 +32,9 @@ namespace Typer.Domain.Entities
             ((List<Category>)Children).Remove(child);
         }
 
-        public void SetParent(Category parent)
+        public void SetParent(Category parentalCategory)
         {
-            this.parent = parent;
+            parent = parentalCategory;
         }
 
         public string FullPath()

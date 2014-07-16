@@ -58,6 +58,7 @@ namespace Typer.Tests.UnitTests.Controllers
             Func<int, string> pageUrlDelegate = i => "Page" + i;
 
             // Act
+            // ReSharper disable once ExpressionIsAlwaysNull
             var result = myHelper.PageLinks(pagingInfo, pageUrlDelegate);
 
             // Assert

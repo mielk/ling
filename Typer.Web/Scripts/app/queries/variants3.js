@@ -2547,13 +2547,13 @@ function VariantSetEditPanel(set) {
         }
 
         function validate(value) {
-            if (!value || value.trim().length === 0) return MessageBundle.get(dict.NameCannotBeEmpty);
+            if (!value || value.trim().length === 0) return window.MessageBundle.get(dict.NameCannotBeEmpty);
 
             var sets = self.set.language.variantSets;
             for (var i = 0; i < sets.length; i++) {
                 var $set = sets[i];
                 if ($set.tag === value && $set !== set) {
-                    return MessageBundle.get(dict.NameAlreadyExists);
+                    return window.MessageBundle.get(dict.NameAlreadyExists);
                 }
             }
 

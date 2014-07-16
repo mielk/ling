@@ -137,15 +137,15 @@ var mailVerified = false;
 function checkMail(mail, isPasswordReset) {
 
     if (!mail) {
-        return MessageBundle.get(dict.MailCannotBeEmpty);
+        return window.MessageBundle.get(dict.MailCannotBeEmpty);
     } else if (!my.text.isValidMail(mail)) {
-        return MessageBundle.get(dict.IllegalMailFormat);
+        return window.MessageBundle.get(dict.IllegalMailFormat);
     } else {
         mailAlreadyExists(mail);
         if (mailExists === true) {
-            return (isPasswordReset || mailVerified !== true ? true : MessageBundle.get(dict.MailAlreadyActivated));
+            return (isPasswordReset || mailVerified !== true ? true : window.MessageBundle.get(dict.MailAlreadyActivated));
         } else {
-            return MessageBundle.get(dict.MailDoesntExists);
+            return window.MessageBundle.get(dict.MailDoesntExists);
         }
     }
     
