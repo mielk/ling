@@ -70,10 +70,18 @@ function VariantSetsPanel(query) {
             }
         });
 
+        function clear() {
+            blocks.clear();
+            $(container).children().each(function () {
+                if (!$(this).hasClass('variant-button-edit')) {
+                    $(this).remove();
+                }
+            });
+        }
+
         function displayVariantSets() {
             //Usuwa wcześniejsze bloki z panelu.
-            blocks.clear();
-            $(container).empty();
+            clear();
             
             //Wstawia wszystkie bloki od nowa.
             self.query.sets.each(function (key, set) {

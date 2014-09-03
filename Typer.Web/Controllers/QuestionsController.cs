@@ -74,22 +74,22 @@ namespace Typer.Web.Controllers
         }
 
 
-        [HttpPost]
+        [HttpGet]
         [AllowAnonymous]
         public ActionResult UpdateWeight(int id, int weight)
         {
             var result = service.ChangeWeight(id, weight);
-            return Json(result);
+            return Json(result, JsonRequestBehavior.AllowGet);
             //return Request.UrlReferrer != null ? Redirect(Request.UrlReferrer.ToString()) : null;
         }
 
 
-        [HttpPost]
+        [HttpGet]
         [AllowAnonymous]
         public ActionResult UpdateCategories(int[] categories, int id)
         {
             var result = service.UpdateCategories(id, categories);
-            return Json(result);
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
 
@@ -106,7 +106,7 @@ namespace Typer.Web.Controllers
 
 
 
-        [HttpPost]
+        [HttpGet]
         [AllowAnonymous]
         public ActionResult Deactivate(int id)
         {
@@ -116,7 +116,7 @@ namespace Typer.Web.Controllers
         }
 
 
-        [HttpPost]
+        [HttpGet]
         [AllowAnonymous]
         public ActionResult Activate(int id)
         {

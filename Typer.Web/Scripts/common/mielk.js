@@ -110,7 +110,6 @@
                     clone.setItem(key, cloned);
                 }
             }
-
             return clone;
 
         };

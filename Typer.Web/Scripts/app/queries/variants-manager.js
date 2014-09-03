@@ -126,6 +126,7 @@ VariantsManager.prototype = {
             type: 'confirm',
             query: self.query
         });
+        self.ui.destroy();
     },
 
     cancel: function () {
@@ -260,20 +261,13 @@ VariantSetsGroup.prototype = {
 
             separate: function () {
                 
+                alert('separate');
+
                 //Jeżeli ta grupa została usunięta, poniższe eventy nie powinny już być wywoływane.
                 if (self.destroyed) return;
                 
                 self.trigger({ type: 'setSeparated', set: set, group: self });
                 self.removeSet(set);
-            },
-            
-            move: function (e) {
-                
-                //Jeżeli ta grupa została usunięta, poniższe eventy nie powinny już być wywoływane.
-                if (self.destroyed) return;
-                
-                self.removeSet(set);
-                e.group.addSet(set);
             }
             
         });
@@ -285,7 +279,7 @@ VariantSetsGroup.prototype = {
         this.trigger({ type: 'addSet', set: set });
     },
 
-    removeSet: function(set) {
+    removeSet: function (set) {
         this.sets.removeItem(set.id);
         this.removeEmptyVariants(set);
         this.trigger({ type: 'setRemoved', set: set });
@@ -412,6 +406,8 @@ function VariantSetGroupPanel(params) {
 
     self.panel = params.panel;
     self.group = params.group;
+    self.id = self.group.id;
+    self.eventHandler = mielk.eventHandler();
 
     self.blocks = mielk.hashTable();
     self.active = false;
@@ -516,9 +512,18 @@ function VariantSetGroupPanel(params) {
 }
 VariantSetGroupPanel.prototype = {    
     
+    bind: function(e){
+        this.eventHandler.bind(e);
+    },
+
+    trigger: function(e){
+        this.eventHandler.trigger(e);
+    },
+
     destroy: function() {
         this.ui.destroy();
         this.destroyed = true;
+        this.trigger({ type: 'destroy' });
     },
 
     bindBlocksEvents: function(events, uiEvents) {
@@ -544,7 +549,7 @@ VariantSetGroupPanel.prototype = {
     
     addBlock: function (set, movable) {
         var self = this;
-        var block = new VariantSetBlock(set, { movable: movable === undefined ? true: movable, panel: self.ui.view });
+        var block = new VariantSetBlock(set, { movable: movable === undefined ? true: movable, panel: self.ui.view, group: self.group });
         block.bind({
             //release: function() {
             //    self.group.trigger({ type: 'blockReleased', block: block });
@@ -588,113 +593,6 @@ VariantSetGroupPanel.prototype = {
     }
     
 };
-
-
-//        function addBlock(block) {
-//            $blocks.setItem(block.id, block);
-//            block.setGroup($self);
-
-//            $blocks.each(function (key, value) {
-//                if (value != block) {
-//                    value.set.addConnection(block.set);
-//                    block.set.addConnection(value.set);
-//                }
-//            });
-
-//            block.rerender();
-//            block.view().appendTo(container);
-//        }
-
-
-
-
-
-
-
-//    var connectionGroup = function (group) {
-//        var $self = null;
-//        var $index = group.id;
-//        var $blocks = new HashTable(null);
-//        var $active = false;
-//        var $group = group;
-
-
-
-
-//        function removeBlock(block) {
-//            $blocks.removeItem(block.id);
-//            $group.sets.removeItem(block.id);
-
-//            if ($blocks.size() === 0) {
-//                destroy();
-//            }
-
-//            //trigger events for each set in this group.
-//            $blocks.each(function (key, value) {
-//                if (value !== block) {
-//                    triggerRemoveConnectionEvent(value.set, block.set);
-//                    triggerRemoveConnectionEvent(block.set, value.set);
-//                }
-//            });
-
-//            function triggerRemoveConnectionEvent(base, removed) {
-//                if (base.VariantSet) {
-//                    base.removeConnection(removed);
-//                    base.trigger({
-//                        type: 'removeConnection',
-//                        set: removed
-//                    });
-//                }
-//            }
-
-//        }
-
-//        return {
-//            selfinject: function (me) {
-//                $self = me;
-//            },
-//            id: $index,
-//            group: $group,
-//            createBlocks: createBlocks,
-//            addBlock: addBlock,
-//            removeBlock: removeBlock,
-//            activate: function () {
-//                self.activeGroup = $self;
-//                $active = true;
-//                refresh();
-//            },
-//            deactivate: function () {
-//                if (self.activeGroup === $self) {
-//                    self.activeGroup = null;
-//                    $active = false;
-//                    refresh();
-//                }
-//            },
-//            isHovered: function (x, y) {
-//                return isHovered(x, y);
-//            },
-//            only: function (block) {
-//                return ($blocks.size() === 1 && $blocks.hasItem(block.id));
-//            }
-//        };
-
-//    };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -891,6 +789,12 @@ mielk.objects.addProperties(VariantConnectionsManager.prototype, {
             },
             blockDeactivated: function () {
                 self.reset();
+            }
+        });
+
+        groupPanel.bind({
+            destroy: function () {
+                self.groupPanels.removeItem(groupPanel.id);
             }
         });
 

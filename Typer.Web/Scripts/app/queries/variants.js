@@ -65,14 +65,13 @@ VariantSet.prototype = {
 
     clone: function () {
         var self = this;
-
         //Create a copy instance of Query with all primitive
         //properties given as initialize parameters.
         var obj = new VariantSet(self.query, {
               Id: self.id
             , VariantTag: self.tag
-            , WordType: self.wordtype.id
-            , LanguageId: self.language.id
+            , WordType: self.wordtype ? self.wordtype.id : 0
+            , LanguageId: self.language ? self.language.id : 0
             , GrammarFormId: self.grammarFormId
             , IsActive: self.isActive
             , CreatorId: self.creatorId
@@ -82,7 +81,6 @@ VariantSet.prototype = {
             , Negative: self.negative
             , IsNew: self.isNew
         });
-
         //Complex properties are set directly.
         obj.cloned = true;
         obj.variants = self.variants.clone(true);
@@ -165,19 +163,24 @@ VariantSet.prototype = {
         });
     },
 
-    move: function (group) {
+    move: function (oldGroup, newGroup) {
         var self = this;
         
         //Usuwa poprzednie powiązania.
         self.clearConnections();
         
-        //Wiąże ten set z każdym setem z podanej grupy.
-        group.sets.each(function(key, set) {
-            self.addRelated(set);
-            set.addRelated(self);
-        });
-
-        self.trigger({ type: 'move', group: group });
+        //Usuwa ten set z poprzedniej grupy.
+        if (oldGroup) oldGroup.removeSet(self);
+        
+        if (newGroup) {
+            //Wiąże ten set z każdym setem z podanej grupy.
+            newGroup.sets.each(function (key, set) {
+                self.addRelated(set);
+                set.addRelated(self);
+            });
+            //Dodaje ten set do nowej grupy.
+            if (newGroup) newGroup.addSet(self);
+        }
 
     }
 
@@ -195,6 +198,7 @@ function VariantSetBlock(set, params) {
 
     self.set = set;
     self.panel = params.panel;
+    self.group = params.group;
     self.eventHandler = mielk.eventHandler();
     self.isActive = false;
     self.isMovable = params.movable || false;
@@ -491,8 +495,9 @@ VariantSetBlock.prototype = {
         return this.set.isAlone();
     },
 
-    move: function (group) {
-        this.set.move(group);
+    move: function (newGroup) {
+        this.set.move(this.group, newGroup);
+        this.group = newGroup;
     }
 
 };

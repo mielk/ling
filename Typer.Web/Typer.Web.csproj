@@ -200,7 +200,7 @@
     <Content Include="Content\images\icon_valid2.png" />
     <Content Include="Content\images\last_node.png" />
     <Content Include="Content\images\line.png" />
-    <Content Include="Content\tests\node.png" />
+    <Content Include="Content\images\node.png" />
     <Content Include="Content\images\red.png" />
     <Content Include="Content\images\select2-spinner.gif" />
     <Content Include="Content\images\select2.png" />
@@ -353,7 +353,7 @@
     <Content Include="Scripts\unit-tests\qunit-1.12.0.js" />
     <Content Include="Scripts\unit-tests\tests.html" />
     <Content Include="Scripts\unit-tests\TestUnitTest.js" />
-    <Content Include="Scripts\unit-tests\VariantsManager.tests.js" />
+    <Content Include="Scripts\unit-tests\variants-manager.tests.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

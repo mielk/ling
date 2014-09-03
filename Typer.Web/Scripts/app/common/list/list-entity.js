@@ -1,5 +1,4 @@
-﻿
-function Entity(properties) {
+﻿function Entity(properties) {
 
     'use strict';
 
