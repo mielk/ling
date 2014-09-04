@@ -261,8 +261,6 @@ VariantSetsGroup.prototype = {
 
             separate: function () {
                 
-                alert('separate');
-
                 //Jeżeli ta grupa została usunięta, poniższe eventy nie powinny już być wywoływane.
                 if (self.destroyed) return;
                 
@@ -868,336 +866,320 @@ mielk.objects.addProperties(VariantConnectionsManager.prototype, {
 });
 
 
-//function VariantConnectionsManager(parent) {
-//    
-//    this.VariantConnectionsManager = true;
-//    var self = this;
-//    self.panel = self.ui.content;
-//    self.groups = new HashTable(null);      //connection groups
-//    self.activeBlock = null;
-//    self.activeGroup = null;
-
-
-//    $(self.panel).bind({
-//        mousemove: function (e) {
-
-//            if (!self.activeBlock) return;
-
-//            var x = e.pageX;
-//            var y = e.pageY;
-
-//            self.activeBlock.move(x, y);
-
-//            if (self.activeGroup) {
-//                if (self.activeGroup.isHovered(x, y) === false) {
-//                    self.activeGroup.deactivate();
-//                    self.activeBlock.overEmpty();
-//                }
-//            } else {
-//                var active = false;
-//                self.groups.each(function (key, value) {
-//                    if (!active) {
-//                        active = value.isHovered(x, y);
-//                        if (active) {
-//                            value.activate();
-//                            self.activeBlock.overGroup();
-//                        }
-//                    }
-//                });
-//            }
-
-//        }
-//    });
-
-//    $(document).bind({
-//        mouseup: function () {
-//            if (self.activeBlock) {
-//                self.activeBlock.release();
-//            }
-
-//            if (self.activeGroup) {
-//                self.activeGroup.deactivate();
-//            }
-
-//        }
-//    });
-
-
-//    var setBlock = function (set) {
-//        var $group = null;
-//        var $self = null;
-//        var $set = set;
-//        var $active = false;
-//        var mover = null;
-
-//        var ui = (function () {
-
-//            var container;
-//            var flag;
-//            var name;
-
-//            function render() {
-
-//                if (container) {
-//                    $(container).remove();
-//                }
-
-//                container = jQuery('<div/>', {
-//                    'class': 'variant-set-block'
-//                });
-
-//                container.bind({
-//                    mousedown: function (e) {
-//                        $active = true;
-//                        self.activeBlock = $self;
-//                        refresh(e);
-//                    }
-//                });
-
-//                flag = jQuery('<div/>', {
-//                    'class': 'unselectable flag ' + set.language.language.flag + '-small'
-//                }).appendTo(container);
-
-//                name = jQuery('<div/>', {
-//                    'class': 'unselectable name',
-//                    html: set.updated.tag
-//                }).appendTo(container);
-
-//                set.bind({
-//                    rename: function (e) {
-//                        $(name).html(e.name);
-//                    }
-//                });
-
-//            }
-
-//            function refresh(e) {
-
-//                $(container).css({
-//                    'visibility': ($active ? 'hidden' : 'visible')
-//                });
-
-//                if ($active) {
-//                    var blockOffset = $(container).offset();
-//                    var panelOffset = $(self.panel).offset();
-//                    var offset = {
-//                        left: blockOffset.left - panelOffset.left,
-//                        top: blockOffset.top - panelOffset.top
-//                    };
-//                    mover = shadow({
-//                        x: e.pageX,
-//                        y: e.pageY,
-//                        left: offset.left,
-//                        top: offset.top
-//                    });
-//                } else {
-//                    mover.destroy();
-//                    mover = null;
-//                }
-
-//            }
-
-//            return {
-//                container: function () {
-//                    return container;
-//                },
-//                deactivate: function () {
-//                    $active = false;
-//                    if (self.activeBlock === $self) self.activeBlock = null;
-//                    refresh();
-//                },
-//                render: render,
-//                destroy: function () {
-//                    $(container).remove();
-//                }
-//            };
-
-//        })();
-
-//        var shadow = function (position) {
-//            var $x = position.x;
-//            var $y = position.y;
-//            var $top = position.top;
-//            var $left = position.left;
-
-//            var container = jQuery('<div/>', {
-//                'class': 'variant-set-block variant-block-mover'
-//            }).css({
-//                'top': $top + 'px',
-//                'left': $left + 'px'
-//            }).appendTo(self.panel);
-
-//            var content = jQuery('<div/>').
-//                css({
-//                    'position': 'relative',
-//                    'width': '100%',
-//                    'height': '100%'
-//                }).appendTo(container);
-
-//            // ReSharper disable once UnusedLocals
-//            var flag = jQuery('<div/>', {
-//                'class': 'flag ' + set.language.language.flag + '-small'
-//            }).appendTo(content);
-
-//            // ReSharper disable once UnusedLocals
-//            var name = jQuery('<div/>', {
-//                'class': 'name',
-//                html: set.updated.tag
-//            }).appendTo(content);
-
-//            var cancel = jQuery('<div/>', {
-//                'class': 'variant-set-block-cancel'
-//            }).appendTo(content);
-
-//            return {
-//                container: container,
-//                destroy: function () {
-//                    $(container).remove();
-//                },
-//                move: function (x, y) {
-//                    var left = $left + (x - $x);
-//                    var top = $top + (y - $y);
-//                    $(container).css({
-//                        'top': top + 'px',
-//                        'left': left + 'px'
-//                    });
-//                },
-//                overEmpty: function () {
-//                    $(cancel).css({
-//                        'visibility': 'visible'
-//                    });
-//                },
-//                overGroup: function () {
-//                    $(cancel).css({
-//                        'visibility': 'hidden'
-//                    });
-//                }
-//            };
-//        };
-
-//        function release() {
-
-//            //self.parent.connectionsChanged = true;
-
-//            if (!self.activeGroup) {
-//                if ($group.only($self)) {
-//                    ui.deactivate();
-//                } else {
-//                    separate();
-//                }
-//            } else if (self.activeGroup === $group) {
-//                ui.deactivate();
-//            } else {
-//                moveToOtherGroup(self.activeGroup);
-//            }
-//        }
-
-//        function separate() {
-//            var previousGroup = $group;
-//            previousGroup.removeBlock($self);
-//            ui.deactivate();
-
-//            previousGroup.group.trigger({
-//                type: 'remove',
-//                set: $set
-//            });
-
-//            self.parent.newGroup(set);
-
-//            ui.destroy();
-
-//        }
-
-//        function moveToOtherGroup(group) {
-//            var previousGroup = $group;
-//            previousGroup.removeBlock($self);
-//            $group = group;
-//            $group.addBlock($self);
-//            ui.deactivate();
-
-//            previousGroup.group.trigger({
-//                type: 'remove',
-//                set: $set
-//            });
-
-//            $group.group.trigger({
-//                type: 'add',
-//                set: $set
-//            });
-
-//        }
-
-//        return {
-//            selfinject: function (me) {
-//                $self = me;
-//            },
-//            set: $set,
-//            setGroup: function (group) {
-//                $group = group;
-//            },
-//            rerender: function () {
-//                ui.render();
-//            },
-//            id: $set.id,
-//            view: function () {
-//                return ui.container();
-//            },
-//            move: function (x, y) {
-//                mover.move(x, y);
-//            },
-//            release: release,
-//            overEmpty: function () {
-//                if (mover) mover.overEmpty();
-//            },
-//            overGroup: function () {
-//                if (mover) mover.overGroup();
-//            }
-//        };
-
-//    };
-
-
-//    // ReSharper disable once UnusedLocals
-//    var events = (function () {
-//        self.parent.bind({
-//            newGroup: function (e) {
-//                createNewGroup(e.group);
-//            }
-//        });
-//    })();
-
-//    var createNewGroup = function (group) {
-//        var $group = connectionGroup(group);
-//        $group.selfinject($group);
-//        $group.createBlocks();
-//        self.groups.setItem($group.id, $group);
-//    };
-
-//    function initialize() {
-//        self.parent.groups.each(function (key, value) {
-//            createNewGroup(value);
-//        });
-//    }
-
-//    initialize();
-
-//}
-//
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+function VariantSetBlock(set, params) {
+
+    'use strict';
+
+    var self = this;
+    self.VariantSetBlock = true;
+
+    self.set = set;
+    self.panel = params.panel;
+    self.group = params.group;
+    self.eventHandler = mielk.eventHandler();
+    self.isActive = false;
+    self.isMovable = params.movable || false;
+    self.isRemovable = false;
+
+    self.ui = (function () {
+        var container;
+        var flag;
+        var tag;
+        var mover;
+
+        function render() {
+            container = jQuery('<div/>', {
+                'class': 'unselectable variant-set-block'
+            }).appendTo(self.panel);
+
+            flag = jQuery('<div/>', {
+                'class': 'unselectable flag ' + self.set.language.flag + '-small'
+            });
+            flag.appendTo(container);
+
+            tag = jQuery('<div/>', {
+                'class': 'unselectable name',
+                html: self.set.tag
+            });
+            tag.appendTo(container);
+
+        }
+
+        function events() {
+            //Set events.
+            self.set.bind({
+                rename: function (e) {
+                    $(tag).html(e.name);
+                }
+            });
+
+            //This events.
+            self.bind({
+                activate: function (e) {
+                    activate(e.value, e.x, e.y);
+                }
+            });
+
+            //Controls events.
+            $(container).bind({
+                mousedown: function (e) {
+                    var value = !self.isActive;
+                    self.activate(value, e.pageX, e.pageY);
+                }
+            });
+
+            //if (self.isMovable) {
+            //    $(document).bind({
+            //        mousemove: function (e) {
+            //            handleMove(e.pageX, e.pageY);
+            //        }
+            //    });
+            //}
+
+        }
+
+        function activate(value, x, y) {
+            if (self.isMovable) {
+                activateMover(value, x, y);
+            } else {
+                activatePanel(value);
+            }
+        }
+
+        function activateMover(value, x, y) {
+            $(container).css({
+                'visibility': (value ? 'hidden' : 'visible')
+            });
+
+            if (value) {
+                mover = createMover(x, y);
+            } else {
+                destroyMover();
+            }
+        }
+
+        function activatePanel(value) {
+            var activeClassName = 'active-variant-set-block';
+            if (value) {
+                $(container).addClass(activeClassName);
+            } else {
+                $(container).removeClass(activeClassName);
+            }
+        }
+
+        function createMover(x, y) {
+            var blockOffset = $(container).offset();
+            var panelOffset = $(self.panel).offset();
+
+            return shadow({
+                x: x,
+                y: y,
+                left: blockOffset.left - panelOffset.left,
+                top: blockOffset.top - panelOffset.top
+            });
+
+        }
+
+        function destroyMover() {
+            if (mover) mielk.fn.run(mover.destroy);
+            mover = null;
+        }
+
+        function bind(e) {
+            $(container).bind(e);
+        }
+
+        function trigger(e) {
+            $(container).trigger(e);
+        }
+
+        function bindEvents(bindings) {
+            if (bindings && bindings.HashTable) {
+                var $events = {};
+                bindings.each(function (key, binding) {
+                    $events[key] = binding;
+                });
+                bind($events);
+            }
+        }
+
+        function destroy() {
+            destroyMover();
+            $(container).remove();
+        }
+
+        function handleMove(x, y) {
+            if (self.isActive && mover) {
+                mover.move(x, y);
+            }
+        }
+
+        function shadow(position) {
+            var clickX = position.x;
+            var clickY = position.y;
+            var divTop = position.top;
+            var divLeft = position.left;
+
+            var shadowContainer;
+            var shadowContent;
+            var shadowFlag;
+            var shadowName;
+            var shadowCancel;
+
+
+            function renderShadow() {
+                shadowContainer = jQuery('<div/>', {
+                    'class': 'unselectable variant-set-block variant-block-mover'
+                }).css({
+                    'top': divTop + 'px',
+                    'left': divLeft + 'px'
+                }).appendTo(self.panel);
+
+                shadowContent = jQuery('<div/>', {
+                    'class': 'relative full-size'
+                });
+                shadowContent.appendTo(shadowContainer);
+
+                shadowFlag = jQuery('<div/>', {
+                    'class': 'flag ' + set.language.flag + '-small'
+                });
+                shadowFlag.appendTo(shadowContent);
+
+                shadowName = jQuery('<div/>', {
+                    'class': 'name',
+                    html: self.set.tag
+                });
+                shadowName.appendTo(shadowContent);
+
+                shadowCancel = jQuery('<div/>', {
+                    'class': 'variant-set-block-cancel'
+                });
+                shadowCancel.appendTo(shadowContent);
+
+            }
+
+            function shadowEvents() {
+                self.bind({
+                    removableStatusChanged: function () {
+                        refreshStatus();
+                    }
+                });
+            }
+
+            function destroyShadow() {
+                $(shadowContainer).remove();
+            }
+
+            function move(x, y) {
+                var left = divLeft + (x - clickX);
+                var top = divTop + (y - clickY);
+                $(shadowContainer).css({
+                    'top': top + 'px',
+                    'left': left + 'px'
+                });
+            }
+
+            function refreshStatus() {
+                $(shadowCancel).css({
+                    'visibility': (self.isRemovable ? 'visible' : 'hidden')
+                });
+            }
+
+
+            (function initialize() {
+                renderShadow();
+                shadowEvents();
+            })();
+
+            return {
+                view: shadowContainer
+                , destroy: destroyShadow
+                , move: move
+                , refreshStatus: refreshStatus
+            };
+
+        }
+
+        (function initialize() {
+            render();
+            events();
+        })();
+
+        return {
+            view: container
+            , bind: bind
+            , trigger: trigger
+            , set: set
+            , bindEvents: bindEvents
+            , destroy: destroy
+            , handleMove: handleMove
+        };
+
+    })();
+
+}
+VariantSetBlock.prototype = {
+
+    bind: function (e) {
+        this.eventHandler.bind(e);
+    },
+
+    trigger: function (e) {
+        this.eventHandler.trigger(e);
+    },
+
+    activate: function (value, x, y) {
+        this.isActive = (value === undefined ? !this.isActive : value);
+        this.trigger({
+            type: 'activate',
+            value: this.isActive,
+            x: x,
+            y: y
+        });
+    },
+
+    bindEvents: function (events) {
+        this.ui.bindEvents(events);
+    },
+
+    view: function () {
+        return this.ui.view;
+    },
+
+    setAsRemovable: function (value) {
+        this.isRemovable = value;
+        this.trigger({ type: 'removableStatusChanged' });
+    },
+
+    handleMove: function (x, y) {
+        var self = this;
+        if (self.isMovable) {
+            self.ui.handleMove(x, y);
+        }
+
+    },
+
+    separate: function () {
+        this.set.separate();
+    },
+
+    destroy: function () {
+        this.ui.destroy();
+        this.activate(false);
+    },
+
+    isAlone: function () {
+        return this.set.isAlone();
+    },
+
+    move: function (newGroup) {
+        this.set.move(this.group, newGroup);
+        this.group = newGroup;
+    }
+
+};
 
 
 

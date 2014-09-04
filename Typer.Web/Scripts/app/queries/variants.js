@@ -98,6 +98,9 @@ VariantSet.prototype = {
 
     },
 
+    //Odświeża [query], przypisane do tego VariantSetu. Wykorzystywane
+    //przy tworzeniu kopii tego obiektu. W przeciwnym razie kopia odnosi
+    //się do oryginalnego query.
     refreshQuery: function (query) {
         var self = this;
 
@@ -136,7 +139,7 @@ VariantSet.prototype = {
     rename: function(name) {
         this.tag = name;
         this.trigger({
-            type: 'name',
+            type: 'rename',
             name: name
         });
     },
@@ -146,23 +149,70 @@ VariantSet.prototype = {
         this.trigger({ type: 'separate' });
     },
 
-    removeConnection: function (connected) {
-        var connectedId = $.isNumeric(connected) ? Number(connected) : connected.id;
-        this.related.removeItem(connectedId);
+    /*  Function:       removeConnection
+     *  Description:    Funkcja usuwająca podany VS z kolekcji powiązań tego wariant seta.
+     *                  Funkcja dokonuje również usunięcia krzyżowego, tj. ten wariant set,
+     *                  zostaje usunięty z powiązań VS podanego jako argument, poprzez
+     *                  wywołanie tej samej funkcji z odwrotnymi parametrami.
+     *  Parameters:
+     *      set         Wariant set lub ID wariant seta, który ma zostać usunięty.
+     */
+    removeConnection: function (set) {
+        var self = this;
+        var id = $.isNumeric(set) ? Number(set) : set.id;
+        var connected = this.related.getItem(id);
+
+        //Usuń podany item z kolekcji wariant-setów powiązanych z tym VS.
+        this.related.removeItem(id);
+
+        //Krzyżowe usunięcie tego VS z kolekcji wariant-setów podanego itemu.
+        //Żeby uniknąć nieskończonej pętli, funkcja najpierw sprawdza czy podany item,
+        //posiada wśród swoich powiązań ten VS.
+        if (connected.isConnected(self.id)) {
+            connected.removeConnection(self);
+        }
+
     },
 
+
+    /*  Function:       isConnected
+     *  Description:    Funkcja sprawdza czy ten VS ma powiązanie z podanym variant setem.
+     *  Parameters:
+     *      set         Wariant set lub ID wariant seta, dla którego funkcja sprawdza powiązanie
+     *                  z tym wariant setem.
+     *
+     *  Returns:        True - jeżeli podany VS jest powiązany z tym wariant setem,
+     *                  False - jeżeli podany VS nie jest powiązany z tym wariant setem. */
+    isConnected: function(set){
+        var id = $.isNumeric(set) ? Number(set) : connected.id;
+        return this.related.hasItem(id);
+    },
+
+
+    /*  Function:       isAlone
+     *  Description:    Funkcja sprawdza czy ten wariant set ma jakieś powiązania.
+     *  Returns:        True - jeżeli ten VS nie jest powiązany z żadnym innym,
+     *                  False - jeżeli ten VS jest powiązany z jakimkolwiek innym wariant setem. */
     isAlone: function () {
         return this.related.size() === 0;
     },
     
+
+    /*  Function:       clearConnections
+     *  Description:    Funkcja usuwająca wszystkie powiązania przypisane do tego VS (wraz
+     *                  z usunięciami krzyżowymi).
+     */
     clearConnections: function () {
         var self = this;
         self.related.each(function (key, value) {
             self.removeConnection(key);
-            value.removeConnection(self.id);
         });
     },
 
+    /*  Function:       move
+     *  Description:    Funkcja przenosząca usuwająca wszystkie powiązania przypisane do tego VS (wraz
+     *                  z usunięciami krzyżowymi).
+     */
     move: function (oldGroup, newGroup) {
         var self = this;
         
@@ -182,322 +232,6 @@ VariantSet.prototype = {
             if (newGroup) newGroup.addSet(self);
         }
 
-    }
-
-};
-
-
-
-
-function VariantSetBlock(set, params) {
-
-    'use strict';
-
-    var self = this;
-    self.VariantSetBlock = true;
-
-    self.set = set;
-    self.panel = params.panel;
-    self.group = params.group;
-    self.eventHandler = mielk.eventHandler();
-    self.isActive = false;
-    self.isMovable = params.movable || false;
-    self.isRemovable = false;
-
-    self.ui = (function() {
-        var container;
-        var flag;
-        var tag;
-        var mover;
-
-        function render() {
-            container = jQuery('<div/>', {
-                'class': 'unselectable variant-set-block'
-            }).appendTo(self.panel);
-
-            flag = jQuery('<div/>', {
-                'class': 'unselectable flag ' + self.set.language.flag + '-small'
-            });
-            flag.appendTo(container);
-
-            tag = jQuery('<div/>', {
-                'class': 'unselectable name',
-                html: self.set.tag
-            });
-            tag.appendTo(container);
-
-        }
-
-        function events() {
-            //Set events.
-            self.set.bind({
-                rename: function (e) {
-                    $(tag).html(e.name);
-                }
-            });
-            
-            //This events.
-            self.bind({                
-                activate: function (e) {
-                    activate(e.value, e.x, e.y);
-                }
-            });
-            
-            //Controls events.
-            $(container).bind({                
-                mousedown: function (e) {
-                    var value = !self.isActive;
-                    self.activate(value, e.pageX, e.pageY);
-                }
-            });
-
-            //if (self.isMovable) {
-            //    $(document).bind({
-            //        mousemove: function (e) {
-            //            handleMove(e.pageX, e.pageY);
-            //        }
-            //    });
-            //}
-
-        }
-
-        function activate(value, x, y) {
-            if (self.isMovable) {
-                activateMover(value, x, y);
-            } else {
-                activatePanel(value);
-            }
-        }
-        
-        function activateMover(value, x, y) {
-            $(container).css({
-                'visibility': (value ? 'hidden' : 'visible')
-            });
-
-            if (value) {
-                mover = createMover(x, y);
-            } else {
-                destroyMover();
-            }
-        }
-        
-        function activatePanel(value) {
-            var activeClassName = 'active-variant-set-block';
-            if (value) {
-                $(container).addClass(activeClassName);
-            } else {
-                $(container).removeClass(activeClassName);
-            }
-        }
-
-        function createMover(x, y) {
-            var blockOffset = $(container).offset();
-            var panelOffset = $(self.panel).offset();
-
-            return shadow({
-                x: x,
-                y: y,
-                left: blockOffset.left - panelOffset.left,
-                top: blockOffset.top - panelOffset.top
-            });
-
-        }
-        
-        function destroyMover() {
-            if (mover) mielk.fn.run(mover.destroy);
-            mover = null;
-        }
-
-        function bind(e) {
-            $(container).bind(e);
-        }
-
-        function trigger(e) {
-            $(container).trigger(e);
-        }
-
-        function bindEvents(bindings) {
-            if (bindings && bindings.HashTable) {
-                var $events = {};
-                bindings.each(function (key, binding) {
-                    $events[key] = binding;
-                });
-                bind($events);
-            }
-        }
-        
-        function destroy() {
-            destroyMover();
-            $(container).remove();
-        }
-        
-        function handleMove(x, y) {
-            if (self.isActive && mover) {
-                mover.move(x, y);
-            }
-        }
-
-        function shadow(position) {
-            var clickX = position.x;
-            var clickY = position.y;
-            var divTop = position.top;
-            var divLeft = position.left;
-
-            var shadowContainer;
-            var shadowContent;
-            var shadowFlag;
-            var shadowName;
-            var shadowCancel;
-
-
-            function renderShadow() {
-                shadowContainer = jQuery('<div/>', {
-                    'class': 'unselectable variant-set-block variant-block-mover'
-                }).css({
-                    'top': divTop + 'px',
-                    'left': divLeft + 'px'
-                }).appendTo(self.panel);
-
-                shadowContent = jQuery('<div/>', {
-                    'class': 'relative full-size'
-                });
-                shadowContent.appendTo(shadowContainer);
-
-                shadowFlag = jQuery('<div/>', {
-                    'class': 'flag ' + set.language.flag + '-small'
-                });
-                shadowFlag.appendTo(shadowContent);
-
-                shadowName = jQuery('<div/>', {
-                    'class': 'name',
-                    html: self.set.tag
-                });
-                shadowName.appendTo(shadowContent);
-
-                shadowCancel = jQuery('<div/>', {
-                    'class': 'variant-set-block-cancel'
-                });
-                shadowCancel.appendTo(shadowContent);
-
-            }
-
-            function shadowEvents() {
-                self.bind({
-                    removableStatusChanged: function() {
-                        refreshStatus();
-                    }
-                });
-            }
-
-            function destroyShadow() {
-                $(shadowContainer).remove();
-            }
-            
-            function move(x, y) {
-                var left = divLeft + (x - clickX);
-                var top = divTop + (y - clickY);
-                $(shadowContainer).css({
-                    'top': top + 'px',
-                    'left': left + 'px'
-                });
-            }
-            
-            function refreshStatus() {
-                $(shadowCancel).css({
-                    'visibility': (self.isRemovable ? 'visible' : 'hidden')
-                });
-            }
-
-
-            (function initialize() {
-                renderShadow();
-                shadowEvents();
-            })();
-
-            return {                
-                 view: shadowContainer
-                ,destroy: destroyShadow
-                ,move: move
-                ,refreshStatus: refreshStatus
-            };
-
-        }
-
-        (function initialize() {
-            render();
-            events();
-        })();
-
-        return {
-              view: container
-            , bind: bind
-            , trigger: trigger
-            , set: set
-            , bindEvents: bindEvents
-            , destroy: destroy
-            , handleMove: handleMove
-        };
-
-    })();
-
-}
-VariantSetBlock.prototype = {    
-    
-    bind: function(e) {
-        this.eventHandler.bind(e);
-    },
-    
-    trigger: function(e) {
-        this.eventHandler.trigger(e);
-    },
-    
-    activate: function (value, x, y) {
-        this.isActive = (value === undefined ? !this.isActive : value);
-        this.trigger({
-            type: 'activate',
-            value: this.isActive,
-            x: x,
-            y: y
-        });
-    },
-    
-    bindEvents: function(events) {
-        this.ui.bindEvents(events);
-    },
-    
-    view: function() {
-        return this.ui.view;
-    },
-    
-    setAsRemovable: function(value) {
-        this.isRemovable = value;
-        this.trigger({ type: 'removableStatusChanged' });
-    },
-    
-    handleMove: function (x, y) {
-        var self = this;
-        if (self.isMovable) {
-            self.ui.handleMove(x, y);
-        }
-        
-    },
-
-    separate: function () {
-        this.set.separate();
-    },
-
-    destroy: function () {
-        this.ui.destroy();
-        this.activate(false);
-    },
-
-    isAlone: function () {
-        return this.set.isAlone();
-    },
-
-    move: function (newGroup) {
-        this.set.move(this.group, newGroup);
-        this.group = newGroup;
     }
 
 };
