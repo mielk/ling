@@ -28,7 +28,6 @@ namespace Typer.Domain.Services
         //Variants
         //IEnumerable<VariantSet> GetVariantSets(int questionId, int[] languages);
         //IEnumerable<Variant> GetVariants(int variantSetId);
-        //IEnumerable<DependencyDefinition> GetDependenciesDefinitions(int[] languages);
         //IEnumerable<VariantSet> GetVariantSetsWithDetails(int questionId);
         //IEnumerable<VariantSet> GetVariantSetsWithDetails(int questionId, int languageId);
         //IEnumerable<VariantSet> GetVariantSetsWithDetails(int questionId, int[] languagesIds);

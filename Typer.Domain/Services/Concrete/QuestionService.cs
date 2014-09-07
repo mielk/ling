@@ -199,7 +199,17 @@ namespace Typer.Domain.Services
             var dependencies = repository.GetVariantSetsDependencies(sets.Select(s => s.Id));
             foreach (var dependency in dependencies)
             {
-                //TODO
+                VariantSet master;
+                VariantSet slave;
+                map.TryGetValue(dependency.MainSetId, out master);
+                map.TryGetValue(dependency.DependantSetId, out slave);
+
+                if (master != null && slave != null)
+                {
+                    master.AddDependant(slave);
+                    slave.ParentId = master.Id;
+                }
+
             }
 
             return map;
@@ -307,11 +317,7 @@ namespace Typer.Domain.Services
 
 
 
-        //public IEnumerable<DependencyDefinition> GetDependenciesDefinitions(int[] languages)
-        //{
-        //    var dtos = _repository.GetDependenciesDefinitions(languages);
-        //    return dtos.Select(DependencyDefinitionFromDto).ToList();
-        //}
+
 
         //public IEnumerable<VariantSetPropertyDefinition> GetVariantSetPropertiesDefinitions(int wordtypeId, int languageId)
         //{
@@ -345,16 +351,6 @@ namespace Typer.Domain.Services
         //}
 
 
-        private static DependencyDefinition DependencyDefinitionFromDto(DependencyDefinitionDto dto)
-        {
-            return new DependencyDefinition
-            {
-                Id = dto.Id,
-                LanguageId = dto.LanguageId,
-                MasterWordtypeId = dto.MasterWordtypeId,
-                SlaveWordtypeId = dto.SlaveWordtypeId
-            };
-        }
 
         private static Question QuestionFromDto(QuestionDto dto)
         {

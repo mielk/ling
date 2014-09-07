@@ -48,5 +48,15 @@ namespace Typer.Web.Controllers
 
         }
 
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult GetWordtypeDependencies(int[] languages)
+        {
+            var properties = service.GetDependenciesDefinitions(languages);
+            return Json(properties, JsonRequestBehavior.AllowGet);
+        }
+
+
     }
 }

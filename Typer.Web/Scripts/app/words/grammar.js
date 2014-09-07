@@ -213,6 +213,7 @@ $(function() {
         var properties = mielk.hashTable();
         var requirements = mielk.hashTable();
         var grammarForms = mielk.hashTable();
+        var wordtypeDependencies = mielk.hashTable();
 
         //Private functions.
         function trigger(actionName, callback) {
@@ -281,6 +282,42 @@ $(function() {
 
         }
 
+        function loadWordtypeDependencies(results) {
+
+            //Create separate hashTable for each language.
+            var languages = Ling.Users.Current.getLanguages();
+            mielk.arrays.each(languages, function (language) {
+                var table = mielk.hashTable();
+                wordtypeDependencies.setItem(language.id, table);
+
+                //In each language hashTable create separate array for each wordtype.
+                mielk.arrays.each(Ling.Enums.Wordtypes.getValues(), function (wordtype) {
+                    table.setItem(wordtype.id, {
+                        masters: [],
+                        slaves: []
+                    });
+                });
+
+            });
+
+            //Distribute grammar forms to the proper language/wordtype pair.
+            mielk.arrays.each(results, function (item) {
+
+                var languageSet = wordtypeDependencies.getItem(item.LanguageId);
+                if (!languageSet) return;
+
+                var master = languageSet.getItem(item.MasterWordtypeId);
+                var slave = languageSet.getItem(item.SlaveWordtypeId);
+
+                if (!master || !slave) return;
+                
+                master.slaves.push(item.SlaveWordtypeId);
+                slave.masters.push(item.MasterWordtypeId)
+
+            });
+
+        }
+
         function createLanguageWordtypeMap(set) {
 
             //Create separate hashTable for each language.
@@ -334,12 +371,41 @@ $(function() {
         }
 
 
+        /*
+         *  Function        getMasterWordtypes
+         *  Description     Funkcja zwraca wszystkie części mowy, od których może zależeć forma 
+         *                  części mowy podanej jako parametr [wordtypeId].
+         */
+        function getMasterWordtypes(languageId, wordtypeId) {
+            var language = wordtypeDependencies.getItem(languageId);
+            if (!language) return [];
+
+            return language.getItem(wordtypeId).masters;
+
+        }
+
+        /*
+         *  Function        getSlaveWordtypes
+         *  Description     Funkcja zwraca wszystkie części mowy, których forma może być zależna
+         *                  od formy podanej jako parametr [wordtypeId].
+         */
+        function getSlaveWordtypes(languageId, wordtypeId) {
+            var language = wordtypeDependencies.getItem(languageId);
+            if (!language) return [];
+
+            return language.getItem(wordtypeId).slaves;
+
+        }
+
+
 
         function initialize() {
             trigger('GetGrammarProperties', loadProperties);
             trigger('GetWordsRequiredProperties', loadWordsProperties);
             trigger('GetGrammarFormGroups', loadGrammarForms);
+            trigger('GetWordtypeDependencies', loadWordtypeDependencies);
         };
+
 
 
         return {
@@ -347,10 +413,13 @@ $(function() {
             , getPropertiesForLanguage: getPropertiesForLanguage
             , getRequiredProperties: getRequiredProperties
             , getRequiredGrammarForms: getRequiredGrammarForms
+            , getMasterWordtypes: getMasterWordtypes
+            , getSlaveWordtypes: getSlaveWordtypes
             , initialize: initialize
         };
 
     })();
+
 
 
     //Add as an item of Ling library.

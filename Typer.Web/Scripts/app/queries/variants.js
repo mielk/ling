@@ -54,8 +54,10 @@ VariantSet.prototype = {
     },
 
     addDependant: function (set) {
-        if (set && set.id !== this.id) {
-            this.dependants.setItem(set.id, set);
+        var self = this;
+        if (set && set.id !== self.id) {
+            self.dependants.setItem(set.id, set);
+            set.setMaster(self);
         }
     },
 

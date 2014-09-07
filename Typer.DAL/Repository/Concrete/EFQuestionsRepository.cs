@@ -263,11 +263,6 @@ namespace Typer.DAL.Repositories
             return Context.MatchQuestionCategory.Where(m => m.QuestionId == questionId);
         }
 
-        public IEnumerable<DependencyDefinitionDto> GetDependenciesDefinitions(IEnumerable<int> languages)
-        {
-            return Context.DependenciesDefinitions.Where(dd => languages.Contains(dd.LanguageId));
-        }
-
         public VariantDto GetVariant(int variantId)
         {
             return Context.Variants.SingleOrDefault(v => v.Id == variantId);

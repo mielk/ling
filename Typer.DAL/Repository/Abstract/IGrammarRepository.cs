@@ -16,6 +16,7 @@ namespace Typer.DAL.Repositories
         IEnumerable<GrammarFormDefinitonDto> GetGrammarFormDefinitions(IEnumerable<int> groupsIds);
         IEnumerable<GrammarFormDefinitionPropertyDto> GetGrammarFormDefinitionsProperties(IEnumerable<int> formsIds);
         IEnumerable<GrammarFormInactiveRuleDto> GetGrammarFormInactiveRules(IEnumerable<int> formsIds);
+        IEnumerable<DependencyDefinitionDto> GetDependenciesDefinitions(IEnumerable<int> languages);
 
         //IEnumerable<GrammarFormDefinitonDto> GetGrammarFormsDefinitions(int[] languages);
         //IEnumerable<GrammarFormDefinitionPropertyDto> GetGrammarFormsProperties(int[] languages);

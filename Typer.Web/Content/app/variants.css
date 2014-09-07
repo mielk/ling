@@ -73,7 +73,8 @@ span.complex {
 }
 
 .active-variant-set-block {
-    background-color: rgb(255, 219, 118);
+    /*background-color: rgb(255, 219, 118);*/
+    background-color: rgb(121, 255, 127);
     font-weight: bold;
 }
 

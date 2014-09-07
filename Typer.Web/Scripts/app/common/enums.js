@@ -84,11 +84,13 @@ $(function () {
 
     var enums = (function () {
 
+        //Zmienić, żeby ładowało się z bazy danych.
         var wordtypes = new Enum({
               NOUN: { id: 1, name: 'noun', symbol: 'N', isDefault: true }
             , VERB: { id: 2, name: 'verb', symbol: 'V' }
             , ADJECTIVE: { id: 3, name: 'adjective', symbol: 'A' }
             , OTHER: { id: 4, name: 'other', symbol: 'O' }
+            , PRONOUN: { id: 5, name: 'pronoun', symbol: 'P' }
         });
 
         var languages = new Enum({

@@ -330,6 +330,9 @@
     <Content Include="Scripts\app\queries\queries.js" />
     <Content Include="Scripts\app\test\test.js" />
     <Content Include="Scripts\common\util.js" />
+    <Content Include="Scripts\jquery-1.9.1.min.js.map">
+      <DependentUpon>jquery-1.9.1.js</DependentUpon>
+    </Content>
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />

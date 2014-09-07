@@ -193,13 +193,7 @@ namespace Typer.Web.Controllers
         //    return Json(sets, JsonRequestBehavior.AllowGet);
         //}
 
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public ActionResult GetDependenciesDefinitions(int[] languages)
-        //{
-        //    var definitions = _service.GetDependenciesDefinitions(languages);
-        //    return Json(definitions, JsonRequestBehavior.AllowGet);
-        //}
+
 
         //[HttpGet]
         //[AllowAnonymous]

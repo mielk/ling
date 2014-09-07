@@ -46,6 +46,11 @@ namespace Typer.DAL.Repositories
             return Context.GrammarFormInactiveRules.Where(gfir => formsIds.Contains(gfir.DefinitionId));
         }
 
+        public IEnumerable<DependencyDefinitionDto> GetDependenciesDefinitions(IEnumerable<int> languages)
+        {
+            return Context.DependenciesDefinitions.Where(dd => languages.Contains(dd.LanguageId));
+        }
+
         //public IEnumerable<GrammarFormDefinitonDto> GetGrammarDefinitions(int languageId, int wordtypeId)
         //{
         //    return Context.GrammarDefinitions.Where(gd => gd.LanguageId == languageId && gd.WordtypeId == wordtypeId);

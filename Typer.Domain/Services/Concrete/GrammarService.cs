@@ -109,6 +109,13 @@ namespace Typer.Domain.Services
 
 
 
+        public IEnumerable<DependencyDefinition> GetDependenciesDefinitions(int[] languages)
+        {
+            var dtos = repository.GetDependenciesDefinitions(languages);
+            return dtos.Select(DependencyDefinitionFromDto).ToList();
+        }
+
+
         private static GrammarPropertyDefinition PropertyDefinitionFromDto(GrammarPropertyDefinitionDto dto)
         {
             return new GrammarPropertyDefinition
@@ -187,6 +194,18 @@ namespace Typer.Domain.Services
                 , DefinitionId = dto.DefinitionId
                 , PropertyId = dto.PropertyId
                 , ValueId = dto.ValueId
+            };
+        }
+
+
+        private static DependencyDefinition DependencyDefinitionFromDto(DependencyDefinitionDto dto)
+        {
+            return new DependencyDefinition
+            {
+                Id = dto.Id,
+                LanguageId = dto.LanguageId,
+                MasterWordtypeId = dto.MasterWordtypeId,
+                SlaveWordtypeId = dto.SlaveWordtypeId
             };
         }
 
