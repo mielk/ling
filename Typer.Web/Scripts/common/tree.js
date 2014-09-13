@@ -262,11 +262,16 @@ SearchPanel.prototype.activate = function () {
     
     this.dropdown = this.dropdown || new DropDown({
         container: me.container,
+        caseSensitive: false,
+        confirmWithFirstClick: true,
         data: this.tree.root.getNodesForSearching(),
         placeholder: 'Select option',
-        allowClear: true
+        allowClear: true,
+        text: function (item) { return item.prepend + item.name; },
+        formatSelection: function (item) { return item.prepend + item.name; },
+        formatResult: function (item) { return item.prepend + item.name;}
     });
-    
+  
     this.dropdown.bind({
         change: function (e) {
             me.select(e.object);

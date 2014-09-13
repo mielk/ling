@@ -53,16 +53,51 @@ VariantSet.prototype = {
         }
     },
 
+
+    /*  Function:       addDependant
+     *  Description:    Dodaje podany variant set do kolekcji setów uzależnionych od tego
+     *                  VariantSeta. Równocześnie próbuje ustawić ten VS jako master dla
+     *                  podanego seta.
+     *  Parameters:
+     *      set         Set, który ma zostać dodany do kolekcji zależnych od tego seta.
+     */
     addDependant: function (set) {
         var self = this;
-        if (set && set.id !== self.id) {
+        if (set && set.id !== self.id && !self.dependants.hasItem(set.id)) {
             self.dependants.setItem(set.id, set);
-            set.setMaster(self);
+            set.master = self;
         }
     },
 
+
+    /*  Function:       removeDependant
+     *  Description:    Usuwa podany variant set z kolekcji setów uzależnionych od 
+     *                  tego VariantSeta.
+     *  Parameters:
+     *      set         Set, który ma zostać usunięty z kolekcji zależnych od tego seta.
+     */
+    removeDependant: function(set){
+        var self = this;
+        var id = $.isNumeric(set) ? Number(set) : set.id;
+
+        //Usuń podany item z kolekcji wariant-setów zależnych od tego VS.
+        this.dependants.removeItem(id);
+
+    },
+
+
+    /*  Function:       setMaster
+     *  Description:    Funkcja ustawia podany VariantSet jako master dla aktualnego VS 
+     *                  (czyli przy wyznaczaniu poprawnej formy gramatycznej dla tego VS
+     *                  będzie brana pod uwagę forma VariantSeta ustawionego jako master).
+     *  Parameters:
+     *      set         Set, który ma zostać ustawiony jako master względem tego VS.
+     */
     setMaster: function (set) {
-        this.master = set;
+        if (this.master !== set) {
+            this.master = set;
+            set.addDependant(this);
+        }
     },
 
     clone: function () {

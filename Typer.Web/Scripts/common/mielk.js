@@ -1330,6 +1330,7 @@
             }
         }
 
+
         //Funkcja klonująca podaną tablicę.
         function clone(array) {
             var $clone = [];

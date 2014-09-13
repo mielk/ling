@@ -94,9 +94,9 @@ function VariantsManager(query) {
         //Parts.
         self.addSubpanel('connections', new VariantConnectionsManager(self));
         self.addSubpanel('dependencies', new VariantDependenciesManager(self));
+        self.addSubpanel('limits', new VariantLimitsManager(self));
         //self.options = new VariantOptionsManager(self);
         //self.connections = new VariantConnectionsManager(self);
-        //self.limits = new VariantLimitsManager(self);
         
         
     })();
@@ -563,27 +563,10 @@ mielk.objects.addProperties(VariantDependenciesManager.prototype, {
         var self = this;
         var line = new VariantDependencyLine(self, set);
 
-        //group.bind({
-        //    blockActivated: function (e) {
-        //        //Deactivate the previously active block.
-        //        if (self.activeBlock) self.activeBlock.activate(false);
-        //        self.activeBlock = e.block;
-        //    },
-        //    blockDeactivated: function () {
-        //        self.reset();
-        //    }
-        //});
-
-        //groupPanel.bind({
-        //    destroy: function () {
-        //        self.groupPanels.removeItem(groupPanel.id);
-        //    }
-        //});
-
         self.lines.setItem(line.id, line);
         self.content.add(line.view());
 
-    },
+    }
 
 });
 
@@ -655,11 +638,12 @@ function VariantDependencyLine(parent, set) {
                         }
                         
                         //Activating new variant set.
-                        self.set.master = block.set;
+                        self.set.setMaster(block.set);
 
                     } else {
                         //Deactivating current variant set.
                         if (block.set === self.set.master) {
+                            self.set.master.removeDependant(self.set);
                             self.set.master = null;
                         }
                     }
@@ -752,6 +736,85 @@ VariantDependencyLine.prototype = {
 
 }
 
+
+
+function VariantLimitsManager(parent) {
+
+    'use strict';
+
+    var self = this;
+    self.VariantLimitsManager = true;
+    VariantSubpanel.call(this, parent, 'Limits');
+    self.query = parent.query;
+
+    //Temporary.
+    self.lines = mielk.hashTable();
+
+    //UI
+    self.content = (function () {
+        var container = jQuery('<div/>').css({
+            'width': '100%'
+        });
+
+        function add(item) {
+            $(item).appendTo(container);
+        }
+
+        function append() {
+            self.ui.insert(container);
+        }
+
+        function css(styles) {
+            $(container).css(styles);
+        }
+
+        return {
+            view: container
+            , add: add
+            , append: append
+            , css: css
+        };
+
+    })();
+
+    self.events = (function () {
+
+
+    })();
+
+    (function initialize() {
+        self.render();
+    })();
+
+}
+mielk.objects.extend(VariantSubpanel, VariantLimitsManager);
+mielk.objects.addProperties(VariantLimitsManager.prototype, {
+
+    render: function () {
+        var self = this;
+
+        var dropdownData = Ling.Enums.Wordtypes.getValues();
+        var languageDropdown = new DropDown({
+              container: self.content.view
+            , data: dropdownData
+            , placeholder: 'Select language'
+            , allowClear: false
+            , text: function (item) { return item.name; }
+            , formatSelection: function(item){ return item.name; }
+            , formatResult: function(item){ return item.name; }
+        });
+
+        //var test = jQuery('<div/>').css({
+        //    'background-color': 'green',
+        //    'height': '20px',
+        //    'width': '20px'
+        //});
+        //self.content.add(test);
+
+        //Dołącza stworzony kontent do głównego kontenera tego panelu.
+        self.content.append();
+    }
+});
 
 
 

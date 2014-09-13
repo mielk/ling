@@ -325,8 +325,11 @@ function WordTypeFilter(panel) {
 
         var dropdownData = Ling.Enums.Wordtypes.getValues();
         var dropdown = new DropDown({
-            container: container
-            ,data: dropdownData
+              container: container
+            , data: dropdownData
+            , text: function (item) { return item.name; }
+            , formatSelection: function (item) { return item.name; }
+            , formatResult: function (item) { return item.name;}
         });
 
         dropdown.bind({

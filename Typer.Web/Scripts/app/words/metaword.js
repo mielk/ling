@@ -257,7 +257,11 @@ function WordtypePanel(params) {
             , data: Ling.Enums.Wordtypes.getValues()
             , slots: 5
             , caseSensitive: false
+            , text: function (item) { return item.name; }
+            , formatSelection: function (item) { return item.name; }
+            , formatResult: function (item) { return item.name; }
             , confirmWithFirstClick: true
+            , initValue: self.value.id
         });
 
         if (self.value) {
