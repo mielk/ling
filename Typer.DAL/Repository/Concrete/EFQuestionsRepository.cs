@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Transactions;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.TransferObjects;
 
@@ -60,6 +61,11 @@ namespace Typer.DAL.Repositories
         public IEnumerable<VariantDto> GetVariants(int variantSetId)
         {
             return Context.Variants.Where(v => v.VariantSetId == variantSetId);
+        }
+
+        public UserQueryDto GetUserQuery(int questionId, int userId, int baseLanguage, int LearnedLanguage)
+        {
+            return Context.UserQueries.SingleOrDefault(q => q.QuestionId == questionId && q.UserId == userId && q.BaseLanguage == baseLanguage && q.LearnedLanguage == LearnedLanguage);
         }
 
 
@@ -183,7 +189,65 @@ namespace Typer.DAL.Repositories
                 return false;
             }
         }
-        
+
+        public bool UpdateQuery(int questionId, int userId, int baseLanguage, int learnedLanguage, int counter, int correct, string last50, int toDo)
+        {
+            var query = GetUserQuery(questionId, userId, baseLanguage, learnedLanguage);
+
+            using (var scope = new TransactionScope())
+            {
+
+                try
+                {
+
+                    //Create new query Dto if it doesn't exist.
+                    if (query == null)
+                    {
+                        query = new UserQueryDto
+                        {
+                            QuestionId = questionId,
+                            UserId = userId,
+                            BaseLanguage = baseLanguage,
+                            LearnedLanguage = learnedLanguage,
+                            Counter = counter,
+                            CorrectAnswers = correct,
+                            Last50 = last50,
+                            ToDo = toDo,
+                            LastQuery = DateTime.Now
+                        };
+
+                        Context.UserQueries.Add(query);
+                        Context.SaveChanges();
+
+                    }
+                    else
+                    {
+                        //Update properties of UserQuery object.
+                        query.Counter = counter;
+                        query.CorrectAnswers = correct;
+                        query.Last50 = last50;
+                        query.ToDo = toDo;
+                        query.LastQuery = DateTime.Now;
+                        Context.SaveChanges();
+                    }
+
+
+                }
+                catch (Exception)
+                {
+                    scope.Dispose();
+                    return false;
+                }
+
+                scope.Complete();
+                return true;
+
+            }
+
+
+        }
+
+
         #endregion
 
 
@@ -328,6 +392,11 @@ namespace Typer.DAL.Repositories
         public IEnumerable<MatchVariantWordDto> GetVariantWordMatching(IEnumerable<int> variants)
         {
             return Context.MatchVariantWords.Where(mvw => variants.Contains(mvw.VariantId));
+        }
+
+        public IEnumerable<UserQueryDto> GetUserQueries(int userId, int baseLanguage, int learnedLanguage)
+        {
+            return Context.UserQueries.Where(uq => uq.UserId == userId && uq.BaseLanguage == baseLanguage && uq.LearnedLanguage == learnedLanguage);
         }
 
     }

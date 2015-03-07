@@ -17,6 +17,20 @@ namespace Typer.Common.Helpers
             return Regex.IsMatch(mail.Trim(), reg);
         }
 
+        public static int countOccurrences(this string source, string substr)
+        {
+            int count = 0;
+            char ch = substr[0];
+            
+            foreach (char c in source)
+            {
+                if (c == ch) count++;
+            }
+
+            return count;
+                
+        }
+
 
         /// <summary>
         /// Generates a fully qualified URL to an action method by using

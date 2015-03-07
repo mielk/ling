@@ -91,6 +91,7 @@ namespace Typer.Web
 
             bundles.Add(new ScriptBundle("~/bundles/test").Include(
                   "~/Scripts/app/test/test.js"
+                , "~/Scripts/app/test/test-controller.js"
             ));
 
 
@@ -105,16 +106,6 @@ namespace Typer.Web
                 , "~/Content/common/dropdown.css"
                 , "~/Content/common/mielk.css"
             ));
-
-            //bundles.Add(new StyleBundle("~/content/css").Include(
-            //    "~/Content/Main.css",
-            //    "~/Content/bootstrap.icon-large.min.css",
-            //    "~/Content/bootstrap.css",
-            //    "~/Content/body.css",
-            //    "~/Content/bootstrap-responsive.css",
-            //    "~/Content/bootstrap-mvc-validation.css",
-            //    "~/Content/bootstrap-datepicker.css",
-            //    "~/Content/bootstrapSwitch.css"));
 
             bundles.Add(new StyleBundle("~/bundles/css/app").Include(
                   "~/Content/app/categories.css"

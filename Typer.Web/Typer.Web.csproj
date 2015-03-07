@@ -275,6 +275,7 @@
     <Content Include="Scripts\app\common\list\edit-query-panel.js" />
     <Content Include="Scripts\app\queries\query-option.js" />
     <Content Include="Scripts\app\queries\variants-manager.js" />
+    <Content Include="Scripts\app\test\test-controller.js" />
     <Content Include="Scripts\app\words\grammar.js" />
     <Content Include="Scripts\app\common\languages.js" />
     <Content Include="Scripts\app\common\list\edit-word-panel.js" />

@@ -238,5 +238,19 @@ namespace Typer.Web.Controllers
         //}
 
 
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult GenerateQuery(int questionId, int baseLanguage, int learnedLanguage)
+        {
+            Question question = service.GetQuestion(questionId);
+            string displayed;
+            string[] correct;
+            question.loadQuery(baseLanguage, learnedLanguage, out displayed, out correct);
+
+            return Json(new { displayed = displayed, correct = correct }, JsonRequestBehavior.AllowGet);
+        }
+
+
     }
 }

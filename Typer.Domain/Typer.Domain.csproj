@@ -43,7 +43,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity" />
-    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -59,6 +59,7 @@
     <Compile Include="Entities\GrammarFormInactiveRule.cs" />
     <Compile Include="Entities\GrammarPropertyDefinition.cs" />
     <Compile Include="Entities\GrammarPropertyOption.cs" />
+    <Compile Include="Entities\UserQuery.cs" />
     <Compile Include="Entities\Variant.cs" />
     <Compile Include="Entities\VariantExclusion.cs" />
     <Compile Include="Entities\VariantSet.cs" />

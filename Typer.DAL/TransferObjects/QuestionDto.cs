@@ -9,6 +9,8 @@ namespace Typer.DAL.TransferObjects
         public int Id { get; set; }
         public string Name { get; set; }
         public int Weight { get; set; }
+        public bool AskPlural { get; set; }
+        public int? WordType { get; set; }
         public bool IsActive { get; set; }
         public int CreatorId { get; set; }
         public DateTime CreateDate { get; set; }

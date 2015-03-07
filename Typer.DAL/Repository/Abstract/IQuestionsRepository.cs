@@ -46,5 +46,9 @@ namespace Typer.DAL.Repositories
 
         IEnumerable<MatchVariantWordDto> GetVariantWordMatching(IEnumerable<int> variants);
 
+        IEnumerable<UserQueryDto> GetUserQueries(int userId, int baseLanguage, int learnedLanguage);
+        UserQueryDto GetUserQuery(int questionId, int userId, int baseLanguage, int learnedLanguage);
+        bool UpdateQuery(int questionId, int userId, int baseLanguage, int learnedLanguage, int counter, int correct, string last50, int toDo);
+
     }
 }

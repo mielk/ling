@@ -17,10 +17,18 @@ if (my === undefined) {
           applicationName: 'ling'
         , applicationVersion: '0.0.1'
         , entities: {
-                  minWeight: 1
-                , maxWeight: 10
-                , pageSize: 15
-            }
+              minWeight: 1
+            , maxWeight: 10
+            , pageSize: 15
+        }
+        , colors: {
+              correctBackground: '#69FF65'
+            , correctBorder: '#024D00'
+            , correctFont: '#024D00'
+            , wrongBackground: '#FF6565'
+            , wrongBorder: '#570000'
+            , wrongFont: '#570000'
+        }
     };
 
     var ling = {

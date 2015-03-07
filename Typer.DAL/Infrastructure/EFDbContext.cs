@@ -34,6 +34,7 @@ namespace Typer.DAL.Infrastructure
         public DbSet<GrammarFormGroupDto> GrammarFormGroups { get; set; }
         public DbSet<GrammarFormInactiveRuleDto> GrammarFormInactiveRules { get; set; }
         public DbSet<MatchVariantWordDto> MatchVariantWords { get; set; }
+        public DbSet<UserQueryDto> UserQueries { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -63,6 +64,7 @@ namespace Typer.DAL.Infrastructure
             modelBuilder.Entity<GrammarFormGroupDto>().ToTable("GrammarFormsGroups");
             modelBuilder.Entity<GrammarFormInactiveRuleDto>().ToTable("GrammarFormsInactiveRules");
             modelBuilder.Entity<MatchVariantWordDto>().ToTable("MatchVariantWord");
+            modelBuilder.Entity<UserQueryDto>().ToTable("TestResults");
         }
 
 

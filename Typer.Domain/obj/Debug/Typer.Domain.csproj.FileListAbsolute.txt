@@ -129,3 +129,20 @@ C:\Users\txmieln\Documents\Visual Studio 2012\Projects\typer\Typer.Domain\bin\De
 C:\Users\txmieln\Documents\Visual Studio 2012\Projects\typer\Typer.Domain\bin\Debug\Newtonsoft.Json.xml
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.Domain\bin\Debug\Newtonsoft.Json.dll
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.Domain\bin\Debug\Newtonsoft.Json.xml
+C:\tm\aplikacje\Lang\Typer.Domain\bin\Debug\Typer.Domain.dll.config
+C:\tm\aplikacje\Lang\Typer.Domain\bin\Debug\Typer.Domain.dll
+C:\tm\aplikacje\Lang\Typer.Domain\bin\Debug\Typer.Domain.pdb
+C:\tm\aplikacje\Lang\Typer.Domain\bin\Debug\EntityFramework.dll
+C:\tm\aplikacje\Lang\Typer.Domain\bin\Debug\Newtonsoft.Json.dll
+C:\tm\aplikacje\Lang\Typer.Domain\bin\Debug\Ninject.dll
+C:\tm\aplikacje\Lang\Typer.Domain\bin\Debug\Typer.Common.dll
+C:\tm\aplikacje\Lang\Typer.Domain\bin\Debug\Typer.DAL.dll
+C:\tm\aplikacje\Lang\Typer.Domain\bin\Debug\Typer.Common.pdb
+C:\tm\aplikacje\Lang\Typer.Domain\bin\Debug\Typer.DAL.pdb
+C:\tm\aplikacje\Lang\Typer.Domain\bin\Debug\EntityFramework.xml
+C:\tm\aplikacje\Lang\Typer.Domain\bin\Debug\Newtonsoft.Json.xml
+C:\tm\aplikacje\Lang\Typer.Domain\bin\Debug\Ninject.pdb
+C:\tm\aplikacje\Lang\Typer.Domain\bin\Debug\Ninject.xml
+C:\tm\aplikacje\Lang\Typer.Domain\obj\Debug\Typer.Domain.csprojResolveAssemblyReference.cache
+C:\tm\aplikacje\Lang\Typer.Domain\obj\Debug\Typer.Domain.dll
+C:\tm\aplikacje\Lang\Typer.Domain\obj\Debug\Typer.Domain.pdb

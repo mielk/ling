@@ -24,6 +24,8 @@ namespace Typer.Domain.Services
         IEnumerable<QuestionOption> GetOptions(int questionId, int[] languages);
         IEnumerable<Category> GetCategories(int questionId);
         IEnumerable<Question> Filter(int lowWeight, int upWeight, int[] categories, string text);
+        IEnumerable<UserQuery> GetQueries(int userId, int baseLanguage, int learnedLanguage);
+        bool SaveAnswer(int questionId, int userId, int baseLanguage, int learnedLanguage, int counter, int correct, string last50, int toDo);
 
         //Variants
         //IEnumerable<VariantSet> GetVariantSets(int questionId, int[] languages);

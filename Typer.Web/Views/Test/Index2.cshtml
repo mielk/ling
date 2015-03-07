@@ -6,11 +6,44 @@
     @Scripts.Render("~/bundles/test")
 }
 
-<h2>Index2</h2>
-
 <body>
 
-    <div id="parent" style="width: 50px; height: 50px; background-color: #EEE">
+    <div class="test-content">
+
+        <div id="test-question" class="test-panel">
+
+        </div>
+
+        <div id="test-answer" class="test-panel">
+            <textarea id="test-answer-text" rows="4" cols="50"></textarea>
+        </div>
+
+        <div id="test-correct-answers" class="test-panel">
+        </div>
+
+        <div id="test-info" class="test-info">
+            
+            <div class="test-info-line">
+                <div class="test-info-line-label">Left</div>
+                <div id="test-left" class="test-info-line-value"></div>
+            </div>
+
+            <div class="test-info-line">
+                <div class="test-info-line-label">Done</div>
+                <div id="test-done" class="test-info-line-value"></div>
+            </div>
+
+            <div class="test-info-line">
+                <div class="test-info-line-label">Correct</div>
+                <div id="test-correct" class="test-info-line-value"></div>
+            </div>
+
+            <div class="test-info-line">
+                <div class="test-info-line-label">Result [%]</div>
+                <div id="test-result" class="test-info-line-value"></div>
+            </div>
+
+        </div>
 
     </div>
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Collections;
 using Typer.DAL.Infrastructure;
 using Typer.DAL.Repositories;
 using Typer.Domain.Entities;
@@ -243,6 +244,55 @@ namespace Typer.Domain.Services
         }
 
 
+        public IEnumerable<UserQuery> GetQueries(int userId, int baseLanguage, int learnedLanguage)
+        {
+            const int FIRST_QUERY_TO_DO = 5;
+            IEnumerable<Question> questions = repository.GetQuestions().Select(QuestionFromDto).ToList();
+            IEnumerable<UserQuery> queries = repository.GetUserQueries(userId, baseLanguage, learnedLanguage).Select(UserQueryFromDto).ToList();
+            Dictionary<int, UserQuery> queriesMap = queries.ToDictionary(q => q.QuestionID);
+            List<UserQuery> queriesList = new List<UserQuery>();
+
+
+            foreach (var question in questions)
+            {
+                
+                UserQuery query;
+                queriesMap.TryGetValue(question.Id, out query);
+                if (query != null)
+                {
+                    query.Question = question;
+                    query.updateToDo();
+                }
+                else
+                {
+                    query = new UserQuery();
+                    query.UserID = userId;
+                    query.QuestionID = question.Id;
+                    query.BaseLanguage = baseLanguage;
+                    query.LearnedLanguage = learnedLanguage;
+                    query.Counter = 0;
+                    query.CorrectAnswers = 0;
+                    query.Last50 = string.Empty;
+                    query.ToDo = FIRST_QUERY_TO_DO;
+                }
+
+                if (query.ToDo > 0)
+                {
+                    queriesList.Add(query);
+                }
+
+            }
+
+            return queriesList;
+
+        }
+
+
+        public bool SaveAnswer(int questionId, int userId, int baseLanguage, int learnedLanguage, int counter, int correct, string last50, int toDo)
+        {
+            return repository.UpdateQuery(questionId, userId, baseLanguage, learnedLanguage, counter, correct, last50, toDo);
+        }
+
 
         //public IEnumerable<VariantSet> GetVariantSets(int questionId, int[] languages)
         //{
@@ -365,7 +415,9 @@ namespace Typer.Domain.Services
                 Name = dto.Name,
                 Negative = dto.Negative,
                 Positive = dto.Positive,
-                Weight = dto.Weight
+                Weight = dto.Weight,
+                AskPlural = dto.AskPlural,
+                WordType = dto.WordType
             };
         }
 
@@ -382,7 +434,9 @@ namespace Typer.Domain.Services
                 Name = question.Name,
                 Negative = question.Negative,
                 Positive = question.Positive,
-                Weight = question.Weight
+                Weight = question.Weight,
+                AskPlural = question.AskPlural,
+                WordType = question.WordType
             };
         }
 
@@ -401,7 +455,8 @@ namespace Typer.Domain.Services
                 Negative = dto.Negative,
                 Positive = dto.Positive,
                 QuestionId = dto.QuestionId,
-                Weight = dto.Weight
+                Weight = dto.Weight,
+                IsMain = dto.IsMain
             };
         }
 
@@ -439,6 +494,22 @@ namespace Typer.Domain.Services
             };
         }
 
+
+        private static UserQuery UserQueryFromDto(UserQueryDto dto)
+        {
+            return new UserQuery
+            {
+                  UserID = dto.UserId
+                , BaseLanguage = dto.BaseLanguage
+                , LearnedLanguage = dto.LearnedLanguage
+                , CorrectAnswers = dto.CorrectAnswers
+                , Counter = dto.Counter
+                , Last50 = dto.Last50   
+                , LastQuery = dto.LastQuery
+                , QuestionID = dto.QuestionId
+                , ToDo = dto.ToDo
+            };
+        }
 
         //private static GrammarFormDefinitionProperty grammarFormDefinitionPropertyFromDto(
         //    GrammarFormDefinitionPropertyDto dto)

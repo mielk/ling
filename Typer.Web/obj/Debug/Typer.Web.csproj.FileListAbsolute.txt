@@ -454,3 +454,47 @@ C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.Web\bin\Typesaf
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.Web\obj\Debug\Typer.Web.csprojResolveAssemblyReference.cache
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.Web\obj\Debug\Typer.Web.dll
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.Web\obj\Debug\Typer.Web.pdb
+C:\tm\aplikacje\Lang\Typer.Web\bin\Typer.Web.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\Typer.Web.pdb
+C:\tm\aplikacje\Lang\Typer.Web\bin\Antlr3.Runtime.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\EntityFramework.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\Microsoft.Web.Infrastructure.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\Moq.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\Newtonsoft.Json.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\Ninject.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\Ninject.Web.Common.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\Ninject.Web.Mvc.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\System.Web.Mvc.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\System.Web.Optimization.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\System.Web.Providers.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\System.Web.Razor.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\System.Web.WebPages.Deployment.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\System.Web.WebPages.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\System.Web.WebPages.Razor.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\Typer.Common.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\Typer.DAL.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\Typer.Domain.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\Typesafe.Mailgun.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\WebActivator.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\WebGrease.dll
+C:\tm\aplikacje\Lang\Typer.Web\bin\Typer.Common.pdb
+C:\tm\aplikacje\Lang\Typer.Web\bin\Typer.DAL.pdb
+C:\tm\aplikacje\Lang\Typer.Web\bin\Typer.Domain.pdb
+C:\tm\aplikacje\Lang\Typer.Web\bin\EntityFramework.xml
+C:\tm\aplikacje\Lang\Typer.Web\bin\Moq.xml
+C:\tm\aplikacje\Lang\Typer.Web\bin\Newtonsoft.Json.xml
+C:\tm\aplikacje\Lang\Typer.Web\bin\Ninject.pdb
+C:\tm\aplikacje\Lang\Typer.Web\bin\Ninject.xml
+C:\tm\aplikacje\Lang\Typer.Web\bin\Ninject.Web.Common.pdb
+C:\tm\aplikacje\Lang\Typer.Web\bin\Ninject.Web.Common.xml
+C:\tm\aplikacje\Lang\Typer.Web\bin\Ninject.Web.Mvc.pdb
+C:\tm\aplikacje\Lang\Typer.Web\bin\Ninject.Web.Mvc.xml
+C:\tm\aplikacje\Lang\Typer.Web\bin\System.Web.Mvc.xml
+C:\tm\aplikacje\Lang\Typer.Web\bin\System.Web.Razor.xml
+C:\tm\aplikacje\Lang\Typer.Web\bin\System.Web.WebPages.xml
+C:\tm\aplikacje\Lang\Typer.Web\bin\System.Web.WebPages.Deployment.xml
+C:\tm\aplikacje\Lang\Typer.Web\bin\System.Web.WebPages.Razor.xml
+C:\tm\aplikacje\Lang\Typer.Web\bin\Typesafe.Mailgun.xml
+C:\tm\aplikacje\Lang\Typer.Web\obj\Debug\Typer.Web.csprojResolveAssemblyReference.cache
+C:\tm\aplikacje\Lang\Typer.Web\obj\Debug\Typer.Web.dll
+C:\tm\aplikacje\Lang\Typer.Web\obj\Debug\Typer.Web.pdb

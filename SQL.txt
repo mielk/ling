@@ -5,7 +5,8 @@ USE [ling];
 
 -- Usuwanie tabel
 -- Zapytania --
-IF OBJECT_ID('dbo.LearningExcludedQueries', N'U') IS NOT NULL DROP TABLE [dbo].[LearningExcludedQueries]
+IF OBJECT_ID('dbo.TestResults', N'U') IS NOT NULL DROP TABLE [dbo].[TestResults]
+IF OBJECT_ID('dbo.LearningExcludedQuestions', N'U') IS NOT NULL DROP TABLE [dbo].[LearningExcludedQuestions]
 IF OBJECT_ID('dbo.LearningExcludedWords', N'U') IS NOT NULL DROP TABLE [dbo].[LearningExcludedWords]
 
 -- Dane --
@@ -16,9 +17,9 @@ IF OBJECT_ID('dbo.MatchVariantWord', N'U') IS NOT NULL DROP TABLE [dbo].[MatchVa
 IF OBJECT_ID('dbo.Variants', N'U') IS NOT NULL DROP TABLE [dbo].[Variants]
 IF OBJECT_ID('dbo.VariantSets', N'U') IS NOT NULL DROP TABLE [dbo].[VariantSets]
 
-IF OBJECT_ID('dbo.QueriesOptions', N'U') IS NOT NULL DROP TABLE [dbo].[QueriesOptions]
-IF OBJECT_ID('dbo.MatchQueryCategory', N'U') IS NOT NULL DROP TABLE [dbo].[MatchQueryCategory]
-IF OBJECT_ID('dbo.Queries', N'U') IS NOT NULL DROP TABLE [dbo].[Queries]
+IF OBJECT_ID('dbo.QuestionsOptions', N'U') IS NOT NULL DROP TABLE [dbo].[QuestionsOptions]
+IF OBJECT_ID('dbo.MatchQuestionCategory', N'U') IS NOT NULL DROP TABLE [dbo].[MatchQuestionCategory]
+IF OBJECT_ID('dbo.Questions', N'U') IS NOT NULL DROP TABLE [dbo].[Questions]
 
 IF OBJECT_ID('dbo.GrammarForms', N'U') IS NOT NULL DROP TABLE [dbo].[GrammarForms]
 IF OBJECT_ID('dbo.WordsProperties', N'U') IS NOT NULL DROP TABLE [dbo].[WordsProperties]
@@ -48,10 +49,10 @@ IF OBJECT_ID('dbo.Countries', N'U') IS NOT NULL DROP TABLE [dbo].[Countries]
 
 
 -- Usuwanie funkcji
-IF OBJECT_ID('dbo.checkWordtypeForVariant', N'FN') IS NOT NULL DROP FUNCTION [dbo].[checkWordtypeForVariant]
+IF OBJECT_ID('dbo.checkWordtypeForWord', N'FN') IS NOT NULL DROP FUNCTION [dbo].[checkWordtypeForWord]
 IF OBJECT_ID('dbo.checkWordtypeForVariant', N'FN') IS NOT NULL DROP FUNCTION [dbo].[checkWordtypeForVariant]
 IF OBJECT_ID('dbo.checkGrammarDefinitionLanguage', N'FN') IS NOT NULL DROP FUNCTION [dbo].[checkGrammarDefinitionLanguage]
-IF OBJECT_ID('dbo.checkQueryForVariantSet', N'FN') IS NOT NULL DROP FUNCTION [dbo].[checkQueryForVariantSet]
+IF OBJECT_ID('dbo.checkQuestionForVariantSet', N'FN') IS NOT NULL DROP FUNCTION [dbo].[checkQuestionForVariantSet]
 IF OBJECT_ID('dbo.checkSetForVariant', N'FN') IS NOT NULL DROP FUNCTION [dbo].[checkSetForVariant]
 IF OBJECT_ID('dbo.checkGrammarDefinitionWordtype', N'FN') IS NOT NULL DROP FUNCTION [dbo].[checkGrammarDefinitionWordtype]
 IF OBJECT_ID('dbo.checkGrammarOptionProperty', N'FN') IS NOT NULL DROP FUNCTION [dbo].[checkGrammarOptionProperty]
@@ -648,35 +649,37 @@ GO
 
 
 -- Pytania
-CREATE TABLE [dbo].[Queries] (
-      [Id]				INT           IDENTITY (1, 1) NOT NULL
+CREATE TABLE [dbo].[Questions] (
+      [Id]			INT           IDENTITY (1, 1) NOT NULL
     , [Name]			VARCHAR (255) NOT NULL UNIQUE
     , [Weight]			INT           DEFAULT ((0)) NOT NULL
+    , [IsComplex]		BIT           DEFAULT ((1)) NOT NULL
+    , [WordType]		INT           NULL
+    , [AskPlural]		BIT           DEFAULT ((1)) NOT NULL
     , [IsActive]		BIT           DEFAULT ((1)) NOT NULL
     , [CreatorId]		INT           DEFAULT ((1)) NOT NULL
     , [CreateDate]		DATETIME      DEFAULT (GETDATE()) NOT NULL
     , [IsApproved]		BIT           DEFAULT ((0)) NOT NULL
     , [Positive]		INT           DEFAULT ((0)) NOT NULL
     , [Negative]		INT           DEFAULT ((0)) NOT NULL
-    , [IsComplex]		BIT           DEFAULT ((1)) NOT NULL
-    , CONSTRAINT [PK_Queries] PRIMARY KEY CLUSTERED ([Id] ASC)
-    , CONSTRAINT [FK_Queries_Creator] FOREIGN KEY ([CreatorId]) REFERENCES [dbo].[Users] ([Id])
-    , CONSTRAINT [Check_Weight] CHECK ([Weight] > (0) AND [Weight] <= (10))
+    , CONSTRAINT [PK_Questions] PRIMARY KEY CLUSTERED ([Id] ASC)
+    , CONSTRAINT [FK_Questions_Creator] FOREIGN KEY ([CreatorId]) REFERENCES [dbo].[Users] ([Id])
+    , CONSTRAINT [FK_Questions_WordType] FOREIGN KEY ([WordType]) REFERENCES [dbo].[WordTypes] ([Id])
+    , CONSTRAINT [FK_Questions_Check_Weight] CHECK ([Weight] > (0) AND [Weight] <= (10))
 );
 GO
-SET IDENTITY_INSERT [dbo].[Queries] ON
+SET IDENTITY_INSERT [dbo].[Questions] ON
 BEGIN TRANSACTION;
-	INSERT INTO [dbo].[Queries] ([Id], [Name], [Weight], [IsComplex])
-	SELECT 1, N'Idê do domu', 10, 0
+#Questions#
 COMMIT;
-SET IDENTITY_INSERT [dbo].[Queries] OFF
+SET IDENTITY_INSERT [dbo].[Questions] OFF
 
 GO
 
 -- Maczowanie pytañ z kategoriami
-CREATE TABLE [dbo].[MatchQueryCategory] (
+CREATE TABLE [dbo].[MatchQuestionCategory] (
       [Id]				INT			IDENTITY (1, 1) NOT NULL
-    , [QueryId]			INT			NOT NULL
+    , [QuestionId]		INT			NOT NULL
     , [CategoryId]		INT			NOT NULL
     , [IsActive]		BIT			DEFAULT ((1)) NOT NULL
     , [CreatorId]		INT			DEFAULT ((1)) NOT NULL
@@ -684,27 +687,29 @@ CREATE TABLE [dbo].[MatchQueryCategory] (
     , [IsApproved]		BIT			DEFAULT ((0)) NOT NULL
     , [Positive]		INT			DEFAULT ((0)) NOT NULL
     , [Negative]		INT			DEFAULT ((0)) NOT NULL
-    , CONSTRAINT [PK_MatchQueryCategory] PRIMARY KEY CLUSTERED ([Id] ASC)
-    , CONSTRAINT [FK_MatchQueryCategory_Question] FOREIGN KEY ([QueryId]) REFERENCES [dbo].[Queries] ([Id])
-    , CONSTRAINT [FK_MatchQueryCategory_Category] FOREIGN KEY ([CategoryId]) REFERENCES [dbo].[Categories] ([Id])
-    , CONSTRAINT [FK_MatchQueryCategory_Creator] FOREIGN KEY ([CreatorId]) REFERENCES [dbo].[Users] ([Id])
+    , CONSTRAINT [PK_MatchQuestionCategory] PRIMARY KEY CLUSTERED ([Id] ASC)
+    , CONSTRAINT [FK_MatchQuestionCategory_Question] FOREIGN KEY ([QuestionId]) REFERENCES [dbo].[Questions] ([Id])
+    , CONSTRAINT [FK_MatchQuestionCategory_Category] FOREIGN KEY ([CategoryId]) REFERENCES [dbo].[Categories] ([Id])
+    , CONSTRAINT [FK_MatchQuestionCategory_Creator] FOREIGN KEY ([CreatorId]) REFERENCES [dbo].[Users] ([Id])
 );
 GO
---SET IDENTITY_INSERT [dbo].[[MatchQueryCategory]] ON
---BEGIN TRANSACTION;
---#[MatchQueryCategory]#
---COMMIT;
---SET IDENTITY_INSERT [dbo].[[MatchQueryCategory]] OFF
+SET IDENTITY_INSERT [dbo].[MatchQuestionCategory] ON
+BEGIN TRANSACTION;
+#MatchQuestionCategory#
+COMMIT;
+SET IDENTITY_INSERT [dbo].[MatchQuestionCategory] OFF
 
---GO
+GO
+
 
 -- Opcje zapytañ
-CREATE TABLE [dbo].[QueriesOptions] (
+CREATE TABLE [dbo].[QuestionsOptions] (
       [Id]				INT            IDENTITY (1, 1) NOT NULL
-    , [QueryId]			INT            NOT NULL
+    , [QuestionId]		INT            NOT NULL
     , [LanguageId]		INT            NOT NULL
     , [Content]			NVARCHAR (255) NOT NULL
     , [Weight]			INT            DEFAULT ((1)) NOT NULL
+    , [IsMain]			BIT            DEFAULT ((1)) NOT NULL	
     , [IsActive]		BIT            DEFAULT ((1)) NOT NULL
     , [CreatorId]		INT            DEFAULT ((1)) NOT NULL
     , [CreateDate]		DATETIME       DEFAULT (GETDATE()) NOT NULL
@@ -712,23 +717,24 @@ CREATE TABLE [dbo].[QueriesOptions] (
     , [Positive]		INT            DEFAULT ((0)) NOT NULL
     , [Negative]		INT            DEFAULT ((0)) NOT NULL
     , [IsComplex]		BIT            DEFAULT ((0)) NOT NULL
-	, [IsCompleted]		BIT			   DEFAULT ((0)) NOT NULL
-    , CONSTRAINT [PK_QueriesOptions] PRIMARY KEY CLUSTERED ([Id] ASC)
-    , CONSTRAINT [U_QueriesOptions_QueryLanguageContent] UNIQUE NONCLUSTERED ([QueryId] ASC, [LanguageId] ASC, [Content] ASC)
-    , CONSTRAINT [FK_QueriesOptions_Question] FOREIGN KEY ([QueryId]) REFERENCES [dbo].[Queries] ([Id])
-    , CONSTRAINT [FK_QueriesOptions_Creator] FOREIGN KEY ([CreatorId]) REFERENCES [dbo].[Users] ([Id])
-    , CONSTRAINT [FK_QueriesOptions_Language] FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id])
-    , CONSTRAINT [CH_QueriesOptionsWeight] CHECK ([Weight] > (0) AND [Weight] <= (10))
+    , [IsCompleted]		BIT			   DEFAULT ((0)) NOT NULL
+    , CONSTRAINT [PK_QuestionsOptions] PRIMARY KEY CLUSTERED ([Id] ASC)
+    , CONSTRAINT [U_QuestionsOptions_QuestionLanguageContent] UNIQUE NONCLUSTERED ([QuestionId] ASC, [LanguageId] ASC, [Content] ASC)
+    , CONSTRAINT [FK_QuestionsOptions_Question] FOREIGN KEY ([QuestionId]) REFERENCES [dbo].[Questions] ([Id])
+    , CONSTRAINT [FK_QuestionsOptions_Creator] FOREIGN KEY ([CreatorId]) REFERENCES [dbo].[Users] ([Id])
+    , CONSTRAINT [FK_QuestionsOptions_Language] FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id])
+    , CONSTRAINT [CH_QuestionsOptionsWeight] CHECK ([Weight] > (0) AND [Weight] <= (10))
 );
 
 GO
-SET IDENTITY_INSERT [dbo].[QueriesOptions] ON
+SET IDENTITY_INSERT [dbo].[QuestionsOptions] ON
 BEGIN TRANSACTION;
-	INSERT INTO [dbo].[QueriesOptions] ([Id], [QueryId], [LanguageId], [Content], [Weight])
-	SELECT 1, 1, 1, N'Idê do #1', 10 UNION ALL
-	SELECT 2, 1, 2, N'I am going #2', 10
+#QuestionsOptions#
+--INSERT INTO [dbo].[QuestionsOptions] ([Id], [QuestionId], [LanguageId], [Content], [Weight])
+--SELECT 1, 1, 1, N'Idê do #1', 10 UNION ALL
+--SELECT 2, 1, 2, N'I am going #2', 10
 COMMIT;
-SET IDENTITY_INSERT [dbo].[QueriesOptions] OFF
+SET IDENTITY_INSERT [dbo].[QuestionsOptions] OFF
 
 GO
 
@@ -737,7 +743,7 @@ GO
 -- Warianty dla zapytañ.
 CREATE TABLE [dbo].[VariantSets] (
       [Id]				INT            IDENTITY (1, 1) NOT NULL
-    , [QueryId]			INT            NOT NULL
+    , [QuestionId]			INT            NOT NULL
     , [LanguageId]		INT            NOT NULL
     , [VariantTag]		NVARCHAR (255) NOT NULL
     , [WordType]		INT            NOT NULL
@@ -746,8 +752,8 @@ CREATE TABLE [dbo].[VariantSets] (
     , [CreatorId]		INT            DEFAULT ((1)) NOT NULL
     , [CreateDate]		DATETIME       DEFAULT (GETDATE()) NOT NULL
     , CONSTRAINT [PK_VariantSets] PRIMARY KEY CLUSTERED ([Id] ASC)
-    , CONSTRAINT [U_VariantSets_QueryLanguageTag] UNIQUE NONCLUSTERED ([QueryId] ASC, [LanguageId] ASC, [VariantTag] ASC)
-    , CONSTRAINT [FK_VariantSets_Query] FOREIGN KEY ([QueryId]) REFERENCES [dbo].[Queries] ([Id])
+    , CONSTRAINT [U_VariantSets_QuestionLanguageTag] UNIQUE NONCLUSTERED ([QuestionId] ASC, [LanguageId] ASC, [VariantTag] ASC)
+    , CONSTRAINT [FK_VariantSets_Question] FOREIGN KEY ([QuestionId]) REFERENCES [dbo].[Questions] ([Id])
     , CONSTRAINT [FK_VariantSets_Language] FOREIGN KEY ([LanguageId]) REFERENCES [dbo].[Languages] ([Id])
     , CONSTRAINT [FK_VariantSets_Wordtype] FOREIGN KEY ([WordType]) REFERENCES [dbo].[WordTypes] ([Id])
     , CONSTRAINT [FK_VariantSets_Creator] FOREIGN KEY ([CreatorId]) REFERENCES [dbo].[Users] ([Id])
@@ -757,7 +763,7 @@ CREATE TABLE [dbo].[VariantSets] (
 GO
 SET IDENTITY_INSERT [dbo].[VariantSets] ON
 BEGIN TRANSACTION;
-	INSERT INTO [dbo].[VariantSets] ([Id], [QueryId], [LanguageId], [VariantTag], [WordType], [GrammarFormId])
+	INSERT INTO [dbo].[VariantSets] ([Id], [QuestionId], [LanguageId], [VariantTag], [WordType], [GrammarFormId])
 	SELECT 1, 1, 1, N'miejsce', 1, 11 UNION ALL 
 	SELECT 2, 1, 2, N'place', 1, 12
 COMMIT;
@@ -767,13 +773,13 @@ GO
 
 
 -- Funkcja sprawdzaj¹ca poprawnoœæ matchowania Language-GrammarPropertyDefinition
-CREATE FUNCTION [dbo].[checkQueryForVariantSet] (@VariantSet INT) 
+CREATE FUNCTION [dbo].[checkQuestionForVariantSet] (@VariantSet INT) 
 RETURNS INT 
 AS BEGIN
 
 	DECLARE @Question INT
 
-	SET @Question = (SELECT [vs].[QueryId] FROM [dbo].[VariantSets] AS [vs] WHERE [vs].[Id] = @VariantSet)
+	SET @Question = (SELECT [vs].[QuestionId] FROM [dbo].[VariantSets] AS [vs] WHERE [vs].[Id] = @VariantSet)
 
 	RETURN @Question
 
@@ -810,8 +816,7 @@ BEGIN TRANSACTION;
 	SELECT 1, 1, 'dom', 'do domu' UNION ALL 
 	SELECT 2, 1, 'szko³a', NULL UNION ALL 
 	SELECT 3, 2, 'dom', 'home' UNION ALL
-	SELECT 4, 2, 'szko³a', NULL UNION ALL
-	SELECT 5, 1, 'praca', 'do pracy'
+	SELECT 4, 2, 'szko³a', NULL
 COMMIT;
 SET IDENTITY_INSERT [dbo].[Variants] OFF
 
@@ -895,17 +900,16 @@ CREATE TABLE [dbo].[VariantConnections] (
     , CONSTRAINT [FK_VariantConnections_ConnectedSet] FOREIGN KEY ([ConnectedSetId]) REFERENCES [dbo].[VariantSets] ([Id])
     , CONSTRAINT [FK_VariantConnections_Creator] FOREIGN KEY ([CreatorId]) REFERENCES [dbo].[Users] ([Id])
     , CONSTRAINT [CH_VariantConnections_DifferentVariants] CHECK ([VariantSetId] <> [ConnectedSetId])
-    , CONSTRAINT [CH_VariantConnections_VariantsOfTheSameQuestion] CHECK ([dbo].[checkQueryForVariantSet]([VariantSetId]) = [dbo].[checkQueryForVariantSet]([ConnectedSetId]))
+    , CONSTRAINT [CH_VariantConnections_VariantsOfTheSameQuestion] CHECK ([dbo].[checkQuestionForVariantSet]([VariantSetId]) = [dbo].[checkQuestionForVariantSet]([ConnectedSetId]))
 );
 
 
-GO
-SET IDENTITY_INSERT [dbo].[VariantConnections] ON
-BEGIN TRANSACTION;
-	INSERT INTO [dbo].[VariantConnections] ([Id], [VariantSetId], [ConnectedSetId])
-	SELECT 1, 1, 2
-COMMIT;
-SET IDENTITY_INSERT [dbo].[VariantConnections] OFF
+--GO
+--SET IDENTITY_INSERT [dbo].[VariantConnections] ON
+--BEGIN TRANSACTION;
+--#VariantConnections#
+--COMMIT;
+--SET IDENTITY_INSERT [dbo].[VariantConnections] OFF
 
 GO
 
@@ -923,7 +927,7 @@ CREATE TABLE [dbo].[VariantDependencies] (
     , CONSTRAINT [FK_VariantDependencies_MainSet] FOREIGN KEY ([MainSetId]) REFERENCES [dbo].[VariantSets] ([Id])
     , CONSTRAINT [FK_VariantDependencies_DependantSet] FOREIGN KEY ([DependantSetId]) REFERENCES [dbo].[VariantSets] ([Id])
     , CONSTRAINT [CH_VariantDependencies_DifferentVariants] CHECK ([MainSetId] <> [DependantSetId])
-    , CONSTRAINT [CH_VariantDependencies_VariantsOfTheSameQuestion] CHECK ([dbo].[checkQueryForVariantSet]([MainSetId]) = [dbo].[checkQueryForVariantSet]([DependantSetId]))
+    , CONSTRAINT [CH_VariantDependencies_VariantsOfTheSameQuestion] CHECK ([dbo].[checkQuestionForVariantSet]([MainSetId]) = [dbo].[checkQuestionForVariantSet]([DependantSetId]))
 );
 
 
@@ -972,23 +976,23 @@ CREATE TABLE [dbo].[VariantLimits] (
 
 
 -- Tabela przechowuj¹ca listê zapytañ wy³¹czonych dla poszczególnych userów.
-CREATE TABLE [dbo].[LearningExcludedQueries] (
+CREATE TABLE [dbo].[LearningExcludedQuestions] (
       [Id]					INT     IDENTITY (1, 1) NOT NULL
     , [UserId]				INT     NOT NULL
-    , [QueryId]				INT		NOT NULL
-    , CONSTRAINT [PK_LearningExcludedQueries] PRIMARY KEY CLUSTERED ([Id] ASC)
-    , CONSTRAINT [U_LearningExcludedQueries] UNIQUE NONCLUSTERED ([UserId] ASC, [QueryId] ASC)
-    , CONSTRAINT [FK_LearningExcludedQueries_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[Users] ([Id])
-    , CONSTRAINT [FK_LearningExcludedQueries_Query] FOREIGN KEY ([QueryId]) REFERENCES [dbo].[Queries] ([Id])
+    , [QuestionId]				INT		NOT NULL
+    , CONSTRAINT [PK_LearningExcludedQuestions] PRIMARY KEY CLUSTERED ([Id] ASC)
+    , CONSTRAINT [U_LearningExcludedQuestions] UNIQUE NONCLUSTERED ([UserId] ASC, [QuestionId] ASC)
+    , CONSTRAINT [FK_LearningExcludedQuestions_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[Users] ([Id])
+    , CONSTRAINT [FK_LearningExcludedQuestions_Question] FOREIGN KEY ([QuestionId]) REFERENCES [dbo].[Questions] ([Id])
 );
 
 
 GO
---SET IDENTITY_INSERT [dbo].[LearningExcludedQueries] ON
+--SET IDENTITY_INSERT [dbo].[LearningExcludedQuestions] ON
 --BEGIN TRANSACTION;
 --#LearningExcludedQuestions#
 --COMMIT;
---SET IDENTITY_INSERT [dbo].[LearningExcludedQueries] OFF
+--SET IDENTITY_INSERT [dbo].[LearningExcludedQuestions] OFF
 
 
 
@@ -1012,3 +1016,24 @@ CREATE TABLE [dbo].[LearningExcludedWords] (
 --#LearningExcludedWords#
 --COMMIT;
 --SET IDENTITY_INSERT [dbo].[LearningExcludedWords] OFF
+
+
+-- Tabela przechowuj¹ca listê s³ów wy³¹czonych z nauki dla poszczególnych userów.
+CREATE TABLE [dbo].[TestResults] (
+      [Id]					INT     IDENTITY (1, 1) NOT NULL
+    , [UserId]				INT	NOT NULL			
+    , [QuestionId]			INT	NOT NULL		
+	, [BaseLanguage]		INT	NOT NULL	
+	, [LearnedLanguage]		INT	NOT NULL	
+	, [Last50]				VARCHAR(50)	DEFAULT ('') 
+	, [Counter]				INT			DEFAULT((0)) 
+	, [CorrectAnswers]		INT			DEFAULT((0)) 
+	, [LastQuery]			DATETIME	DEFAULT((0)) 
+	, [ToDo]			INT	DEFAULT((0)) 
+    , CONSTRAINT [PK_TestResult] PRIMARY KEY CLUSTERED ([Id] ASC)
+    , CONSTRAINT [U_UserQuestionLanguages] UNIQUE NONCLUSTERED ([UserId] ASC, [QuestionId] ASC, [BaseLanguage] ASC, [LearnedLanguage] ASC)
+    , CONSTRAINT [FK_TestResult_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[Users] ([Id])
+	, CONSTRAINT [FK_TestResult_Question] FOREIGN KEY ([QuestionId]) REFERENCES [dbo].[Questions] ([Id])
+    , CONSTRAINT [FK_TestResult_BaseLanguage] FOREIGN KEY ([BaseLanguage]) REFERENCES [dbo].[Languages] ([Id])
+	, CONSTRAINT [FK_TestResult_LearnedLanguage] FOREIGN KEY ([LearnedLanguage]) REFERENCES [dbo].[Languages] ([Id])
+);

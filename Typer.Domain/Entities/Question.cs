@@ -43,6 +43,12 @@ namespace Typer.Domain.Entities
         [Display(Name = "Is complex")]
         public bool IsComplex { get; set; }
 
+        [Display(Name = "Ask plural")]
+        public bool AskPlural { get; set; }
+
+        [Display(Name = "Word type")]
+        public int? WordType { get; set; }
+
         private IEnumerable<Category> categories;
         public IEnumerable<Category> Categories
         {
@@ -77,6 +83,60 @@ namespace Typer.Domain.Entities
         }
 
         public List<VariantSet> VariantSets;
+
+
+        public void loadQuery(int baseLanguage, int learnedLanguage, out string displayed, out string[] correct)
+        {
+            var selectedOption = drawOption(baseLanguage);
+
+
+            if (IsComplex)
+            {
+                displayed = selectedOption.Content;
+                correct = new string[] {"a"};
+            }
+            else
+            {
+                displayed = selectedOption.Content;
+                IList<QuestionOption> correctOptions = GetOptions(learnedLanguage).ToList();
+                var correctAnswers = "";
+                
+                foreach (var option in correctOptions)
+                {
+                    correctAnswers += "";
+                }
+
+                correct = correctAnswers.Split(';');
+
+            }
+
+        }
+
+
+        private QuestionOption drawOption(int baseLanguage)
+        {
+            IEnumerable<QuestionOption> langOptions = GetOptions(baseLanguage);
+
+            var totalWeight = langOptions.Sum(o => (IsComplex || o.IsMain ? o.Weight : 0));
+            var sum = 0;
+            var rnd = new Random();
+            var randomValue = rnd.Next(1, totalWeight);
+
+            foreach (var option in langOptions)
+            {
+                if (IsComplex || option.IsMain)
+                {
+                    sum += option.Weight;
+                    if (sum >= randomValue)
+                    {
+                        return option;
+                    }
+                }
+            }
+
+            return null;
+
+        }
 
     }
 }
