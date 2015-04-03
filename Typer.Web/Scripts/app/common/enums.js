@@ -105,6 +105,7 @@ $(function () {
             , Weight: { name: 'weight' }
             , Categories: { name: 'categories' }
             , Wordtype: { name: 'wordtype' }
+            , IsMain: { name: 'isMain' }
         });
 
         var dataTypes = new Enum({

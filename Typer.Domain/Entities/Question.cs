@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using Typer.Domain.Services;
 
@@ -59,6 +61,14 @@ namespace Typer.Domain.Entities
             }
         }
 
+        private IEnumerable<QuestionOption> options;
+        public IEnumerable<QuestionOption> Options
+        {
+            get { return options ?? (options = QuestionServicesFactory.Instance().GetService().GetOptions(Id)); }
+        }
+
+
+
 
         private void LoadCategories()
         {
@@ -72,11 +82,36 @@ namespace Typer.Domain.Entities
         }
 
 
-        private IEnumerable<QuestionOption> options;
-        public IEnumerable<QuestionOption> Options
+
+        public Question(string json)
         {
-            get { return options ?? (options = QuestionServicesFactory.Instance().GetService().GetOptions(Id)); }
+            JToken token = JObject.Parse(json);
+
+            Id = (int)token.SelectToken("Id");
+            Name = (string)token.SelectToken("Name");
+            Weight = (int)token.SelectToken("Weight");
+            WordType = (int)token.SelectToken("WordType");
+            IsActive = (bool)token.SelectToken("IsActive");
+            IsComplex = (bool)token.SelectToken("IsComplex");
+            AskPlural = (bool)token.SelectToken("AskPlural");
+            CreatorId = (int)token.SelectToken("CreatorId");
+            CreateDate = (DateTime)token.SelectToken("CreateDate");
+            categories = Category.GetCollection(token.SelectToken("Categories"));
+
+            ////Convert JSON to properties.
+            //var categories = new int[] { };// token.SelectToken("Categories");
+            //var dependencies = new string[] { };
+            //var connections = new string[] { };
+            //var editedSets = new string[] { };
+            //var properties = new string[] { };
+            //var editedVariants = new string[] { };
+            //var addedVariants = new string[] { };
+            //var limits = new string[] { };
+
+
         }
+
+
         public IEnumerable<QuestionOption> GetOptions(int languageId)
         {
             return Options.Where(o => o.LanguageId == languageId);
@@ -89,6 +124,12 @@ namespace Typer.Domain.Entities
         {
             var selectedOption = drawOption(baseLanguage);
 
+            if (selectedOption == null)
+            {
+                displayed = string.Empty;
+                correct = new string[] { };
+                return;
+            }
 
             if (IsComplex)
             {
@@ -97,19 +138,104 @@ namespace Typer.Domain.Entities
             }
             else
             {
+
                 displayed = selectedOption.Content;
                 IList<QuestionOption> correctOptions = GetOptions(learnedLanguage).ToList();
-                var correctAnswers = "";
-                
+                IList<string> answers = new List<string>();
+                IList<string> versions;
+
                 foreach (var option in correctOptions)
                 {
-                    correctAnswers += "";
+                    
+                    versions = getOptionVersions(option.Content);
+
+                    foreach (var str in versions)
+                    {
+                        answers.Add(str);
+                    }
+
                 }
 
-                correct = correctAnswers.Split(';');
+                correct = answers.ToArray();
 
             }
 
+        }
+
+        private IList<string> getOptionVersions(string option)
+        {
+
+            bool complete = false;
+            IList<string> versions = new List<string>();
+            versions.Add(option);
+
+            do
+            {
+                versions = reduceVersionsLevel(versions, out complete);
+            } while (!complete);
+
+            return versions;
+
+        }
+
+
+        private IList<string> reduceVersionsLevel(IList<string> versions, out bool complete)
+        {
+            Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+            IList<string> result = new List<string>();
+            complete = true;
+
+            foreach (var str in versions)
+            {
+
+                result.Add(str);
+                var part = "";
+                
+                foreach (char ch in str.ToCharArray())
+                {
+
+                    if (ch == '(')
+                    {
+                        part = "";
+                        result.Remove(str);
+                    }
+                    else if (ch == ')')
+                    {
+                        IList<string> parts = getVersions(part);
+                        string original = '(' + part + ')';
+
+                        foreach (var s in parts)
+                        {
+                            string converted = rgx.Replace(str.Replace(original, s), "");
+                            result.Add(converted);
+                        }
+
+                        complete = false;
+
+                    }
+                    else
+                    {
+                        part += ch;
+                    }
+                }
+            }
+
+
+            return result;
+
+        }
+
+
+        private IList<string> getVersions(string substring)
+        {
+            IList<string> versions = substring.Split('/').ToList();
+
+            if (versions.Count == 1)
+            {
+                versions.Add(string.Empty);
+            }
+
+            return versions;
         }
 
 
@@ -120,6 +246,9 @@ namespace Typer.Domain.Entities
             var totalWeight = langOptions.Sum(o => (IsComplex || o.IsMain ? o.Weight : 0));
             var sum = 0;
             var rnd = new Random();
+
+            if (totalWeight == 0) return null;
+
             var randomValue = rnd.Next(1, totalWeight);
 
             foreach (var option in langOptions)

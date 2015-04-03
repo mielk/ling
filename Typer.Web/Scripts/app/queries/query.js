@@ -17,6 +17,9 @@ function Query(properties) {
     Entity.call(self, properties);
 
     //Instance properties.
+    self.wordtype = properties.WordType ? Ling.Enums.Wordtypes.getItem(properties.WordType) : null;
+    self.askPlural = properties.AskPlural;
+    self.isComplex = properties.IsComplex;
     self.service = Ling.Queries;
     self.sets = mielk.hashTable();
 
@@ -72,6 +75,10 @@ mielk.objects.addProperties(Query.prototype, {
         editPanel.bind({
             confirm: function (e) {
                 self.update(e.object);
+                self.trigger({
+                      type: 'confirm'
+                    , query: self
+                });
             }
         });
 
@@ -149,6 +156,9 @@ mielk.objects.addProperties(Query.prototype, {
               Id: self.id
             , Name: self.name
             , Weight: self.weight
+            , IsComplex: self.isComplex
+            , WordType: self.wordtype.id
+            , AskPlural: self.askPlural
             , IsActive: self.isActive
             , CreatorId: self.creatorId
             , CreateDate: self.createDate
@@ -156,6 +166,7 @@ mielk.objects.addProperties(Query.prototype, {
             , Positive: self.positive
             , Negative: self.negative
             , IsNew: self.isNew
+            , WordType: self.wordtype.id
         });
 
         //Complex properties are set directly.
@@ -216,11 +227,15 @@ mielk.objects.addProperties(Query.prototype, {
         self.edited = true;
         self.name = object.name;
         self.weight = object.weight;
+        self.isComplex = object.isComplex;
+        self.wordtype = object.wordtype;
+        self.askPlural = object.askPlural;
         self.isActive = object.isActive;
         self.wordtype = object.wordtype;
         self.categories = object.categories;
         self.items = object.items;
         self.sets = object.sets;
+        self.wordtype = object.wordtype || self.wordtype;
     }
 
     //[Override]
@@ -231,7 +246,9 @@ mielk.objects.addProperties(Query.prototype, {
               Id: self.id
             , Name: self.name
             , Weight: self.weight
-            , Type: self.wordtype.id
+            , WordType: self.wordtype ? self.wordtype.id : 0
+            , IsComplex: self.isComplex
+            , AskPlural: self.askPlural
             , IsActive: self.isActive
             , CreatorId: self.creatorId
             , CreateDate: self.createDate

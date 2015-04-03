@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using Typer.Domain.Services;
 using Typer.Domain.Entities;
 using Typer.Web.Models;
+using Newtonsoft.Json.Linq;
 
 namespace Typer.Web.Controllers
 {
@@ -94,14 +95,26 @@ namespace Typer.Web.Controllers
 
 
 
+        //[HttpPost]
+        //[AllowAnonymous]
+        //public ActionResult Update(int id, string name, int weight, int[] categories, 
+        //    string[] dependencies, string[] connections, string[] editedSets, string[] properties,
+        //    string[] editedVariants, string[] addedVariants, string[] limits)
+        //{
+        //    var result = service.Update(id, name, weight, categories, dependencies, connections, editedSets, properties, editedVariants, addedVariants, limits);
+        //    return Json(result);
+        //}
+
+
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult Update(int id, string name, int weight, int[] categories, 
-            string[] dependencies, string[] connections, string[] editedSets, string[] properties,
-            string[] editedVariants, string[] addedVariants, string[] limits)
+        public ActionResult Update(string json)
         {
-            var result = service.Update(id, name, weight, categories, dependencies, connections, editedSets, properties, editedVariants, addedVariants, limits);
+
+            var question = new Question(json);
+            var result = service.Update(question);
             return Json(result);
+
         }
 
 

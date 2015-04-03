@@ -792,6 +792,83 @@ WeightPanel.prototype = {
 
 
 
+function CheckboxPanel(params) {
+
+    'use strict';
+
+    var self = this;
+
+    //Class signature.
+    self.CheckboxPanel = true;
+
+    self.callback = params.callback;          //Funkcja odpalana po zmianie wartości właściwości tego checkboxa.
+
+    self.ui = (function () {
+        var container = null;
+        var box = null;
+
+        function createContainer() {
+            container = jQuery('<span/>', {
+                'class': 'block'
+            }).css({
+                'text-align': 'left'
+            });
+
+            box = jQuery('<input/>', {
+                  'type': 'checkbox'
+                , 'class': 'field default'
+                , 'value': params.value
+            }).css({
+                'height': '24px',
+                'width': '24px',
+                'margin': '5px 0'
+            }).appendTo(container);
+
+        }
+
+        function applyCustomCss() {
+            if (params && params.css) {
+                $(container).css(params.css);
+            }
+        }
+
+        function refresh(value) {
+            alert('ustaw checkbox');
+        }
+
+        (function initialize() {
+            createContainer();
+            applyCustomCss();
+        })();
+
+        return {
+              view: container
+            , refresh: refresh
+        };
+
+    })();
+
+}
+CheckboxPanel.prototype = {
+
+    view: function () {
+        return this.ui.view;
+    }
+
+    , changeValue: function (value) {
+        mielk.fn.run(this.callback, value);
+        this.ui.refresh(value);
+    }
+
+    , setValue: function (value) {
+        this.ui.refresh(value);
+    }
+
+};
+
+
+
+
 
 //Klasa reprezentująca panel do wybierania kategorii.
 function CategoryPanel(params) {

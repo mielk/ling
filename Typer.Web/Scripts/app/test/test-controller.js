@@ -35,7 +35,7 @@
                 var value = e.target.value;
 
                 //Check if answer is given at all.
-                if (value.trim().length) {
+                if (value.length) {
                     self.answerStatus = true;
                     self.checkAnswer(value);
                     $(self.correctAnswers).focus();
@@ -49,7 +49,28 @@
 
     $(self.correctAnswers).bind({
         keypress: function (e) {
-            self.runTest();
+
+            //If [Space] is pressed - edit this question.
+            if (e.which === 32) {
+
+                var query = new Query(Ling.Queries.getQuery(self.currentQuery.QuestionId));
+
+                query.bind({
+                    confirm: function (e) {
+                        self.runTest();
+                    }
+                });
+
+                query.edit();
+
+            }
+
+            //Otherwise, move to the next question.
+            else
+            {
+                self.runTest();
+            }
+
         }
     });
 
@@ -102,7 +123,7 @@ TestController.prototype = {
 
     , refreshView: function () {
         var self = this;
-        $(self.leftControl).html(self.left);
+        $(self.leftControl).html(self.left + ' (' + self.queries.size() + ')');
         $(self.doneControl).html(self.done);
         $(self.correctControl).html(self.correct);
         $(self.resultControl).html(self.done > 0 ?
@@ -132,6 +153,10 @@ TestController.prototype = {
                 self.clearCorrectAnswers();
                 $(self.answerControl).focus();
 
+            }
+            , done: function (e) {
+                self.queries.removeItem(e.questionId);
+                self.refreshView();
             }
 
         });
@@ -170,11 +195,10 @@ TestController.prototype = {
         if (isCorrect) {
             self.correct++;
             self.left--;
+
         } else {
             self.left++;
         }
-        self.refreshView();
-
 
         //Highlight [Answer] textbox depending on the result.
         $(self.answerControl).addClass(isCorrect ? 'correct' : 'incorrect');
@@ -184,6 +208,14 @@ TestController.prototype = {
 
         //Send results to the database.
         self.currentQuery.saveAnswer(isCorrect);
+
+        //Refresh stats view.
+        self.refreshView();
+
+        //If answer was incorrect, display AlertBox with proper answers.
+        if (!isCorrect) {
+            alert(self.currentQuery.getAlertText());
+        }
 
     }
 
@@ -276,10 +308,12 @@ UserQuery.prototype = {
 
     , checkAnswer: function (value) {
         var self = this;
-        var comparisonValue = value.trim().toUpperCase();
+        var comparisonValue = value.replace(/[^a-z0-9]/gi, '').toUpperCase();
+
 
         for (var i = 0; i < self.correct.length; i++) {
-            var correctValue = self.correct[i].trim().toUpperCase();
+
+            var correctValue = self.correct[i].replace(/[^a-z0-9]/gi, '').toUpperCase();
 
             if (comparisonValue === correctValue) {
                 return true;
@@ -309,12 +343,38 @@ UserQuery.prototype = {
 
     }
 
+    , getAlertText: function () {
+        var self = this;
+        var text = '';
+
+        text = 'QUESTION: ' + self.displayed + '\n\n';
+        text = text + 'ANSWERS\n';
+        text = text + '---------------------\n';
+
+        mielk.arrays.each(self.correct, function (item) {
+            text = text + item + '\n';
+        });
+
+        return text;
+
+    }
+
     , saveAnswer: function (result) {
         var self = this;
         self.Counter++;
         if (result) {
             self.Correct++;
             self.ToDo--;
+
+            //Remove if left = 0.
+            if (self.ToDo === 0) {
+                self.trigger({
+                      type: 'done'
+                    , questionId: self.QuestionId
+                });
+            }
+
+
         } else {
             self.ToDo++;
         }

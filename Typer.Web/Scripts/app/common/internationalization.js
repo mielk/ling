@@ -307,6 +307,10 @@ $(function () {
                   POL: 'Nazwa'
                 , ENG: 'Name'
             }
+            , IsDisplayed: {
+                  POL: 'Wyświetlany'
+                , ENG: 'Displayed'
+            }
             , Weight: {
                   POL: 'Waga'
                 , ENG: 'Weight'

@@ -190,6 +190,33 @@ namespace Typer.DAL.Repositories
             }
         }
 
+
+        public bool Update(QuestionDto question)
+        {
+
+            var entity = GetQuestion(question.Id);
+
+            try
+            {
+                entity.Name = question.Name;
+                entity.Weight = question.Weight;
+                entity.WordType = question.WordType != null && question.WordType != 0 ? question.WordType : null;
+                entity.IsComplex = question.IsComplex;
+                entity.IsActive = question.IsActive;
+                entity.AskPlural = question.AskPlural;
+
+                Context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+        }
+
+
+
         public bool UpdateQuery(int questionId, int userId, int baseLanguage, int learnedLanguage, int counter, int correct, string last50, int toDo)
         {
             var query = GetUserQuery(questionId, userId, baseLanguage, learnedLanguage);

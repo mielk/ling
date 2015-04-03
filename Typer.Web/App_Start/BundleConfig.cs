@@ -80,6 +80,7 @@ namespace Typer.Web
                 , "~/Scripts/app/common/list/list-entity.js"
                 , "~/Scripts/app/common/list/edit-panel.js"
                 , "~/Scripts/app/common/list/edit-query-panel.js"
+                , "~/Scripts/app/common/list/edit-option-panel.js"
                 , "~/Scripts/app/queries/query-list.js"
                 , "~/Scripts/app/queries/queries.js"
                 , "~/Scripts/app/queries/query.js"

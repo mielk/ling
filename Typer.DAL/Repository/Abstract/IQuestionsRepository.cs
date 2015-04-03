@@ -16,6 +16,7 @@ namespace Typer.DAL.Repositories
         bool UpdateWeight(int id, int weight);
         bool UpdateProperties(int id, string name, int weight);
         bool UpdateCategories(int id, IEnumerable<int> categories);
+        bool Update(QuestionDto question);
         bool Activate(int id);
         bool Deactivate(int id);
         bool NameExists(string name);

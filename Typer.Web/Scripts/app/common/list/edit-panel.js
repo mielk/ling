@@ -357,7 +357,7 @@ function EditDataLine(panel, params) {
 
         }
 
-        function applyPanel($panel, $editable, $value) {
+        function applyPanel($panel, $editable, $value, $checkbox) {
 
             if ($panel) {
                 //Jeżeli gotowy panel jest przekazany do konstruktora
@@ -368,7 +368,7 @@ function EditDataLine(panel, params) {
                 applyNonEditablePanel($value);
             } else {
                 //Sytuacja, kiedy linia ma być edytowalna.
-                applyEditablePanel($value);
+                applyEditablePanel($value, $checkbox);
             }
 
         }
@@ -385,11 +385,11 @@ function EditDataLine(panel, params) {
             }).appendTo(container);
         }
 
-        function applyEditablePanel($value) {
+        function applyEditablePanel($value, $checkbox) {
 
             valuePanel = jQuery('<input/>', {
                 'class': 'field default',
-                'type': 'text'
+                'type': $checkbox ? 'checkbox' : 'text'
             }).bind({
                 'keydown': function (e) {
                     /* Jeżeli to nie jest ustawione, w IE 9 focus przeskakuje od razu
@@ -462,7 +462,7 @@ function EditDataLine(panel, params) {
             applyLabel(properties.label);
             applyErrorWarnings(properties.validation);
             applyRightPanel(properties.right);
-            applyPanel(properties.panel, properties.editable, properties.value);
+            applyPanel(properties.panel, properties.editable, properties.value, properties.checkbox);
             applyCustomCss(properties.inputCss);
             applyBindings(properties.controlBindings);
         })();

@@ -83,11 +83,19 @@ namespace Typer.Domain.Services
         }
 
 
-        public bool Update(int id, string name, int weight, int[] categories, string[] dependencies, string[] connections, string[] editedSets, 
-            string[] properties, string[] editedVariants, string[] addedVariants, string[] limits)
+        public bool Update(int id, string name, int weight, int type, bool isComplex, bool askPlural, int[] categories, string[] dependencies,
+                            string[] connections, string[] editedSets, string[] properties, string[] editedVariants, string[] addedVariants, string[] limits)
         {
             return false;
         }
+
+        public bool Update(Question question)
+        {
+            var dto = QuestionToDto(question);
+            return repository.Update(dto);
+        }
+
+
 
 
         public bool AddQuestion(Question question)
@@ -436,7 +444,30 @@ namespace Typer.Domain.Services
                 Positive = question.Positive,
                 Weight = question.Weight,
                 AskPlural = question.AskPlural,
-                WordType = question.WordType
+                WordType = question.WordType,
+                Categories = question.Categories == null ? null : question.Categories.Select(c => c.Id).ToArray(),
+                Options = question.Options == null ? null : question.Options.Select(OptionToDto).ToArray()
+            };
+        }
+
+        private static QuestionOptionDto OptionToDto(QuestionOption option)
+        {
+            return new QuestionOptionDto
+            {
+                Content = option.Content, 
+                CreateDate = option.CreateDate,
+                CreatorId = option.CreatorId,
+                Id = option.Id,
+                IsActive = option.IsActive,
+                IsApproved = option.IsApproved,
+                IsCompleted = option.IsCompleted,
+                IsComplex = option.IsComplex,
+                IsMain = option.IsMain,
+                LanguageId = option.LanguageId,
+                Negative = option.Negative,
+                Positive = option.Positive,
+                QuestionId = option.QuestionId,
+                Weight = option.Weight
             };
         }
 
@@ -451,6 +482,7 @@ namespace Typer.Domain.Services
                 IsActive = dto.IsActive,
                 IsApproved = dto.IsApproved,
                 IsComplex = dto.IsComplex,
+                IsCompleted = dto.IsCompleted,
                 LanguageId = dto.LanguageId,
                 Negative = dto.Negative,
                 Positive = dto.Positive,
