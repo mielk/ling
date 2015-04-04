@@ -194,24 +194,54 @@ namespace Typer.DAL.Repositories
         public bool Update(QuestionDto question)
         {
 
+            var correct = true;
             var entity = GetQuestion(question.Id);
 
-            try
+            using (var scope = new TransactionScope())
             {
-                entity.Name = question.Name;
-                entity.Weight = question.Weight;
-                entity.WordType = question.WordType != null && question.WordType != 0 ? question.WordType : null;
-                entity.IsComplex = question.IsComplex;
-                entity.IsActive = question.IsActive;
-                entity.AskPlural = question.AskPlural;
 
-                Context.SaveChanges();
-                return true;
+                try
+                {
+                    entity.Name = question.Name;
+                    entity.Weight = question.Weight;
+                    entity.WordType = question.WordType != null && question.WordType != 0 ? question.WordType : null;
+                    entity.IsComplex = question.IsComplex;
+                    entity.IsActive = question.IsActive;
+                    entity.AskPlural = question.AskPlural;
+                    entity.CreateDate = question.CreateDate;
+                    entity.CreatorId = question.CreatorId;
+                    entity.IsApproved = question.IsApproved;
+                    entity.Negative = question.Negative;
+                    entity.Positive = question.Positive;
+                    Context.SaveChanges();
+
+                    //Update categories.
+
+                    //Update options.
+
+
+                }
+                catch (Exception)
+                {
+                    scope.Dispose();
+                    return false;
+                }
+
+
+
+                if (correct)
+                {
+                    scope.Complete();
+                    return true;
+                }
+                else
+                {
+                    scope.Dispose();
+                    return false;
+                }
+
             }
-            catch (Exception)
-            {
-                return false;
-            }
+
 
         }
 

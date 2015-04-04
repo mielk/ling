@@ -91,10 +91,12 @@ mielk.objects.addProperties(Query.prototype, {
 
     }
 
-    , getOptionByName: function(languageId, name) {
+    , getOptionByContent: function(languageId, content) {
         var options = this.items.getItem(languageId);
         var option = null;
-        if (options) option = options.getItem(name);
+        if (options) {
+            option = options.getItem(content);
+        }
         return option;
     }
 

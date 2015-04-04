@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Typer.DAL.TransferObjects
 {
@@ -21,5 +22,10 @@ namespace Typer.DAL.TransferObjects
         public int Negative { get; set; }
         public bool IsComplex { get; set; }
         public bool IsCompleted { get; set; }
+        [NotMapped]
+        public bool IsEdited { get; set; }
+        [NotMapped]
+        public bool IsNew { get; set; }
+
     }
 }

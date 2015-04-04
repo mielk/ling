@@ -118,6 +118,10 @@ $(function () {
                 POL: 'Nazwa nie może być pusta',
                 ENG: 'Name cannot be empty'
             }
+            , ContentCannotBeEmpty: {
+                POL: 'Treść nie może być pusta',
+                ENG: 'Content cannot be empty'
+            }
             , NameCannotBeLongerThan: {
                 POL: 'Nazwa nie może być dłuższa niż {0} znaków',
                 ENG: 'Name cannot be longer than {0} characters'
@@ -125,6 +129,10 @@ $(function () {
             , NameAlreadyExists: {
                 POL: 'Istnieje już element o takiej nazwie',
                 ENG: 'This name has been used already'
+            }
+            , ContentAlreadyExists: {
+                POL: 'Istnieje już element o takiej treści',
+                ENG: 'This content has been used already'
             }
             , NodeCannotBeMovedToDescendant: {
                 POL: 'Element nie może być przeniesiony do własnego potomka',
@@ -306,6 +314,10 @@ $(function () {
             , Name: {
                   POL: 'Nazwa'
                 , ENG: 'Name'
+            }
+            , Content: {
+                  POL: 'Treść'
+                , ENG: 'Content'
             }
             , IsDisplayed: {
                   POL: 'Wyświetlany'

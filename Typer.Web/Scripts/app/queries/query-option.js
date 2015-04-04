@@ -48,6 +48,11 @@ mielk.objects.addProperties(QueryOption.prototype, {
         this.trigger({ type: 'remove' });
     }
 
+    //[Override]
+    , key: function () {
+        return this.content;
+    }
+
     , clone: function () {
         var self = this;
 
@@ -85,7 +90,7 @@ mielk.objects.addProperties(QueryOption.prototype, {
     , getEditedPropertiesList: function () {
         return [
               Ling.Enums.Properties.Id
-            , Ling.Enums.Properties.Name
+            , Ling.Enums.Properties.Content
             , Ling.Enums.Properties.Weight
             , Ling.Enums.Properties.IsMain
         ];
@@ -129,19 +134,19 @@ mielk.objects.addProperties(QueryOption.prototype, {
         }
 
 
-        //[Name]
-        if ($.inArray(Ling.Enums.Properties.Name, properties) > -1) {
+        //[Content]
+        if ($.inArray(Ling.Enums.Properties.Content, properties) > -1) {
             datalines.push({
-                property: Ling.Enums.Properties.Name,
+                property: Ling.Enums.Properties.Content,
                 index: 1,
-                label: dict.Name.get(),
-                value: object.name,
+                label: dict.Content.get(),
+                value: object.content,
                 callback: function (value) {
-                    object.name = value;
-                    object.trigger({ type: 'changeName', value: value });
+                    object.content = value;
+                    object.trigger({ type: 'changeContent', value: value });
                 },
                 validation: function (params) {
-                    return object.entity.checkName(params.value);
+                    return object.entity.checkContent(params.value);
                 },
                 editable: true
             });
@@ -173,10 +178,10 @@ mielk.objects.addProperties(QueryOption.prototype, {
         if ($.inArray(Ling.Enums.Properties.IsMain, properties) > -1) {
             var checkboxPanel = new CheckboxPanel({
                   value: object.isMain
-                , callback: function(value){
-                    alert(value);
-                }
-                , css: { 'margin': '0', 'height': '100%', 'width': 'auto', 'float': 'left' }
+                , callback: function (value) {
+                    object.isMain = value;
+                    object.trigger({ type: 'changeDisplayStatus', value: value });
+                  }
             });
             datalines.push({
                 property: Ling.Enums.Properties.IsMain,
@@ -184,9 +189,6 @@ mielk.objects.addProperties(QueryOption.prototype, {
                 label: dict.IsDisplayed.get(),
                 value: object.isMain,
                 panel: checkboxPanel.view(),
-                callback: function (value) {
-                    object.isMain = value;
-                },
                 editable: true
             });
         }
@@ -242,8 +244,7 @@ mielk.objects.addProperties(QueryOption.prototype, {
     , update: function (object) {
         var self = this;
         self.edited = true;
-        self.name = object.name;
-        self.content = object.Content;
+        self.content = object.content;
         self.weight = object.weight;
         self.isMain = object.isMain;
         self.isActive = object.isActive;
@@ -253,7 +254,7 @@ mielk.objects.addProperties(QueryOption.prototype, {
     }
 
     , checkIfComplete: function () {
-        alert('QueryOption.update :: TODO');
+        alert('QueryOption.checkIfComplete :: TODO');
         return false;
     }
 
@@ -297,16 +298,15 @@ mielk.objects.addProperties(QueryOption.prototype, {
 
 
 
-    //[Override]
-    //Funkcja sprawdzająca czy Entity o takiej nazwie już istnieje.
-    , checkName: function (name) {
+    //Funkcja sprawdzająca czy Entity o takiej treści już istnieje.
+    , checkContent: function (content) {
 
         //Check if name is not empty.
-        if (!name) return dict.NameCannotBeEmpty.get();
+        if (!content) return dict.ContentCannotBeEmpty.get();
 
         //Check if name already exists in this language for its parent.
-        var option = this.parent.getOptionByName(this.language.id, name);
-        if (option && option.id !== this.id) return dict.NameAlreadyExists.get();
+        var option = this.parent.getOptionByContent(this.language.id, content);
+        if (option && option.id !== this.id) return dict.ContentAlreadyExists.get();
 
         return true;
 
@@ -321,7 +321,7 @@ mielk.objects.addProperties(QueryOption.prototype, {
               Id: self.id
             , QueryId: self.parent.id
             , LanguageId: self.language.id
-            , Name: self.name
+            , Weight: self.weight
             , Content: self.content
             , IsMain: self.isMain
             , IsCompleted: self.isCompleted

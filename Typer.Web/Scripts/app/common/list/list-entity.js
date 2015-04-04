@@ -44,6 +44,10 @@ Entity.prototype = {
         this.eventHandler.bind(e);
     }
 
+    , key: function () {
+        return this.name;
+    }
+
     //Funkcja zwracająca obiekty typu Category przypisane do tego Entity.
     , loadCategories: function (categories) {
         var array = [];
@@ -191,7 +195,7 @@ Entity.prototype = {
             var set = table.getItem(languageId);
             if (set) {
                 var subitem = self.createSubItem(value);
-                set.setItem(subitem.name, subitem);
+                set.setItem(subitem.key(), subitem);
             }
         });
 
@@ -800,6 +804,7 @@ function CheckboxPanel(params) {
 
     //Class signature.
     self.CheckboxPanel = true;
+    self.value = params.value;
 
     self.callback = params.callback;          //Funkcja odpalana po zmianie wartości właściwości tego checkboxa.
 
@@ -811,17 +816,26 @@ function CheckboxPanel(params) {
             container = jQuery('<span/>', {
                 'class': 'block'
             }).css({
-                'text-align': 'left'
+                  'text-align': 'left'
+                , 'float': 'left'
+                , 'margin': '0'
+                , 'height': '100%'
+                , 'width': 'auto'
+                , 'background-color': 'transparent'
             });
 
             box = jQuery('<input/>', {
                   'type': 'checkbox'
                 , 'class': 'field default'
-                , 'value': params.value
             }).css({
                 'height': '24px',
                 'width': '24px',
                 'margin': '5px 0'
+            }).prop({
+                'checked': self.value
+            }).change(function () {
+                var value = box.prop('checked');
+                self.changeValue(value);
             }).appendTo(container);
 
         }
@@ -833,7 +847,8 @@ function CheckboxPanel(params) {
         }
 
         function refresh(value) {
-            alert('ustaw checkbox');
+            self.value = value;
+            $(box).prop('checked', value);
         }
 
         (function initialize() {

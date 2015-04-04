@@ -467,7 +467,9 @@ namespace Typer.Domain.Services
                 Negative = option.Negative,
                 Positive = option.Positive,
                 QuestionId = option.QuestionId,
-                Weight = option.Weight
+                Weight = option.Weight,
+                IsEdited = option.IsEdited,
+                IsNew = option.IsNew
             };
         }
 

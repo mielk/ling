@@ -97,17 +97,7 @@ namespace Typer.Domain.Entities
             CreatorId = (int)token.SelectToken("CreatorId");
             CreateDate = (DateTime)token.SelectToken("CreateDate");
             categories = Category.GetCollection(token.SelectToken("Categories"));
-
-            ////Convert JSON to properties.
-            //var categories = new int[] { };// token.SelectToken("Categories");
-            //var dependencies = new string[] { };
-            //var connections = new string[] { };
-            //var editedSets = new string[] { };
-            //var properties = new string[] { };
-            //var editedVariants = new string[] { };
-            //var addedVariants = new string[] { };
-            //var limits = new string[] { };
-
+            options = QuestionOption.GetCollection(token.SelectToken("Options"));
 
         }
 

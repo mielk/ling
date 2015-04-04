@@ -102,6 +102,7 @@ $(function () {
         var properties = new Enum({
               Id: { name: 'id' }
             , Name: { name: 'name' }
+            , Content: { name: 'content' }
             , Weight: { name: 'weight' }
             , Categories: { name: 'categories' }
             , Wordtype: { name: 'wordtype' }
