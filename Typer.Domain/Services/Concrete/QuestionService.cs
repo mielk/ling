@@ -89,10 +89,10 @@ namespace Typer.Domain.Services
             return false;
         }
 
-        public bool Update(Question question)
+        public bool Update(Question question, IEnumerable<int> languages)
         {
             var dto = QuestionToDto(question);
-            return repository.Update(dto);
+            return repository.Update(dto, languages);
         }
 
 

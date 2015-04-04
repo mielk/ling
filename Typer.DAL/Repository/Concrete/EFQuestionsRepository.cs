@@ -120,6 +120,10 @@ namespace Typer.DAL.Repositories
             }
         }
 
+        public bool UpdateCategories(QuestionDto question)
+        {
+            return UpdateCategories(question.Id, question.Categories);
+        }
 
         public bool UpdateCategories(int questionId, IEnumerable<int> categories)
         {
@@ -191,7 +195,61 @@ namespace Typer.DAL.Repositories
         }
 
 
-        public bool Update(QuestionDto question)
+        public bool UpdateOptions(QuestionDto question, IEnumerable<int> languages)
+        {
+
+            IEnumerable<QuestionOptionDto> options = Context.QuestionOptions.Where(o => o.QuestionId == question.Id && languages.Contains(o.LanguageId));
+
+
+            foreach (var option in options)
+            {
+
+                var updatedOption = question.Options.SingleOrDefault(o => o.Id == option.Id);
+
+                //Check if this option is still appended. If not, remove it from the database.
+                if (updatedOption == null)
+                {
+                    //Remove this item from the db.
+                }
+                else if (updatedOption.IsEdited)
+                {
+                    option.Content = updatedOption.Content;
+                    option.CreateDate = updatedOption.CreateDate;
+                    option.CreatorId = updatedOption.CreatorId;
+                    option.IsActive = updatedOption.IsActive;
+                    option.IsApproved = updatedOption.IsApproved;
+                    option.IsCompleted = updatedOption.IsCompleted;
+                    option.IsComplex = updatedOption.IsComplex;
+                    option.IsMain = updatedOption.IsMain;
+                    option.LanguageId = updatedOption.LanguageId;
+                    option.Negative = updatedOption.Negative;
+                    option.Positive = updatedOption.Positive;
+                    option.QuestionId = updatedOption.QuestionId;
+                    option.Weight = updatedOption.Weight;
+                    //Context.SaveChanges();
+                }
+
+            }
+
+
+
+            //Iterate through all the options in updated DTO object and add new items.
+            foreach (var option in question.Options)
+            {
+                if (option.IsNew)
+                {
+                    //This is new item.
+                    //Add it to the database.
+                }
+            }
+
+
+            return true;
+
+        }
+
+
+        public bool Update(QuestionDto question, IEnumerable<int> languages)
         {
 
             var correct = true;
@@ -213,11 +271,23 @@ namespace Typer.DAL.Repositories
                     entity.IsApproved = question.IsApproved;
                     entity.Negative = question.Negative;
                     entity.Positive = question.Positive;
-                    Context.SaveChanges();
+                    //Context.Questions.SaveChanges();
 
                     //Update categories.
+                    if (!UpdateCategories(question))
+                    {
+                        correct = false;
+                    }
 
-                    //Update options.
+
+                    //Update options - only if [correct] is still true. Otherwise it won't be committed anyway.
+                    if (correct)
+                    {
+                        if (!UpdateOptions(question, languages))
+                        {
+                            correct = false;
+                        }
+                    }
 
 
                 }
@@ -231,6 +301,7 @@ namespace Typer.DAL.Repositories
 
                 if (correct)
                 {
+                    Context.SaveChanges();
                     scope.Complete();
                     return true;
                 }

@@ -289,6 +289,7 @@ mielk.objects.addProperties(Query.prototype, {
                 return array;
 
             })()
+            , Languages: Ling.Users.Current.getLanguagesIds()
         };
 
     }

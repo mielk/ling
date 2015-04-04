@@ -4,6 +4,7 @@ using Typer.Domain.Services;
 using Typer.Domain.Entities;
 using Typer.Web.Models;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace Typer.Web.Controllers
 {
@@ -112,7 +113,9 @@ namespace Typer.Web.Controllers
         {
 
             var question = new Question(json);
-            var result = service.Update(question);
+            IEnumerable<int> languages = JObject.Parse(json).SelectToken("Languages").Select(t => t.Value<int>());
+
+            var result = service.Update(question, languages);
             return Json(result);
 
         }
