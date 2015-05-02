@@ -275,11 +275,7 @@ mielk.objects.addProperties(Query.prototype, {
                 self.items.each(function (key, language) {
                     language.each(function (k, word) {
 
-                        dto = (word.edited ? word.dto() : {
-                            Id: word.id
-                            , Name: word.name
-                            , Edited: false
-                        });
+                        dto = word.dto();
 
                         array.push(dto);
 

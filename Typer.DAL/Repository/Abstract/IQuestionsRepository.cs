@@ -50,6 +50,10 @@ namespace Typer.DAL.Repositories
         IEnumerable<UserQueryDto> GetUserQueries(int userId, int baseLanguage, int learnedLanguage);
         UserQueryDto GetUserQuery(int questionId, int userId, int baseLanguage, int learnedLanguage);
         bool UpdateQuery(int questionId, int userId, int baseLanguage, int learnedLanguage, int counter, int correct, string last50, int toDo);
+        bool SaveSessionStats(int sessionId, int queries, int correct, int questions, int bestRow, bool completed);
+        int RegisterSession(int userId, int baseLanguage, int learnedLanguage);
+        bool ClearCalculationStepsTable();
+        bool AddToCalculationStepsTable(int questionId, double timeFactor, double doneFactor, double correctFactor, bool inherited, bool isNew, int total);
 
     }
 }

@@ -408,7 +408,7 @@ Entity.prototype = {
     , addItem: function (item) {
         var languageId = item.language.id;
         var set = this.items.getItem(languageId);
-        set.setItem(item.name, item);
+        set.setItem(item.name || item.content, item);
         item.isNew = false;
     }
 

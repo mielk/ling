@@ -12,6 +12,7 @@ namespace Typer.DAL.TransferObjects
         public int QuestionId { get; set; }
         public int LanguageId { get; set; }
         public string Content { get; set; }
+        public int? WordId { get; set; }
         public int Weight { get; set; }
         public bool IsMain { get; set; }
         public bool IsActive { get; set; }

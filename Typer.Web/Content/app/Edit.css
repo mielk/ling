@@ -455,6 +455,19 @@ input.id
     margin: 4px 18px 4px 0;
 }
 
+.displayed {
+    float: left !important;
+    display: block !important;
+    width: 16px !important;
+    height: 16px !important;
+    margin: 4px 6px;
+    background-image: url('/Content/images/gold_star.png');
+}
+
+.non-displayed {
+    display: none !important;
+}
+
 .complete {
     background-image: url('/Content/images/green.png');
 }

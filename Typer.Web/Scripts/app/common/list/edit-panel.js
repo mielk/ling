@@ -760,6 +760,7 @@ function OptionPanel(item, parent) {
         var edit;
         var content;
         var weight;
+        var displayness;
         var completness;
 
         function createUi() {
@@ -797,6 +798,10 @@ function OptionPanel(item, parent) {
                 'class': 'completness ' + (self.item.isCompleted ? 'complete' : 'incomplete')
             }).appendTo(container);
 
+            displayness = jQuery('<div/>', {
+                'class': (self.item.isMain ? 'displayed' : 'non-displayed')
+            }).appendTo(container);
+
 
         }
 
@@ -820,11 +825,13 @@ function OptionPanel(item, parent) {
             $(container).remove();
         }
 
-        function update($content, $weight, $complete) {
-            $(content).html(self.contentToHtml($content));
-            $(weight).html($weight);
-            $(completness).addClass($complete ? 'complete' : 'incomplete');
-            $(completness).removeClass($complete ? 'incomplete' : 'complete');
+        function update(params) {
+            $(content).html(self.contentToHtml(params.content));
+            $(weight).html(params.weight);
+            $(completness).addClass(params.isCompleted ? 'complete' : 'incomplete');
+            $(completness).removeClass(params.isCompleted ? 'incomplete' : 'complete');
+            $(displayness).addClass(params.displayed ? 'displayed' : 'non-displayed');
+            $(displayness).removeClass(params.displayed ? 'non-displayed' : 'displayed');
         }
 
 
@@ -845,9 +852,15 @@ function OptionPanel(item, parent) {
     // ReSharper restore UnusedLocals
 
     self.events = (function () {
-        self.item.bind({
+        var i = self.item;
+        i.bind({
             updated: function () {
-                self.update(self.item.name, self.item.weight, self.item.isCompleted);
+                self.update({
+                    content: i.content
+                    , weight: i.weight
+                    , isCompleted: i.isCompleted
+                    , displayed: i.isMain
+                });
             }
         });
     })();
@@ -878,8 +891,8 @@ OptionPanel.prototype = {
 
     }
     
-    , contentToHtml: function() {
-        var content = this.item.name;
+    , contentToHtml: function($content) {
+        var content = $content || this.item.content;
         var replaced = content.replace(/\[/g, '|$').replace(/\]/g, '|');
         var parts = replaced.split("|");
 

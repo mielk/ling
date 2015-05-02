@@ -261,6 +261,9 @@ namespace Typer.Domain.Services
             List<UserQuery> queriesList = new List<UserQuery>();
 
 
+            //ClearCalculationStepsTable();
+
+
             foreach (var question in questions)
             {
                 
@@ -301,6 +304,26 @@ namespace Typer.Domain.Services
             return repository.UpdateQuery(questionId, userId, baseLanguage, learnedLanguage, counter, correct, last50, toDo);
         }
 
+        public bool SaveSessionStats(int sessionId, int queries, int correct, int questions, int bestRow, bool completed)
+        {
+            return repository.SaveSessionStats(sessionId, queries, correct, questions, bestRow, completed);
+        }
+
+        public int RegisterSession(int userId, int baseLanguage, int learnedLanguage)
+        {
+            return repository.RegisterSession(userId, baseLanguage, learnedLanguage);
+        }
+
+        public bool ClearCalculationStepsTable()
+        {
+            return repository.ClearCalculationStepsTable();
+        }
+
+        public bool AddToCalculationStepsTable(int questionId, double timeFactor, double doneFactor, double correctFactor,
+                                       bool inherited, bool isNew, int total)
+        {
+            return repository.AddToCalculationStepsTable(questionId, timeFactor, doneFactor, correctFactor, inherited, isNew, total);
+        }
 
         //public IEnumerable<VariantSet> GetVariantSets(int questionId, int[] languages)
         //{
@@ -464,6 +487,7 @@ namespace Typer.Domain.Services
                 IsComplex = option.IsComplex,
                 IsMain = option.IsMain,
                 LanguageId = option.LanguageId,
+                WordId = option.WordId,
                 Negative = option.Negative,
                 Positive = option.Positive,
                 QuestionId = option.QuestionId,
@@ -486,6 +510,7 @@ namespace Typer.Domain.Services
                 IsComplex = dto.IsComplex,
                 IsCompleted = dto.IsCompleted,
                 LanguageId = dto.LanguageId,
+                WordId = dto.WordId,
                 Negative = dto.Negative,
                 Positive = dto.Positive,
                 QuestionId = dto.QuestionId,

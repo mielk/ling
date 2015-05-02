@@ -364,6 +364,23 @@ $(function () {
                 , ENG: 'Error when loading languages from the database'
             }
 
+
+            //Test
+            , SessionRegistrationFailed: {
+                  POL: 'Błąd podczas rejestrowania sesji w bazie danych'
+                , ENG: 'Error when trying to register session in the database'
+            }
+
+            , SessionStatsUpdateFailure: {
+                  POL: 'Błąd podczas zapisywania statystyk sesji w bazie danych'
+                , ENG: 'Error when trying to save session\'s statistics in the database'
+            }
+
+            , SessionCompleted: {
+                  POL: 'Gratulacje! Odpowiedziałeś na wszystkie zapytania'
+                , ENG: 'Congratulations! Session has been completed'
+            }
+
         };
 
         addEntries(entries);

@@ -19,7 +19,7 @@ function QueryOption(query, params) {
     //Instance properties.
     self.parent = query;
     self.name = params.Name || params.Content || '';
-    self.content = params.Content || '';
+    self.content = params.Content || params.Name || '';
     self.isMain = params.IsMain || false;
     self.isCompleted = (params.IsCompleted || params.isCompleted ? true : false);
     self.language = Ling.Languages.getLanguage(params.languageId || params.LanguageId);
@@ -60,8 +60,8 @@ mielk.objects.addProperties(QueryOption.prototype, {
         //properties given as initialize parameters.
         var obj = new QueryOption(self.parent, {
               Id: self.id
-            , Name: self.name
-            , Content: self.content
+            , Name: self.name || self.content
+            , Content: self.content || self.name
             , Weight: self.weight
             , LanguageId: self.language.id
             , IsMain: self.isMain
@@ -143,6 +143,7 @@ mielk.objects.addProperties(QueryOption.prototype, {
                 value: object.content,
                 callback: function (value) {
                     object.content = value;
+                    object.name = value;
                     object.trigger({ type: 'changeContent', value: value });
                 },
                 validation: function (params) {
@@ -245,6 +246,7 @@ mielk.objects.addProperties(QueryOption.prototype, {
         var self = this;
         self.edited = true;
         self.content = object.content;
+        self.name = object.content;
         self.weight = object.weight;
         self.isMain = object.isMain;
         self.isActive = object.isActive;

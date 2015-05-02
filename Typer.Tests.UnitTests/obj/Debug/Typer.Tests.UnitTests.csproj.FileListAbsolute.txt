@@ -266,3 +266,4 @@ C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.Tests.UnitTests
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.Tests.UnitTests\obj\Debug\Typer.Tests.UnitTests.csprojResolveAssemblyReference.cache
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.Tests.UnitTests\obj\Debug\Typer.Tests.UnitTests.dll
 C:\Users\Tomek\Documents\Visual Studio 2012\Projects\liing\Typer.Tests.UnitTests\obj\Debug\Typer.Tests.UnitTests.pdb
+C:\tm\aplikacje\Lang\Typer.Tests.UnitTests\obj\Debug\Typer.Tests.UnitTests.csprojResolveAssemblyReference.cache

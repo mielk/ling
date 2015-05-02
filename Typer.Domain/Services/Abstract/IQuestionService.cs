@@ -27,7 +27,12 @@ namespace Typer.Domain.Services
         IEnumerable<Question> Filter(int lowWeight, int upWeight, int[] categories, string text);
         IEnumerable<UserQuery> GetQueries(int userId, int baseLanguage, int learnedLanguage);
         bool SaveAnswer(int questionId, int userId, int baseLanguage, int learnedLanguage, int counter, int correct, string last50, int toDo);
-
+        bool SaveSessionStats(int sessionId, int queries, int correct, int questions, int bestRow, bool completed);
+        int RegisterSession(int userId, int baseLanguage, int learnedLanguage);
+        bool ClearCalculationStepsTable();
+        bool AddToCalculationStepsTable(int questionId, double timeFactor, double doneFactor, double correctFactor,
+                                               bool inherited, bool isNew, int total);
+            
         //Variants
         //IEnumerable<VariantSet> GetVariantSets(int questionId, int[] languages);
         //IEnumerable<Variant> GetVariants(int variantSetId);

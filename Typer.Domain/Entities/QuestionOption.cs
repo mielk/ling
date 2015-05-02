@@ -11,6 +11,7 @@ namespace Typer.Domain.Entities
         public int QuestionId { get; set; }
         public int LanguageId { get; set; }
         public string Content { get; set; }
+        public int? WordId { get; set; }
         public int Weight { get; set; }
         public bool IsMain { get; set; }
         public bool IsActive { get; set; }
@@ -37,21 +38,18 @@ namespace Typer.Domain.Entities
             IsEdited = token.Value<bool?>("Edited") ?? false;
             IsNew = token.Value<bool?>("New") ?? false;
 
-            if (IsEdited || IsNew)
-            {
-                QuestionId = (int)token.SelectToken("QueryId");
-                LanguageId = (int)token.SelectToken("LanguageId");
-                Content = (string)token.SelectToken("Content");
-                Weight = (int)token.SelectToken("Weight");
-                IsMain = (bool)token.SelectToken("IsMain");
-                IsCompleted = (bool)token.SelectToken("IsCompleted");
-                IsActive = (bool)token.SelectToken("IsActive");
-                CreatorId = (int)token.SelectToken("CreatorId");
-                CreateDate = (DateTime)token.SelectToken("CreateDate");
-                IsApproved = (bool)token.SelectToken("IsApproved");
-                Positive = (int)token.SelectToken("Positive");
-                Negative = (int)token.SelectToken("Negative");
-            }
+            QuestionId = (int)token.SelectToken("QueryId");
+            LanguageId = (int)token.SelectToken("LanguageId");
+            Content = (string)token.SelectToken("Content");
+            Weight = (int)token.SelectToken("Weight");
+            IsMain = (bool)token.SelectToken("IsMain");
+            IsCompleted = (bool)token.SelectToken("IsCompleted");
+            IsActive = (bool)token.SelectToken("IsActive");
+            CreatorId = (int)token.SelectToken("CreatorId");
+            CreateDate = (DateTime)token.SelectToken("CreateDate");
+            IsApproved = (bool)token.SelectToken("IsApproved");
+            Positive = (int)token.SelectToken("Positive");
+            Negative = (int)token.SelectToken("Negative");
 
         }
 

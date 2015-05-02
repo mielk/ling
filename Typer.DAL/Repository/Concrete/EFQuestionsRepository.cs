@@ -85,6 +85,36 @@ namespace Typer.DAL.Repositories
 
 
 
+        #region Database management methods.
+
+        public bool ClearCalculationStepsTable()
+        {
+
+            const string TableName = "TestCalculationSteps";
+
+            string sqlCommand = string.Format(" DELETE FROM {0};", TableName);
+
+
+            using (var context = EFDbContext.GetInstance())
+            {
+
+                try
+                {
+                    context.Database.ExecuteSqlCommand(sqlCommand);
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+
+            }
+     
+        }
+
+        #endregion
+
+
 
         #region Update methods.
 
@@ -236,10 +266,26 @@ namespace Typer.DAL.Repositories
             //Iterate through all the options in updated DTO object and add new items.
             foreach (var option in question.Options)
             {
-                if (option.IsNew)
+                if (option.IsEdited && option.Id == 0)
                 {
-                    //This is new item.
-                    //Add it to the database.
+
+                    var newOption = new QuestionOptionDto();
+                    newOption.Content = option.Content;
+                    newOption.CreateDate = option.CreateDate;
+                    newOption.CreatorId = option.CreatorId;
+                    newOption.IsActive = true;
+                    newOption.IsApproved = option.IsApproved;
+                    newOption.IsCompleted = option.IsCompleted;
+                    newOption.IsComplex = option.IsComplex;
+                    newOption.IsMain = option.IsMain;
+                    newOption.LanguageId = option.LanguageId;
+                    newOption.Negative = option.Negative;
+                    newOption.Positive = option.Positive;
+                    newOption.QuestionId = option.QuestionId;
+                    newOption.Weight = option.Weight;
+
+                    Context.QuestionOptions.Add(newOption);
+
                 }
             }
 
@@ -320,6 +366,7 @@ namespace Typer.DAL.Repositories
 
         public bool UpdateQuery(int questionId, int userId, int baseLanguage, int learnedLanguage, int counter, int correct, string last50, int toDo)
         {
+
             var query = GetUserQuery(questionId, userId, baseLanguage, learnedLanguage);
 
             using (var scope = new TransactionScope())
@@ -371,6 +418,40 @@ namespace Typer.DAL.Repositories
                 return true;
 
             }
+
+
+        }
+
+
+
+
+        public bool AddToCalculationStepsTable(int questionId, double timeFactor, double doneFactor, double correctFactor,
+                                               bool inherited, bool isNew, int total)
+        {
+
+            var dto = Context.TestCalculations.SingleOrDefault(tc => tc.QuestionId == questionId);
+            if (dto == null)
+            {
+                dto = new TestCalculationDto();
+                dto.QuestionId = questionId;
+                dto.TimeFactor = timeFactor;
+                dto.DoneFactor = doneFactor;
+                dto.CorrectFactor = correctFactor;
+                dto.Inherited = inherited;
+                dto.IsNew = isNew;
+                dto.Total = total;
+            }
+
+
+            if (dto.Id == 0)
+            {
+                Context.TestCalculations.Add(dto);
+            }
+
+            Context.SaveChanges();
+
+
+            return true;
 
 
         }
@@ -525,6 +606,66 @@ namespace Typer.DAL.Repositories
         public IEnumerable<UserQueryDto> GetUserQueries(int userId, int baseLanguage, int learnedLanguage)
         {
             return Context.UserQueries.Where(uq => uq.UserId == userId && uq.BaseLanguage == baseLanguage && uq.LearnedLanguage == learnedLanguage);
+        }
+
+
+        //Test sessions.
+        public int RegisterSession(int userId, int baseLanguage, int learnedLanguage)
+        {
+            var sessionDto = new TestSessionDto();
+            sessionDto.UserId = userId;
+            sessionDto.BaseLanguage = baseLanguage;
+            sessionDto.LearnedLanguage = learnedLanguage;
+            sessionDto.StartTime = DateTime.Now;
+            sessionDto.EndTime = DateTime.Now;
+            sessionDto.Completed = false;
+
+            Context.TestSessions.Add(sessionDto);
+            Context.SaveChanges();
+
+            return sessionDto.Id;
+
+        }
+
+
+        public bool SaveSessionStats(int sessionId, int queries, int correct, int questions, int bestRow, bool completed)
+        {
+
+            var session = Context.TestSessions.SingleOrDefault(s => s.Id == sessionId);
+
+
+            //Check if Session has been found.
+            if (session == null) return false;
+
+
+            using (var scope = new TransactionScope())
+            {
+
+                try
+                {
+
+                    //Update properties of TestSession object.
+                    session.EndTime = DateTime.Now;
+                    session.Queries = queries;
+                    session.Correct = correct;
+                    session.Wrong = queries - correct;
+                    session.Questions = questions;
+                    session.BestRow = bestRow;
+                    session.Completed = completed;
+                    Context.SaveChanges();
+
+                }
+                catch (Exception)
+                {
+                    scope.Dispose();
+                    return false;
+                }
+
+                scope.Complete();
+                return true;
+
+            }
+
         }
 
     }

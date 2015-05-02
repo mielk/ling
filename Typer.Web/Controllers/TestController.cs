@@ -55,5 +55,23 @@ namespace Typer.Web.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult RegisterSession(int userId, int baseLanguage, int learnedLanguage)
+        {
+            int sessionId = questionService.RegisterSession(userId, baseLanguage, learnedLanguage);
+            return Json(sessionId, JsonRequestBehavior.AllowGet);
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult SaveSessionStats(int sessionId, int queries, int correct, int questions, int bestRow, bool completed)
+        {
+            var result = questionService.SaveSessionStats(sessionId, queries, correct, questions, bestRow, completed);
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
     }
 }

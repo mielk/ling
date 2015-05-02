@@ -46,7 +46,7 @@ namespace Typer.Domain.Entities
         public bool IsComplex { get; set; }
 
         [Display(Name = "Ask plural")]
-        public bool AskPlural { get; set; }
+        public int AskPlural { get; set; }
 
         [Display(Name = "Word type")]
         public int? WordType { get; set; }
@@ -93,7 +93,7 @@ namespace Typer.Domain.Entities
             WordType = (int)token.SelectToken("WordType");
             IsActive = (bool)token.SelectToken("IsActive");
             IsComplex = (bool)token.SelectToken("IsComplex");
-            AskPlural = (bool)token.SelectToken("AskPlural");
+            AskPlural = (int)token.SelectToken("AskPlural");
             CreatorId = (int)token.SelectToken("CreatorId");
             CreateDate = (DateTime)token.SelectToken("CreateDate");
             categories = Category.GetCollection(token.SelectToken("Categories"));

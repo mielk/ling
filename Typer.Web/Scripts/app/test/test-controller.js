@@ -7,6 +7,7 @@
     self.userId = params.userId;
     self.baseLanguage = params.baseLanguage;
     self.learnedLanguage = params.learnedLanguage;
+    self.sessionId = 0;
 
     self.events = mielk.eventHandler();
 
@@ -16,6 +17,9 @@
     self.left = 0;
     self.done = 0;
     self.correct = 0;
+    self.questionsAsked = mielk.hashTable();
+    self.bestRow = 0;
+    self.currentRow = 0;
 
     //Controls
     self.leftControl = $('#test-left')[0];
@@ -68,7 +72,13 @@
             //Otherwise, move to the next question.
             else
             {
-                self.runTest();
+
+                if (self.left === 0) {
+                    alert(dict.SessionCompleted.get());
+                } else {
+                    self.runTest();
+                }
+
             }
 
         }
@@ -134,6 +144,14 @@ TestController.prototype = {
 
     , runTest: function () {
         var self = this;
+
+
+        //Register this session if it has not been registered yet.
+        if (self.sessionId === 0) {
+            self.registerSession();
+        }
+
+
         var query = self.drawQuery();
         query.bind({
               answered: function (e) {
@@ -162,6 +180,48 @@ TestController.prototype = {
         });
         query.ask();
 
+    }
+
+    , registerSession: function () {
+        var self = this;
+
+        mielk.db.fetch('Test', 'RegisterSession', {
+              'userId': self.userId
+            , 'baseLanguage': self.baseLanguage
+            , 'learnedLanguage': self.learnedLanguage
+        }, {
+            async: true,
+            cache: false,
+            callback: function (result) {
+                self.sessionId = result;
+            },
+            errorCallback: function (error) {
+                mielk.notify.display(dict.SessionRegistrationFailed.get(), false);
+            }
+        });
+
+    }
+
+    , saveSessionStats: function () {
+        var self = this;
+
+        mielk.db.fetch('Test', 'SaveSessionStats', {
+              'sessionId': self.sessionId
+            , 'queries': self.done
+            , 'correct': self.correct
+            , 'questions': self.questionsAsked.size()
+            , 'bestRow': self.bestRow
+            , 'completed': (self.left === 0 ? true : false)
+        }, {
+            async: true,
+            cache: false,
+            callback: function (result) {
+                
+            },
+            errorCallback: function (error) {
+                mielk.notify.display(dict.SessionStatsUpdateFailure.get(), false);
+            }
+        });
     }
 
     , drawQuery: function() {
@@ -195,10 +255,19 @@ TestController.prototype = {
         if (isCorrect) {
             self.correct++;
             self.left--;
-
+            self.currentRow++;
+            if (self.currentRow > self.bestRow) {
+                self.bestRow = self.currentRow;
+            }
         } else {
             self.left++;
+            self.currentRow = 0;
         }
+
+        self.questionsAsked.setItem(self.currentQuery.QuestionId, 0);
+
+
+
 
         //Highlight [Answer] textbox depending on the result.
         $(self.answerControl).addClass(isCorrect ? 'correct' : 'incorrect');
@@ -208,6 +277,8 @@ TestController.prototype = {
 
         //Send results to the database.
         self.currentQuery.saveAnswer(isCorrect);
+        self.saveSessionStats();
+
 
         //Refresh stats view.
         self.refreshView();

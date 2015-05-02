@@ -75,6 +75,8 @@
     <Compile Include="TransferObjects\MatchVariantWordDto.cs" />
     <Compile Include="TransferObjects\QuestionCategoryDto.cs" />
     <Compile Include="TransferObjects\MetawordDto.cs" />
+    <Compile Include="TransferObjects\TestCalculationDto.cs" />
+    <Compile Include="TransferObjects\TestSessionDto.cs" />
     <Compile Include="TransferObjects\UserQueryDto.cs" />
     <Compile Include="TransferObjects\VariantDependencyDto.cs" />
     <Compile Include="TransferObjects\VariantLimitDto.cs" />
