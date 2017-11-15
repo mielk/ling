@@ -124,3 +124,16 @@ C:\tm\aplikacje\Lang\Typer.DAL\bin\Debug\Ninject.xml
 C:\tm\aplikacje\Lang\Typer.DAL\obj\Debug\Typer.DAL.csprojResolveAssemblyReference.cache
 C:\tm\aplikacje\Lang\Typer.DAL\obj\Debug\Typer.DAL.dll
 C:\tm\aplikacje\Lang\Typer.DAL\obj\Debug\Typer.DAL.pdb
+C:\Tomek\aplikacje\ling\Typer.DAL\bin\Debug\Typer.DAL.dll.config
+C:\Tomek\aplikacje\ling\Typer.DAL\bin\Debug\Typer.DAL.dll
+C:\Tomek\aplikacje\ling\Typer.DAL\bin\Debug\Typer.DAL.pdb
+C:\Tomek\aplikacje\ling\Typer.DAL\bin\Debug\EntityFramework.dll
+C:\Tomek\aplikacje\ling\Typer.DAL\bin\Debug\Ninject.dll
+C:\Tomek\aplikacje\ling\Typer.DAL\bin\Debug\Typer.Common.dll
+C:\Tomek\aplikacje\ling\Typer.DAL\bin\Debug\Typer.Common.pdb
+C:\Tomek\aplikacje\ling\Typer.DAL\bin\Debug\EntityFramework.xml
+C:\Tomek\aplikacje\ling\Typer.DAL\bin\Debug\Ninject.pdb
+C:\Tomek\aplikacje\ling\Typer.DAL\bin\Debug\Ninject.xml
+C:\Tomek\aplikacje\ling\Typer.DAL\obj\Debug\Typer.DAL.csprojResolveAssemblyReference.cache
+C:\Tomek\aplikacje\ling\Typer.DAL\obj\Debug\Typer.DAL.dll
+C:\Tomek\aplikacje\ling\Typer.DAL\obj\Debug\Typer.DAL.pdb

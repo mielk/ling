@@ -256,7 +256,7 @@ mielk.objects.addProperties(QueryOption.prototype, {
     }
 
     , checkIfComplete: function () {
-        alert('QueryOption.checkIfComplete :: TODO');
+        //alert('QueryOption.checkIfComplete :: TODO');
         return false;
     }
 

@@ -159,7 +159,6 @@ mielk.objects.addProperties(Query.prototype, {
             , Name: self.name
             , Weight: self.weight
             , IsComplex: self.isComplex
-            , WordType: self.wordtype.id
             , AskPlural: self.askPlural
             , IsActive: self.isActive
             , CreatorId: self.creatorId
@@ -168,7 +167,7 @@ mielk.objects.addProperties(Query.prototype, {
             , Positive: self.positive
             , Negative: self.negative
             , IsNew: self.isNew
-            , WordType: self.wordtype.id
+            , WordType: (self.wordtype ? self.wordtype.id : 0)
         });
 
         //Complex properties are set directly.
@@ -249,8 +248,8 @@ mielk.objects.addProperties(Query.prototype, {
             , Name: self.name
             , Weight: self.weight
             , WordType: self.wordtype ? self.wordtype.id : 0
-            , IsComplex: self.isComplex
-            , AskPlural: self.askPlural
+            , IsComplex: self.isComplex || false
+            , AskPlural: self.askPlural || false
             , IsActive: self.isActive
             , CreatorId: self.creatorId
             , CreateDate: self.createDate

@@ -26,7 +26,15 @@ namespace Typer.Domain.Services
         public IEnumerable<Question> GetQuestions()
         {
             var dataObjects = repository.GetQuestions();
-            return dataObjects.Select(QuestionFromDto).ToList();
+            if (dataObjects.Count() > 0)
+            {
+                return dataObjects.Select(QuestionFromDto).ToList();
+            }
+            else
+            {
+                return new List<Question>();
+            }
+            
         }
 
         public Question GetQuestion(int id)
@@ -143,7 +151,7 @@ namespace Typer.Domain.Services
 
             //Get main Question object.
             var dto = repository.GetQuestion(id);
-            Question question = QuestionFromDto(dto);
+            Question question = (dto == null ? new Question() : QuestionFromDto(dto));
 
             //Get sets and variants for the given question.
             var sets = GetQuestionVariantSets(id, currentUserId);

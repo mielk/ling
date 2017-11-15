@@ -36,13 +36,21 @@
 
             if (e.which === 13) {
 
-                var value = e.target.value;
+                if (isCorrectPanelVisible()) {
 
-                //Check if answer is given at all.
-                if (value.length) {
-                    self.answerStatus = true;
-                    self.checkAnswer(value);
-                    $(self.correctAnswers).focus();
+                    moveToNextQuestion();
+
+                } else {
+
+                    var value = e.target.value;
+
+                    //Check if answer is given at all.
+                    if (value.length) {
+                        self.answerStatus = true;
+                        self.checkAnswer(value);
+                        $(self.correctAnswers).focus();
+                    }
+
                 }
 
             }
@@ -50,6 +58,10 @@
         }
     });
 
+    function isCorrectPanelVisible()
+    {
+        return $(self.correctAnswers).is(":visible");
+    }
 
     $(self.correctAnswers).bind({
         keypress: function (e) {
@@ -72,17 +84,19 @@
             //Otherwise, move to the next question.
             else
             {
-
-                if (self.left === 0) {
-                    alert(dict.SessionCompleted.get());
-                } else {
-                    self.runTest();
-                }
-
+                moveToNextQuestion();
             }
 
         }
     });
+
+    function moveToNextQuestion() {
+        if (self.left === 0) {
+            alert(dict.SessionCompleted.get());
+        } else {
+            self.runTest();
+        }
+    }
 
 
 }

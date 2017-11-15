@@ -47,3 +47,8 @@ C:\tm\aplikacje\Lang\Typer.Common\bin\Debug\Typer.Common.dll
 C:\tm\aplikacje\Lang\Typer.Common\bin\Debug\Typer.Common.pdb
 C:\tm\aplikacje\Lang\Typer.Common\obj\Debug\Typer.Common.dll
 C:\tm\aplikacje\Lang\Typer.Common\obj\Debug\Typer.Common.pdb
+C:\Tomek\aplikacje\ling\Typer.Common\bin\Debug\Typer.Common.dll
+C:\Tomek\aplikacje\ling\Typer.Common\bin\Debug\Typer.Common.pdb
+C:\Tomek\aplikacje\ling\Typer.Common\obj\Debug\Typer.Common.csprojResolveAssemblyReference.cache
+C:\Tomek\aplikacje\ling\Typer.Common\obj\Debug\Typer.Common.dll
+C:\Tomek\aplikacje\ling\Typer.Common\obj\Debug\Typer.Common.pdb

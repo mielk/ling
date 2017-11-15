@@ -146,3 +146,6 @@ C:\tm\aplikacje\Lang\Typer.Domain\bin\Debug\Ninject.xml
 C:\tm\aplikacje\Lang\Typer.Domain\obj\Debug\Typer.Domain.csprojResolveAssemblyReference.cache
 C:\tm\aplikacje\Lang\Typer.Domain\obj\Debug\Typer.Domain.dll
 C:\tm\aplikacje\Lang\Typer.Domain\obj\Debug\Typer.Domain.pdb
+C:\Tomek\aplikacje\ling\Typer.Domain\obj\Debug\Typer.Domain.csprojResolveAssemblyReference.cache
+C:\Tomek\aplikacje\ling\Typer.Domain\obj\Debug\Typer.Domain.dll
+C:\Tomek\aplikacje\ling\Typer.Domain\obj\Debug\Typer.Domain.pdb
