@@ -1,4 +1,3 @@
-C:\Tomek\aplikacje\ling\Typer.Tests.UnitTests\obj\Debug\ling.Tests.UnitTests.csprojResolveAssemblyReference.cache
 C:\Tomek\aplikacje\ling\Typer.Tests.UnitTests\bin\Debug\Typer.Tests.UnitTests.dll.config
 C:\Tomek\aplikacje\ling\Typer.Tests.UnitTests\bin\Debug\Typer.Tests.UnitTests.dll
 C:\Tomek\aplikacje\ling\Typer.Tests.UnitTests\bin\Debug\Typer.Tests.UnitTests.pdb
@@ -34,5 +33,6 @@ C:\Tomek\aplikacje\ling\Typer.Tests.UnitTests\bin\Debug\Ninject.Web.Common.pdb
 C:\Tomek\aplikacje\ling\Typer.Tests.UnitTests\bin\Debug\Ninject.Web.Common.xml
 C:\Tomek\aplikacje\ling\Typer.Tests.UnitTests\bin\Debug\System.Web.Http.WebHost.xml
 C:\Tomek\aplikacje\ling\Typer.Tests.UnitTests\bin\Debug\System.Net.Http.Formatting.xml
+C:\Tomek\aplikacje\ling\Typer.Tests.UnitTests\obj\Debug\ling.Tests.UnitTests.csprojResolveAssemblyReference.cache
 C:\Tomek\aplikacje\ling\Typer.Tests.UnitTests\obj\Debug\Typer.Tests.UnitTests.dll
 C:\Tomek\aplikacje\ling\Typer.Tests.UnitTests\obj\Debug\Typer.Tests.UnitTests.pdb

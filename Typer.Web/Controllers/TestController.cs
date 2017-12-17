@@ -43,7 +43,6 @@ namespace Typer.Web.Controllers
         {
             var queries = questionService.GetQueries(userId, baseLanguage, learnedLanguage);
             return Json(new { queries = queries }, JsonRequestBehavior.AllowGet);
-
         }
 
 

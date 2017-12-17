@@ -8,6 +8,7 @@
     self.baseLanguage = params.baseLanguage;
     self.learnedLanguage = params.learnedLanguage;
     self.sessionId = 0;
+    self.questionMode = false;
 
     self.events = mielk.eventHandler();
 
@@ -20,15 +21,18 @@
     self.questionsAsked = mielk.hashTable();
     self.bestRow = 0;
     self.currentRow = 0;
+    self.previousQueryObjects = mielk.hashTable();
 
     //Controls
-    self.leftControl = $('#test-left')[0];
-    self.doneControl = $('#test-done')[0];
-    self.correctControl = $('#test-correct')[0];
-    self.resultControl = $('#test-result')[0];
+    self.leftControl = $('#left-questions')[0];
+    self.leftWordsControl = $('#left-words')[0];
+    self.doneControl = $('#done-questions')[0];
+    self.correctControl = $('#correct-answers')[0];
+    self.resultControl = $('#result-box')[0];
     self.questionControl = $('#test-question')[0];
     self.answerControl = $('#test-answer-text')[0];
     self.correctAnswers = $('#test-correct-answers')[0];
+    self.previousQueriesContainer = $('#previous-queries')[0];
 
     //Bind events.
     $(self.answerControl).bind({
@@ -36,10 +40,8 @@
 
             if (e.which === 13) {
 
-                if (isCorrectPanelVisible()) {
-
+                if (!self.questionMode) {
                     moveToNextQuestion();
-
                 } else {
 
                     var value = e.target.value;
@@ -49,10 +51,13 @@
                         self.answerStatus = true;
                         self.checkAnswer(value);
                         $(self.correctAnswers).focus();
+                        self.questionMode = false;
                     }
 
                 }
 
+            } else if (e.which == 32 && !self.questionMode) {
+                triggerQueryEdition();
             }
 
         }
@@ -68,17 +73,7 @@
 
             //If [Space] is pressed - edit this question.
             if (e.which === 32) {
-
-                var query = new Query(Ling.Queries.getQuery(self.currentQuery.QuestionId));
-
-                query.bind({
-                    confirm: function (e) {
-                        self.runTest();
-                    }
-                });
-
-                query.edit();
-
+                triggerQueryEdition();
             }
 
             //Otherwise, move to the next question.
@@ -90,6 +85,20 @@
         }
     });
 
+    function triggerQueryEdition() {
+
+        var query = new Query(Ling.Queries.getQuery(self.currentQuery.QuestionId));
+
+        query.bind({
+            confirm: function (e) {
+                self.runTest();
+            }
+        });
+
+        query.edit();
+
+    }
+
     function moveToNextQuestion() {
         if (self.left === 0) {
             alert(dict.SessionCompleted.get());
@@ -98,6 +107,9 @@
         }
     }
 
+    function getPreviousQueriesContainer() {
+        return self.previousQueriesContainer;
+    }
 
 }
 
@@ -147,13 +159,19 @@ TestController.prototype = {
 
     , refreshView: function () {
         var self = this;
-        $(self.leftControl).html(self.left + ' (' + self.queries.size() + ')');
+        $(self.leftControl).html(self.left);
+        $(self.leftWordsControl).html(self.queries.size());
         $(self.doneControl).html(self.done);
         $(self.correctControl).html(self.correct);
         $(self.resultControl).html(self.done > 0 ?
             Math.floor((self.correct / self.done) * 100)
             : '-');
 
+    }
+
+    , updatePreviousQueriesPanel: function (query) {
+        var self = this;
+        var prevQuery = new PreviousQuery(self, { query: query });
     }
 
     , runTest: function () {
@@ -193,6 +211,7 @@ TestController.prototype = {
 
         });
         query.ask();
+        self.questionMode = true;
 
     }
 
@@ -297,10 +316,12 @@ TestController.prototype = {
         //Refresh stats view.
         self.refreshView();
 
-        //If answer was incorrect, display AlertBox with proper answers.
-        if (!isCorrect) {
-            alert(self.currentQuery.getAlertText());
-        }
+        self.updatePreviousQueriesPanel(self.currentQuery);
+
+        ////If answer was incorrect, display AlertBox with proper answers.
+        //if (!isCorrect) {
+        //    alert(self.currentQuery.getAlertText());
+        //}
 
     }
 

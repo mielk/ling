@@ -281,6 +281,7 @@
     <Compile Include="App_Start\NinjectWebCommon.Bindings.cs" />
     <Content Include="Scripts\app\common\list\edit-option-panel.js" />
     <Content Include="Scripts\app\common\list\edit-query-panel.js" />
+    <Content Include="Scripts\app\queries\previous-query.js" />
     <Content Include="Scripts\app\queries\query-option.js" />
     <Content Include="Scripts\app\queries\variants-manager.js" />
     <Content Include="Scripts\app\test\test-controller.js" />

@@ -85,6 +85,7 @@ namespace Typer.Web
                 , "~/Scripts/app/queries/queries.js"
                 , "~/Scripts/app/queries/query.js"
                 , "~/Scripts/app/queries/query-option.js"
+                , "~/Scripts/app/queries/previous-query.js"
                 , "~/Scripts/app/queries/variants.js"
                 , "~/Scripts/app/queries/variants-manager.js"
                 , "~/Scripts/app/words/grammar.js"
