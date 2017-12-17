@@ -51,6 +51,11 @@ EditPanel.prototype = {
     }
 
     , cancel: function () {
+        var self = this;
+        self.trigger({
+            type: 'cancel',
+            object: self.editObject
+        });
         this.destroy();
     }
 

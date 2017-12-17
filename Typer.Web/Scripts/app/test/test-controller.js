@@ -21,7 +21,10 @@
     self.questionsAsked = mielk.hashTable();
     self.bestRow = 0;
     self.currentRow = 0;
-    self.previousQueryObjects = mielk.hashTable();
+
+    //Previous queries info.
+    self.howManyPreviousDisplayed = 5;
+    self.previousQueryObjects = [];
 
     //Controls
     self.leftControl = $('#left-questions')[0];
@@ -33,6 +36,7 @@
     self.answerControl = $('#test-answer-text')[0];
     self.correctAnswers = $('#test-correct-answers')[0];
     self.previousQueriesContainer = $('#previous-queries')[0];
+
 
     //Bind events.
     $(self.answerControl).bind({
@@ -47,7 +51,7 @@
                     var value = e.target.value;
 
                     //Check if answer is given at all.
-                    if (value.length) {
+                    if (value.replace(/(\r\n|\n|\r)/gm,"").length) {
                         self.answerStatus = true;
                         self.checkAnswer(value);
                         $(self.correctAnswers).focus();
@@ -107,9 +111,7 @@
         }
     }
 
-    function getPreviousQueriesContainer() {
-        return self.previousQueriesContainer;
-    }
+
 
 }
 
@@ -169,9 +171,27 @@ TestController.prototype = {
 
     }
 
-    , updatePreviousQueriesPanel: function (query) {
+    , updatePreviousQueriesPanel: function (query, givenAnswer, isCorrect) {
         var self = this;
-        var prevQuery = new PreviousQuery(self, { query: query });
+        var prevQuery = new PreviousQuery(self, { query: query, givenAnswer: givenAnswer, isCorrect: isCorrect });
+        self.addObjectToPreviousQueriesArray(prevQuery);
+    }
+
+    , addObjectToPreviousQueriesArray: function (prevQuery) {
+        var self = this;
+        self.previousQueryObjects.unshift(prevQuery);
+        self.deleteExpiredPreviousQueries();
+    }
+
+    , deleteExpiredPreviousQueries: function () {
+        var self = this;
+        if (self.previousQueryObjects.length > self.howManyPreviousDisplayed) {
+            for (var i = self.previousQueryObjects.length - 1; i >= self.howManyPreviousDisplayed; i--) {
+                var prevQuery = self.previousQueryObjects[i];
+                prevQuery.remove();
+                self.previousQueryObjects.splice(i, 1);
+            }
+        }
     }
 
     , runTest: function () {
@@ -315,8 +335,7 @@ TestController.prototype = {
 
         //Refresh stats view.
         self.refreshView();
-
-        self.updatePreviousQueriesPanel(self.currentQuery);
+        self.updatePreviousQueriesPanel(self.currentQuery, value, isCorrect);
 
         ////If answer was incorrect, display AlertBox with proper answers.
         //if (!isCorrect) {

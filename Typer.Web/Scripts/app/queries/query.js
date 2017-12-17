@@ -79,6 +79,12 @@ mielk.objects.addProperties(Query.prototype, {
                       type: 'confirm'
                     , query: self
                 });
+            },
+            cancel: function (e) {
+                self.trigger({
+                      type: 'cancel'
+                    , query: self
+                });
             }
         });
 

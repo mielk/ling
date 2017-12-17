@@ -13,7 +13,7 @@
     display: block;
     float: left;
     position: relative;
-    width: 80%;
+    width: 60%;
     height: 100%;
     padding: 0;
     border-right: 1px solid #888888;
@@ -24,7 +24,7 @@
     display: block;
     float: right;
     position: relative;
-    width: 20%;
+    width: 40%;
     height: 100%;
     padding: 0;
     border-right: 1px solid #888888;
@@ -158,6 +158,7 @@
     height: 96px;
     text-align: center;
     border-bottom: 1px solid #888888;
+    background-color: #EEEEEE;
 }
 
 
@@ -210,7 +211,7 @@
     bottom: 0;
     padding: 0;
     text-align: left;
-    font-size: 16px;
+    font-size: 14px;
     font-family: 'Century Gothic';
 }
 
@@ -247,4 +248,186 @@
     padding: 0;
     text-align: center;
     border-bottom: 1px solid #888888;
+}
+
+.previous-query-container {
+    display: block;
+    position: relative;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    height: auto;
+    padding: 0 6px;
+    border-bottom: 1px solid #888888;
+}
+
+.previous-query-metadata-container {
+    display: block;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    height: auto;
+    min-height: 24px;
+    padding: 6px 0;
+    border-bottom: 1px solid #CCCCCC;
+}
+
+.previous-query-metadata-subpanel{
+    display: block;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 45%;
+    height: 100%;
+    min-height: 48px;
+    padding: 0;
+    font-size: 13px;
+    font-family: 'Century Gothic';
+    text-align: left;
+}
+
+.previous-query-question {
+    height: auto;
+}
+
+.previous-query-correct-answers-container {
+    display: block;
+    position: relative;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 50%;
+    height: auto;
+    min-height: 48px;
+    padding: 0;
+    font-size: 12px;
+    font-family: 'Century Gothic';
+}
+
+.previous-query-correct-answer {
+    display: block;
+    position: relative;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    height: 24px;
+    line-height: 18px;
+    padding-bottom: 6px;
+    font-size: 13px;
+    font-family: 'Century Gothic';
+    text-align: left;
+}
+
+.previous-query-other-correct {
+    font-style: italic;
+    font-size: 11px;
+}
+
+
+
+.previous-query-my-answer-container {
+    display: block;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    height: 24px;
+    padding: 3px 0;
+    border-bottom: 1px solid #CCCCCC;
+}
+
+.previous-query-my-answer {
+    display: block;
+    float: left;
+    font-size: 11px;
+    font-family: 'Century Gothic';
+    font-style: italic;
+    line-height: 18px;
+    text-align: left;
+}
+
+.previous-query-stats-container {
+    display: block;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    height: 24px;
+    padding: 4px 0;
+}
+
+.previous-query-edit-icon {
+    display: table-cell;
+    position: absolute;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 16px;
+    height: 16px;
+    top: 3px;
+    right: 3px;
+    background-image: url('/Content/images/edit2.png');
+}
+
+.previous-query-edit-icon:hover {
+    cursor: pointer;
+}
+
+.previous-query-correct {
+    background-color: rgba(227, 255, 219, 1)
+}
+
+.previous-query-incorrect {
+    background-color: rgb(255, 205, 205);
+}
+
+.previous-query-start-icon {
+    display: table-cell;
+    position: relative;
+    float: left;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 16px;
+    height: 16px;
+    margin-left: 0;
+    margin-right: 3px;
+}
+
+.query-counter-icon {
+    background-image: url('/Content/images/question.png');
+}
+
+.query-correct-counter-icon {
+    background-image: url('/Content/images/thumb-up.png');
+}
+
+.query-incorrect-counter-icon {
+    background-image: url('/Content/images/thumb-down.png');
+}
+
+.query-stat-value {
+    display: block;
+    float: left;
+    font-size: 11px;
+    font-family: 'Century Gothic';
+    line-height: 18px;
+    text-align: right;
+    padding: 0 6px;
+}
+
+.query-correct-percent {
+    display: block;
+    float: left;
+    padding-left: 12px;
 }

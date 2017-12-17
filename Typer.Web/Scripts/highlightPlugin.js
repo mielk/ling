@@ -8,7 +8,10 @@
                 var wordNode = node.splitText(match.index);
                 wordNode.splitText(match[0].length);
                 var wordClone = wordNode.cloneNode(true);
-                highlight.appendChild(wordClone);
+                highlight.
+
+
+                    Child(wordClone);
                 wordNode.parentNode.replaceChild(highlight, wordNode);
                 return 1; //skip added node in parent
             }
