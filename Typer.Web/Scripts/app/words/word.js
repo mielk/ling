@@ -18,6 +18,7 @@ function Word(metaword, params) {
     //Instance properties.
     self.parent = metaword;
     self.isCompleted = (params.IsCompleted || params.isCompleted ? true : false);
+    self.content = params.Content || params.Name || '';
     self.language = Ling.Languages.getLanguage(params.languageId || params.LanguageId);
     self.properties = params.Properties || mielk.hashTable();
     self.grammarForms = params.GrammarForms || mielk.hashTable();

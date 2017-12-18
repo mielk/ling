@@ -263,7 +263,7 @@ namespace Typer.Domain.Services
         public IEnumerable<UserQuery> GetQueries(int userId, int baseLanguage, int learnedLanguage)
         {
             const int FIRST_QUERY_TO_DO = 5;
-            IEnumerable<Question> questions = repository.GetQuestions().Select(QuestionFromDto).ToList();
+            IEnumerable<Question> questions = repository.GetQuestions().Where(q => q.IsActive).Select(QuestionFromDto).ToList();
             IEnumerable<UserQuery> queries = repository.GetUserQueries(userId, baseLanguage, learnedLanguage).Select(UserQueryFromDto).ToList();
             Dictionary<int, UserQuery> queriesMap = queries.ToDictionary(q => q.QuestionID);
             List<UserQuery> queriesList = new List<UserQuery>();

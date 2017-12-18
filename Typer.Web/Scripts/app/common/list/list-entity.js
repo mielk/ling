@@ -195,7 +195,8 @@ Entity.prototype = {
             var set = table.getItem(languageId);
             if (set) {
                 var subitem = self.createSubItem(value);
-                set.setItem(subitem.key(), subitem);
+                var key = subitem.key();
+                set.setItem(key, subitem);
             }
         });
 

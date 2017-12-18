@@ -65,7 +65,8 @@ mielk.objects.addProperties(Metaword.prototype, {
     //Tworzy obiekt zależny względem tego entity, np. Word dla Metaword
     //albo QueryOption dla Query.
     , createSubItem: function (params) {
-        return new Word(this, params);
+        var word = new Word(this, params);
+        return word;
     }
 
     //Zwraca tablicę zawierającą definicję zestawu danych
