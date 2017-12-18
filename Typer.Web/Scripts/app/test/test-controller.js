@@ -36,6 +36,7 @@
     self.answerControl = $('#test-answer-text')[0];
     self.correctAnswers = $('#test-correct-answers')[0];
     self.previousQueriesContainer = $('#previous-queries')[0];
+    self.nextQueryButton = $('#next-query-button')[0];
 
 
     //Bind events.
@@ -46,6 +47,7 @@
 
                 if (!self.questionMode) {
                     moveToNextQuestion();
+                    e.preventDefault();
                 } else {
 
                     var value = e.target.value;
@@ -53,9 +55,10 @@
                     //Check if answer is given at all.
                     if (value.replace(/(\r\n|\n|\r)/gm,"").length) {
                         self.answerStatus = true;
-                        self.checkAnswer(value);
-                        $(self.correctAnswers).focus();
+                        self.checkAnswer(value);                        
                         self.questionMode = false;
+                        e.preventDefault();
+                        $(self.nextQueryButton).focus();
                     }
 
                 }
@@ -64,6 +67,12 @@
                 triggerQueryEdition();
             }
 
+        }
+    });
+
+    $(self.nextQueryButton).bind({
+        click: function (e) {
+            moveToNextQuestion();
         }
     });
 

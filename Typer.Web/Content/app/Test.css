@@ -82,7 +82,6 @@
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
-    margin: 0;
     padding: 12px;
     border: 1px solid #888;
     width: 100%;
@@ -116,9 +115,13 @@
 }
 
 #test-correct-answers {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
     height: auto;
     background-color: rgba(189, 255, 192, 1);
-    margin: 0;
+    margin-top: 0;
+    margin-bottom: 9px;
 }
 
 .correct-line {
@@ -430,4 +433,30 @@
     display: block;
     float: left;
     padding-left: 12px;
+}
+
+
+.test-buttons-panel {
+    display: block;
+    position: relative;
+    float: left;
+    height: 36px;
+    width: 100%;
+}
+
+#next-query-button {
+    display: block;
+    position: relative;
+    float: right;
+    height: 36px;
+    width: 120px;
+    border: 1px solid #888888;
+    line-height: 36px;
+    text-align: center;
+    font-family: 'Century Gothic';
+    font-size: 14px;
+    font-weight: bold;
+    background-color: #BBBBBB;
+    text-transform: capitalize;
+    cursor: pointer;
 }

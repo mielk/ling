@@ -115,10 +115,10 @@ function PreviousQuery(controller, params) {
                 var query = new Query(Ling.Queries.getQuery(questionId));
                 query.bind({
                     confirm: function (e) {
-                        self.controller.runTest();
+                        //self.controller.runTest();
                     },
                     cancel: function (e) {
-                        self.controller.runTest();
+                        
                     }
                 });
                 query.edit();
