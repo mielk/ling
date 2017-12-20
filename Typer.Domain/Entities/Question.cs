@@ -131,7 +131,7 @@ namespace Typer.Domain.Entities
 
                 displayed = selectedOption.Content;
                 IList<QuestionOption> correctOptions = GetOptions(learnedLanguage).ToList();
-                IList<string> answers = new List<string>();
+                IEnumerable<string> answers = new List<string>();
 
                 foreach (var option in correctOptions)
                 {
@@ -142,7 +142,7 @@ namespace Typer.Domain.Entities
 
         }
 
-        private List<string> getOptionVersions(string option)
+        private IEnumerable<string> getOptionVersions(string option)
         {
 
             Regex rgx = new Regex(@"\([^\(\)]*\)");
