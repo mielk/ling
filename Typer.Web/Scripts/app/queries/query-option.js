@@ -139,6 +139,7 @@ mielk.objects.addProperties(QueryOption.prototype, {
             datalines.push({
                 property: Ling.Enums.Properties.Content,
                 index: 1,
+                focus: true,
                 label: dict.Content.get(),
                 value: object.content,
                 callback: function (value) {
@@ -233,6 +234,7 @@ mielk.objects.addProperties(QueryOption.prototype, {
 
         var editPanel = new EditOptionPanel(self);
         editPanel.show();
+        editPanel.focus();
         editPanel.bind({
             confirm: function (e) {
                 self.update(e.object);

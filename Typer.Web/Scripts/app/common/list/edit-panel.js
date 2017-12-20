@@ -36,6 +36,11 @@ EditPanel.prototype = {
         this.ui.show();
     }
 
+    , focus: function () {
+        var contentDataline = this.getDataLine('content');
+        if (contentDataline) contentDataline.ui.focus();
+    }
+
     , destroy: function () {
         this.ui.destroy();
         this.clear();
@@ -81,7 +86,7 @@ EditPanel.prototype = {
 
         mielk.arrays.each(datalines, function (data) {
             var dataline = new EditDataLine(self, data);
-            self.dataLines.setItem(dataline.property, dataline);
+            self.dataLines.setItem(dataline.property.name || dataline.property, dataline);
             $(dataline.view()).appendTo(container);
         });
 
@@ -111,6 +116,7 @@ EditPanel.prototype = {
         self.ui.appendDetailsView(container);
 
     }
+
     , clear: function() {
         for (var key in this) {
             delete this[key];
@@ -214,7 +220,7 @@ function EditPanelView(panel) {
 }
 EditPanelView.prototype = {
 
-    show: function () {
+      show: function () {
         $(this.background).css({
             'visibility': 'visible',
             'z-index': mielk.ui.topLayer()
@@ -402,6 +408,7 @@ function EditDataLine(panel, params) {
                     if (e.which === 13) {
                         e.preventDefault();
                         e.stopPropagation();
+                        self.panel.confirm();
                     }
                 }
                 , 'keyup': function () {
