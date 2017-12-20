@@ -131,11 +131,11 @@ namespace Typer.Domain.Entities
 
                 displayed = selectedOption.Content;
                 IList<QuestionOption> correctOptions = GetOptions(learnedLanguage).ToList();
-                IEnumerable<string> answers = new List<string>();
+                List<string> answers = new List<string>();
 
                 foreach (var option in correctOptions)
                 {
-                    answers = getOptionVersions(option.Content);
+                    answers.AddRange(getOptionVersions(option.Content));
                 }
                 correct = answers.ToArray();
             }
