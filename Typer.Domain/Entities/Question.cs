@@ -138,7 +138,6 @@ namespace Typer.Domain.Entities
                 {
                     
                     versions = getOptionVersions(option.Content);
-
                     foreach (var str in versions)
                     {
                         answers.Add(str);
