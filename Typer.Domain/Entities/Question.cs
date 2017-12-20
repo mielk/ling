@@ -132,92 +132,49 @@ namespace Typer.Domain.Entities
                 displayed = selectedOption.Content;
                 IList<QuestionOption> correctOptions = GetOptions(learnedLanguage).ToList();
                 IList<string> answers = new List<string>();
-                IList<string> versions;
 
                 foreach (var option in correctOptions)
                 {
-                    
-                    versions = getOptionVersions(option.Content);
-                    foreach (var str in versions)
-                    {
-                        answers.Add(str);
-                    }
-
+                    answers = getOptionVersions(option.Content);
                 }
-
                 correct = answers.ToArray();
-
             }
 
         }
 
-        private IList<string> getOptionVersions(string option)
+        private List<string> getOptionVersions(string option)
         {
 
-            bool complete = false;
-            IList<string> versions = new List<string>();
-            versions.Add(option);
+            Regex rgx = new Regex(@"\([^\(\)]*\)");
+            List<string> result = new List<string>();
 
-            do
+            Match match = rgx.Match(option);
+            if (match.Success)
             {
-                versions = reduceVersionsLevel(versions, out complete);
-            } while (!complete);
-
-            return versions;
-
-        }
-
-
-        private IList<string> reduceVersionsLevel(IList<string> versions, out bool complete)
-        {
-            Regex rgx = new Regex("[^a-zA-Z0-9 -]");
-            IList<string> result = new List<string>();
-            complete = true;
-
-            foreach (var str in versions)
-            {
-
-                result.Add(str);
-                var part = "";
-                
-                foreach (char ch in str.ToCharArray())
+                var matchedText = match.ToString();
+                IList<string> bracketVersions = getVersions(matchedText);
+                foreach (var s in bracketVersions)
                 {
-
-                    if (ch == '(')
-                    {
-                        part = "";
-                        result.Remove(str);
-                    }
-                    else if (ch == ')')
-                    {
-                        IList<string> parts = getVersions(part);
-                        string original = '(' + part + ')';
-
-                        foreach (var s in parts)
-                        {
-                            string converted = rgx.Replace(str.Replace(original, s), "");
-                            result.Add(converted);
-                        }
-
-                        complete = false;
-
-                    }
-                    else
-                    {
-                        part += ch;
-                    }
+                    var substring = option.Replace(matchedText, s);
+                    var processed = getOptionVersions(substring);
+                    result.AddRange(processed);
                 }
             }
+            else
+            {
+                result.Add(option);
+            }
 
-
-            return result;
+            return result.Distinct();
 
         }
+
 
 
         private IList<string> getVersions(string substring)
         {
-            IList<string> versions = substring.Split('/').ToList();
+            string withoutBrackets = substring.Replace("(", string.Empty).Replace(")", string.Empty);
+            IList<string> versions = withoutBrackets.Split('/').ToList();
 
             if (versions.Count == 1)
             {
