@@ -1,0 +1,2 @@
+﻿edycja zapytań:
+	- ogólne okno do edycji zapytań - dodać obsługę kliknięcia Entera i Esc
