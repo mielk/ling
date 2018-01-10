@@ -82,7 +82,6 @@ namespace Typer.Domain.Entities
         }
 
 
-
         public Question(string json)
         {
             JToken token = JObject.Parse(json);
@@ -113,6 +112,7 @@ namespace Typer.Domain.Entities
         public void loadQuery(int baseLanguage, int learnedLanguage, out string displayed, out string[] correct)
         {
             var selectedOption = drawOption(baseLanguage);
+            var displayedContent = drawDisplayedContent(selectedOption);
 
             if (selectedOption == null)
             {
@@ -123,13 +123,13 @@ namespace Typer.Domain.Entities
 
             if (IsComplex)
             {
-                displayed = selectedOption.Content;
+                displayed = displayedContent;
                 correct = new string[] {"a"};
             }
             else
             {
 
-                displayed = selectedOption.Content;
+                displayed = displayedContent;
                 IList<QuestionOption> correctOptions = GetOptions(learnedLanguage).ToList();
                 List<string> answers = new List<string>();
 
@@ -145,7 +145,7 @@ namespace Typer.Domain.Entities
         private IEnumerable<string> getOptionVersions(string option)
         {
 
-            Regex rgx = new Regex(@"\([^\(\)]*\)");
+            Regex rgx = new Regex(@"\{[^\{\}]*\}");
             List<string> result = new List<string>();
 
             Match match = rgx.Match(option);
@@ -169,11 +169,9 @@ namespace Typer.Domain.Entities
 
         }
 
-
-
         private IList<string> getVersions(string substring)
         {
-            string withoutBrackets = substring.Replace("(", string.Empty).Replace(")", string.Empty);
+            string withoutBrackets = substring.Replace("{", string.Empty).Replace("}", string.Empty);
             IList<string> versions = withoutBrackets.Split('/').ToList();
 
             if (versions.Count == 1)
@@ -211,6 +209,15 @@ namespace Typer.Domain.Entities
 
             return null;
 
+        }
+
+        private string drawDisplayedContent(QuestionOption option)
+        {
+            List<string> versions = getOptionVersions(option.Content).ToList();
+            int counter = versions.Count;
+            var rnd = new Random();
+            var index = rnd.Next(1, counter);
+            return versions.ElementAt(index - 1);
         }
 
     }
