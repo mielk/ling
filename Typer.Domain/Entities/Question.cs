@@ -221,4 +221,5 @@ namespace Typer.Domain.Entities
         }
 
     }
+
 }
